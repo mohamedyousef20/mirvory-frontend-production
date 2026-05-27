@@ -398,10 +398,8 @@ export default function ReturnDetailsPage() {
                         <div className="space-y-3">
                             <div>
                                 <span className="font-medium text-gray-700">رقم الطلب الأصلي:</span>
-                                <p className="text-gray-600">#{returnRequest.order?.orderNumber}</p>
-                                <p className="text-gray-600">
-                                    {returnRequest.order?.totalPrice} ج.م
-                                </p>
+                                <p className="text-gray-600">#{returnRequest.order.orderNumber}</p>
+                            
                             </div>
 
                             <div>
