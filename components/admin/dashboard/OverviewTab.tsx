@@ -314,62 +314,64 @@ export function OverviewTab({
                         <CardTitle>{isArabic ? "أحدث الطلبات" : "Recent Orders"}</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>{isArabic ? "رقم الطلب" : "Order ID"}</TableHead>
-                                    <TableHead>{isArabic ? "التاريخ" : "Date"}</TableHead>
-                                    <TableHead>{isArabic ? "العميل" : "Customer"}</TableHead>
-                                    <TableHead>{isArabic ? "البائع" : "Vendor"}</TableHead>
-                                    <TableHead>{isArabic ? "الحالة" : "Status"}</TableHead>
-                                    <TableHead>{isArabic ? "الإجمالي" : "Total"}</TableHead>
-                                    <TableHead>{isArabic ? "العناصر" : "Items"}</TableHead>
-                                    <TableHead>{isArabic ? "طريقة الدفع" : "Payment"}</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {Array.isArray(orders) && orders.map((order: any) => (
-                                    <TableRow key={order._id}>
-                                        <TableCell className="font-medium">#{order._id?.substring(0, 6) || 'N/A'}</TableCell>
-                                        <TableCell>{order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}</TableCell>
-                                        <TableCell>{order.buyer?.fullName || "N/A"}</TableCell>
-                                        <TableCell>{order.seller?.fullName}</TableCell>
-                                        <TableCell>
-                                            <Badge variant={
-                                                order.deliveryStatus === "processing" ? "secondary"
-                                                    : order.deliveryStatus === "shipped" ? "default"
-                                                        : order.deliveryStatus === "delivered" ? "default"
-                                                            : "destructive"
-                                            }>
-                                                {isArabic
-                                                    ? order.deliveryStatus === "delivered" ? "تم التسليم"
-                                                        : order.deliveryStatus === "shipped" ? "تم الشحن"
-                                                            : order.deliveryStatus === "cancelled" ? "ملغي"
-                                                                : "قيد المعالجة"
-                                                    : order.deliveryStatus}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell className={isArabic ? "text-right" : "text-left"}>
-                                            {order.total || 0} {isArabic ? "ج.م" : "EGP"}
-                                        </TableCell>
-                                        <TableCell>{order.items?.length || 0}</TableCell>
-                                        <TableCell>
-                                            <Badge variant={
-                                                order.paymentStatus === "paid" ? "default"
-                                                    : order.paymentStatus === "failed" ? "destructive"
-                                                        : "secondary"
-                                            }>
-                                                {isArabic
-                                                    ? order.paymentStatus === "paid" ? "مدفوع"
-                                                        : order.paymentStatus === "failed" ? "فشل"
-                                                            : "قيد الانتظار"
-                                                    : order.paymentStatus}
-                                            </Badge>
-                                        </TableCell>
+                        <div className="overflow-x-auto">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>{isArabic ? "رقم الطلب" : "Order ID"}</TableHead>
+                                        <TableHead>{isArabic ? "التاريخ" : "Date"}</TableHead>
+                                        <TableHead>{isArabic ? "العميل" : "Customer"}</TableHead>
+                                        <TableHead>{isArabic ? "البائع" : "Vendor"}</TableHead>
+                                        <TableHead>{isArabic ? "الحالة" : "Status"}</TableHead>
+                                        <TableHead>{isArabic ? "الإجمالي" : "Total"}</TableHead>
+                                        <TableHead>{isArabic ? "العناصر" : "Items"}</TableHead>
+                                        <TableHead>{isArabic ? "طريقة الدفع" : "Payment"}</TableHead>
                                     </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
+                                </TableHeader>
+                                <TableBody>
+                                    {Array.isArray(orders) && orders.map((order: any) => (
+                                        <TableRow key={order._id}>
+                                            <TableCell className="font-medium">#{order._id?.substring(0, 6) || 'N/A'}</TableCell>
+                                            <TableCell>{order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}</TableCell>
+                                            <TableCell>{order.buyer?.fullName || "N/A"}</TableCell>
+                                            <TableCell>{order.seller?.fullName}</TableCell>
+                                            <TableCell>
+                                                <Badge variant={
+                                                    order.deliveryStatus === "processing" ? "secondary"
+                                                        : order.deliveryStatus === "shipped" ? "default"
+                                                            : order.deliveryStatus === "delivered" ? "default"
+                                                                : "destructive"
+                                                }>
+                                                    {isArabic
+                                                        ? order.deliveryStatus === "delivered" ? "تم التسليم"
+                                                            : order.deliveryStatus === "shipped" ? "تم الشحن"
+                                                                : order.deliveryStatus === "cancelled" ? "ملغي"
+                                                                    : "قيد المعالجة"
+                                                        : order.deliveryStatus}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell className={isArabic ? "text-right" : "text-left"}>
+                                                {order.total || 0} {isArabic ? "ج.م" : "EGP"}
+                                            </TableCell>
+                                            <TableCell>{order.items?.length || 0}</TableCell>
+                                            <TableCell>
+                                                <Badge variant={
+                                                    order.paymentStatus === "paid" ? "default"
+                                                        : order.paymentStatus === "failed" ? "destructive"
+                                                            : "secondary"
+                                                }>
+                                                    {isArabic
+                                                        ? order.paymentStatus === "paid" ? "مدفوع"
+                                                            : order.paymentStatus === "failed" ? "فشل"
+                                                                : "قيد الانتظار"
+                                                        : order.paymentStatus}
+                                                </Badge>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </div>
                     </CardContent>
                 </Card>
 

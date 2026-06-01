@@ -27,6 +27,7 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { categoryService } from "@/lib/api"
+import ImageSlider from "@/components/ui/ImageSlider"
 
 // Define Product type
 interface Product {
@@ -469,15 +470,8 @@ export default function CategoryProductsGrid() {
                       className="overflow-hidden group shadow-md hover:shadow-lg transition-all duration-300"
                     >
                       <Link href={`/products/${product._id}`} className="relative block">
-                        <div className="aspect-square overflow-hidden">
-                          <Image
-                            src={product.images[0] || "/placeholder.svg"}
-                            alt={product.title}
-                            width={300}
-                            height={300}
-                            className="object-cover transition-transform group-hover:scale-105"
-                          />
-                        </div>
+                        <ImageSlider images={product.images} alt={product.title} 
+                        variant="card" />
                         {(product.ratings?.average ?? 0) > 4.5 && (
                           <Badge className="absolute top-2 right-2 bg-red-500 hover:bg-red-600">
                             {language === "ar" ? "مميز" : "Top Rated"}

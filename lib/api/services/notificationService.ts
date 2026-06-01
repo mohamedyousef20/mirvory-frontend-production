@@ -29,14 +29,14 @@ export interface Notification {
   createdAt: string;
   updatedAt: string;
   status?: 'sent' | 'failed';
-  userIds?: string[];
+  userId?: string[];
 }
 
 interface SendNotificationData {
   title: string;
   message: string;
   type: NotificationType;
-  userIds?: string[];
+  userId?: string[];
   role?: UserRole;
   orderId?: string;
 }

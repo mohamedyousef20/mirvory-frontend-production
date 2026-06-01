@@ -45,24 +45,33 @@ export function NewestProducts({ title }: NewestProductsProps) {
                 setLoading(true);
                 const response = await productService.getNewArrivals();
 
-                //console.log(response.data, 'the newst ')
+                console.log('NewestProducts response:', response);
+
+                // Handle the new response format: { success: true, data: products }
+                let productsData = [];
                 if (response.data) {
-                    setProducts(response.data.products);
-                } else {
-                    setError(t('products.loadError'));
-                    toast.error(t('فشل تحميل المنتجات'));
+                    if (response.data.success && response.data.data) {
+                        productsData = response.data.data;
+                    } else if (Array.isArray(response.data)) {
+                        productsData = response.data;
+                    } else if (response.data.data && Array.isArray(response.data.data)) {
+                        productsData = response.data.data;
+                    }
                 }
+
+                console.log('Products data:', productsData);
+                setProducts(productsData);
             } catch (err) {
                 console.error('Error fetching newest products:', err);
-                setError(t('products.loadError'));
-                toast.error(t('فشل تحميل المنتجات'));
+                setError(language === 'ar' ? 'فشل تحميل المنتجات' : 'Failed to load products');
+                toast.error(language === 'ar' ? 'فشل تحميل المنتجات' : 'Failed to load products');
             } finally {
                 setLoading(false);
             }
         };
 
         fetchNewestProducts();
-    }, [t]);
+    }, [language]);
 
     const scroll = (direction: 'left' | 'right') => {
         if (scrollContainerRef.current) {
@@ -80,10 +89,10 @@ export function NewestProducts({ title }: NewestProductsProps) {
             const newFavorites = new Set(prev);
             if (newFavorites.has(productId)) {
                 newFavorites.delete(productId);
-                toast.success(t('wishlist.removed'));
+                toast.success(language === "ar" ? "تمت الإزالة من المفضلة" : "Removed from wishlist");
             } else {
                 newFavorites.add(productId);
-                toast.success(t('wishlist.added'));
+                toast.success(language === "ar" ? "تمت الإضافة إلى المفضلة" : "Added to wishlist");
             }
             return newFavorites;
         });
@@ -103,8 +112,13 @@ export function NewestProducts({ title }: NewestProductsProps) {
         <div className="bg-white shadow-sm rounded-lg p-6">
             <h2 className="text-xl font-semibold mb-6">{title}</h2>
 
-            {/* Products Grid */}
-            {products.length > 0 ? (
+            {/* Loading State */}
+            {loading ? (
+                <div className="flex items-center justify-center py-12">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+                </div>
+            ) : /* Products Grid */
+            products && products.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {products.map((product) => (
                         <ProductCard

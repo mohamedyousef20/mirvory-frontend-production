@@ -31,7 +31,7 @@ export default function NotificationsPage() {
     const [title, setTitle] = useState("")
     const [message, setMessage] = useState("")
     const [target, setTarget] = useState<NotificationTarget>("all_users")
-    const [userIds, setUserIds] = useState("")
+    const [userId, setuserId] = useState("")
     const [isSending, setIsSending] = useState(false)
     const [searchQuery, setSearchQuery] = useState("")
     const [searchResults, setSearchResults] = useState<User[]>([])
@@ -62,10 +62,7 @@ export default function NotificationsPage() {
                 response = await userService.getSellerForAdmin();
             }
 
-            // استخراج البيانات من الاستجابة
-            const users = response.data || response;
-            //console.log('Fetched users:', users);
-
+            const users = response.data.data;
             // تصفية البيانات للتأكد من أنها تطابق واجهة User
             const filteredUsers = users
                 .filter((user: any) => user.role === role)
@@ -100,25 +97,19 @@ export default function NotificationsPage() {
         setHasSearched(true)
         try {
             const role = target === "specific_users" ? 'user' : 'seller'
-            const response = await userService.searchUsers(searchQuery, role)
-
+            const response = await userService.searchUsersForAdmin(
+                searchQuery,
+                role
+            )
+            console.log(response,'4578')
             // معالجة الاستجابة بشكل صحيح
             let results;
             if (response.data && response.data.data) {
-                results = response.data.data; // إذا كان الهيكل { data: { data: [...] } }
-            } else if (response.data) {
-                results = response.data; // إذا كان الهيكل { data: [...] }
-            } else {
-                results = response; // إذا كان الاستجابة مباشرة
+                results = response.data.data; 
             }
 
-            //console.log('Search results:', results)
-
-            // التأكد من أن results هي مصفوفة
-            const resultsArray = Array.isArray(results) ? results : [];
-
             // تصفية البيانات
-            const filteredResults = resultsArray.map((user: any) => ({
+            const filteredResults = results.map((user: any) => ({
                 _id: user._id || user.id,
                 firstName: user.firstName || '',
                 lastName: user.lastName || '',
@@ -142,7 +133,7 @@ export default function NotificationsPage() {
         if (!selectedUsers.find(u => u._id === user._id)) {
             const updatedSelectedUsers = [...selectedUsers, user];
             setSelectedUsers(updatedSelectedUsers)
-            setUserIds(updatedSelectedUsers.map(u => u._id).join(','))
+            setuserId(updatedSelectedUsers.map(u => u._id).join(','))
         }
     }
 
@@ -150,7 +141,7 @@ export default function NotificationsPage() {
     const handleRemoveUser = (userId: string) => {
         const updatedSelectedUsers = selectedUsers.filter(u => u._id !== userId)
         setSelectedUsers(updatedSelectedUsers)
-        setUserIds(updatedSelectedUsers.map(u => u._id).join(','))
+        setuserId(updatedSelectedUsers.map(u => u._id).join(','))
     }
 
     // البحث عند الضغط على Enter
@@ -166,7 +157,7 @@ export default function NotificationsPage() {
         setSearchQuery("")
         setSearchResults([])
         setSelectedUsers([])
-        setUserIds("")
+        setuserId("")
         setAllUsers([])
         setHasSearched(false)
     }, [target])
@@ -186,7 +177,7 @@ export default function NotificationsPage() {
                 title: string
                 message: string
                 type: string
-                userIds?: string[]
+                userId?: string[]
                 role?: 'seller' | 'user'
             } = {
                 title,
@@ -201,7 +192,7 @@ export default function NotificationsPage() {
                     notificationData.type = 'ALL_USERS'
                     break
                 case 'specific_users':
-                    notificationData.userIds = selectedUsers.map(user => user._id)
+                    notificationData.userId = selectedUsers.map(user => user._id)
                     notificationData.role = 'user'
                     break
                 case 'all_sellers':
@@ -209,7 +200,7 @@ export default function NotificationsPage() {
                     notificationData.type = 'ALL_USERS'
                     break
                 case 'specific_sellers':
-                    notificationData.userIds = selectedUsers.map(user => user._id)
+                    notificationData.userId = selectedUsers.map(user => user._id)
                     notificationData.role = 'seller'
                     break
             }
@@ -220,7 +211,7 @@ export default function NotificationsPage() {
             // Reset form
             setTitle("")
             setMessage("")
-            setUserIds("")
+            setuserId("")
             setSelectedUsers([])
             setTarget("all_users")
             setAllUsers([])

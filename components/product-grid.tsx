@@ -302,6 +302,8 @@ export function ProductGrid() {
                 filters.sort === "topRated" ? "-ratings.average" : undefined,
         };
         response = await productService.searchProducts(filters.searchQuery, searchParams);
+        console.log("searchParams147", searchParams);
+        console.log("response147", response.data);
       } else {
         // Otherwise use regular products endpoint with filters
         const params = {
@@ -327,10 +329,10 @@ export function ProductGrid() {
 
       // Update pagination info based on new backend format
       if (response.data?.pagination) {
-        const { currentPage, totalPages, limit } = response.data.pagination;
+        const { page, totalPages, limit } = response.data.pagination;
         setPagination(prev => ({
           ...prev,
-          page: currentPage,
+          page,
           pageSize: limit,
           totalPages
         }));
@@ -478,16 +480,7 @@ export function ProductGrid() {
     }
   }, [isAuthenticated, language, uiState.favorites]);
 
-  const addToCart = async (productId: string) => {
-    try {
-      //console.log('Adding to cart:', productId);
-      // await dispatch(addToCartAction({ productId, quantity: 1 })).unwrap();
-      toast.success(language === "ar" ? "تمت الإضافة إلى السلة" : "Added to cart");
-    } catch (error) {
-      toast.error(language === "ar" ? "فشل في إضافة المنتج إلى السلة" : "Failed to add product to cart");
-    }
-  };
-
+ 
   const setPage = useCallback((page: number) => {
     setPagination(prev => ({ ...prev, page }));
   }, []);

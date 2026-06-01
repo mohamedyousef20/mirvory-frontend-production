@@ -74,8 +74,8 @@ interface Review {
   rating: number
   comment?: string
   user?: {
-    id?: string
-    name: string | null
+    _id?: string
+    fullName: string | null
   }
   createdAt: string
 }
@@ -131,10 +131,11 @@ const ProductDetail = ({ productId }: { productId: string }) => {
         setError(null)
 
         const response = await productService.getProductById(productId)
-        //console.log('Product response:', response.data.product)
-
+        console.log('Product response:', response.data.product)
+        console.log(user, 'user147')
+        console.log(userId, 'user148')
         if (response.data && response.data.product) {
-          const productData = response.data.product
+          const productData = response.data?.product
           setProduct(productData)
           setMainImage(productData.images?.[0] || '')
           // initialize selections to match current quantity
@@ -292,25 +293,13 @@ const ProductDetail = ({ productId }: { productId: string }) => {
 
       setIsLoadingReviews(true)
       const ratingResponse = await ratingService.getProductRatings(productId)
-      //console.log('Fullratingresponse:', ratingResponse)
-
+      console.log(ratingResponse.data, "ratingResponse")
       // Handle the nested response structure
       const ratingData = ratingResponse?.data?.data || {}
-      //console.log('Rating data:', ratingData)
 
-      const reviewsData = ratingData.ratings || []
-      //console.log('Reviews data:', reviewsData)
+      setReviews(ratingData)
 
-      setReviews(reviewsData)
 
-      if (ratingData.averageRating !== undefined || ratingData.total !== undefined) {
-        setRatingsSummary({
-          average: ratingData.averageRating ?? 0,
-          total: ratingData.total ?? 0
-        })
-      } else {
-        setRatingsSummary(null)
-      }
 
       //console.log('Processed reviews:', reviewsData)
     } catch (err) {
@@ -334,16 +323,11 @@ const ProductDetail = ({ productId }: { productId: string }) => {
       return
     }
 
-    //console.log('Checking for user review. User ID:', userId)
-    //console.log('All reviews:', reviews)
-
     const existingRating = reviews.find(review => {
-      const reviewUserId = review.user?.id
-      //console.log('Review user ID:', reviewUserId, 'Current user ID:', userId, 'Match:', reviewUserId === userId)
+      const reviewUserId = review?.user?._id
       return reviewUserId === userId
     })
 
-    //console.log('Found existing rating:', existingRating)
 
     if (existingRating) {
       // Use the id field from your API response
@@ -363,7 +347,7 @@ const ProductDetail = ({ productId }: { productId: string }) => {
     //console.log('Editing review:', review)
 
     // Use the id field from your API response
-    const ratingId = review.id
+    const ratingId = review._id
     //console.log('Extracted rating ID:', ratingId)
     //console.log('Current user ID:', userId)
 
@@ -858,9 +842,13 @@ const ProductDetail = ({ productId }: { productId: string }) => {
                 ) : (
                   <div className="space-y-4">
                     {reviews.map((review) => {
-                      const reviewUserId = review.user?.id
+                      const reviewUserId = review?.user?._id
                       const isUserReview = userId && reviewUserId === userId
-                      const ratingId = review.id
+                      console.log(review?.user?._id,' review?.user?._id')
+                      console.log(isUserReview, 'isUserReview')
+                      console.log(userId, 'userId')
+                      console.log(reviewUserId, 'reviewUserId')
+                      const ratingId = review?._id
                       const isDeletingThisReview = deletingReviewId === ratingId
 
                       return (
@@ -869,7 +857,7 @@ const ProductDetail = ({ productId }: { productId: string }) => {
                             <div className="flex items-center justify-between">
                               <div>
                                 <p className="font-medium text-sm">
-                                  {review.user?.name || (language === 'ar' ? 'مستخدم' : 'Customer')}
+                                  {review.user?.fullName || (language === 'ar' ? 'مستخدم' : 'Customer')}
                                 </p>
                                 <span className="text-xs text-muted-foreground">
                                   {new Date(review.createdAt).toLocaleDateString(language === 'ar' ? 'ar-EG' : 'en-US')}

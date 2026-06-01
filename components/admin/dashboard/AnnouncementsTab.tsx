@@ -655,98 +655,99 @@ export function AnnouncementsTab({
                     <div className="mt-8">
                         <h3 className="text-lg font-semibold mb-4">{isArabic ? "جميع الإعلانات" : "All Announcements"}</h3>
                         <div className="rounded-md border">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead className="w-[100px]">{isArabic ? "المعرف" : "ID"}</TableHead>
-                                        <TableHead>{isArabic ? "العنوان" : "Title"}</TableHead>
-                                        <TableHead>{isArabic ? "الصورة" : "Image"}</TableHead>
-                                        <TableHead>{isArabic ? "الرابط" : "Link"}</TableHead>
-                                        <TableHead>{isArabic ? "الحالة" : "Status"}</TableHead>
-                                        <TableHead>{isArabic ? "تاريخ البدء" : "Start Date"}</TableHead>
-                                        <TableHead>{isArabic ? "تاريخ الانتهاء" : "End Date"}</TableHead>
-                                        <TableHead>{isArabic ? "الإجراءات" : "Actions"}</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {announcements.map((announcement: any) => {
-                                        const statusInfo = getAnnouncementStatus(announcement);
-                                        return (
-                                            <TableRow key={announcement._id}>
-                                                <TableCell className="font-medium">
-                                                    <div className="text-xs text-muted-foreground">
-                                                        #{announcement._id.substring(0, 8)}
-                                                    </div>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <div className="flex flex-col">
-                                                        <div className="font-medium">
-                                                            {isArabic ? announcement.title : announcement.titleEn}
+                            <div className="overflow-x-auto">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead className="w-[100px]">{isArabic ? "المعرف" : "ID"}</TableHead>
+                                            <TableHead>{isArabic ? "العنوان" : "Title"}</TableHead>
+                                            <TableHead>{isArabic ? "الصورة" : "Image"}</TableHead>
+                                            <TableHead>{isArabic ? "الرابط" : "Link"}</TableHead>
+                                            <TableHead>{isArabic ? "الحالة" : "Status"}</TableHead>
+                                            <TableHead>{isArabic ? "تاريخ البدء" : "Start Date"}</TableHead>
+                                            <TableHead>{isArabic ? "تاريخ الانتهاء" : "End Date"}</TableHead>
+                                            <TableHead>{isArabic ? "الإجراءات" : "Actions"}</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {announcements.map((announcement: any) => {
+                                            const statusInfo = getAnnouncementStatus(announcement);
+                                            return (
+                                                <TableRow key={announcement._id}>
+                                                    <TableCell className="font-medium">
+                                                        <div className="text-xs text-muted-foreground">
+                                                            #{announcement._id.substring(0, 8)}
                                                         </div>
-                                                        {announcement.isMain && (
-                                                            <span className="text-xs text-blue-600 flex items-center gap-1">
-                                                                <Star className="h-3 w-3" />
-                                                                {isArabic ? "رئيسي" : "Main"}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <div className="flex flex-col">
+                                                            <div className="font-medium">
+                                                                {isArabic ? announcement.title : announcement.titleEn}
+                                                            </div>
+                                                            {announcement.isMain && (
+                                                                <span className="text-xs text-blue-600 flex items-center gap-1">
+                                                                    <Star className="h-3 w-3" />
+                                                                    {isArabic ? "رئيسي" : "Main"}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {announcement.image ? (
+                                                            <img
+                                                                src={announcement.image}
+                                                                alt={isArabic ? announcement.title : announcement.titleEn}
+                                                                className="w-16 h-12 object-cover rounded"
+                                                            />
+                                                        ) : (
+                                                            <span className="text-xs text-muted-foreground">
+                                                                {isArabic ? "بدون صورة" : "No Image"}
                                                             </span>
                                                         )}
-                                                    </div>
-                                                </TableCell>
-                                                <TableCell>
-                                                    {announcement.image ? (
-                                                        <img
-                                                            src={announcement.image}
-                                                            alt={isArabic ? announcement.title : announcement.titleEn}
-                                                            className="w-16 h-12 object-cover rounded"
-                                                        />
-                                                    ) : (
-                                                        <span className="text-xs text-muted-foreground">
-                                                            {isArabic ? "بدون صورة" : "No Image"}
-                                                        </span>
-                                                    )}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {announcement.link ? (
-                                                        <a
-                                                            href={announcement.link}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="text-blue-600 hover:text-blue-800 text-sm flex items-center gap-1"
-                                                        >
-                                                            <Link className="h-3 w-3" />
-                                                            {isArabic ? "رابط" : "Link"}
-                                                        </a>
-                                                    ) : (
-                                                        <span className="text-xs text-muted-foreground">
-                                                            {isArabic ? "بدون رابط" : "No Link"}
-                                                        </span>
-                                                    )}
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Badge variant={statusInfo.variant} className={statusInfo.color}>
-                                                        {statusInfo.label}
-                                                    </Badge>
-                                                </TableCell>
-                                                <TableCell>{formatDate(announcement.startDate)}</TableCell>
-                                                <TableCell>{formatDate(announcement.endDate)}</TableCell>
-                                                <TableCell>
-                                                    <div className="flex space-x-2">
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="sm"
-                                                            onClick={() => handleEditOrCreate(announcement)}
-                                                        >
-                                                            <Edit className="h-4 w-4 mr-1" />
-                                                            {isArabic ? "تعديل" : "Edit"}
-                                                        </Button>
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="sm"
-                                                            className="text-destructive hover:text-destructive"
-                                                            onClick={() => handleDeleteAnnouncement(announcement._id)}
-                                                        >
-                                                            <Trash className="h-4 w-4 mr-1" />
-                                                            {isArabic ? "حذف" : "Delete"}
-                                                        </Button>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {announcement.link ? (
+                                                            <a
+                                                                href={announcement.link}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="text-blue-600 hover:text-blue-800 text-sm flex items-center gap-1"
+                                                            >
+                                                                <Link className="h-3 w-3" />
+                                                                {isArabic ? "رابط" : "Link"}
+                                                            </a>
+                                                        ) : (
+                                                            <span className="text-xs text-muted-foreground">
+                                                                {isArabic ? "بدون رابط" : "No Link"}
+                                                            </span>
+                                                        )}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Badge variant={statusInfo.variant} className={statusInfo.color}>
+                                                            {statusInfo.label}
+                                                        </Badge>
+                                                    </TableCell>
+                                                    <TableCell>{formatDate(announcement.startDate)}</TableCell>
+                                                    <TableCell>{formatDate(announcement.endDate)}</TableCell>
+                                                    <TableCell>
+                                                        <div className="flex space-x-2">
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                onClick={() => handleEditOrCreate(announcement)}
+                                                            >
+                                                                <Edit className="h-4 w-4 mr-1" />
+                                                                {isArabic ? "تعديل" : "Edit"}
+                                                            </Button>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                className="text-destructive hover:text-destructive"
+                                                                onClick={() => handleDeleteAnnouncement(announcement._id)}
+                                                            >
+                                                                <Trash className="h-4 w-4 mr-1" />
+                                                                {isArabic ? "حذف" : "Delete"}
+                                                            </Button>
                                                     </div>
                                                 </TableCell>
                                             </TableRow>
@@ -754,6 +755,7 @@ export function AnnouncementsTab({
                                     })}
                                 </TableBody>
                             </Table>
+                            </div>
                         </div>
                     </div>
                 </>

@@ -343,59 +343,61 @@ export function PickupPointsTab({
                             {isArabic ? "جميع نقاط الاستلام" : "All Pickup Points"}
                         </h3>
                         <div className="rounded-md border">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>{isArabic ? "اسم المحطة" : "Station Name"}</TableHead>
-                                        <TableHead>{isArabic ? "العنوان" : "Address"}</TableHead>
-                                        <TableHead>{isArabic ? "الهاتف" : "Phone"}</TableHead>
-                                        <TableHead>{isArabic ? "ساعات العمل" : "Working Hours"}</TableHead>
-                                        <TableHead>{isArabic ? "الحالة" : "Status"}</TableHead>
-                                        <TableHead>{isArabic ? "الإجراءات" : "Actions"}</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {pickupPoints.map((point) => (
-                                        <TableRow key={point._id}>
-                                            <TableCell className="font-medium">{point.stationName}</TableCell>
-                                            <TableCell>{point.address}</TableCell>
-                                            <TableCell>{point.phone || '-'}</TableCell>
-                                            <TableCell>{point.workingHours || '-'}</TableCell>
-                                            <TableCell>
-                                                <Badge variant={point.status === 'active' ? 'default' : 'secondary'}>
-                                                    {point.status === 'active'
-                                                        ? (isArabic ? 'نشط' : 'Active')
-                                                        : (isArabic ? 'غير نشط' : 'Inactive')}
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="flex space-x-2">
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        onClick={() => {
-                                                            setSelectedPickupPoint(point);
-                                                            setShowAddPickupPoint(true);
-                                                        }}
-                                                    >
-                                                        <Edit className="h-4 w-4 mr-1" />
-                                                        {isArabic ? "تعديل" : "Edit"}
-                                                    </Button>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        className="text-destructive"
-                                                        onClick={() => handleDeletePickupPoint(point._id!)}
-                                                    >
-                                                        <Trash2 className="h-4 w-4 mr-1" />
-                                                        {isArabic ? "حذف" : "Delete"}
-                                                    </Button>
-                                                </div>
-                                            </TableCell>
+                            <div className="overflow-x-auto">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>{isArabic ? "اسم المحطة" : "Station Name"}</TableHead>
+                                            <TableHead>{isArabic ? "العنوان" : "Address"}</TableHead>
+                                            <TableHead>{isArabic ? "الهاتف" : "Phone"}</TableHead>
+                                            <TableHead>{isArabic ? "ساعات العمل" : "Working Hours"}</TableHead>
+                                            <TableHead>{isArabic ? "الحالة" : "Status"}</TableHead>
+                                            <TableHead>{isArabic ? "الإجراءات" : "Actions"}</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {pickupPoints.map((point) => (
+                                            <TableRow key={point._id}>
+                                                <TableCell className="font-medium">{point.stationName}</TableCell>
+                                                <TableCell>{point.address}</TableCell>
+                                                <TableCell>{point.phone || '-'}</TableCell>
+                                                <TableCell>{point.workingHours || '-'}</TableCell>
+                                                <TableCell>
+                                                    <Badge variant={point.status === 'active' ? 'default' : 'secondary'}>
+                                                        {point.status === 'active'
+                                                            ? (isArabic ? 'نشط' : 'Active')
+                                                            : (isArabic ? 'غير نشط' : 'Inactive')}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className="flex space-x-2">
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            onClick={() => {
+                                                                setSelectedPickupPoint(point);
+                                                                setShowAddPickupPoint(true);
+                                                            }}
+                                                        >
+                                                            <Edit className="h-4 w-4 mr-1" />
+                                                            {isArabic ? "تعديل" : "Edit"}
+                                                        </Button>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            className="text-destructive"
+                                                            onClick={() => handleDeletePickupPoint(point._id!)}
+                                                        >
+                                                            <Trash2 className="h-4 w-4 mr-1" />
+                                                            {isArabic ? "حذف" : "Delete"}
+                                                        </Button>
+                                                    </div>
+                                                </TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
                             </Table>
+                            </div>
                         </div>
                     </div>
                 </>

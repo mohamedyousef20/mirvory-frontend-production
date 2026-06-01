@@ -23,7 +23,7 @@ export function SendNotification({ onNotificationSent }: SendNotificationProps) 
     title: "",
     message: "",
     type: "all",
-    userIds: [] as string[],
+    userId: [] as string[],
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -36,7 +36,7 @@ export function SendNotification({ onNotificationSent }: SendNotificationProps) 
         title: formData.title,
         message: formData.message,
         type: formData.type === 'all' ? 'ALL_USERS' : 'CUSTOM',
-        userIds: formData.type === 'specific' ? formData.userIds : undefined
+        userId: formData.type === 'specific' ? formData.userId : undefined
       };
 
       await notificationService.sendNotification(notificationData);
@@ -51,7 +51,7 @@ export function SendNotification({ onNotificationSent }: SendNotificationProps) 
         title: "",
         message: "",
         type: "all",
-        userIds: [],
+        userId: [],
       });
     } catch (error: any) {
       const errorMessage = error.response?.data?.message ||
@@ -130,8 +130,8 @@ export function SendNotification({ onNotificationSent }: SendNotificationProps) 
               <Input
                 placeholder={isArabic ? "أدخل معرفات المستخدمين (مفصولة بفواصل)" : "Enter user IDs (comma separated)"}
                 onChange={(e) => {
-                  const userIds = e.target.value.split(",").map(id => id.trim());
-                  setFormData(prev => ({ ...prev, userIds }));
+                  const userId = e.target.value.split(",").map(id => id.trim());
+                  setFormData(prev => ({ ...prev, userId }));
                 }}
                 dir={isArabic ? "rtl" : "ltr"}
               />

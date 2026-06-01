@@ -232,8 +232,7 @@ function AuthContextWrapper({
             isRefreshing = true;
 
             try {
-                const res = await authService.getCurrentUser();
-                console.log(res,'getCurrentUser')
+                const res = await authService.getMe();
                 const fetchedUser = normalizeUserPayload(res?.data);
                 console.log(fetchedUser, 'getCurrentUser1')
 

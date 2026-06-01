@@ -175,128 +175,129 @@ export function CouponsTab({
             </div>
 
             <div className="rounded-md border">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead className="w-[120px]">{isArabic ? "الكود" : "Code"}</TableHead>
-                            <TableHead>{isArabic ? "نوع الخصم" : "Discount Type"}</TableHead>
-                            <TableHead>{isArabic ? "قيمة الخصم" : "Discount Value"}</TableHead>
-                            <TableHead>{isArabic ? "الحد الأدنى" : "Min Purchase"}</TableHead>
-                            <TableHead>{isArabic ? "الفترة" : "Validity Period"}</TableHead>
-                            <TableHead>{isArabic ? "الاستخدام" : "Usage"}</TableHead>
-                            <TableHead>{isArabic ? "الحالة" : "Status"}</TableHead>
-                            <TableHead className="w-[100px] text-center">{isArabic ? "الإجراءات" : "Actions"}</TableHead>
-                        </TableRow>
-                    </TableHeader>
+                <div className="overflow-x-auto">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead className="w-[120px]">{isArabic ? "الكود" : "Code"}</TableHead>
+                                <TableHead>{isArabic ? "نوع الخصم" : "Discount Type"}</TableHead>
+                                <TableHead>{isArabic ? "قيمة الخصم" : "Discount Value"}</TableHead>
+                                <TableHead>{isArabic ? "الحد الأدنى" : "Min Purchase"}</TableHead>
+                                <TableHead>{isArabic ? "الفترة" : "Validity Period"}</TableHead>
+                                <TableHead>{isArabic ? "الاستخدام" : "Usage"}</TableHead>
+                                <TableHead>{isArabic ? "الحالة" : "Status"}</TableHead>
+                                <TableHead className="w-[100px] text-center">{isArabic ? "الإجراءات" : "Actions"}</TableHead>
+                            </TableRow>
+                        </TableHeader>
 
-                    <TableBody>
-                        {coupons && coupons.length > 0 ? (
-                            coupons.map((coupon: Coupon) => {
-                                const statusBadge = getStatusBadge(coupon);
-                                const expired = isExpired(coupon.validUntil);
-                                const notStarted = isNotStarted(coupon.validFrom);
+                        <TableBody>
+                            {coupons && coupons.length > 0 ? (
+                                coupons.map((coupon: Coupon) => {
+                                    const statusBadge = getStatusBadge(coupon);
+                                    const expired = isExpired(coupon.validUntil);
+                                    const notStarted = isNotStarted(coupon.validFrom);
 
-                                return (
-                                    <TableRow key={coupon._id} className={expired ? "opacity-60" : ""}>
-                                        <TableCell className="font-medium">
-                                            <div className="flex flex-col">
-                                                <span className="font-bold text-lg">{coupon.code}</span>
-                                                <span className="text-xs text-muted-foreground">
-                                                    {formatDate(coupon.createdAt)}
-                                                </span>
-                                            </div>
-                                        </TableCell>
+                                    return (
+                                        <TableRow key={coupon._id} className={expired ? "opacity-60" : ""}>
+                                            <TableCell className="font-medium">
+                                                <div className="flex flex-col">
+                                                    <span className="font-bold text-lg">{coupon.code}</span>
+                                                    <span className="text-xs text-muted-foreground">
+                                                        {formatDate(coupon.createdAt)}
+                                                    </span>
+                                                </div>
+                                            </TableCell>
 
-                                        <TableCell>
-                                            <div className="flex items-center">
-                                                {coupon.discountType === "percentage" ? (
-                                                    <Percent className="h-4 w-4 mr-2 text-muted-foreground" />
-                                                ) : (
-                                                    <DollarSign className="h-4 w-4 mr-2 text-muted-foreground" />
-                                                )}
-                                                {coupon.discountType === "percentage"
-                                                    ? (isArabic ? "نسبة مئوية" : "Percentage")
-                                                    : (isArabic ? "قيمة ثابتة" : "Fixed Amount")}
-                                            </div>
-                                        </TableCell>
-
-                                        <TableCell>
-                                            <div className="flex flex-col">
-                                                <span className="font-medium">
+                                            <TableCell>
+                                                <div className="flex items-center">
+                                                    {coupon.discountType === "percentage" ? (
+                                                        <Percent className="h-4 w-4 mr-2 text-muted-foreground" />
+                                                    ) : (
+                                                        <DollarSign className="h-4 w-4 mr-2 text-muted-foreground" />
+                                                    )}
                                                     {coupon.discountType === "percentage"
-                                                        ? `${coupon.discountValue}%`
-                                                        : `$${coupon.discountValue?.toFixed(2)}`}
-                                                </span>
-                                                {coupon.maxDiscountAmount && coupon.discountType === "percentage" && (
-                                                    <div className="text-xs text-muted-foreground">
-                                                        {isArabic ? "بحد أقصى" : "Max"} ${coupon.maxDiscountAmount.toFixed(2)}
+                                                        ? (isArabic ? "نسبة مئوية" : "Percentage")
+                                                        : (isArabic ? "قيمة ثابتة" : "Fixed Amount")}
+                                                </div>
+                                            </TableCell>
+
+                                            <TableCell>
+                                                <div className="flex flex-col">
+                                                    <span className="font-medium">
+                                                        {coupon.discountType === "percentage"
+                                                            ? `${coupon.discountValue}%`
+                                                            : `$${coupon.discountValue?.toFixed(2)}`}
+                                                    </span>
+                                                    {coupon.maxDiscountAmount && coupon.discountType === "percentage" && (
+                                                        <div className="text-xs text-muted-foreground">
+                                                            {isArabic ? "بحد أقصى" : "Max"} ${coupon.maxDiscountAmount.toFixed(2)}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </TableCell>
+
+                                            <TableCell>
+                                                ${coupon.minPurchaseAmount?.toFixed(2) || "0.00"}
+                                            </TableCell>
+
+                                            <TableCell>
+                                                <div className="flex flex-col space-y-1">
+                                                    <div className="flex items-center text-sm">
+                                                        <Calendar className="h-3 w-3 mr-1 text-muted-foreground" />
+                                                        {formatDate(coupon.validFrom)}
                                                     </div>
-                                                )}
-                                            </div>
-                                        </TableCell>
-
-                                        <TableCell>
-                                            ${coupon.minPurchaseAmount?.toFixed(2) || "0.00"}
-                                        </TableCell>
-
-                                        <TableCell>
-                                            <div className="flex flex-col space-y-1">
-                                                <div className="flex items-center text-sm">
-                                                    <Calendar className="h-3 w-3 mr-1 text-muted-foreground" />
-                                                    {formatDate(coupon.validFrom)}
+                                                    <div className="flex items-center text-sm">
+                                                        <Calendar className="h-3 w-3 mr-1 text-muted-foreground" />
+                                                        {formatDate(coupon.validUntil)}
+                                                    </div>
+                                                    {notStarted && (
+                                                        <Badge variant="outline" className="text-xs">
+                                                            {isArabic ? "قادم" : "Upcoming"}
+                                                        </Badge>
+                                                    )}
+                                                    {expired && (
+                                                        <Badge variant="outline" className="text-xs">
+                                                            {isArabic ? "منتهي" : "Expired"}
+                                                        </Badge>
+                                                    )}
                                                 </div>
-                                                <div className="flex items-center text-sm">
-                                                    <Calendar className="h-3 w-3 mr-1 text-muted-foreground" />
-                                                    {formatDate(coupon.validUntil)}
+                                            </TableCell>
+
+                                            <TableCell>
+                                                <div className="flex flex-col">
+                                                    <span className="font-medium">
+                                                        {coupon.currentUses} / {coupon.maxUses || "∞"}
+                                                    </span>
+                                                    <div className="w-full bg-gray-200 rounded-full h-1.5 dark:bg-gray-700">
+                                                        <div
+                                                            className="bg-blue-600 h-1.5 rounded-full"
+                                                            style={{
+                                                                width: `${Math.min((coupon.currentUses / coupon.maxUses) * 100, 100)}%`
+                                                            }}
+                                                        ></div>
+                                                    </div>
                                                 </div>
-                                                {notStarted && (
-                                                    <Badge variant="outline" className="text-xs">
-                                                        {isArabic ? "قادم" : "Upcoming"}
-                                                    </Badge>
-                                                )}
-                                                {expired && (
-                                                    <Badge variant="outline" className="text-xs">
-                                                        {isArabic ? "منتهي" : "Expired"}
-                                                    </Badge>
-                                                )}
-                                            </div>
-                                        </TableCell>
+                                            </TableCell>
 
-                                        <TableCell>
-                                            <div className="flex flex-col">
-                                                <span className="font-medium">
-                                                    {coupon.currentUses} / {coupon.maxUses || "∞"}
-                                                </span>
-                                                <div className="w-full bg-gray-200 rounded-full h-1.5 dark:bg-gray-700">
-                                                    <div
-                                                        className="bg-blue-600 h-1.5 rounded-full"
-                                                        style={{
-                                                            width: `${Math.min((coupon.currentUses / coupon.maxUses) * 100, 100)}%`
-                                                        }}
-                                                    ></div>
-                                                </div>
-                                            </div>
-                                        </TableCell>
+                                            <TableCell>
+                                                <Badge variant={statusBadge.variant} className={statusBadge.className}>
+                                                    {statusBadge.text}
+                                                </Badge>
+                                            </TableCell>
 
-                                        <TableCell>
-                                            <Badge variant={statusBadge.variant} className={statusBadge.className}>
-                                                {statusBadge.text}
-                                            </Badge>
-                                        </TableCell>
-
-                                        <TableCell>
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost" className="h-8 w-8 p-0">
-                                                        <span className="sr-only">Open menu</span>
-                                                        <MoreHorizontal className="h-4 w-4" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end">
-                                                    <DropdownMenuItem onClick={() => handleEditCoupon(coupon)}>
-                                                        <Edit className="h-4 w-4 mr-2" />
-                                                        {isArabic ? "تعديل" : "Edit"}
-                                                    </DropdownMenuItem>
+                                            <TableCell>
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="ghost" className="h-8 w-8 p-0">
+                                                            <span className="sr-only">Open menu</span>
+                                                            <MoreHorizontal className="h-4 w-4" />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end">
+                                                        <DropdownMenuItem onClick={() => handleEditCoupon(coupon)}>
+                                                            <Edit className="h-4 w-4 mr-2" />
+                                                            {isArabic ? "تعديل" : "Edit"}
+                                                        </DropdownMenuItem>
                                                     <DropdownMenuItem
                                                         onClick={() => handleToggleStatus(coupon._id, coupon.isActive)}
                                                         className={coupon.isActive ? "text-orange-600" : "text-green-600"}
@@ -337,6 +338,7 @@ export function CouponsTab({
                         )}
                     </TableBody>
                 </Table>
+                </div>
             </div>
 
             {/* Built-in Add / Edit Form Modal Overlay */}

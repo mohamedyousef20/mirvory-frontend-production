@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/table";
 
 import { SafeImage } from "@/components/SafeImage";
+import DashboardImageSlider from "@/components/ui/DashboardImageSlider";
+import { normalizeImageUrl } from "@/src/lib/normalizeImageUrl";
 
 interface ReturnsTableProps {
     data: any[];
@@ -107,14 +109,18 @@ export function ReturnsTable({
 
                                     <div className="flex items-center gap-2">
 
-                                        <div className="h-9 w-9 rounded-lg overflow-hidden border border-slate-200">
+                                        <div className="w-12">
 
-                                            <SafeImage
-                                                src={request.images?.[0] || "/placeholder.svg"}
+                                            <DashboardImageSlider
+                                                images={
+                                                    request.images?.length
+                                                        ? request.images.map((img: string) =>
+                                                            normalizeImageUrl(img)
+                                                        )
+                                                        : ["/placeholder.svg"]
+                                                }
                                                 alt="product"
-                                                width={36}
-                                                height={36}
-                                                className="object-cover"
+                                                layout="square"
                                             />
 
                                         </div>

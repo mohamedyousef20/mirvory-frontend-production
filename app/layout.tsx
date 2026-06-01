@@ -14,6 +14,7 @@ import { SiteFooter } from "@/components/site-footer"
 import { Toaster } from "sonner"
 import { getUserServer } from "@/src/lib/getUserServer"
 import { AuthProvider } from "@/contexts/AuthProvider"
+import { SocketProvider } from "@/contexts/SocketProvider"
 const cairo = Cairo({
   subsets: ["latin", "arabic"],
   display: "swap",
@@ -48,19 +49,21 @@ export default async function RootLayout({
                 <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
                   <ErrorBoundaryProvider>
                     <AuthProvider initialUser={userData}>
-                    <MainNav />
-                    <div className="pt-16">
-                      <Toaster
-                        position="top-center"
-                        richColors
-                        expand
-                        duration={4000}
-                        closeButton
-                      />
-                      {children}
-                    </div>
-                    <SiteFooter />
-                  </AuthProvider>
+                      <SocketProvider>
+                        <MainNav />
+                        <div className="pt-16">
+                          <Toaster
+                            position="top-center"
+                            richColors
+                            expand
+                            duration={4000}
+                            closeButton
+                          />
+                          {children}
+                        </div>
+                        <SiteFooter />
+                      </SocketProvider>
+                    </AuthProvider>
                   </ErrorBoundaryProvider>
                 </ThemeProvider>
               </ColorThemeProvider>

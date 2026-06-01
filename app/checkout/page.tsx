@@ -65,10 +65,17 @@ export default function Checkout() {
     })
 
     const [cartItems, setCartItems] = useState<any[]>([])
+    const [appliedCoupon, setAppliedCoupon] = useState<any>(null)
     const [subtotal, setSubtotal] = useState(0)
 
     const shippingFee = useMemo(() => (subtotal > 500 || deliveryMethod === 'pickup' ? 0 : 70), [subtotal, deliveryMethod])
-    const total = useMemo(() => subtotal + shippingFee, [subtotal, shippingFee])
+    const total = useMemo(() => {
+        let finalTotal = subtotal + shippingFee;
+        if (appliedCoupon?.discountAmount) {
+            finalTotal -= appliedCoupon.discountAmount;
+        }
+        return finalTotal;
+    }, [subtotal, shippingFee, appliedCoupon]);
 
     const handleNewAddressChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target
@@ -88,9 +95,12 @@ export default function Checkout() {
         const loadCheckoutData = async () => {
             try {
                 setLoadingData(true)
-                const cartRes = await cartService.getCart()
+                const cartRes = await cartService.getCart();
+                console.log(cartRes, 'res2525')
                 const items = cartRes?.data?.items || []
-                setCartItems(items)
+                setCartItems(items);
+                const couponData = cartRes?.data?.appliedCoupon || null;
+                setAppliedCoupon(couponData);              
 
                 const sub = items.reduce((acc: number, item: any) =>
                     acc + ((item?.price ?? item?.product?.price ?? 0) * (item?.quantity ?? 1)), 0
@@ -452,26 +462,82 @@ export default function Checkout() {
 
                             {/* Cart Items Summary */}
                             <div className="max-h-[35vh] overflow-y-auto custom-scrollbar pe-2 space-y-4 mb-6">
-                                {cartItems.map((item: any, idx: number) => (
-                                    <div key={idx} className="flex gap-4 items-center bg-white/10 p-3 rounded-xl border border-white/20">
-                                        <div className="w-16 h-16 bg-white rounded-lg overflow-hidden shrink-0 relative">
-                                            <Image
-                                                src={item.product?.images?.[0] || "/placeholder.png"}
-                                                alt={item.product?.title || "Item"}
-                                                fill
-                                                className="object-cover"
-                                            />
+
+                                {/* COUPON DISPLAY */}
+                           
+                                {/* ITEMS LIST */}
+                                {cartItems.map((item: any) => {
+                                    const product = item.product || {};
+                                    const itemTotal = (item.quantity || 0) * (item.price || 0);
+
+                                    return (
+                                        <div
+                                            key={item._id}
+                                            className="flex gap-4 items-center bg-white/10 p-3 rounded-xl border border-white/20"
+                                        >
+                                            {/* IMAGE */}
+                                            <div className="w-16 h-16 bg-white rounded-lg overflow-hidden shrink-0 relative">
+                                                <Image
+                                                    src={product.images?.[0] || "/placeholder.png"}
+                                                    alt={product.title || "Item"}
+                                                    fill
+                                                    className="object-cover"
+                                                />
+                                            </div>
+
+                                            {/* DETAILS */}
+                                            <div className="flex-1 min-w-0">
+                                                <h5 className="font-medium text-sm text-white truncate">
+                                                    {product.title || "Product"}
+                                                </h5>
+
+                                                <p className="text-blue-200 text-xs mt-1">
+                                                    {isAr ? "الكمية:" : "Qty:"} {item.quantity}
+                                                </p>
+
+                                                {/* COLOR */}
+                                                {item.colors?.length > 0 && (
+                                                    <p className="text-blue-200 text-xs mt-1">
+                                                        {isAr ? "اللون:" : "Color:"} {item.colors[0]}
+                                                    </p>
+                                                )}
+
+                                                {/* SIZE */}
+                                                {item.sizes?.length > 0 && (
+                                                    <p className="text-blue-200 text-xs mt-1">
+                                                        {isAr ? "المقاس:" : "Size:"} {item.sizes[0]}
+                                                    </p>
+                                                )}
+                                            </div>
+
+                                            {/* PRICE */}
+                                            <div className="text-white font-bold whitespace-nowrap">
+                                                ج.م {itemTotal.toFixed(2)}
+                                            </div>
                                         </div>
-                                        <div className="flex-1 min-w-0">
-                                            <h5 className="font-medium text-sm text-white truncate">{item.product?.title}</h5>
-                                            <p className="text-blue-200 text-xs mt-1">{isAr ? "الكمية:" : "Qty:"} {item.quantity}</p>
-                                        </div>
-                                        <div className="text-white font-bold whitespace-nowrap">
-                                            ج.م{(item.quantity * item.price).toFixed(2)}
-                                        </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
+
                             </div>
+                            {appliedCoupon && (
+                                <div className="p-3 rounded-xl bg-green-500/10 border border-green-400/30 text-green-200">
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-sm">
+                                            {isAr ? "كوبون مطبق:" : "Coupon Applied:"} {appliedCoupon.code}
+                                        </span>
+
+                                        <span className="font-bold">
+                                            -{appliedCoupon.discountAmount} ج.م
+                                        </span>
+                                    </div>
+
+                                    <div className="text-xs mt-1 text-green-100/80">
+                                        {isAr
+                                            ? `قبل الخصم: ${appliedCoupon.originalTotal} ج.م`
+                                            : `Before discount: ${appliedCoupon.originalTotal} EGP`}
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         <div>

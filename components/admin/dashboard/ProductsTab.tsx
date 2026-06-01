@@ -18,6 +18,7 @@ import Image from "next/image";
 
 import { normalizeImageUrl } from "@/src/lib/normalizeImageUrl";
 import PaginationControls from "@/components/pagination-controls";
+import DashboardImageSlider from "@/components/ui/DashboardImageSlider";
 
 interface ProductsTabProps {
     products: any[];
@@ -111,140 +112,142 @@ export function ProductsTab({
 
             {/* Table */}
             <div className="rounded-md border overflow-hidden">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead className="w-[80px]">
-                                {isArabic ? "الصورة" : "Image"}
-                            </TableHead>
-
-                            <TableHead className="min-w-[150px]">
-                                {isArabic ? "المنتج" : "Product"}
-                            </TableHead>
-
-                            <TableHead>
-                                {isArabic ? "البائع" : "Vendor"}
-                            </TableHead>
-
-                            <TableHead className="min-w-[100px]">
-                                {isArabic ? "السعر" : "Price"}
-                            </TableHead>
-
-                            <TableHead className="min-w-[80px]">
-                                {isArabic ? "المخزون" : "Stock"}
-                            </TableHead>
-
-                            <TableHead className="min-w-[80px]">
-                                {isArabic ? "تم البيع" : "Sold"}
-                            </TableHead>
-
-                            <TableHead className="min-w-[100px]">
-                                {isArabic ? "التقييم" : "Rating"}
-                            </TableHead>
-
-                            <TableHead className="min-w-[120px]">
-                                {isArabic ? "الفئة" : "Category"}
-                            </TableHead>
-
-                            <TableHead className="min-w-[120px]">
-                                {isArabic ? "الحالة" : "Status"}
-                            </TableHead>
-
-                            <TableHead className="min-w-[120px]">
-                                {isArabic ? "تاريخ التقديم" : "Submitted Date"}
-                            </TableHead>
-
-                            <TableHead className="min-w-[150px]">
-                                {isArabic ? "الإجراءات" : "Actions"}
-                            </TableHead>
-                        </TableRow>
-                    </TableHeader>
-
-                    <TableBody>
-
-                        {/* Loading */}
-                        {loadingProducts ? (
+                <div className="overflow-x-auto">
+                    <Table>
+                        <TableHeader>
                             <TableRow>
-                                <TableCell colSpan={11} className="text-center">
-                                    <div className="flex flex-col justify-center items-center py-12">
-                                        <Loader2 className="h-8 w-8 animate-spin mb-4" />
+                                <TableHead className="w-[80px]">
+                                    {isArabic ? "الصورة" : "Image"}
+                                </TableHead>
 
-                                        <p className="text-muted-foreground">
-                                            {isArabic
-                                                ? "جاري تحميل المنتجات..."
-                                                : "Loading products..."}
-                                        </p>
-                                    </div>
-                                </TableCell>
+                                <TableHead className="min-w-[150px]">
+                                    {isArabic ? "المنتج" : "Product"}
+                                </TableHead>
+
+                                <TableHead>
+                                    {isArabic ? "البائع" : "Vendor"}
+                                </TableHead>
+
+                                <TableHead className="min-w-[100px]">
+                                    {isArabic ? "السعر" : "Price"}
+                                </TableHead>
+
+                                <TableHead className="min-w-[80px]">
+                                    {isArabic ? "المخزون" : "Stock"}
+                                </TableHead>
+
+                                <TableHead className="min-w-[80px]">
+                                    {isArabic ? "تم البيع" : "Sold"}
+                                </TableHead>
+
+                                <TableHead className="min-w-[100px]">
+                                    {isArabic ? "التقييم" : "Rating"}
+                                </TableHead>
+
+                                <TableHead className="min-w-[120px]">
+                                    {isArabic ? "الفئة" : "Category"}
+                                </TableHead>
+
+                                <TableHead className="min-w-[120px]">
+                                    {isArabic ? "الحالة" : "Status"}
+                                </TableHead>
+
+                                <TableHead className="min-w-[120px]">
+                                    {isArabic ? "تاريخ التقديم" : "Submitted Date"}
+                                </TableHead>
+
+                                <TableHead className="min-w-[150px]">
+                                    {isArabic ? "الإجراءات" : "Actions"}
+                                </TableHead>
                             </TableRow>
+                        </TableHeader>
 
-                        ) : errorProducts ? (
+                        <TableBody>
 
-                            /* Error */
-                            <TableRow>
-                                <TableCell
-                                    colSpan={11}
-                                    className="text-center text-destructive py-8"
-                                >
-                                    <div className="flex flex-col items-center">
-                                        <XCircle className="h-12 w-12 mb-4" />
+                            {/* Loading */}
+                            {loadingProducts ? (
+                                <TableRow>
+                                    <TableCell colSpan={11} className="text-center">
+                                        <div className="flex flex-col justify-center items-center py-12">
+                                            <Loader2 className="h-8 w-8 animate-spin mb-4" />
 
-                                        <p>{errorProducts}</p>
-                                    </div>
-                                </TableCell>
-                            </TableRow>
-
-                        ) : filteredProducts.length === 0 ? (
-
-                            /* Empty */
-                            <TableRow>
-                                <TableCell colSpan={11} className="text-center py-12">
-                                    <div className="flex flex-col items-center">
-                                        <Package className="h-12 w-12 text-muted-foreground mb-4" />
-
-                                        <p className="text-muted-foreground">
-                                            {isArabic
-                                                ? "لا توجد منتجات مطابقة"
-                                                : "No matching products found"}
-                                        </p>
-                                    </div>
-                                </TableCell>
-                            </TableRow>
-
-                        ) : (
-
-                            /* Products */
-                            filteredProducts.map((product: any) => (
-                                <TableRow key={product._id}>
-
-                                    {/* Image */}
-                                    <TableCell>
-                                        <div className="relative h-12 w-12 rounded-md overflow-hidden">
-                                            <Image
-                                                src={
-                                                    (product.images?.[0] &&
-                                                        normalizeImageUrl(product.images[0])) ||
-                                                    "/placeholder.svg"
-                                                }
-                                                alt={product.title}
-                                                fill
-                                                className="object-cover"
-                                            />
-                                        </div>
-                                    </TableCell>
-
-                                    {/* Product */}
-                                    <TableCell>
-                                        <div className="space-y-1">
-                                            <p className="font-medium truncate max-w-[150px]">
-                                                {product.title}
-                                            </p>
-
-                                            <p className="text-xs text-muted-foreground truncate max-w-[150px]">
-                                                ID: {product._id.slice(-6)}
+                                            <p className="text-muted-foreground">
+                                                {isArabic
+                                                    ? "جاري تحميل المنتجات..."
+                                                    : "Loading products..."}
                                             </p>
                                         </div>
                                     </TableCell>
+                                </TableRow>
+
+                            ) : errorProducts ? (
+
+                                /* Error */
+                                <TableRow>
+                                    <TableCell
+                                        colSpan={11}
+                                        className="text-center text-destructive py-8"
+                                    >
+                                        <div className="flex flex-col items-center">
+                                            <XCircle className="h-12 w-12 mb-4" />
+
+                                            <p>{errorProducts}</p>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+
+                            ) : filteredProducts.length === 0 ? (
+
+                                /* Empty */
+                                <TableRow>
+                                    <TableCell colSpan={11} className="text-center py-12">
+                                        <div className="flex flex-col items-center">
+                                            <Package className="h-12 w-12 text-muted-foreground mb-4" />
+
+                                            <p className="text-muted-foreground">
+                                                {isArabic
+                                                    ? "لا توجد منتجات مطابقة"
+                                                    : "No matching products found"}
+                                            </p>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+
+                            ) : (
+
+                                /* Products */
+                                filteredProducts.map((product: any) => (
+                                    <TableRow key={product._id}>
+
+                                        {/* Image */}
+                                        <TableCell>
+                                            <div className="w-16">
+                                                <DashboardImageSlider
+                                                    images={
+                                                        product.images?.length
+                                                            ? product.images.map((img: string) =>
+                                                                normalizeImageUrl(img)
+                                                            )
+                                                            : ["/placeholder.svg"]
+                                                    }
+                                                    alt={product.title}
+                                                    layout="square"
+                                                />
+                                            </div>
+                                        </TableCell>
+
+                                        {/* Product */}
+                                        <TableCell>
+                                            <div className="space-y-1">
+                                                <p className="font-medium truncate max-w-[150px]">
+                                                    {product.title}
+                                                </p>
+
+                                                <p className="text-xs text-muted-foreground truncate max-w-[150px]">
+                                                    ID: {product._id.slice(-6)}
+                                                </p>
+                                            </div>
+                                        </TableCell>
 
                                     {/* Seller */}
                                     <TableCell>
@@ -470,6 +473,7 @@ export function ProductsTab({
                         )}
                     </TableBody>
                 </Table>
+                </div>
             </div>
 
             {/* Pagination */}

@@ -45,16 +45,26 @@ export function FeaturedProducts({ title }: FeaturedProductsProps) {
       try {
         setLoading(true);
         const response = await productService.getFeaturedProducts();
-        //console.log(response.data, 'getFeaturedProducts')
+
+        console.log('FeaturedProducts response:', response);
+
+        // Handle the new response format: { success: true, data: products }
+        let productsData = [];
         if (response.data) {
-          setProducts(response?.data.products);
-        } else {
-          setError((t as any)('products.loadError'));
-          toast.error(language === 'ar' ? 'فشل تحميل المنتجات' : 'Failed to load products');
+          if (response.data.success && response.data.data) {
+            productsData = response.data.data;
+          } else if (Array.isArray(response.data)) {
+            productsData = response.data;
+          } else if (response.data.data && Array.isArray(response.data.data)) {
+            productsData = response.data.data;
+          }
         }
+
+        console.log('Featured products data:', productsData);
+        setProducts(productsData);
       } catch (err) {
         console.error('Error fetching featured products:', err);
-        setError((t as any)('products.loadError'));
+        setError(language === 'ar' ? 'فشل تحميل المنتجات' : 'Failed to load products');
         toast.error(language === 'ar' ? 'فشل تحميل المنتجات' : 'Failed to load products');
       } finally {
         setLoading(false);
@@ -62,7 +72,7 @@ export function FeaturedProducts({ title }: FeaturedProductsProps) {
     };
 
     fetchFeaturedProducts();
-  }, []);
+  }, [language]);
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
@@ -98,8 +108,13 @@ export function FeaturedProducts({ title }: FeaturedProductsProps) {
     <div className="bg-white shadow-sm rounded-lg p-6">
       <h2 className="text-xl font-semibold mb-6">{title}</h2>
 
-      {/* Products Grid */}
-      {products && products.length > 0 ? (
+      {/* Loading State */}
+      {loading ? (
+        <div className="flex items-center justify-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+        </div>
+      ) : /* Products Grid */
+      products && products.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {products.map((product) => (
             <ProductCard

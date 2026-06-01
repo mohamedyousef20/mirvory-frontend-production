@@ -303,50 +303,51 @@ export function CategoriesTab({
                     <div className="mt-8">
                         <h3 className="text-lg font-semibold mb-4">{isArabic ? "جميع التصنيفات" : "All Categories"}</h3>
                         <div className="rounded-md border">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>{isArabic ? "المعرف" : "ID"}</TableHead>
-                                        <TableHead>{isArabic ? "اسم التصنيف" : "Category Name"}</TableHead>
-                                        <TableHead>{isArabic ? "الوصف" : "Description"}</TableHead>
-                                        <TableHead>{isArabic ? "الحالة" : "Status"}</TableHead>
-                                        <TableHead>{isArabic ? "تاريخ الإنشاء" : "Created At"}</TableHead>
-                                        <TableHead>{isArabic ? "الإجراءات" : "Actions"}</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {categories.map((category: any) => (
-                                        <TableRow key={category._id}>
-                                            <TableCell className="font-medium">#{category._id.substring(0, 6)}</TableCell>
-                                            <TableCell>
-                                                <div className="font-medium">
-                                                    {isArabic ? category.name : category.nameEn}
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="text-sm text-muted-foreground line-clamp-1">
-                                                    {isArabic ? category.description : category.descriptionEn || "-"}
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Badge variant={category.status === "active" ? "default" : "secondary"}>
-                                                    {isArabic ? (category.status === "active" ? "نشط" : "غير نشط") : category.status}
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell>
-                                                {new Date(category.createdAt).toLocaleDateString()}
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="flex space-x-2">
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        onClick={() => setEditingCategory(category)}
-                                                    >
-                                                        <Edit className="h-4 w-4 mr-1" />
-                                                        {isArabic ? "تعديل" : "Edit"}
-                                                    </Button>
-                                                    <Button
+                            <div className="overflow-x-auto">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>{isArabic ? "المعرف" : "ID"}</TableHead>
+                                            <TableHead>{isArabic ? "اسم التصنيف" : "Category Name"}</TableHead>
+                                            <TableHead>{isArabic ? "الوصف" : "Description"}</TableHead>
+                                            <TableHead>{isArabic ? "الحالة" : "Status"}</TableHead>
+                                            <TableHead>{isArabic ? "تاريخ الإنشاء" : "Created At"}</TableHead>
+                                            <TableHead>{isArabic ? "الإجراءات" : "Actions"}</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {categories.map((category: any) => (
+                                            <TableRow key={category._id}>
+                                                <TableCell className="font-medium">#{category._id.substring(0, 6)}</TableCell>
+                                                <TableCell>
+                                                    <div className="font-medium">
+                                                        {isArabic ? category.name : category.nameEn}
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className="text-sm text-muted-foreground line-clamp-1">
+                                                        {isArabic ? category.description : category.descriptionEn || "-"}
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Badge variant={category.status === "active" ? "default" : "secondary"}>
+                                                        {isArabic ? (category.status === "active" ? "نشط" : "غير نشط") : category.status}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell>
+                                                    {new Date(category.createdAt).toLocaleDateString()}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className="flex space-x-2">
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            onClick={() => setEditingCategory(category)}
+                                                        >
+                                                            <Edit className="h-4 w-4 mr-1" />
+                                                            {isArabic ? "تعديل" : "Edit"}
+                                                        </Button>
+                                                        <Button
                                                         variant="ghost"
                                                         size="sm"
                                                         className="text-destructive"
@@ -361,6 +362,7 @@ export function CategoriesTab({
                                     ))}
                                 </TableBody>
                             </Table>
+                            </div>
                         </div>
                     </div>
                 </>

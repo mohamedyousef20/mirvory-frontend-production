@@ -232,15 +232,15 @@ export function AdminDashboard() {
           <TabsTrigger value="users">{isArabic ? "المستخدمين" : "Users"}</TabsTrigger>
           <TabsTrigger value="products">{t("products")}</TabsTrigger>
           <TabsTrigger value="orders">{t("orders")}</TabsTrigger>
-          <TabsTrigger value="brands">{isArabic ? "الماركات" : "Brands"}</TabsTrigger>
+          {/* <TabsTrigger value="brands">{isArabic ? "الماركات" : "Brands"}</TabsTrigger> */}
           <TabsTrigger value="categories">{isArabic ? "التصنيفات" : "Categories"}</TabsTrigger>
           <TabsTrigger value="coupons">{isArabic ? "الكوبونات" : "Coupons"}</TabsTrigger>
           <TabsTrigger value="announcements">{isArabic ? "الإعلانات" : "Announcements"}</TabsTrigger>
           <TabsTrigger value="pickup">{isArabic ? "نقاط الاستلام" : "Pickup"}</TabsTrigger>
           <TabsTrigger value="complaints">{isArabic ? "الشكاوى" : "Complaints"}</TabsTrigger>
           <TabsTrigger value="returns">{isArabic ? "طلبات الإرجاع" : "Returns"}</TabsTrigger>
-          <TabsTrigger value="analytics">{isArabic ? "التحليلات" : "Analytics"}</TabsTrigger>
-          <TabsTrigger value="transactions">{isArabic ? "المعاملات" : "Transactions"}</TabsTrigger>
+          {/* <TabsTrigger value="analytics">{isArabic ? "التحليلات" : "Analytics"}</TabsTrigger> */}
+          {/* <TabsTrigger value="transactions">{isArabic ? "المعاملات" : "Transactions"}</TabsTrigger> */}
         </TabsList>
 
         {/* Tab Contents */}

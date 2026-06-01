@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import PaginationControls from "@/components/pagination-controls";
 import { Loader2, Package, Check, X, Clock, RefreshCw, PackageCheck, ArrowRight, Trash2 } from "lucide-react";
 import { useState } from "react";
+import DashboardImageSlider from "@/components/ui/DashboardImageSlider";
 
 interface ReturnsTabProps {
     returnRequests: any[];
@@ -283,19 +284,20 @@ export function ReturnsTab({
             </div>
 
             <div className="rounded-md border">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead className="w-[80px]">{isArabic ? "المعرف" : "ID"}</TableHead>
-                            <TableHead>{isArabic ? "المستخدم" : "User"}</TableHead>
-                            <TableHead>{isArabic ? "الطلب" : "Order"}</TableHead>
-                            <TableHead>{isArabic ? "المنتج" : "Product"}</TableHead>
-                            <TableHead>{isArabic ? "السبب" : "Reason"}</TableHead>
-                            <TableHead>{isArabic ? "الصور" : "Images"}</TableHead>
-                            <TableHead>{isArabic ? "البائع" : "Seller"}</TableHead>
-                            <TableHead className="w-[130px]">{isArabic ? "الحالة" : "Status"}</TableHead>
-                            <TableHead className="w-[220px]">{isArabic ? "الإجراءات" : "Actions"}</TableHead>
-                            <TableHead className="w-[120px]">{isArabic ? "تاريخ الطلب" : "Request Date"}</TableHead>
+                <div className="overflow-x-auto">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead className="w-[80px]">{isArabic ? "المعرف" : "ID"}</TableHead>
+                                <TableHead>{isArabic ? "المستخدم" : "User"}</TableHead>
+                                <TableHead>{isArabic ? "الطلب" : "Order"}</TableHead>
+                                <TableHead>{isArabic ? "المنتج" : "Product"}</TableHead>
+                                <TableHead>{isArabic ? "السبب" : "Reason"}</TableHead>
+                                <TableHead>{isArabic ? "الصور" : "Images"}</TableHead>
+                                <TableHead>{isArabic ? "البائع" : "Seller"}</TableHead>
+                                <TableHead className="w-[130px]">{isArabic ? "الحالة" : "Status"}</TableHead>
+                                <TableHead className="w-[220px]">{isArabic ? "الإجراءات" : "Actions"}</TableHead>
+                                <TableHead className="w-[120px]">{isArabic ? "تاريخ الطلب" : "Request Date"}</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -365,16 +367,19 @@ export function ReturnsTab({
                                             </div>
                                         </TableCell>
                                         <TableCell className="max-w-[220px]">
-                                            {request.images?.length > 0 ? (
-                                                <img
-                                                    src={request.images[0]}
+                                            <div className="w-16">
+                                                <DashboardImageSlider
+                                                    images={
+                                                        request.images?.length
+                                                            ? request.images.map((img: string) =>
+                                                                normalizeImageUrl(img)
+                                                            )
+                                                            : ["/placeholder.svg"]
+                                                    }
                                                     alt="Return request image"
-                                                    className="h-16 w-16 object-cover rounded-md border"
-                                                    loading="lazy"
+                                                    layout="square"
                                                 />
-                                            ) : (
-                                                <span className="text-sm text-gray-400">No image</span>
-                                            )}
+                                            </div>
                                         </TableCell>
                                         <TableCell>
                                             {request.seller ? (
@@ -411,6 +416,7 @@ export function ReturnsTab({
                         )}
                     </TableBody>
                 </Table>
+                </div>
             </div>
 
             {/* Summary Stats - Only the main statuses */}

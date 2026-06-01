@@ -19,7 +19,7 @@ export function BulkNotification() {
   const [title, setTitle] = useState("")
   const [message, setMessage] = useState("")
   const [target, setTarget] = useState<NotificationTarget>("all_users")
-  const [userIds, setUserIds] = useState("")
+  const [userId, setuserId] = useState("")
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -28,7 +28,7 @@ export function BulkNotification() {
         title: string
         message: string
         type: NotificationType
-        userIds?: string[]
+        userId?: string[]
         role?: 'seller' | 'user'
       } = {
         title,
@@ -43,7 +43,7 @@ export function BulkNotification() {
           notificationData.type = 'ALL_USERS'
           break
         case 'specific_users':
-          notificationData.userIds = userIds.split(',').map(id => id.trim())
+          notificationData.userId = userId.split(',').map(id => id.trim())
           notificationData.role = 'user'
           break
         case 'all_sellers':
@@ -51,7 +51,7 @@ export function BulkNotification() {
           notificationData.type = 'ALL_USERS'
           break
         case 'specific_sellers':
-          notificationData.userIds = userIds.split(',').map(id => id.trim())
+          notificationData.userId = userId.split(',').map(id => id.trim())
           notificationData.role = 'seller'
           break
       }
@@ -63,7 +63,7 @@ export function BulkNotification() {
       setIsModalOpen(false)
       setTitle("")
       setMessage("")
-      setUserIds("")
+      setuserId("")
       setTarget("all_users")
     } catch (error) {
       console.error('Error sending notification:', error)
@@ -180,15 +180,15 @@ export function BulkNotification() {
 
               {(target === "specific_users" || target === "specific_sellers") && (
                 <div>
-                  <Label htmlFor="userIds">
+                  <Label htmlFor="userId">
                     {isArabic
                       ? target === "specific_users" ? "معرفات المستخدمين" : "معرفات البائعين"
                       : target === "specific_users" ? "User IDs" : "Seller IDs"} *
                   </Label>
                   <Input
-                    id="userIds"
-                    value={userIds}
-                    onChange={(e) => setUserIds(e.target.value)}
+                    id="userId"
+                    value={userId}
+                    onChange={(e) => setuserId(e.target.value)}
                     placeholder={
                       isArabic
                         ? target === "specific_users"

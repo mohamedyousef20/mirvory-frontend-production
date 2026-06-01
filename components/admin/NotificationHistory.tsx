@@ -8,10 +8,10 @@ import { notificationService, Notification as ServiceNotification } from "@/lib/
 import { useLanguage } from "@/components/language-provider";
 
 // Extend service Notification type with optional fields used here
-type Notification = ServiceNotification & { userIds?: string[]; id?: string; status?: 'sent' | 'failed' };
+type Notification = ServiceNotification & { userId?: string[]; id?: string; status?: 'sent' | 'failed' };
 
 export function NotificationHistory() {
-    const { language, t } = useLanguage();
+  const { language, t } = useLanguage();
   const isArabic = language === "ar";
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
@@ -72,7 +72,7 @@ export function NotificationHistory() {
                 <TableRow key={notification._id}>
                   <TableCell>{notification.title}</TableCell>
                   <TableCell>
-                    {notification.type === 'ALL_USERS' || !notification.userIds || notification.userIds.length === 0
+                    {notification.type === 'ALL_USERS' || !notification.userId || notification.userId.length === 0
                       ? (isArabic ? "لجميع المستخدمين" : "All Users")
                       : (isArabic ? "مستخدمين محددين" : "Specific Users")}
                   </TableCell>
@@ -98,8 +98,8 @@ export function NotificationHistory() {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {notification.userIds && notification.userIds.length > 0
-                      ? `${notification.userIds.length} ${isArabic ? "مستخدم" : "users"}`
+                    {notification.userId && notification.userId.length > 0
+                      ? `${notification.userId.length} ${isArabic ? "مستخدم" : "users"}`
                       : ""
                     }
                   </TableCell>

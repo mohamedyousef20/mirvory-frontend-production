@@ -17,84 +17,85 @@ export function UsersTab({ users, isArabic, updatingUserId, pagination, onPageCh
     return (
         <div className="space-y-6">
             <div className="rounded-md border">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead className="w-[100px]">{isArabic ? "المعرف" : "ID"}</TableHead>
-                            <TableHead>{isArabic ? "المستخدم" : "User"}</TableHead>
-                            <TableHead>{isArabic ? "البريد الإلكتروني" : "Email"}</TableHead>
-                            <TableHead>{isArabic ? "الهاتف" : "Phone"}</TableHead>
-                            <TableHead>{isArabic ? "الدور" : "Role"}</TableHead>
-                            <TableHead>{isArabic ? "الحالة" : "Status"}</TableHead>
-                            <TableHead>{isArabic ? "تاريخ التسجيل" : "Registration Date"}</TableHead>
-                            <TableHead>{isArabic ? "إجراءات" : "Actions"}</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {users && users.length > 0 ? (
-                            users.map((user: any) => (
-                                <TableRow key={user._id}>
-                                    <TableCell className="font-medium">#{user._id?.substring(0, 6)}</TableCell>
-                                    <TableCell>
-                                        <div className="flex flex-col">
-                                            <span className="font-medium">
-                                                {user.fullName || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'N/A'}
-                                            </span>
-                                            <span className="text-sm text-muted-foreground">
-                                                {user.address? `${user.address.governorate || ''}, ${user.address.city || ''}, ${user.address.addressLine || ''}`: 'N/A'}
-                                            </span>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>
-                                        <div className="flex items-center">
-                                            <Mail className="h-4 w-4 mr-2 text-muted-foreground" />
-                                            {user.email}
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>{user.phone || 'N/A'}</TableCell>
-                                    <TableCell>
-                                        <Badge variant={user.role === "admin" ? "destructive" : "secondary"}>
-                                            {isArabic
-                                                ? user.role === "admin" ? "مدير"
-                                                    : user.role === "seller" ? "بائع"
-                                                        : "مستخدم"
-                                                : user.role
-                                            }
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Badge
-                                            variant={user.isActive ? "default" : "destructive"}
-                                            className={user.isActive
-                                                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-                                                : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
-                                            }
-                                        >
-                                            {user.isActive ? (isArabic ? "نشط" : "Active") : (isArabic ? "غير نشط" : "Inactive")}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell>
-                                        <div className="flex items-center">
-                                            <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
-                                            {user.createdAt ? new Date(user.createdAt).toLocaleDateString(isArabic ? 'ar-EG' : 'en-US', {
-                                                year: 'numeric',
-                                                month: 'short',
-                                                day: 'numeric'
-                                            }) : 'N/A'}
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>
-                                        <div className="flex items-center gap-2">
-                                            {/* Disable / Restore */}
-                                            {user.isDeleted ? (
-                                                <button
-                                                    onClick={() => onRestore(user._id)}
-                                                    disabled={updatingUserId === user._id}
-                                                    className="px-2 py-1 text-xs rounded font-medium bg-green-50 text-green-700 hover:bg-green-100 transition"
-                                                >
-                                                    {isArabic ? "استعادة" : "Restore"}
-                                                </button>
-                                            ) : (
+                <div className="overflow-x-auto">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead className="w-[100px]">{isArabic ? "المعرف" : "ID"}</TableHead>
+                                <TableHead>{isArabic ? "المستخدم" : "User"}</TableHead>
+                                <TableHead>{isArabic ? "البريد الإلكتروني" : "Email"}</TableHead>
+                                <TableHead>{isArabic ? "الهاتف" : "Phone"}</TableHead>
+                                <TableHead>{isArabic ? "الدور" : "Role"}</TableHead>
+                                <TableHead>{isArabic ? "الحالة" : "Status"}</TableHead>
+                                <TableHead>{isArabic ? "تاريخ التسجيل" : "Registration Date"}</TableHead>
+                                <TableHead>{isArabic ? "إجراءات" : "Actions"}</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {users && users.length > 0 ? (
+                                users.map((user: any) => (
+                                    <TableRow key={user._id}>
+                                        <TableCell className="font-medium">#{user._id?.substring(0, 6)}</TableCell>
+                                        <TableCell>
+                                            <div className="flex flex-col">
+                                                <span className="font-medium">
+                                                    {user.fullName || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'N/A'}
+                                                </span>
+                                                <span className="text-sm text-muted-foreground">
+                                                    {user.address? `${user.address.governorate || ''}, ${user.address.city || ''}, ${user.address.addressLine || ''}`: 'N/A'}
+                                                </span>
+                                            </div>
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className="flex items-center">
+                                                <Mail className="h-4 w-4 mr-2 text-muted-foreground" />
+                                                {user.email}
+                                            </div>
+                                        </TableCell>
+                                        <TableCell>{user.phone || 'N/A'}</TableCell>
+                                        <TableCell>
+                                            <Badge variant={user.role === "admin" ? "destructive" : "secondary"}>
+                                                {isArabic
+                                                    ? user.role === "admin" ? "مدير"
+                                                        : user.role === "seller" ? "بائع"
+                                                            : "مستخدم"
+                                                    : user.role
+                                                }
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Badge
+                                                variant={user.isActive ? "default" : "destructive"}
+                                                className={user.isActive
+                                                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+                                                    : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+                                                }
+                                            >
+                                                {user.isActive ? (isArabic ? "نشط" : "Active") : (isArabic ? "غير نشط" : "Inactive")}
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className="flex items-center">
+                                                <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
+                                                {user.createdAt ? new Date(user.createdAt).toLocaleDateString(isArabic ? 'ar-EG' : 'en-US', {
+                                                    year: 'numeric',
+                                                    month: 'short',
+                                                    day: 'numeric'
+                                                }) : 'N/A'}
+                                            </div>
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className="flex items-center gap-2">
+                                                {/* Disable / Restore */}
+                                                {user.isDeleted ? (
+                                                    <button
+                                                        onClick={() => onRestore(user._id)}
+                                                        disabled={updatingUserId === user._id}
+                                                        className="px-2 py-1 text-xs rounded font-medium bg-green-50 text-green-700 hover:bg-green-100 transition"
+                                                    >
+                                                        {isArabic ? "استعادة" : "Restore"}
+                                                    </button>
+                                                ) : (
                                                     <button
                                                         onClick={() => toggleUserActive(user._id, user.isActive)}
                                                         disabled={updatingUserId === user._id}
@@ -146,6 +147,7 @@ export function UsersTab({ users, isArabic, updatingUserId, pagination, onPageCh
                         )}
                     </TableBody>
                 </Table>
+                </div>
             </div>
             {/* Pagination */}
             {users.length > 0 && (

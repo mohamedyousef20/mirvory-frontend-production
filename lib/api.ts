@@ -231,6 +231,8 @@ export const userService = {
     api.patch(`/api/users/admin/seller/${id}/trust`, { trusted }),
   searchUsers: (query: string, role?: string) =>
     api.get('/api/users', { params: { search: query, role } }),
+  searchUsersForAdmin: (query: string, role?: string, page = 1) =>
+    api.get("/api/users/admin/search", { params: { search: query,   role,   page,  }, }),
   updateVendorBalance: (sellerId: string, balanceData: { balance?: number; pendingBalance?: number }) =>
     api.patch('/api/users/admin/vendor/balance', { sellerId, ...balanceData }),
   updateVendorStatus: (sellerId: string, statusData: { trustedSeller?: boolean; approvalStatus?: 'pending' | 'approved' | 'rejected' }) =>
@@ -424,7 +426,7 @@ export const orderService = {
 
   updateDeliveryStatus: (id: string, deliveryStatus: string) =>
     api.patch(`/api/orders/updateDelivery`, { id, deliveryStatus }),
-  
+
   updatePaymentStatus: (orderId: string, status: string) =>
     api.patch(`/api/orders/update-payment`, {
       orderId,
@@ -481,7 +483,7 @@ export const cartService = {
   }) => api.post('/api/carts', data),
 
   updateCartItem: (itemId: string, quantity: number) =>
-    api.patch(`/api/carts/${itemId}`, { quantity }),
+    api.patch(`/api/carts/increase`, { itemId, quantity }),
 
   getCartCount: () => api.get('/api/carts/count'),
 
@@ -494,7 +496,7 @@ export const cartService = {
 export const wishlistService = {
   getWishlist: () => api.get('/api/wishlist'),
   getWishlistCount: () => api.get('/api/wishlist/count'),
-  toggleWishlist: (productId: string) => api.post('/api/wishlist/toggle', { productId }),
+  toggleWishlist: (productId: string) => api.post(`/api/wishlist/toggle/${productId}`),
   clearWishlist: () => api.delete('/api/wishlist'),
 };
 

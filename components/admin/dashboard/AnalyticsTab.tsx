@@ -115,7 +115,7 @@ export function AnalyticsTab({
               ))}
             </div>
 
-            <div className="grid gap-6 lg:grid-cols-2">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
               <div className="space-y-3">
                 <h3 className="text-sm font-semibold">{isArabic ? "عدد الطلبات آخر 30 يوم" : "Orders in last 30 days"}</h3>
                 <div className="space-y-1 max-h-72 overflow-y-auto pr-2">

@@ -185,7 +185,7 @@ const Profile = () => {
         setError('');
 
         try {
-            const response = await authService.getCurrentUser();
+            const response = await authService.getMe();
             const userData = response.data.data?.user || response.data;
 
             setUser(userData);

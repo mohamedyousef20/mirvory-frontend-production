@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import { io, type Socket } from 'socket.io-client'
 import { toast } from 'sonner'
+import { useAuth } from './AuthProvider'
 
 interface NotificationPayload {
   title: string
@@ -23,9 +24,19 @@ export const useSocket = () => {
 
 export const SocketProvider = ({ children }: { children: ReactNode }) => {
   const [socket, setSocket] = useState<Socket | null>(null)
+  const { user, cookiesReady } = useAuth()
 
   useEffect(() => {
-    const newSocket = io(process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:5000', {
+    // Only connect when user is authenticated and cookies are ready
+    if (!cookiesReady || !user) {
+      console.log('Waiting for authentication before connecting socket')
+      return
+    }
+
+    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:5000'
+    console.log('Connecting to socket at:', socketUrl, 'for user:', user._id)
+
+    const newSocket = io(socketUrl, {
       withCredentials: true,
       transports: ['websocket'],
     })
@@ -33,10 +44,11 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     setSocket(newSocket)
 
     newSocket.on('connect', () => {
-      // console.log('Connected')
+      console.log('Socket connected successfully for user:', user._id)
     })
 
     newSocket.on('notification', (notif: NotificationPayload) => {
+      console.log('Notification received:', notif)
       toast.message(notif.title, {
         description: notif.message,
       })
@@ -47,10 +59,15 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
       toast.error('Connection failed')
     })
 
+    newSocket.on('disconnect', () => {
+      console.log('Socket disconnected')
+    })
+
     return () => {
+      console.log('Cleaning up socket connection')
       newSocket.disconnect()
     }
-  }, [])
+  }, [cookiesReady, user])
 
   return <SocketContext.Provider value={{ socket }}>{children}</SocketContext.Provider>
 }

@@ -416,7 +416,7 @@ export function useAdminDashboard() {
             setUpdatingUser(null);
         }
     };
- 
+
 
 
     const handleRestoreUser = async (id: string) => {
@@ -439,6 +439,7 @@ export function useAdminDashboard() {
             setLoadingReturns(true);
             setErrorReturns(null);
             const response = await returnService.getReturnRequestsForAdmin({ page: returnsPage, limit: RETURNS_LIMIT });
+            console.log(response,'1425')
             if (response.data?.data) {
                 setReturnRequests(response.data.data);
             } else {
@@ -581,10 +582,14 @@ export function useAdminDashboard() {
     const fetchProducts = async () => {
         try {
             setLoadingProducts(true);
+
             const response = await productService.getProductsForAdmin({ page: productsPage, limit: PRODUCTS_LIMIT });
+            console.log(response, 'zz456')
+
             const data = response.data;
-            if (data?.products) {
-                setProducts(data.products);
+
+            if (data?.data) {
+                setProducts(data.data);
             } else {
                 setProducts([]);
             }
@@ -762,7 +767,7 @@ export function useAdminDashboard() {
             console.error('Error toggling coupon status', error);
             toast.error(error?.response?.data?.message || (isArabic ? "حدث خطأ أثناء تحديث حالة الكوبون" : "Error toggling coupon status"));
         }
-    }; 
+    };
 
     // delete coupon 
     const handleDeleteCoupon = async (id: string) => {
@@ -841,12 +846,10 @@ export function useAdminDashboard() {
         try {
             setLoadingOrders(true);
             const response = await orderService.getAdminOrders({ page: ordersPage, limit: ORDERS_LIMIT });
-            //console.log(response,'admin order')
-            if (response.data?.orders) {
-                setOrders(response.data.orders);
-            } else {
-                setOrders(response.data);
-            }
+            console.log(response,'admin order')
+            if (response.data?.data) {
+                setOrders(response.data.data);
+            } 
             if (response.data?.pagination) {
                 setOrdersPage(response.data.pagination.currentPage);
                 setOrdersPages(response.data.pagination.totalPages);
@@ -946,10 +949,8 @@ export function useAdminDashboard() {
     const fetchSellers = async () => {
         try {
             const response = await userService.getSellerForAdmin({ page: sellersPage, limit: SELLERS_LIMIT });
-            if (response.data?.sellers) {
-                setSellers(response.data.sellers);
-            } else {
-                setSellers(response.data);
+            if (response.data?.data) {
+                setSellers(response.data.data);
             }
             if (response.data?.pagination) {
                 setSellersPage(response.data.pagination.currentPage);
@@ -963,10 +964,8 @@ export function useAdminDashboard() {
     const fetchUsers = async () => {
         try {
             const response = await userService.getUserForAdmin({ page: usersPage, limit: USERS_LIMIT });
-            if (response.data?.users) {
-                setUsers(response.data.users);
-            } else {
-                setUsers(response.data);
+            if (response.data?.data) {
+                setUsers(response.data.data);
             }
             if (response.data?.pagination) {
                 setUsersPage(response.data.pagination.currentPage);
@@ -1255,7 +1254,7 @@ export function useAdminDashboard() {
         }
     };
 
-   
+
     return {
         // State
         activeTab,
@@ -1326,7 +1325,7 @@ export function useAdminDashboard() {
         setNewAnnouncement,
 
 
-    // Functions
+        // Functions
         handleCreateCategory,
         handleEditCategory,
         handleDeleteCategory,

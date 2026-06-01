@@ -30,15 +30,8 @@ export function HeroCarousel() {
       try {
         setLoading(true)
         const response = await announcementService.getMainAnnouncements();
-        // Handle both array and single object responses
-        //console.log(response.data, 'ann')
-        //console.log(response, 'ann')
-        //console.log(response, 'ann')
-        //console.log(response, 'ann')
-        //console.log(response, 'ann')
-        //console.log(response, 'ann')
-        //console.log(response, 'ann')
-        //console.log(response, 'ann')
+        console.log("API Response: ann", response);
+
         if (Array.isArray(response.data)) {
           setAnnouncements(response.data)
         } else if (response.data && typeof response.data === 'object') {

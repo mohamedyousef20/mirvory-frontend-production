@@ -39,65 +39,66 @@ export function VendorsTab({
     return (
         <div className="space-y-6">
             <div className="rounded-md border">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead className="w-[100px]">{isArabic ? "المعرف" : "ID"}</TableHead>
-                            <TableHead>{isArabic ? "البائع" : "Vendor"}</TableHead>
-                            <TableHead>{isArabic ? "البريد الإلكتروني" : "Email"}</TableHead>
-                            <TableHead>{isArabic ? "الهاتف" : "Phone"}</TableHead>
-                            <TableHead>{isArabic ? "العنوان" : "Address"}</TableHead>
-                            <TableHead>{isArabic ? "الرصيد الأساسي" : "Main Balance"}</TableHead>
-                            <TableHead>{isArabic ? "الرصيد المعلق" : "Pending Balance"}</TableHead>
-                            <TableHead>{isArabic ? "الحالة والتوثيق" : "Status & Trust"}</TableHead>
-                            <TableHead>{isArabic ? "إجراءات الحساب" : "Account Actions"}</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {sellers && sellers.length > 0 ? (
-                            
-                            sellers.map((seller) => (
-                                <TableRow key={seller._id}>
-                                    <TableCell className="font-mono text-xs">{seller._id.substring(0, 6)}</TableCell>
-                                    <TableCell className="font-medium">{seller.vendorProfile?.storeName || `${seller.firstName} ${seller.lastName}`}</TableCell>
-                                    <TableCell>{seller.email}</TableCell>
-                                    <TableCell>{seller.phone}</TableCell>
-                                    <TableCell>
-                                        <div className="flex flex-col text-sm">
-                                            <span>{seller.address?.governorate}</span>
-                                            <span>{seller.address?.city}</span>
-                                            <span className="text-gray-500">
-                                                {seller.address?.addressLine}
-                                            </span>
-                                        </div>
-                                    </TableCell>
-                                    {/* عرض الرصيد الأساسي وزر تعديله */}
-                                    <TableCell>
-                                        <div className="flex items-center gap-2">
+                <div className="overflow-x-auto">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead className="w-[100px]">{isArabic ? "المعرف" : "ID"}</TableHead>
+                                <TableHead>{isArabic ? "البائع" : "Vendor"}</TableHead>
+                                <TableHead>{isArabic ? "البريد الإلكتروني" : "Email"}</TableHead>
+                                <TableHead>{isArabic ? "الهاتف" : "Phone"}</TableHead>
+                                <TableHead>{isArabic ? "العنوان" : "Address"}</TableHead>
+                                <TableHead>{isArabic ? "الرصيد الأساسي" : "Main Balance"}</TableHead>
+                                <TableHead>{isArabic ? "الرصيد المعلق" : "Pending Balance"}</TableHead>
+                                <TableHead>{isArabic ? "الحالة والتوثيق" : "Status & Trust"}</TableHead>
+                                <TableHead>{isArabic ? "إجراءات الحساب" : "Account Actions"}</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {sellers && sellers.length > 0 ? (
+                                
+                                sellers.map((seller) => (
+                                    <TableRow key={seller._id}>
+                                        <TableCell className="font-mono text-xs">{seller._id.substring(0, 6)}</TableCell>
+                                        <TableCell className="font-medium">{seller.vendorProfile?.storeName || `${seller.firstName} ${seller.lastName}`}</TableCell>
+                                        <TableCell>{seller.email}</TableCell>
+                                        <TableCell>{seller.phone}</TableCell>
+                                        <TableCell>
+                                            <div className="flex flex-col text-sm">
+                                                <span>{seller.address?.governorate}</span>
+                                                <span>{seller.address?.city}</span>
+                                                <span className="text-gray-500">
+                                                    {seller.address?.addressLine}
+                                                </span>
+                                            </div>
+                                        </TableCell>
+                                        {/* عرض الرصيد الأساسي وزر تعديله */}
+                                        <TableCell>
+                                            <div className="flex items-center gap-2">
 
-                                            <span className="font-medium">
-                                                {Number(seller.wallet?.balance || 0).toLocaleString(undefined, {
+                                                <span className="font-medium">
+                                                    {Number(seller.wallet?.balance || 0).toLocaleString(undefined, {
+                                                        minimumFractionDigits: 2,
+                                                        maximumFractionDigits: 3
+                                                    })}
+                                                    {seller.wallet?.currency || ' EGP'}
+                                                </span>                                          <button
+                                                    onClick={() => promptUpdateBalance(seller._id, seller.wallet?.balance || 0, seller.wallet?.pendingBalance || 0)}
+                                                    className="text-slate-500 hover:text-blue-600 p-1"
+                                                    title={isArabic ? "تعديل الرصيد" : "Edit Balance"}
+                                                >
+                                                    <Edit3 className="h-3.5 w-3.5" />
+                                                </button>
+                                            </div>
+                                        </TableCell>
+
+                                        {/* الرصيد المعلق */}
+                                        <TableCell>
+                                            <span className="text-xs text-muted-foreground">
+                                                {isArabic ? "معلق: " : "Pending: "}
+                                                {Number(seller.wallet?.pendingBalance || 0).toLocaleString(undefined, {
                                                     minimumFractionDigits: 2,
                                                     maximumFractionDigits: 3
-                                                })}
-                                                {seller.wallet?.currency || ' EGP'}
-                                            </span>                                          <button
-                                                onClick={() => promptUpdateBalance(seller._id, seller.wallet?.balance || 0, seller.wallet?.pendingBalance || 0)}
-                                                className="text-slate-500 hover:text-blue-600 p-1"
-                                                title={isArabic ? "تعديل الرصيد" : "Edit Balance"}
-                                            >
-                                                <Edit3 className="h-3.5 w-3.5" />
-                                            </button>
-                                        </div>
-                                    </TableCell>
-
-                                    {/* الرصيد المعلق */}
-                                    <TableCell>
-                                        <span className="text-xs text-muted-foreground">
-                                            {isArabic ? "معلق: " : "Pending: "}
-                                            {Number(seller.wallet?.pendingBalance || 0).toLocaleString(undefined, {
-                                                minimumFractionDigits: 2,
-                                                maximumFractionDigits: 3
                                             })}
                                         </span>                                    </TableCell>
 
@@ -182,6 +183,7 @@ export function VendorsTab({
                         )}
                     </TableBody>
                 </Table>
+                </div>
             </div>
             {/* التحكم بالصفحات */}
             {sellers.length > 0 && (

@@ -935,12 +935,12 @@ export function MainNav() {
                         </div>
                       </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
+                    {/* <DropdownMenuItem asChild>
                       <Link href="/settings" className="cursor-pointer flex items-center gap-2">
                         <Settings className="h-4 w-4" />
                         {language === "ar" ? "الإعدادات" : "Settings"}
                       </Link>
-                    </DropdownMenuItem>
+                    </DropdownMenuItem> */}
                     {dashboardLinks.map((item) => (
                       <DropdownMenuItem key={item.href} asChild>
                         <Link href={item.href} className="flex items-center gap-2 cursor-pointer">
