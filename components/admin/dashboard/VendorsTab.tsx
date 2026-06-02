@@ -37,21 +37,20 @@ export function VendorsTab({
     };
 
     return (
-        <div className="space-y-6">
-            <div className="rounded-md border">
-                <div className="overflow-x-auto">
+        <div className="space-y-4 md:space-y-6">
+            <div className="rounded-md border overflow-x-auto">
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead className="w-[100px]">{isArabic ? "المعرف" : "ID"}</TableHead>
-                                <TableHead>{isArabic ? "البائع" : "Vendor"}</TableHead>
-                                <TableHead>{isArabic ? "البريد الإلكتروني" : "Email"}</TableHead>
-                                <TableHead>{isArabic ? "الهاتف" : "Phone"}</TableHead>
-                                <TableHead>{isArabic ? "العنوان" : "Address"}</TableHead>
-                                <TableHead>{isArabic ? "الرصيد الأساسي" : "Main Balance"}</TableHead>
-                                <TableHead>{isArabic ? "الرصيد المعلق" : "Pending Balance"}</TableHead>
-                                <TableHead>{isArabic ? "الحالة والتوثيق" : "Status & Trust"}</TableHead>
-                                <TableHead>{isArabic ? "إجراءات الحساب" : "Account Actions"}</TableHead>
+                                <TableHead className="w-[100px] text-xs md:text-sm">{isArabic ? "المعرف" : "ID"}</TableHead>
+                                <TableHead className="text-xs md:text-sm">{isArabic ? "البائع" : "Vendor"}</TableHead>
+                                <TableHead className="text-xs md:text-sm">{isArabic ? "البريد الإلكتروني" : "Email"}</TableHead>
+                                <TableHead className="text-xs md:text-sm">{isArabic ? "الهاتف" : "Phone"}</TableHead>
+                                <TableHead className="text-xs md:text-sm">{isArabic ? "العنوان" : "Address"}</TableHead>
+                                <TableHead className="text-xs md:text-sm">{isArabic ? "الرصيد الأساسي" : "Main Balance"}</TableHead>
+                                <TableHead className="text-xs md:text-sm">{isArabic ? "الرصيد المعلق" : "Pending Balance"}</TableHead>
+                                <TableHead className="text-xs md:text-sm">{isArabic ? "الحالة والتوثيق" : "Status & Trust"}</TableHead>
+                                <TableHead className="text-xs md:text-sm">{isArabic ? "إجراءات الحساب" : "Account Actions"}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -59,12 +58,12 @@ export function VendorsTab({
                                 
                                 sellers.map((seller) => (
                                     <TableRow key={seller._id}>
-                                        <TableCell className="font-mono text-xs">{seller._id.substring(0, 6)}</TableCell>
-                                        <TableCell className="font-medium">{seller.vendorProfile?.storeName || `${seller.firstName} ${seller.lastName}`}</TableCell>
-                                        <TableCell>{seller.email}</TableCell>
-                                        <TableCell>{seller.phone}</TableCell>
-                                        <TableCell>
-                                            <div className="flex flex-col text-sm">
+                                        <TableCell className="font-mono text-xs md:text-sm">{seller._id.substring(0, 6)}</TableCell>
+                                        <TableCell className="font-medium text-xs md:text-sm">{seller.vendorProfile?.storeName || `${seller.firstName} ${seller.lastName}`}</TableCell>
+                                        <TableCell className="text-xs md:text-sm">{seller.email}</TableCell>
+                                        <TableCell className="text-xs md:text-sm">{seller.phone}</TableCell>
+                                        <TableCell className="text-xs md:text-sm">
+                                            <div className="flex flex-col text-xs md:text-sm">
                                                 <span>{seller.address?.governorate}</span>
                                                 <span>{seller.address?.city}</span>
                                                 <span className="text-gray-500">
@@ -73,10 +72,10 @@ export function VendorsTab({
                                             </div>
                                         </TableCell>
                                         {/* عرض الرصيد الأساسي وزر تعديله */}
-                                        <TableCell>
+                                        <TableCell className="text-xs md:text-sm">
                                             <div className="flex items-center gap-2">
 
-                                                <span className="font-medium">
+                                                <span className="font-medium text-xs md:text-sm">
                                                     {Number(seller.wallet?.balance || 0).toLocaleString(undefined, {
                                                         minimumFractionDigits: 2,
                                                         maximumFractionDigits: 3
@@ -93,7 +92,7 @@ export function VendorsTab({
                                         </TableCell>
 
                                         {/* الرصيد المعلق */}
-                                        <TableCell>
+                                        <TableCell className="text-xs md:text-sm">
                                             <span className="text-xs text-muted-foreground">
                                                 {isArabic ? "معلق: " : "Pending: "}
                                                 {Number(seller.wallet?.pendingBalance || 0).toLocaleString(undefined, {
@@ -103,27 +102,27 @@ export function VendorsTab({
                                         </span>                                    </TableCell>
 
                                     {/* حالة التوثيق والقبول الإداري */}
-                                    <TableCell>
+                                    <TableCell className="text-xs md:text-sm">
                                         <div className="flex flex-col gap-1">
                                             <div className="flex items-center gap-1.5">
                                                 {seller.vendorProfile?.trustedSeller ? (
-                                                    <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-200">
+                                                    <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-200 text-xs">
                                                         <ShieldCheck className="h-3 w-3 mr-1 inline" /> {isArabic ? "موثوق" : "Trusted"}
                                                     </Badge>
                                                 ) : (
-                                                    <Badge variant="outline" className="text-slate-400">
+                                                    <Badge variant="outline" className="text-slate-400 text-xs">
                                                         {isArabic ? "غير موثوق" : "Untrusted"}
                                                     </Badge>
                                                 )}
                                             </div>
 
                                             {seller.isActive ? (
-                                                <span className="flex items-center gap-1 text-emerald-400 font-medium">
+                                                <span className="flex items-center gap-1 text-emerald-400 font-medium text-xs md:text-sm">
                                                     <span className="w-2 h-2 rounded-full bg-emerald-300"></span>
                                                     {isArabic ? "نشط" : "Active"}
                                                 </span>
                                             ) : (
-                                                <span className="flex items-center gap-1 text-red-400 font-medium">
+                                                <span className="flex items-center gap-1 text-red-400 font-medium text-xs md:text-sm">
                                                     <span className="w-2 h-2 rounded-full bg-red-300"></span>
                                                     {isArabic ? "غير نشط" : "Inactive"}
                                                 </span>
@@ -132,13 +131,13 @@ export function VendorsTab({
                                     </TableCell>
 
                                     {/* أزرار الإجراءات الإدارية الصارمة */}
-                                    <TableCell>
-                                        <div className="flex items-center gap-2">
+                                    <TableCell className="text-xs md:text-sm">
+                                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
                                             {/* زر التوثيق / إلغاء التوثيق */}
                                             <button
                                                 onClick={() => onUpdateStatus(seller._id, !seller.vendorProfile?.trustedSeller)}
                                                 disabled={updatingUserId === seller._id}
-                                                className={`px-2 py-1 text-xs rounded font-medium ${seller.vendorProfile?.trustedSeller ? 'bg-amber-50 text-amber-700' : 'bg-blue-50 text-blue-700'}`}
+                                                className={`px-2 py-1 text-xs rounded font-medium w-full sm:w-auto ${seller.vendorProfile?.trustedSeller ? 'bg-amber-50 text-amber-700' : 'bg-blue-50 text-blue-700'}`}
                                             >
                                                 {seller.vendorProfile?.trustedSeller ? (isArabic ? "إلغاء التوثيق" : "Untrust") : (isArabic ? "توثيق الحساب" : "Trust")}
                                             </button>
@@ -147,7 +146,7 @@ export function VendorsTab({
                                             <button
                                                 onClick={() => onToggleActive(seller._id, seller.isActive)}
                                                 disabled={updatingUserId === seller._id}
-                                                className={`px-2 py-1 text-xs rounded font-medium ${seller.isActive ? 'bg-red-50 text-red-700 hover:bg-red-100' : 'bg-green-50 text-green-700 hover:bg-green-100'}`}
+                                                className={`px-2 py-1 text-xs rounded font-medium w-full sm:w-auto ${seller.isActive ? 'bg-red-50 text-red-700 hover:bg-red-100' : 'bg-green-50 text-green-700 hover:bg-green-100'}`}
                                             >
                                                 {seller.isActive ? (isArabic ? "تعطيل" : "Deactivate") : (isArabic ? "تفعيل" : "Activate")}
                                             </button>
@@ -183,7 +182,6 @@ export function VendorsTab({
                         )}
                     </TableBody>
                 </Table>
-                </div>
             </div>
             {/* التحكم بالصفحات */}
             {sellers.length > 0 && (

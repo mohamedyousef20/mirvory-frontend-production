@@ -49,7 +49,7 @@ interface ProductCardProps {
   isFavorite?: boolean
 }
 
-export function ProductCard({ product, language, onAddToCart, onToggleWishlist, isFavorite: isFavoriteProp }: ProductCardProps) {
+const ProductCardComponent = function ProductCard({ product, language, onAddToCart, onToggleWishlist, isFavorite: isFavoriteProp }: ProductCardProps) {
   const [isFavorite, setIsFavorite] = useState(product.isFavorite || false)
   const [isAddingToCart, setIsAddingToCart] = useState(false)
   const [isTogglingFavorite, setIsTogglingFavorite] = useState(false)
@@ -393,3 +393,5 @@ export function ProductCard({ product, language, onAddToCart, onToggleWishlist, 
     </Link>
   )
 }
+
+export const ProductCard = React.memo(ProductCardComponent)

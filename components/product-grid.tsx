@@ -37,7 +37,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { ProductCard } from "@/components/ProductCard"
 import { ProductSearch } from "@/components/ProductSearch"
-import { announcementService, categoryService, productService, wishlistService, brandService } from "@/lib/api"
+import { announcementService, categoryService, productService, wishlistService, brandService, cartService } from "@/lib/api"
 import { useAuth } from "@/contexts/AuthProvider"
 
 // Types
@@ -288,56 +288,61 @@ export function ProductGrid() {
 
       let response;
 
-      // If there's a search query, use search endpoint
+      // If there's a search query, use new advanced search endpoint
       if (filters.searchQuery.trim()) {
-        const searchParams = {
+        const searchParams: any = {
+          q: filters.searchQuery.trim(),
           page: pagination.page,
           limit: pagination.pageSize,
-          category: filters.categories.length > 0 ? filters.categories.join(',') : undefined,
-          minPrice: filters.priceRange[0],
-          maxPrice: filters.priceRange[1],
-          sort: filters.sort === "newest" ? "-createdAt" :
-            filters.sort === "priceHighToLow" ? "-price" :
-              filters.sort === "priceLowToHigh" ? "price" :
-                filters.sort === "topRated" ? "-ratings.average" : undefined,
         };
-        response = await productService.searchProducts(filters.searchQuery, searchParams);
-        console.log("searchParams147", searchParams);
-        console.log("response147", response.data);
-      } else {
-        // Otherwise use regular products endpoint with filters
-        const params = {
-          page: pagination.page,
-          limit: pagination.pageSize,
-          category: filters.categories.length > 0 ? filters.categories.join(',') : undefined,
-          // brand: filters.brands.length > 0 ? filters.brands.join(',') : undefined,
-          minPrice: filters.priceRange[0],
-          maxPrice: filters.priceRange[1],
-          sort: filters.sort === "newest" ? "-createdAt" :
-            filters.sort === "priceHighToLow" ? "-price" :
-              filters.sort === "priceLowToHigh" ? "price" :
-                filters.sort === "topRated" ? "-ratings.average" : undefined,
-          isApproved: true,
-          status: 'available',
+
+        // Add optional filters
+        if (filters.categories.length > 0) {
+          searchParams.category = filters.categories[0]; // Single category for now
+        }
+        if (filters.priceRange[0] > 0) {
+          searchParams.minPrice = filters.priceRange[0];
+        }
+        if (filters.priceRange[1] < 10000) {
+          searchParams.maxPrice = filters.priceRange[1];
+        }
+
+        // Map sort options to new format
+        const sortMap = {
+          newest: "latest",
+          priceHighToLow: "price_desc",
+          priceLowToHigh: "price_asc",
+          topRated: "top_rated",
         };
-        response = await productService.getProducts(params);
+        searchParams.sort = sortMap[filters.sort] || "relevance";
+
+        response = await productService.advancedSearch(searchParams);
+        console.log(response, 'response454545')
+
+        // Handle response format
+        const productsData = response.data?.products || [];
+        console.log(productsData, 'productsData147')
+        setProducts(productsData);
+        console.log(products, 'productsData148')
+
+        // Update pagination info based on new backend format
+        if (response.data?.pagination) {
+          const { page, totalPages, limit, total } = response.data.pagination;
+          setPagination(prev => ({
+            ...prev,
+            page,
+            pageSize: limit,
+            totalPages,
+            totalProducts: total || productsData.length
+          }));
+        } else {
+          // Fallback for old format
+          setPagination(prev => ({
+            ...prev,
+            totalProducts: productsData.length
+          }));
+        }
       }
-
-      const productsData = Array.isArray(response.data) ? response.data : response.data?.products || [];
-
-      setProducts(productsData);
-
-      // Update pagination info based on new backend format
-      if (response.data?.pagination) {
-        const { page, totalPages, limit } = response.data.pagination;
-        setPagination(prev => ({
-          ...prev,
-          page,
-          pageSize: limit,
-          totalPages
-        }));
-      }
-
     } catch (error) {
       console.error("Error fetching products:", error);
       const message = language === "ar" ? "فشل جلب المنتجات" : "Failed to load products";
@@ -363,6 +368,7 @@ export function ProductGrid() {
   // Read search query from URL params
   useEffect(() => {
     const searchQuery = searchParams.get('q');
+
     if (searchQuery) {
       setFilters(prev => ({ ...prev, searchQuery }));
     }
@@ -480,7 +486,22 @@ export function ProductGrid() {
     }
   }, [isAuthenticated, language, uiState.favorites]);
 
- 
+  const addToCart = useCallback(async (productId: string) => {
+    if (!isAuthenticated) {
+      toast.error(language === "ar" ? "يرجى تسجيل الدخول لإضافة المنتجات للسلة" : "Please sign in to add products to cart");
+      return;
+    }
+
+    try {
+      await cartService.addToCart({ productId, quantity: 1 });
+      toast.success(language === "ar" ? "تمت إضافة المنتج للسلة" : "Product added to cart");
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      toast.error(language === "ar" ? "فشل إضافة المنتج للسلة" : "Failed to add product to cart");
+    }
+  }, [isAuthenticated, language]);
+
+
   const setPage = useCallback((page: number) => {
     setPagination(prev => ({ ...prev, page }));
   }, []);
@@ -807,13 +828,13 @@ export function ProductGrid() {
               renderEmptyState()
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {products.map((product) => (
+                {products?.map((product) => (
                   <ProductCard
                     key={product._id}
                     product={product}
                     language={language}
                     onAddToCart={addToCart}
-                    ontoggleWishlist={toggleWishlist}
+                    onToggleWishlist={toggleWishlist}
                     isFavorite={uiState.favorites.has(product._id)}
                   />
                 ))}

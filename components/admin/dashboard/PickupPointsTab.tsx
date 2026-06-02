@@ -60,17 +60,17 @@ export function PickupPointsTab({
     };
 
     return (
-        <div className="space-y-6">
-            <div className="flex justify-between items-center mb-6">
+        <div className="space-y-4 md:space-y-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4 md:mb-6">
                 <div>
-                    <h2 className="text-xl font-bold">{isArabic ? "إدارة نقاط الاستلام" : "Pickup Points Management"}</h2>
-                    <p className="text-muted-foreground">
+                    <h2 className="text-lg md:text-xl font-bold">{isArabic ? "إدارة نقاط الاستلام" : "Pickup Points Management"}</h2>
+                    <p className="text-xs md:text-sm text-muted-foreground">
                         {isArabic
                             ? "إدارة نقاط الاستلام والتحكم في عرضها في المتجر"
                             : "Manage pickup points and control how they appear in your store"}
                     </p>
                 </div>
-                <Button onClick={handleOpenCreateForm}>
+                <Button onClick={handleOpenCreateForm} className="w-full md:w-auto">
                     <Plus className="mr-2 h-4 w-4" />
                     {isArabic ? "إضافة نقطة استلام" : "Add Pickup Point"}
                 </Button>
@@ -78,14 +78,14 @@ export function PickupPointsTab({
 
             {showAddPickupPoint && (
                 <Card>
-                    <CardHeader>
-                        <CardTitle>
+                    <CardHeader className="p-4 md:p-6">
+                        <CardTitle className="text-base md:text-lg">
                             {selectedPickupPoint?._id
                                 ? (isArabic ? 'تعديل نقطة الاستلام' : 'Edit Pickup Point')
                                 : (isArabic ? 'إضافة نقطة استلام جديدة' : 'Add New Pickup Point')}
                         </CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="p-4 md:p-6 pt-0">
                         <form onSubmit={handleSubmitPickupPoint} className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
@@ -229,7 +229,7 @@ export function PickupPointsTab({
                                 </div>
                             </div>
 
-                            <div className="flex justify-end space-x-2 pt-4">
+                            <div className="flex flex-col md:flex-row justify-end gap-2 pt-4">
                                 <Button
                                     type="button"
                                     variant="outline"
@@ -237,12 +237,14 @@ export function PickupPointsTab({
                                         setShowAddPickupPoint(false);
                                         setSelectedPickupPoint(null);
                                     }}
+                                    className="w-full md:w-auto"
                                 >
                                     {isArabic ? 'إلغاء' : 'Cancel'}
                                 </Button>
                                 <Button
                                     type="submit"
                                     disabled={!selectedPickupPoint?.stationName || !selectedPickupPoint?.address}
+                                    className="w-full md:w-auto"
                                 >
                                     {selectedPickupPoint?._id
                                         ? (isArabic ? 'تحديث' : 'Update')
@@ -255,40 +257,40 @@ export function PickupPointsTab({
             )}
 
             {loadingPickupPoints ? (
-                <div className="flex justify-center items-center h-64">
+                <div className="flex justify-center items-center h-48 md:h-64">
                     <Loader2 className="h-8 w-8 animate-spin" />
                 </div>
             ) : pickupPoints.length === 0 ? (
-                <div className="text-center py-12">
-                    <div className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                        <MapPin className="h-8 w-8 text-gray-500" />
+                <div className="text-center py-8 md:py-12">
+                    <div className="bg-gray-200 border-2 border-dashed rounded-xl w-14 h-14 md:w-16 md:h-16 mx-auto mb-4 flex items-center justify-center">
+                        <MapPin className="h-7 w-7 md:h-8 md:w-8 text-gray-500" />
                     </div>
-                    <h2 className="text-xl font-medium mb-2">
+                    <h2 className="text-lg md:text-xl font-medium mb-2">
                         {isArabic ? "لا توجد نقاط استلام" : "No Pickup Points Found"}
                     </h2>
-                    <p className="text-muted-foreground mb-6">
+                    <p className="text-xs md:text-sm text-muted-foreground mb-6">
                         {isArabic
                             ? "لم يتم العثور على أي نقاط استلام. ابدأ بإضافة نقطة استلام جديدة."
                             : "No pickup points found. Start by adding a new pickup point."}
                     </p>
-                    <Button onClick={handleOpenCreateForm}>
+                    <Button onClick={handleOpenCreateForm} className="w-full md:w-auto">
                         {isArabic ? "إضافة نقطة استلام" : "Add Pickup Point"}
                     </Button>
                 </div>
             ) : (
                 <>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
                         {pickupPoints.map((point) => (
                             <Card key={point._id} className="hover:shadow-md transition-shadow">
-                                <CardHeader>
+                                <CardHeader className="p-4 md:p-6">
                                     <div className="flex justify-between items-start">
                                         <div>
-                                            <CardTitle className="text-lg flex items-center gap-2">
-                                                <MapPin className="h-5 w-5 text-muted-foreground" />
+                                            <CardTitle className="text-base md:text-lg flex items-center gap-2">
+                                                <MapPin className="h-4 w-4 md:h-5 md:w-5 text-muted-foreground" />
                                                 {point.stationName}
                                             </CardTitle>
-                                            <p className="text-sm text-muted-foreground mt-1">
-                                                <Clock className="h-4 w-4 inline mr-1" />
+                                            <p className="text-xs md:text-sm text-muted-foreground mt-1">
+                                                <Clock className="h-3 w-3 md:h-4 md:w-4 inline mr-1" />
                                                 {point.workingHours}
                                             </p>
                                         </div>
@@ -299,8 +301,8 @@ export function PickupPointsTab({
                                         </Badge>
                                     </div>
                                 </CardHeader>
-                                <CardContent>
-                                    <div className="space-y-2 text-sm">
+                                <CardContent className="p-4 md:p-6 pt-0">
+                                    <div className="space-y-2 text-xs md:text-sm">
                                         <p className="font-medium">{point.address}</p>
                                         {point.phone && (
                                             <p className="text-muted-foreground">{point.phone}</p>
@@ -311,7 +313,7 @@ export function PickupPointsTab({
                                             </p>
                                         )}
                                     </div>
-                                    <div className="flex justify-end mt-4 space-x-2">
+                                    <div className="flex flex-col md:flex-row justify-end mt-4 gap-2">
                                         <Button
                                             variant="outline"
                                             size="sm"
@@ -319,6 +321,7 @@ export function PickupPointsTab({
                                                 setSelectedPickupPoint(point);
                                                 setShowAddPickupPoint(true);
                                             }}
+                                            className="w-full md:w-auto"
                                         >
                                             <Edit className="h-4 w-4 mr-2" />
                                             {isArabic ? 'تعديل' : 'Edit'}
@@ -326,7 +329,7 @@ export function PickupPointsTab({
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            className="text-destructive"
+                                            className="text-destructive w-full md:w-auto"
                                             onClick={() => handleDeletePickupPoint(point._id!)}
                                         >
                                             <Trash2 className="h-4 w-4 mr-2" />
@@ -338,30 +341,29 @@ export function PickupPointsTab({
                         ))}
                     </div>
 
-                    <div className="mt-8">
-                        <h3 className="text-lg font-semibold mb-4">
+                    <div className="mt-6 md:mt-8">
+                        <h3 className="text-base md:text-lg font-semibold mb-4">
                             {isArabic ? "جميع نقاط الاستلام" : "All Pickup Points"}
                         </h3>
-                        <div className="rounded-md border">
-                            <div className="overflow-x-auto">
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>{isArabic ? "اسم المحطة" : "Station Name"}</TableHead>
-                                            <TableHead>{isArabic ? "العنوان" : "Address"}</TableHead>
-                                            <TableHead>{isArabic ? "الهاتف" : "Phone"}</TableHead>
-                                            <TableHead>{isArabic ? "ساعات العمل" : "Working Hours"}</TableHead>
-                                            <TableHead>{isArabic ? "الحالة" : "Status"}</TableHead>
-                                            <TableHead>{isArabic ? "الإجراءات" : "Actions"}</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
+                        <div className="rounded-md border overflow-x-auto">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead className="text-xs md:text-sm">{isArabic ? "اسم المحطة" : "Station Name"}</TableHead>
+                                        <TableHead className="text-xs md:text-sm">{isArabic ? "العنوان" : "Address"}</TableHead>
+                                        <TableHead className="text-xs md:text-sm">{isArabic ? "الهاتف" : "Phone"}</TableHead>
+                                        <TableHead className="text-xs md:text-sm">{isArabic ? "ساعات العمل" : "Working Hours"}</TableHead>
+                                        <TableHead className="text-xs md:text-sm">{isArabic ? "الحالة" : "Status"}</TableHead>
+                                        <TableHead className="text-xs md:text-sm">{isArabic ? "الإجراءات" : "Actions"}</TableHead>
+                                    </TableRow>
+                                </TableHeader>
                                     <TableBody>
                                         {pickupPoints.map((point) => (
                                             <TableRow key={point._id}>
-                                                <TableCell className="font-medium">{point.stationName}</TableCell>
-                                                <TableCell>{point.address}</TableCell>
-                                                <TableCell>{point.phone || '-'}</TableCell>
-                                                <TableCell>{point.workingHours || '-'}</TableCell>
+                                                <TableCell className="font-medium text-xs md:text-sm">{point.stationName}</TableCell>
+                                                <TableCell className="text-xs md:text-sm">{point.address}</TableCell>
+                                                <TableCell className="text-xs md:text-sm">{point.phone || '-'}</TableCell>
+                                                <TableCell className="text-xs md:text-sm">{point.workingHours || '-'}</TableCell>
                                                 <TableCell>
                                                     <Badge variant={point.status === 'active' ? 'default' : 'secondary'}>
                                                         {point.status === 'active'
@@ -369,8 +371,8 @@ export function PickupPointsTab({
                                                             : (isArabic ? 'غير نشط' : 'Inactive')}
                                                     </Badge>
                                                 </TableCell>
-                                                <TableCell>
-                                                    <div className="flex space-x-2">
+                                                <TableCell className="text-xs md:text-sm">
+                                                    <div className="flex flex-col sm:flex-row gap-2">
                                                         <Button
                                                             variant="ghost"
                                                             size="sm"
@@ -378,6 +380,7 @@ export function PickupPointsTab({
                                                                 setSelectedPickupPoint(point);
                                                                 setShowAddPickupPoint(true);
                                                             }}
+                                                            className="w-full sm:w-auto"
                                                         >
                                                             <Edit className="h-4 w-4 mr-1" />
                                                             {isArabic ? "تعديل" : "Edit"}
@@ -385,7 +388,7 @@ export function PickupPointsTab({
                                                         <Button
                                                             variant="ghost"
                                                             size="sm"
-                                                            className="text-destructive"
+                                                            className="text-destructive w-full sm:w-auto"
                                                             onClick={() => handleDeletePickupPoint(point._id!)}
                                                         >
                                                             <Trash2 className="h-4 w-4 mr-1" />
@@ -397,7 +400,6 @@ export function PickupPointsTab({
                                     ))}
                                 </TableBody>
                             </Table>
-                            </div>
                         </div>
                     </div>
                 </>

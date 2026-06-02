@@ -21,7 +21,10 @@ import {
 } from "@/components/ui/breadcrumb"
 import {
   ShoppingCart, Heart, Share2, Star, Truck,
-  ShieldCheck, RotateCcw, Minus, Plus, AlertCircle
+  ShieldCheck, RotateCcw, Minus, Plus, AlertCircle,
+  Pencil,
+  Loader2,
+  Trash2
 } from "lucide-react"
 import { toast } from "sonner"
 import { cartService, productService, ratingService, wishlistService } from "@/lib/api"
@@ -114,7 +117,7 @@ const ProductDetail = ({ productId }: { productId: string }) => {
   const [isSubmittingReview, setIsSubmittingReview] = useState(false)
   const [isLoadingReviews, setIsLoadingReviews] = useState(false)
   const [deletingReviewId, setDeletingReviewId] = useState<string | null>(null)
-  const userId = user?.id || null
+  const userId = user?._id || null
   const reviewFormRef = useRef<HTMLFormElement | null>(null)
 
   const handleReload = useCallback(() => {
@@ -298,9 +301,10 @@ const ProductDetail = ({ productId }: { productId: string }) => {
       const ratingData = ratingResponse?.data?.data || {}
 
       setReviews(ratingData)
+      if (reviews) {
+        console.log(reviews, 'reviews1')
 
-
-
+      }
       //console.log('Processed reviews:', reviewsData)
     } catch (err) {
       console.error('Failed to load ratings', err)
@@ -331,7 +335,7 @@ const ProductDetail = ({ productId }: { productId: string }) => {
 
     if (existingRating) {
       // Use the id field from your API response
-      const ratingId = existingRating.id
+      const ratingId = existingRating._id
       //console.log('Setting user rating ID:', ratingId)
       setUserRatingId(ratingId || null)
       setRatingInput(existingRating.rating)
@@ -844,10 +848,13 @@ const ProductDetail = ({ productId }: { productId: string }) => {
                     {reviews.map((review) => {
                       const reviewUserId = review?.user?._id
                       const isUserReview = userId && reviewUserId === userId
-                      console.log(review?.user?._id,' review?.user?._id')
-                      console.log(isUserReview, 'isUserReview')
-                      console.log(userId, 'userId')
-                      console.log(reviewUserId, 'reviewUserId')
+                      console.log('=== Review Debug ===')
+                      console.log('review?.user?._id:', review?.user?._id, 'type:', typeof review?.user?._id)
+                      console.log('userId:', userId, 'type:', typeof userId)
+                      console.log('reviewUserId:', reviewUserId, 'type:', typeof reviewUserId)
+                      console.log('isUserReview:', isUserReview)
+                      console.log('String comparison:', String(reviewUserId) === String(userId))
+                      console.log('===================')
                       const ratingId = review?._id
                       const isDeletingThisReview = deletingReviewId === ratingId
 
@@ -867,23 +874,26 @@ const ProductDetail = ({ productId }: { productId: string }) => {
                                 {isUserReview && (
                                   <div className="flex items-center gap-1">
                                     <Button
-                                      variant="outline"
-                                      size="sm"
+                                      variant="ghost"
+                                      size="icon"
                                       onClick={() => handleEditReview(review)}
                                       className="text-blue-600 hover:text-blue-800"
                                     >
-                                      {language === 'ar' ? 'تعديل' : 'Edit'}
+                                      <Pencil className="h-4 w-4" />
                                     </Button>
+
                                     <Button
-                                      variant="outline"
-                                      size="sm"
+                                      variant="ghost"
+                                      size="icon"
                                       className="text-red-600 hover:text-red-800 hover:bg-red-50"
                                       onClick={() => handleDeleteReview(ratingId)}
                                       disabled={isDeletingThisReview}
                                     >
-                                      {isDeletingThisReview
-                                        ? (language === 'ar' ? 'جاري الحذف...' : 'Deleting...')
-                                        : (language === 'ar' ? 'حذف' : 'Delete')}
+                                      {isDeletingThisReview ? (
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                      ) : (
+                                        <Trash2 className="h-4 w-4" />
+                                      )}
                                     </Button>
                                   </div>
                                 )}

@@ -14,7 +14,7 @@ interface Notification {
   title?: string;
   message?: string;
   link?: string;
-  isRead: boolean;
+  seen: boolean;
   createdAt: string | number | Date;
 }
 
@@ -34,8 +34,7 @@ export function NotificationsPage() {
       try {
         setLoading(true);
         const response = await notificationService.getNotifications();
-        //console.log(response, 'xs')
-        setNotifications(response.data.data || []);
+        setNotifications(response.data.notifications || []);
       } catch (error) {
         console.error('Error fetching notifications:', error);
         toast.error(language === 'ar' ? 'فشل في تحميل الإشعارات' : 'Failed to load notifications');
@@ -101,7 +100,7 @@ export function NotificationsPage() {
   const markAllAsRead = async () => {
     try {
       await notificationService.markAllAsRead();
-      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+      setNotifications(prev => prev.map(n => ({ ...n, seen: true })));
       toast.success(language === 'ar' ? 'تم تعليم الكل كمقروء' : 'All marked as read');
     } catch {
       toast.error(language === 'ar' ? 'فشل في تعليم الإشعارات كمقروءة' : 'Failed to mark as read');
@@ -111,7 +110,7 @@ export function NotificationsPage() {
   const markAsRead = async (id: string) => {
     try {
       await notificationService.markAsRead(id);
-      setNotifications(prev => prev.map(n => (n._id === id ? { ...n, isRead: true } : n)));
+      setNotifications(prev => prev.map(n => (n._id === id ? { ...n, seen: true } : n)));
     } catch {
       toast.error(language === 'ar' ? 'فشل في تحديث الإشعار' : 'Failed to update notification');
     }
@@ -119,7 +118,7 @@ export function NotificationsPage() {
 
   const filteredNotifications = notifications.filter(notification => {
     if (activeTab === 'all') return true;
-    if (activeTab === 'unread') return !notification.isRead;
+    if (activeTab === 'unread') return !notification.seen;
 
     const typeMap = {
       order: ['ORDER_PLACED', 'ORDER_SHIPPED', 'ORDER_COMPLETED', 'ORDER_DELIVERED'],
@@ -130,7 +129,7 @@ export function NotificationsPage() {
     return typeMap[activeTab]?.includes(notification.type) || notification.type === activeTab;
   });
 
-  const unreadCount = notifications.filter(n => !n.isRead).length;
+  const unreadCount = notifications.filter(n => !n.seen).length;
 
   // ✅ حالة التحميل
   if (loading) {
@@ -191,12 +190,12 @@ export function NotificationsPage() {
             filteredNotifications.map(notification => (
               <Card
                 key={notification._id}
-                className={`p-4 transition-all duration-200 ${notification.isRead ? 'bg-background' : 'bg-primary/5'
+                className={`p-4 transition-all duration-200 ${notification.seen ? 'bg-background' : 'bg-primary/5'
                   }`}
               >
                 <Link
                   href={notification.link || '#'}
-                  onClick={() => !notification.isRead && markAsRead(notification._id)}
+                  onClick={() => !notification.seen && markAsRead(notification._id)}
                 >
                   <div className="flex gap-4">
                     <div className={`rounded-full p-2 ${getTypeColor(notification.type)}`}>
@@ -211,7 +210,7 @@ export function NotificationsPage() {
                       </div>
                       <p className="text-sm text-muted-foreground">{notification.message}</p>
                     </div>
-                    {!notification.isRead && <div className="w-2 h-2 rounded-full bg-primary mt-2" />}
+                    {!notification.seen && <div className="w-2 h-2 rounded-full bg-primary mt-2" />}
                   </div>
                 </Link>
               </Card>

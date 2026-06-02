@@ -6,6 +6,7 @@ import PaginationControls from "@/components/pagination-controls";
 import { Loader2, Package, Check, X, Clock, RefreshCw, PackageCheck, ArrowRight, Trash2 } from "lucide-react";
 import { useState } from "react";
 import DashboardImageSlider from "@/components/ui/DashboardImageSlider";
+import { normalizeImageUrl } from "@/src/lib/normalizeImageUrl";
 
 interface ReturnsTabProps {
     returnRequests: any[];
@@ -261,7 +262,7 @@ export function ReturnsTab({
         : returnRequests.filter(request => request.status === activeFilter);
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4 md:space-y-6">
             {/* Status Filter Buttons */}
             <div className="flex flex-wrap gap-2">
                 {statusFilters.map((filter) => (
@@ -270,12 +271,12 @@ export function ReturnsTab({
                         variant={activeFilter === filter.value ? "default" : "outline"}
                         size="sm"
                         onClick={() => setActiveFilter(filter.value)}
-                        className="relative"
+                        className="relative text-xs md:text-sm"
                     >
                         {filter.label}
                         <Badge
                             variant="secondary"
-                            className="ml-2 bg-primary text-primary-foreground"
+                            className="ml-2 bg-primary text-primary-foreground text-xs"
                         >
                             {filter.count}
                         </Badge>
@@ -336,38 +337,38 @@ export function ReturnsTab({
 
                                 return (
                                     <TableRow key={request._id}>
-                                        <TableCell className="font-medium">
+                                        <TableCell className="font-medium text-xs md:text-sm">
                                             #{request._id.slice(-6)}
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell className="text-xs md:text-sm">
                                             <div className="space-y-1">
-                                                <div className="font-medium">{request.user?.name || request.order?.buyer || 'N/A'}</div>
-                                                <div className="text-sm text-muted-foreground">{request.user?.email || 'N/A'}</div>
-                                                <div className="text-sm text-muted-foreground">{request.user?.phone || 'N/A'}</div>
+                                                <div className="font-medium text-xs md:text-sm">{request.user?.name || request.order?.buyer || 'N/A'}</div>
+                                                <div className="text-xs text-muted-foreground">{request.user?.email || 'N/A'}</div>
+                                                <div className="text-xs text-muted-foreground">{request.user?.phone || 'N/A'}</div>
                                             </div>
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell className="text-xs md:text-sm">
                                             {request.order ? `#${request.order._id || 'N/A'}` : 'N/A'}
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell className="text-xs md:text-sm">
                                             {request.product ? (
                                                 <div>
-                                                    <div className="font-medium">{request.product.title}</div>
+                                                    <div className="font-medium text-xs md:text-sm">{request.product.title}</div>
                                                     {request.product.price && (
-                                                        <div className="text-sm text-muted-foreground">
+                                                        <div className="text-xs text-muted-foreground">
                                                             {request.product.price} {isArabic ? "ج.م" : "EGP"}
                                                         </div>
                                                     )}
                                                 </div>
                                             ) : 'N/A'}
                                         </TableCell>
-                                        <TableCell className="max-w-[200px]">
+                                        <TableCell className="max-w-[200px] text-xs md:text-sm">
                                             <div className="line-clamp-2" title={request.reason}>
                                                 {request.reason}
                                             </div>
                                         </TableCell>
-                                        <TableCell className="max-w-[220px]">
-                                            <div className="w-16">
+                                        <TableCell className="max-w-[220px] text-xs md:text-sm">
+                                            <div className="w-12 md:w-16">
                                                 <DashboardImageSlider
                                                     images={
                                                         request.images?.length
@@ -381,29 +382,29 @@ export function ReturnsTab({
                                                 />
                                             </div>
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell className="text-xs md:text-sm">
                                             {request.seller ? (
                                                 <div className="space-y-1">
-                                                    <div className="font-medium">{request.seller.firstName} {request.seller.lastName}</div>
-                                                    <div className="text-sm text-muted-foreground">{request.seller.email}</div>
-                                                    <div className="text-sm text-muted-foreground">{request.seller.phone}</div>
+                                                    <div className="font-medium text-xs md:text-sm">{request.seller.firstName} {request.seller.lastName}</div>
+                                                    <div className="text-xs text-muted-foreground">{request.seller.email}</div>
+                                                    <div className="text-xs text-muted-foreground">{request.seller.phone}</div>
                                                 </div>
                                             ) : "Unknown"}
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell className="text-xs md:text-sm">
                                             <Badge
                                                 variant={statusBadge.variant}
-                                                className={`${statusBadge.color} flex items-center gap-1 w-fit`}
+                                                className={`${statusBadge.color} flex items-center gap-1 w-fit text-xs`}
                                             >
                                                 {statusBadge.icon}
                                                 <span>{statusBadge.text}</span>
                                             </Badge>
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell className="text-xs md:text-sm">
                                             {getStatusProgressionButtons(request)}
                                         </TableCell>
-                                        <TableCell>
-                                            <div className="text-sm">
+                                        <TableCell className="text-xs md:text-sm">
+                                            <div className="text-xs md:text-sm">
                                                 {new Date(request.createdAt).toLocaleDateString()}
                                                 <div className="text-muted-foreground text-xs">
                                                     {new Date(request.createdAt).toLocaleTimeString()}
@@ -421,22 +422,22 @@ export function ReturnsTab({
 
             {/* Summary Stats - Only the main statuses */}
             {!loadingReturns && returnRequests.length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
-                    <div className="bg-yellow-50 p-3 rounded-lg border">
-                        <div className="font-medium text-yellow-700">{isArabic ? "قيد الانتظار" : "Pending"}</div>
-                        <div className="text-xl font-bold text-yellow-800">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs md:text-sm">
+                    <div className="bg-yellow-50 p-2 md:p-3 rounded-lg border">
+                        <div className="font-medium text-yellow-700 text-xs md:text-sm">{isArabic ? "قيد الانتظار" : "Pending"}</div>
+                        <div className="text-lg md:text-xl font-bold text-yellow-800">
                             {returnRequests.filter(r => r.status === 'pending').length}
                         </div>
                     </div>
-                    <div className="bg-blue-50 p-3 rounded-lg border">
-                        <div className="font-medium text-blue-700">{isArabic ? "مقبول" : "Approved"}</div>
-                        <div className="text-xl font-bold text-blue-800">
+                    <div className="bg-blue-50 p-2 md:p-3 rounded-lg border">
+                        <div className="font-medium text-blue-700 text-xs md:text-sm">{isArabic ? "مقبول" : "Approved"}</div>
+                        <div className="text-lg md:text-xl font-bold text-blue-800">
                             {returnRequests.filter(r => r.status === 'approved').length}
                         </div>
                     </div>
-                    <div className="bg-green-100 p-3 rounded-lg border">
-                        <div className="font-medium text-green-800">{isArabic ? "مكتمل" : "Processed"}</div>
-                        <div className="text-xl font-bold text-green-900">
+                    <div className="bg-green-100 p-2 md:p-3 rounded-lg border">
+                        <div className="font-medium text-green-800 text-xs md:text-sm">{isArabic ? "مكتمل" : "Processed"}</div>
+                        <div className="text-lg md:text-xl font-bold text-green-900">
                             {returnRequests.filter(r => r.status === 'processed').length}
                         </div>
                     </div>

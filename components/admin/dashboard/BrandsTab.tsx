@@ -36,11 +36,11 @@ export function BrandsTab({ brands, loading, error, isArabic, handleDeleteBrand,
   }
 
   return (
-    <> 
+    <>
       <div className="flex justify-end mb-4">
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => { setEditing(null); setOpen(true); }}>
+            <Button onClick={() => { setEditing(null); setOpen(true); }} className="w-full md:w-auto">
               {isArabic ? "إضافة ماركة" : "Add Brand"}
             </Button>
           </DialogTrigger>
@@ -63,30 +63,31 @@ export function BrandsTab({ brands, loading, error, isArabic, handleDeleteBrand,
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-24">ID</TableHead>
-            <TableHead>{isArabic ? "الاسم" : "Name"}</TableHead>
-            <TableHead>{isArabic ? "الحالة" : "Status"}</TableHead>
-            <TableHead>{isArabic ? "تاريخ الإنشاء" : "Created"}</TableHead>
+            <TableHead className="w-24 text-xs md:text-sm">ID</TableHead>
+            <TableHead className="text-xs md:text-sm">{isArabic ? "الاسم" : "Name"}</TableHead>
+            <TableHead className="text-xs md:text-sm">{isArabic ? "الحالة" : "Status"}</TableHead>
+            <TableHead className="text-xs md:text-sm">{isArabic ? "تاريخ الإنشاء" : "Created"}</TableHead>
+            <TableHead className="text-xs md:text-sm">{isArabic ? "الإجراءات" : "Actions"}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {brands.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+              <TableCell colSpan={5} className="text-center py-8 text-muted-foreground text-xs md:text-sm">
                 {isArabic ? "لا توجد علامات تجارية" : "No brands found"}
               </TableCell>
             </TableRow>
           ) : (
             brands.map((brand: any) => (
               <TableRow key={brand._id}>
-                <TableCell>#{brand._id?.substring(0, 6)}</TableCell>
-                <TableCell>{brand.name}</TableCell>
-                <TableCell>
+                <TableCell className="text-xs md:text-sm">#{brand._id?.substring(0, 6)}</TableCell>
+                <TableCell className="text-xs md:text-sm">{brand.name}</TableCell>
+                <TableCell className="text-xs md:text-sm">
                   <Badge variant={brand.status === "active" ? undefined : "destructive"}>
                     {brand.status === "active" ? (isArabic ? "نشط" : "Active") : (isArabic ? "غير نشط" : "Inactive")}
                   </Badge>
                 </TableCell>
-                <TableCell>
+                <TableCell className="text-xs md:text-sm">
                   {new Date(brand.createdAt).toLocaleDateString(isArabic ? "ar-EG" : "en-US", {
                     year: "numeric",
                     month: "short",
@@ -94,12 +95,14 @@ export function BrandsTab({ brands, loading, error, isArabic, handleDeleteBrand,
                   })}
                 </TableCell>
                 <TableCell className="space-x-2 rtl:space-x-reverse">
-                  <Button size="sm" variant="outline" onClick={() => { setEditing(brand); setOpen(true); }}>
-                    {isArabic ? "تعديل" : "Edit"}
-                  </Button>
-                  <Button size="sm" variant="outline" className="text-destructive" onClick={() => handleDeleteBrand(brand._id)}>
-                    {isArabic ? "حذف" : "Delete"}
-                  </Button>
+                  <div className="flex flex-col md:flex-row gap-2">
+                    <Button size="sm" variant="outline" onClick={() => { setEditing(brand); setOpen(true); }} className="w-full md:w-auto">
+                      {isArabic ? "تعديل" : "Edit"}
+                    </Button>
+                    <Button size="sm" variant="outline" className="text-destructive w-full md:w-auto" onClick={() => handleDeleteBrand(brand._id)}>
+                      {isArabic ? "حذف" : "Delete"}
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             ))

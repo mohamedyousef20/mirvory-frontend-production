@@ -48,20 +48,20 @@ export function AnalyticsTab({
   return (
     <Card>
       <CardHeader className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-        <div>
-          <CardTitle>{isArabic ? "تحليلات الأداء" : "Performance Analytics"}</CardTitle>
-          <CardDescription>
+        <div className="w-full md:w-auto">
+          <CardTitle className="text-lg md:text-xl">{isArabic ? "تحليلات الأداء" : "Performance Analytics"}</CardTitle>
+          <CardDescription className="text-xs md:text-sm">
             {isArabic
               ? "نظرة شاملة على الطلبات، أعلى المنتجات، رضا العملاء، ومتوسط التجهيز عبر المنصة كلها."
               : "Cross-platform insight into orders, top products, customer satisfaction, and preparation speed."}
           </CardDescription>
         </div>
-        <Button variant="outline" size="sm" onClick={fetchAdminAnalytics} disabled={analyticsLoading}>
+        <Button variant="outline" size="sm" onClick={fetchAdminAnalytics} disabled={analyticsLoading} className="w-full md:w-auto">
           {analyticsLoading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
           {isArabic ? "تحديث البيانات" : "Refresh"}
         </Button>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4 md:space-y-6">
         {analyticsLoading && (
           <div className="flex items-center gap-2 text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -81,7 +81,7 @@ export function AnalyticsTab({
 
         {analytics && !analyticsLoading && (
           <>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-3 md:gap-4 grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
               {[
                 {
                   key: "avgPrep",
@@ -105,17 +105,17 @@ export function AnalyticsTab({
                 }
               ].map((metric) => (
                 <Card key={metric.key} className="bg-muted/20">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm text-muted-foreground">{metric.label}</CardTitle>
+                  <CardHeader className="pb-2 p-3 md:p-6">
+                    <CardTitle className="text-xs md:text-sm text-muted-foreground">{metric.label}</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-semibold">{metric.value}</div>
+                  <CardContent className="p-3 md:p-6 pt-0">
+                    <div className="text-2xl md:text-3xl font-semibold">{metric.value}</div>
                   </CardContent>
                 </Card>
               ))}
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
+            <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2">
               <div className="space-y-3">
                 <h3 className="text-sm font-semibold">{isArabic ? "عدد الطلبات آخر 30 يوم" : "Orders in last 30 days"}</h3>
                 <div className="space-y-1 max-h-72 overflow-y-auto pr-2">
@@ -123,8 +123,8 @@ export function AnalyticsTab({
                     <p className="text-sm text-muted-foreground">{isArabic ? "لا يوجد بيانات" : "No data"}</p>
                   ) : (
                     (analytics.ordersPerDay ?? []).map((day) => (
-                      <div key={day._id} className="flex items-center justify-between rounded-md border px-3 py-2 text-sm">
-                        <span>{day._id}</span>
+                      <div key={day._id} className="flex items-center justify-between rounded-md border px-3 py-2 text-xs md:text-sm">
+                        <span className="truncate">{day._id}</span>
                         <span className="font-medium">{day.count}</span>
                       </div>
                     ))
@@ -132,7 +132,7 @@ export function AnalyticsTab({
                 </div>
               </div>
 
-              <div className="grid gap-6 sm:grid-cols-2">
+              <div className="grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2">
                 <div className="space-y-3">
                   <h3 className="text-sm font-semibold">{isArabic ? "المنتجات الأعلى مبيعاً" : "Top selling products"}</h3>
                   <div className="space-y-2 max-h-72 overflow-y-auto pr-2">
@@ -140,7 +140,7 @@ export function AnalyticsTab({
                       <p className="text-sm text-muted-foreground">{isArabic ? "لا يوجد بيانات" : "No data"}</p>
                     ) : (
                       sellingSlice.map((product) => (
-                        <div key={product._id} className="rounded-md border p-3 text-sm">
+                        <div key={product._id} className="rounded-md border p-3 text-xs md:text-sm">
                           <p className="font-semibold truncate">{product.title}</p>
                           <p className="text-xs text-muted-foreground">
                             {isArabic ? "البائع" : "Seller"}: {product.seller ? `${product.seller.firstName ?? ""} ${product.seller.lastName ?? ""}`.trim() : (isArabic ? "غير معروف" : "Unknown")}
@@ -161,7 +161,7 @@ export function AnalyticsTab({
                       <p className="text-sm text-muted-foreground">{isArabic ? "لا يوجد بيانات" : "No data"}</p>
                     ) : (
                       ratedSlice.map((product) => (
-                        <div key={product._id} className="rounded-md border p-3 text-sm">
+                        <div key={product._id} className="rounded-md border p-3 text-xs md:text-sm">
                           <p className="font-semibold truncate">{product.title}</p>
                           <p className="text-xs text-muted-foreground">
                             {isArabic ? "البائع" : "Seller"}: {product.seller ? `${product.seller.firstName ?? ""} ${product.seller.lastName ?? ""}`.trim() : (isArabic ? "غير معروف" : "Unknown")}

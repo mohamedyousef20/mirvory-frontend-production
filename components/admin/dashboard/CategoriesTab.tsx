@@ -63,29 +63,29 @@ export function CategoriesTab({
     };
 
     return (
-        <div className="space-y-6">
-            <div className="flex justify-between items-center mb-6">
-                <div>
-                    <h2 className="text-xl font-bold">{isArabic ? "إدارة التصنيفات" : "Category Management"}</h2>
-                    <p className="text-muted-foreground">
+        <div className="space-y-4 md:space-y-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 md:mb-6">
+                <div className="w-full md:w-auto">
+                    <h2 className="text-lg md:text-xl font-bold">{isArabic ? "إدارة التصنيفات" : "Category Management"}</h2>
+                    <p className="text-sm md:text-base text-muted-foreground">
                         {isArabic
                             ? "إدارة التصنيفات والتحكم في عرضها في المتجر"
                             : "Manage categories and control how they appear in your store"}
                     </p>
                 </div>
-                <Button onClick={() => setIsCreating(!isCreating)}>
+                <Button onClick={() => setIsCreating(!isCreating)} className="w-full md:w-auto">
                     <Plus className="mr-2 h-4 w-4" />
                     {isArabic ? "إضافة تصنيف" : "Add Category"}
                 </Button>
             </div>
 
             {isCreating && (
-                <Card className="mb-6">
-                    <CardHeader>
-                        <CardTitle>{isArabic ? "إنشاء تصنيف جديد" : "Create New Category"}</CardTitle>
+                <Card className="mb-4 md:mb-6">
+                    <CardHeader className="p-4 md:p-6">
+                        <CardTitle className="text-base md:text-lg">{isArabic ? "إنشاء تصنيف جديد" : "Create New Category"}</CardTitle>
                     </CardHeader>
-                    <CardContent>
-                        <form onSubmit={handleCreateCategory} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <CardContent className="p-4 md:p-6">
+                        <form onSubmit={handleCreateCategory} className="grid grid-cols-1 gap-4 md:grid-cols-2">
                             <div>
                                 <Label htmlFor="name">{isArabic ? "الاسم (عربي)" : "Name (Arabic)"}</Label>
                                 <Input
@@ -125,11 +125,11 @@ export function CategoriesTab({
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <div className="md:col-span-2 flex justify-end space-x-2">
-                                <Button variant="outline" onClick={() => setIsCreating(false)}>
+                            <div className="md:col-span-2 flex flex-col md:flex-row justify-end space-y-2 md:space-y-0 md:space-x-2">
+                                <Button variant="outline" onClick={() => setIsCreating(false)} className="w-full md:w-auto">
                                     {isArabic ? "إلغاء" : "Cancel"}
                                 </Button>
-                                <Button type="submit" disabled={!newCategory.name}>
+                                <Button type="submit" disabled={!newCategory.name} className="w-full md:w-auto">
                                     {isArabic ? "إنشاء" : "Create"}
                                 </Button>
                             </div>
@@ -139,12 +139,12 @@ export function CategoriesTab({
             )}
 
             {editingCategory && (
-                <Card className="mb-6">
-                    <CardHeader>
-                        <CardTitle>{isArabic ? "تعديل التصنيف" : "Edit Category"}</CardTitle>
+                <Card className="mb-4 md:mb-6">
+                    <CardHeader className="p-4 md:p-6">
+                        <CardTitle className="text-base md:text-lg">{isArabic ? "تعديل التصنيف" : "Edit Category"}</CardTitle>
                     </CardHeader>
-                    <CardContent>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <CardContent className="p-4 md:p-6">
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                             <div>
                                 <Label htmlFor="edit-name">{isArabic ? "الاسم (عربي)" : "Name (Arabic)"}</Label>
                                 <Input
@@ -198,11 +198,11 @@ export function CategoriesTab({
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <div className="md:col-span-2 flex justify-end space-x-2">
-                                <Button variant="outline" onClick={() => setEditingCategory(null)}>
+                            <div className="md:col-span-2 flex flex-col md:flex-row justify-end space-y-2 md:space-y-0 md:space-x-2">
+                                <Button variant="outline" onClick={() => setEditingCategory(null)} className="w-full md:w-auto">
                                     {isArabic ? "إلغاء" : "Cancel"}
                                 </Button>
-                                <Button onClick={() => handleEditCategory(editingCategory)}>
+                                <Button onClick={() => handleEditCategory(editingCategory)} className="w-full md:w-auto">
                                     {isArabic ? "تحديث التصنيف" : "Update Category"}
                                 </Button>
                             </div>
@@ -241,12 +241,12 @@ export function CategoriesTab({
                 </div>
             ) : (
                 <>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
                         {categories.map((category: any) => (
                             <Card key={category._id} className="hover:shadow-md transition-shadow">
-                                <CardHeader>
+                                <CardHeader className="p-3 md:p-6">
                                     <div className="flex items-center justify-between">
-                                        <CardTitle className="text-lg">
+                                        <CardTitle className="text-sm md:text-lg line-clamp-2">
                                             {isArabic ? category.name : category.nameEn}
                                         </CardTitle>
                                         <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-2">
@@ -264,30 +264,31 @@ export function CategoriesTab({
                                         </div>
                                     </div>
                                 </CardHeader>
-                                <CardContent>
+                                <CardContent className="p-3 md:p-6">
                                     <div className="space-y-3">
-                                        <p className="text-sm text-muted-foreground line-clamp-2">
+                                        <p className="text-xs md:text-sm text-muted-foreground line-clamp-2">
                                             {isArabic ? category.description : category.descriptionEn || "-"}
                                         </p>
                                         <Badge variant={category.status === "active" ? "default" : "secondary"}>
                                             {isArabic ? (category.status === "active" ? "نشط" : "غير نشط") : category.status}
                                         </Badge>
-                                        <div className="flex justify-between items-center">
+                                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
                                             <span className="text-xs text-muted-foreground">
                                                 {new Date(category.createdAt).toLocaleDateString()}
                                             </span>
-                                            <div className="space-x-2">
+                                            <div className="flex space-x-2 w-full md:w-auto">
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
                                                     onClick={() => setEditingCategory(category)}
+                                                    className="flex-1 md:flex-none"
                                                 >
                                                     <Edit className="h-4 w-4" />
                                                 </Button>
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    className="text-destructive"
+                                                    className="text-destructive flex-1 md:flex-none"
                                                     onClick={() => handleDeleteCategory(category._id)}
                                                 >
                                                     <Trash className="h-4 w-4" />
@@ -300,31 +301,30 @@ export function CategoriesTab({
                         ))}
                     </div>
 
-                    <div className="mt-8">
-                        <h3 className="text-lg font-semibold mb-4">{isArabic ? "جميع التصنيفات" : "All Categories"}</h3>
-                        <div className="rounded-md border">
-                            <div className="overflow-x-auto">
-                                <Table>
+                    <div className="mt-6 md:mt-8">
+                        <h3 className="text-base md:text-lg font-semibold mb-3 md:mb-4">{isArabic ? "جميع التصنيفات" : "All Categories"}</h3>
+                        <div className="rounded-md border overflow-x-auto">
+                            <Table>
                                     <TableHeader>
                                         <TableRow>
-                                            <TableHead>{isArabic ? "المعرف" : "ID"}</TableHead>
-                                            <TableHead>{isArabic ? "اسم التصنيف" : "Category Name"}</TableHead>
-                                            <TableHead>{isArabic ? "الوصف" : "Description"}</TableHead>
-                                            <TableHead>{isArabic ? "الحالة" : "Status"}</TableHead>
-                                            <TableHead>{isArabic ? "تاريخ الإنشاء" : "Created At"}</TableHead>
-                                            <TableHead>{isArabic ? "الإجراءات" : "Actions"}</TableHead>
+                                            <TableHead className="text-xs md:text-sm">{isArabic ? "المعرف" : "ID"}</TableHead>
+                                            <TableHead className="text-xs md:text-sm">{isArabic ? "اسم التصنيف" : "Category Name"}</TableHead>
+                                            <TableHead className="text-xs md:text-sm">{isArabic ? "الوصف" : "Description"}</TableHead>
+                                            <TableHead className="text-xs md:text-sm">{isArabic ? "الحالة" : "Status"}</TableHead>
+                                            <TableHead className="text-xs md:text-sm">{isArabic ? "تاريخ الإنشاء" : "Created At"}</TableHead>
+                                            <TableHead className="text-xs md:text-sm">{isArabic ? "الإجراءات" : "Actions"}</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
                                         {categories.map((category: any) => (
                                             <TableRow key={category._id}>
-                                                <TableCell className="font-medium">#{category._id.substring(0, 6)}</TableCell>
-                                                <TableCell>
+                                                <TableCell className="font-medium text-xs md:text-sm">#{category._id.substring(0, 6)}</TableCell>
+                                                <TableCell className="text-xs md:text-sm">
                                                     <div className="font-medium">
                                                         {isArabic ? category.name : category.nameEn}
                                                     </div>
                                                 </TableCell>
-                                                <TableCell>
+                                                <TableCell className="text-xs md:text-sm">
                                                     <div className="text-sm text-muted-foreground line-clamp-1">
                                                         {isArabic ? category.description : category.descriptionEn || "-"}
                                                     </div>
@@ -337,12 +337,13 @@ export function CategoriesTab({
                                                 <TableCell>
                                                     {new Date(category.createdAt).toLocaleDateString()}
                                                 </TableCell>
-                                                <TableCell>
-                                                    <div className="flex space-x-2">
+                                                <TableCell className="text-xs md:text-sm">
+                                                    <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
                                                         <Button
                                                             variant="ghost"
                                                             size="sm"
                                                             onClick={() => setEditingCategory(category)}
+                                                            className="w-full md:w-auto"
                                                         >
                                                             <Edit className="h-4 w-4 mr-1" />
                                                             {isArabic ? "تعديل" : "Edit"}
@@ -350,7 +351,7 @@ export function CategoriesTab({
                                                         <Button
                                                         variant="ghost"
                                                         size="sm"
-                                                        className="text-destructive"
+                                                        className="text-destructive w-full md:w-auto"
                                                         onClick={() => handleDeleteCategory(category._id)}
                                                     >
                                                         <Trash className="h-4 w-4 mr-1" />
@@ -362,7 +363,6 @@ export function CategoriesTab({
                                     ))}
                                 </TableBody>
                             </Table>
-                            </div>
                         </div>
                     </div>
                 </>

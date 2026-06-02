@@ -192,7 +192,7 @@ export const authService = {
 // Notification Service 
 export const notificationService = {
   getNotifications: () => api.get('/api/notifications'),
-  markAsRead: (id: number) => api.patch(`/api/notifications/${id}/read`),
+  markAsRead: (id: number) => api.patch(`/api/notifications/read`, { id }),
   markAllAsRead: () => api.patch('/api/notifications/read-all'),
   getNotificationCount: () => api.get('/api/notifications/unread-count'),
   sendNotification: (notificationData: any) => api.post('/api/notifications', notificationData),
@@ -232,7 +232,7 @@ export const userService = {
   searchUsers: (query: string, role?: string) =>
     api.get('/api/users', { params: { search: query, role } }),
   searchUsersForAdmin: (query: string, role?: string, page = 1) =>
-    api.get("/api/users/admin/search", { params: { search: query,   role,   page,  }, }),
+    api.get("/api/users/admin/search", { params: { search: query, role, page, }, }),
   updateVendorBalance: (sellerId: string, balanceData: { balance?: number; pendingBalance?: number }) =>
     api.patch('/api/users/admin/vendor/balance', { sellerId, ...balanceData }),
   updateVendorStatus: (sellerId: string, statusData: { trustedSeller?: boolean; approvalStatus?: 'pending' | 'approved' | 'rejected' }) =>
@@ -303,11 +303,32 @@ export const productService = {
   rejectProduct: (id: string, reason: string) =>
     api.patch(`/api/products/reject`, { id, reason }),
 
-  // Search products (independent search API)
-  searchProducts: (query: string, params?: any) =>
-    api.get("/api/search", {
-      params: { q: query, ...params },
-    }),
+
+
+  // Advanced search with new endpoint
+  advancedSearch: (params?: {
+    q?: string;
+    page?: number;
+    limit?: number;
+    category?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    sort?: string;
+    availability?: string;
+  }) => api.get("/api/products/search", { params }),
+
+  // Search suggestions/autocomplete
+  getSearchSuggestions: (query: string) =>
+    api.get("/api/products/search/suggestions", { params: { q: query } }),
+
+  // Get recent searches (requires auth)
+  getRecentSearches: () => api.get("/api/products/search/recent"),
+
+  // Get trending searches (public)
+  getTrendingSearches: () => api.get("/api/products/search/trending"),
+
+  // Clear search history (requires auth)
+  clearSearchHistory: () => api.delete("/api/products/search/history"),
 
 };
 

@@ -199,21 +199,21 @@ export function AdminDashboard() {
   }
     
   return (
-    <div className="max-w-screen-2xl w-full px-4 py-6 md:py-12 mx-auto" dir={isArabic ? "rtl" : "ltr"}>
+    <div className="max-w-screen-2xl w-full px-3 py-4 md:px-4 md:py-12 mx-auto" dir={isArabic ? "rtl" : "ltr"}>
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 md:mb-8">
+        <div className="w-full md:w-auto">
+          <h1 className="text-xl md:text-3xl font-bold tracking-tight">
             {t("adminDashboard")}
           </h1>
-          <p className="text-muted-foreground mt-2">
+          <p className="text-sm md:text-base text-muted-foreground mt-2">
             {isArabic
               ? "مرحبًا بك في لوحة تحكم المدير، يمكنك إدارة المنصة من هنا."
               : "Welcome to the admin dashboard, manage your platform from here."}
           </p>
         </div>
-        <Link href="/admin/notifications">
-          <Button>
+        <Link href="/admin/notifications" className="w-full md:w-auto">
+          <Button className="w-full md:w-auto">
             {isArabic ? "إرسال إشعارات" : "Send Notifications"}
           </Button>
         </Link>
@@ -224,21 +224,21 @@ export function AdminDashboard() {
         defaultValue="overview"
         value={activeTab}
         onValueChange={setActiveTab}
-        className="space-y-6"
+        className="space-y-4 md:space-y-6"
       >
-        <TabsList className="flex overflow-x-auto whitespace-nowrap space-x-2 p-1">
-          <TabsTrigger value="overview">{isArabic ? "نظرة عامة" : "Overview"}</TabsTrigger>
-          <TabsTrigger value="vendors">{isArabic ? "البائعين" : "Vendors"}</TabsTrigger>
-          <TabsTrigger value="users">{isArabic ? "المستخدمين" : "Users"}</TabsTrigger>
-          <TabsTrigger value="products">{t("products")}</TabsTrigger>
-          <TabsTrigger value="orders">{t("orders")}</TabsTrigger>
+        <TabsList className="flex overflow-x-auto whitespace-nowrap space-x-2 p-1 w-full md:w-auto min-w-0">
+          <TabsTrigger value="overview" className="text-xs md:text-sm whitespace-nowrap">{isArabic ? "نظرة عامة" : "Overview"}</TabsTrigger>
+          <TabsTrigger value="vendors" className="text-xs md:text-sm whitespace-nowrap">{isArabic ? "البائعين" : "Vendors"}</TabsTrigger>
+          <TabsTrigger value="users" className="text-xs md:text-sm whitespace-nowrap">{isArabic ? "المستخدمين" : "Users"}</TabsTrigger>
+          <TabsTrigger value="products" className="text-xs md:text-sm whitespace-nowrap">{t("products")}</TabsTrigger>
+          <TabsTrigger value="orders" className="text-xs md:text-sm whitespace-nowrap">{t("orders")}</TabsTrigger>
           {/* <TabsTrigger value="brands">{isArabic ? "الماركات" : "Brands"}</TabsTrigger> */}
-          <TabsTrigger value="categories">{isArabic ? "التصنيفات" : "Categories"}</TabsTrigger>
-          <TabsTrigger value="coupons">{isArabic ? "الكوبونات" : "Coupons"}</TabsTrigger>
-          <TabsTrigger value="announcements">{isArabic ? "الإعلانات" : "Announcements"}</TabsTrigger>
-          <TabsTrigger value="pickup">{isArabic ? "نقاط الاستلام" : "Pickup"}</TabsTrigger>
-          <TabsTrigger value="complaints">{isArabic ? "الشكاوى" : "Complaints"}</TabsTrigger>
-          <TabsTrigger value="returns">{isArabic ? "طلبات الإرجاع" : "Returns"}</TabsTrigger>
+          <TabsTrigger value="categories" className="text-xs md:text-sm whitespace-nowrap">{isArabic ? "التصنيفات" : "Categories"}</TabsTrigger>
+          <TabsTrigger value="coupons" className="text-xs md:text-sm whitespace-nowrap">{isArabic ? "الكوبونات" : "Coupons"}</TabsTrigger>
+          <TabsTrigger value="announcements" className="text-xs md:text-sm whitespace-nowrap">{isArabic ? "الإعلانات" : "Announcements"}</TabsTrigger>
+          <TabsTrigger value="pickup" className="text-xs md:text-sm whitespace-nowrap">{isArabic ? "نقاط الاستلام" : "Pickup"}</TabsTrigger>
+          <TabsTrigger value="complaints" className="text-xs md:text-sm whitespace-nowrap">{isArabic ? "الشكاوى" : "Complaints"}</TabsTrigger>
+          <TabsTrigger value="returns" className="text-xs md:text-sm whitespace-nowrap">{isArabic ? "طلبات الإرجاع" : "Returns"}</TabsTrigger>
           {/* <TabsTrigger value="analytics">{isArabic ? "التحليلات" : "Analytics"}</TabsTrigger> */}
           {/* <TabsTrigger value="transactions">{isArabic ? "المعاملات" : "Transactions"}</TabsTrigger> */}
         </TabsList>

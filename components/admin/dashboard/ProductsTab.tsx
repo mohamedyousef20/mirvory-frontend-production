@@ -62,23 +62,23 @@ export function ProductsTab({
     }, [products, sellerSearch]);
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4 md:space-y-6">
 
             {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                 <div>
-                    <h2 className="text-2xl font-bold">
+                    <h2 className="text-lg md:text-2xl font-bold">
                         {isArabic ? "إدارة المنتجات" : "Products Management"}
                     </h2>
 
-                    <p className="text-muted-foreground">
+                    <p className="text-xs md:text-sm text-muted-foreground">
                         {isArabic
                             ? "إدارة وعرض جميع المنتجات في النظام"
                             : "Manage and view all products in the system"}
                     </p>
                 </div>
 
-                <Button asChild>
+                <Button asChild className="w-full md:w-auto">
                     <Link href="/admin/products/new">
                         <Plus className="h-4 w-4 mr-2" />
                         {isArabic ? "إضافة منتج جديد" : "Add New Product"}
@@ -116,47 +116,47 @@ export function ProductsTab({
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead className="w-[80px]">
+                                <TableHead className="w-[80px] text-xs md:text-sm">
                                     {isArabic ? "الصورة" : "Image"}
                                 </TableHead>
 
-                                <TableHead className="min-w-[150px]">
+                                <TableHead className="min-w-[150px] text-xs md:text-sm">
                                     {isArabic ? "المنتج" : "Product"}
                                 </TableHead>
 
-                                <TableHead>
+                                <TableHead className="text-xs md:text-sm">
                                     {isArabic ? "البائع" : "Vendor"}
                                 </TableHead>
 
-                                <TableHead className="min-w-[100px]">
+                                <TableHead className="min-w-[100px] text-xs md:text-sm">
                                     {isArabic ? "السعر" : "Price"}
                                 </TableHead>
 
-                                <TableHead className="min-w-[80px]">
+                                <TableHead className="min-w-[80px] text-xs md:text-sm">
                                     {isArabic ? "المخزون" : "Stock"}
                                 </TableHead>
 
-                                <TableHead className="min-w-[80px]">
+                                <TableHead className="min-w-[80px] text-xs md:text-sm">
                                     {isArabic ? "تم البيع" : "Sold"}
                                 </TableHead>
 
-                                <TableHead className="min-w-[100px]">
+                                <TableHead className="min-w-[100px] text-xs md:text-sm">
                                     {isArabic ? "التقييم" : "Rating"}
                                 </TableHead>
 
-                                <TableHead className="min-w-[120px]">
+                                <TableHead className="min-w-[120px] text-xs md:text-sm">
                                     {isArabic ? "الفئة" : "Category"}
                                 </TableHead>
 
-                                <TableHead className="min-w-[120px]">
+                                <TableHead className="min-w-[120px] text-xs md:text-sm">
                                     {isArabic ? "الحالة" : "Status"}
                                 </TableHead>
 
-                                <TableHead className="min-w-[120px]">
+                                <TableHead className="min-w-[120px] text-xs md:text-sm">
                                     {isArabic ? "تاريخ التقديم" : "Submitted Date"}
                                 </TableHead>
 
-                                <TableHead className="min-w-[150px]">
+                                <TableHead className="min-w-[150px] text-xs md:text-sm">
                                     {isArabic ? "الإجراءات" : "Actions"}
                                 </TableHead>
                             </TableRow>
@@ -220,8 +220,8 @@ export function ProductsTab({
                                     <TableRow key={product._id}>
 
                                         {/* Image */}
-                                        <TableCell>
-                                            <div className="w-16">
+                                        <TableCell className="text-xs md:text-sm">
+                                            <div className="w-12 md:w-16">
                                                 <DashboardImageSlider
                                                     images={
                                                         product.images?.length
@@ -237,20 +237,20 @@ export function ProductsTab({
                                         </TableCell>
 
                                         {/* Product */}
-                                        <TableCell>
+                                        <TableCell className="text-xs md:text-sm">
                                             <div className="space-y-1">
-                                                <p className="font-medium truncate max-w-[150px]">
+                                                <p className="font-medium truncate max-w-[120px] md:max-w-[150px]">
                                                     {product.title}
                                                 </p>
 
-                                                <p className="text-xs text-muted-foreground truncate max-w-[150px]">
+                                                <p className="text-xs text-muted-foreground truncate max-w-[120px] md:max-w-[150px]">
                                                     ID: {product._id.slice(-6)}
                                                 </p>
                                             </div>
                                         </TableCell>
 
                                     {/* Seller */}
-                                    <TableCell>
+                                    <TableCell className="text-xs md:text-sm">
                                         <div className="space-y-1">
                                             <p className="font-medium">
                                                 {product.seller
@@ -259,7 +259,7 @@ export function ProductsTab({
                                             </p>
 
                                             {product.seller?.email && (
-                                                <p className="text-xs text-muted-foreground truncate max-w-[120px]">
+                                                <p className="text-xs text-muted-foreground truncate max-w-[100px] md:max-w-[120px]">
                                                     {product.seller.email}
                                                 </p>
                                             )}
@@ -267,7 +267,7 @@ export function ProductsTab({
                                     </TableCell>
 
                                     {/* Price */}
-                                    <TableCell>
+                                    <TableCell className="text-xs md:text-sm">
                                         {product.discountPercentage > 0 ? (
                                             <div className="flex flex-col">
                                                 <span className="font-medium text-green-600">
@@ -295,7 +295,7 @@ export function ProductsTab({
                                     </TableCell>
 
                                     {/* Stock */}
-                                    <TableCell>
+                                    <TableCell className="text-xs md:text-sm">
                                         <div className="flex items-center gap-1">
                                             {product.quantity || 0}
 
@@ -321,7 +321,7 @@ export function ProductsTab({
                                     </TableCell>
 
                                     {/* Sold */}
-                                    <TableCell>
+                                    <TableCell className="text-xs md:text-sm">
                                         <div className="flex items-center gap-1">
                                             {product.sold || 0}
 
@@ -337,7 +337,7 @@ export function ProductsTab({
                                     </TableCell>
 
                                     {/* Rating */}
-                                    <TableCell>
+                                    <TableCell className="text-xs md:text-sm">
                                         <div className="flex flex-col">
                                             <div className="flex items-center gap-1">
                                                 <span className="font-medium">
@@ -355,8 +355,8 @@ export function ProductsTab({
                                     </TableCell>
 
                                     {/* Category */}
-                                    <TableCell>
-                                        <Badge variant="outline" className="bg-blue-50">
+                                    <TableCell className="text-xs md:text-sm">
+                                        <Badge variant="outline" className="bg-blue-50 text-xs">
                                             {product.category
                                                 ? (
                                                     isArabic
@@ -369,7 +369,7 @@ export function ProductsTab({
                                     </TableCell>
 
                                     {/* Status */}
-                                    <TableCell>
+                                    <TableCell className="text-xs md:text-sm">
                                         <Badge
                                             variant={
                                                 product.isApproved
@@ -378,8 +378,8 @@ export function ProductsTab({
                                             }
                                             className={
                                                 product.isApproved
-                                                    ? "bg-green-100 text-green-800 border-green-200"
-                                                    : "bg-amber-100 text-amber-800 border-amber-200"
+                                                    ? "bg-green-100 text-green-800 border-green-200 text-xs"
+                                                    : "bg-amber-100 text-amber-800 border-amber-200 text-xs"
                                             }
                                         >
                                             {isArabic
@@ -393,8 +393,8 @@ export function ProductsTab({
                                     </TableCell>
 
                                     {/* Date */}
-                                    <TableCell>
-                                        <div className="text-sm">
+                                    <TableCell className="text-xs md:text-sm">
+                                        <div className="text-xs md:text-sm">
                                             {new Date(product.createdAt).toLocaleDateString(
                                                 isArabic ? "ar-EG" : "en-US",
                                                 {
@@ -407,7 +407,7 @@ export function ProductsTab({
                                     </TableCell>
 
                                     {/* Actions */}
-                                    <TableCell>
+                                    <TableCell className="text-xs md:text-sm">
                                         <div className="flex flex-col gap-2">
 
                                             {!product.isApproved && (

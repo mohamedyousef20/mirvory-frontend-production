@@ -66,18 +66,18 @@ export function TransactionsTab({
 
   return (
     <Card>
-      <CardHeader className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <CardHeader className="flex flex-col gap-3 md:gap-4 p-4 md:p-6">
         <div>
-          <CardTitle>{isArabic ? "معاملات البائعين" : "Seller Financial Transactions"}</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-base md:text-lg">{isArabic ? "معاملات البائعين" : "Seller Financial Transactions"}</CardTitle>
+          <CardDescription className="text-xs md:text-sm">
             {isArabic
               ? "راقب جميع عمليات الإيداع والسحب ومصادرها وحالتها."
               : "Monitor all credits, debits, and their sources in real time."}
           </CardDescription>
         </div>
-        <div className="flex flex-wrap gap-3 items-center">
+        <div className="flex flex-col md:flex-row flex-wrap gap-2 md:gap-3 items-stretch md:items-center">
           <Select value={transactionFilters.type} onValueChange={value => handleTypeChange(value as "all" | "credit" | "debit")}>
-            <SelectTrigger className="w-[150px]">
+            <SelectTrigger className="w-full md:w-[150px]">
               <SelectValue placeholder={isArabic ? "نوع العملية" : "Type"} />
             </SelectTrigger>
             <SelectContent>
@@ -88,7 +88,7 @@ export function TransactionsTab({
           </Select>
 
           <Select value={transactionFilters.sellerId} onValueChange={handleSellerChange}>
-            <SelectTrigger className="w-[220px]">
+            <SelectTrigger className="w-full md:w-[220px]">
               <SelectValue placeholder={isArabic ? "البائع" : "Seller"} />
             </SelectTrigger>
             <SelectContent className="max-h-72">
@@ -101,26 +101,26 @@ export function TransactionsTab({
             </SelectContent>
           </Select>
 
-          <Button variant="outline" onClick={fetchAdminTransactions} disabled={transactionsLoading}>
+          <Button variant="outline" onClick={fetchAdminTransactions} disabled={transactionsLoading} className="w-full md:w-auto">
             {transactionsLoading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
             {isArabic ? "تحديث" : "Refresh"}
           </Button>
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 p-4 md:p-6 pt-0">
         <div className="rounded-md border overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>#</TableHead>
-                <TableHead>{isArabic ? "البائع" : "Seller"}</TableHead>
-                <TableHead>{isArabic ? "النوع" : "Type"}</TableHead>
-                <TableHead>{isArabic ? "المصدر" : "Source"}</TableHead>
-                <TableHead>{isArabic ? "المبلغ" : "Amount"}</TableHead>
-                <TableHead>{isArabic ? "الرصيد بعد العملية" : "Balance After"}</TableHead>
-                <TableHead>{isArabic ? "الحالة" : "Status"}</TableHead>
-                <TableHead>{isArabic ? "التاريخ" : "Date"}</TableHead>
+                <TableHead className="text-xs md:text-sm">#</TableHead>
+                <TableHead className="text-xs md:text-sm">{isArabic ? "البائع" : "Seller"}</TableHead>
+                <TableHead className="text-xs md:text-sm">{isArabic ? "النوع" : "Type"}</TableHead>
+                <TableHead className="text-xs md:text-sm">{isArabic ? "المصدر" : "Source"}</TableHead>
+                <TableHead className="text-xs md:text-sm">{isArabic ? "المبلغ" : "Amount"}</TableHead>
+                <TableHead className="text-xs md:text-sm">{isArabic ? "الرصيد بعد العملية" : "Balance After"}</TableHead>
+                <TableHead className="text-xs md:text-sm">{isArabic ? "الحالة" : "Status"}</TableHead>
+                <TableHead className="text-xs md:text-sm">{isArabic ? "التاريخ" : "Date"}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -142,26 +142,26 @@ export function TransactionsTab({
               ) : (
                 transactions.map((txn) => (
                   <TableRow key={txn._id}>
-                    <TableCell>#{txn._id.slice(-6)}</TableCell>
-                    <TableCell>
+                    <TableCell className="text-xs md:text-sm">#{txn._id.slice(-6)}</TableCell>
+                    <TableCell className="text-xs md:text-sm">
                       {txn.seller
                         ? `${txn.seller.firstName ?? ""} ${txn.seller.lastName ?? ""}`.trim() || txn.seller.email
                         : isArabic ? "غير محدد" : "N/A"}
                     </TableCell>
-                    <TableCell>
-                      <Badge variant={txn.type === "credit" ? "secondary" : "outline"}>
+                    <TableCell className="text-xs md:text-sm">
+                      <Badge variant={txn.type === "credit" ? "secondary" : "outline"} className="text-xs">
                         {txn.type === "credit" ? (isArabic ? "إيداع" : "Credit") : (isArabic ? "سحب" : "Debit")}
                       </Badge>
                     </TableCell>
-                    <TableCell className="max-w-[200px] truncate">{txn.source || (isArabic ? "غير معروف" : "Unknown")}</TableCell>
-                    <TableCell className={`font-semibold ${txn.type === "credit" ? "text-emerald-600" : "text-red-600"}`}>
+                    <TableCell className="max-w-[200px] truncate text-xs md:text-sm">{txn.source || (isArabic ? "غير معروف" : "Unknown")}</TableCell>
+                    <TableCell className={`font-semibold text-xs md:text-sm ${txn.type === "credit" ? "text-emerald-600" : "text-red-600"}`}>
                       {txn.type === "credit" ? "+" : "-"}
                       {txn.amount.toFixed(2)} {isArabic ? "ج.م" : "EGP"}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="text-xs md:text-sm">
                       {txn.balanceAfter?.toFixed(2)} {isArabic ? "ج.م" : "EGP"}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="text-xs md:text-sm">
                       <Badge
                         variant={
                           txn.status === "completed"
@@ -170,6 +170,7 @@ export function TransactionsTab({
                               ? "secondary"
                               : "destructive"
                         }
+                        className="text-xs"
                       >
                         {txn.status === "completed"
                           ? (isArabic ? "مكتملة" : "Completed")
@@ -178,7 +179,7 @@ export function TransactionsTab({
                             : (isArabic ? "فاشلة" : "Failed")}
                       </Badge>
                     </TableCell>
-                    <TableCell>{new Date(txn.createdAt).toLocaleString(isArabic ? "ar-EG" : "en-US")}</TableCell>
+                    <TableCell className="text-xs md:text-sm">{new Date(txn.createdAt).toLocaleString(isArabic ? "ar-EG" : "en-US")}</TableCell>
                   </TableRow>
                 ))
               )}

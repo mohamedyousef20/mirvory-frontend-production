@@ -118,7 +118,7 @@ export function OrdersTab({
     );
 
     return (
-        <div className="space-y-5" dir={ar ? "rtl" : "ltr"}>
+        <div className="space-y-4 md:space-y-5" dir={ar ? "rtl" : "ltr"}>
 
             {/* ── Page heading ─────────────────────────────────────── */}
             <div className="flex items-center justify-between">
@@ -127,10 +127,10 @@ export function OrdersTab({
                         <ShoppingBag className="h-4 w-4 text-blue-500" />
                     </div>
                     <div>
-                        <h2 className="text-base font-bold text-slate-800">
+                        <h2 className="text-base md:text-lg font-bold text-slate-800">
                             {ar ? "إدارة الطلبات" : "Order Management"}
                         </h2>
-                        <p className="text-xs text-slate-400 mt-0.5">
+                        <p className="text-xs md:text-sm text-slate-400 mt-0.5">
                             {ar ? `${orders.length} طلب` : `${orders.length} orders`}
                         </p>
                     </div>
@@ -139,14 +139,14 @@ export function OrdersTab({
 
             {/* ── Orders grid ──────────────────────────────────────── */}
             {orders.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-16 border border-dashed border-slate-200 rounded-2xl bg-white text-center">
+                <div className="flex flex-col items-center justify-center py-12 md:py-16 border border-dashed border-slate-200 rounded-2xl bg-white text-center">
                     <div className="p-4 bg-slate-100 rounded-2xl mb-3">
                         <ShoppingBag className="h-7 w-7 text-slate-400" />
                     </div>
-                    <p className="text-sm font-medium text-slate-600">{ar ? "لا توجد طلبات" : "No orders found"}</p>
+                    <p className="text-sm md:text-base font-medium text-slate-600">{ar ? "لا توجد طلبات" : "No orders found"}</p>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 md:gap-4">
                     {orders.map((order: any) => {
                         const paymentMethodLabel = getPaymentMethodLabel(order.paymentMethod || 'cash');
                         const deliveryMethodLabel = getDeliveryMethodLabel(order.deliveryMethod === "home"
@@ -160,10 +160,10 @@ export function OrdersTab({
                                 className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden cursor-pointer hover:shadow-md hover:border-slate-300 transition-all active:scale-[0.99] group"
                             >
                                 {/* ── Card header ──────────────────────────────── */}
-                                <div className="px-4 py-3 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                                <div className="px-3 md:px-4 py-2 md:py-3 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <Hash className="h-3.5 w-3.5 text-slate-400" />
-                                        <span className="text-sm font-bold text-slate-800 font-mono">
+                                        <span className="text-xs md:text-sm font-bold text-slate-800 font-mono">
                                             {order.orderNumber}
                                         </span>
                                     </div>
@@ -173,7 +173,7 @@ export function OrdersTab({
                                     </div>
                                 </div>
 
-                                <div className="px-4 py-3 space-y-3">
+                                <div className="px-3 md:px-4 py-2 md:py-3 space-y-3">
 
                                     {/* ── Customer ─────────────────────────────── */}
                                     <div className="flex items-start gap-2">
@@ -181,7 +181,7 @@ export function OrdersTab({
                                             <User className="h-4 w-4 text-slate-500" />
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-semibold text-slate-800 truncate">
+                                            <p className="text-xs md:text-sm font-semibold text-slate-800 truncate">
                                                 {order.buyer?.fullName ||
                                                     `${order.buyer?.firstName || ''} ${order.buyer?.lastName || ''}`.trim() || "N/A"}
                                             </p>
@@ -290,20 +290,20 @@ export function OrdersTab({
                                     )}
 
                                     {/* ── Financials ───────────────────────────── */}
-                                    <div className="grid grid-cols-3 gap-1.5">
-                                        <div className="bg-slate-50 border border-slate-100 rounded-xl p-2 text-center">
+                                    <div className="grid grid-cols-3 gap-1 md:gap-1.5">
+                                        <div className="bg-slate-50 border border-slate-100 rounded-xl p-1.5 md:p-2 text-center">
                                             <p className="text-[10px] text-slate-400 uppercase tracking-wide">{ar ? "فرعي" : "Sub"}</p>
                                             <p className="text-xs font-bold text-slate-700 mt-0.5">
                                                 {order.subtotal?.toFixed(2) || "0.00"}
                                             </p>
                                         </div>
-                                        <div className="bg-red-50 border border-red-100 rounded-xl p-2 text-center">
+                                        <div className="bg-red-50 border border-red-100 rounded-xl p-1.5 md:p-2 text-center">
                                             <p className="text-[10px] text-red-400 uppercase tracking-wide">{ar ? "خصم" : "Disc"}</p>
                                             <p className="text-xs font-bold text-red-600 mt-0.5">
                                                 -{order?.discount?.toFixed(2) || "0.00"}
                                             </p>
                                         </div>
-                                        <div className="bg-blue-50 border border-blue-100 rounded-xl p-2 text-center">
+                                        <div className="bg-blue-50 border border-blue-100 rounded-xl p-1.5 md:p-2 text-center">
                                             <p className="text-[10px] text-blue-400 uppercase tracking-wide">{ar ? "شحن" : "Ship"}</p>
                                             <p className="text-xs font-bold text-blue-600 mt-0.5">
                                                 {order.shippingFee?.toFixed(2) || "0.00"}
@@ -312,9 +312,9 @@ export function OrdersTab({
                                     </div>
 
                                     {/* Total */}
-                                    <div className="flex items-center justify-between px-3 py-2.5 bg-emerald-50 border border-emerald-100 rounded-xl">
+                                    <div className="flex items-center justify-between px-3 py-2 md:py-2.5 bg-emerald-50 border border-emerald-100 rounded-xl">
                                         <span className="text-xs font-semibold text-emerald-700">{ar ? "الإجمالي" : "Total"}</span>
-                                        <span className="text-sm font-bold text-emerald-700">
+                                        <span className="text-xs md:text-sm font-bold text-emerald-700">
                                             EGP {order.total?.toFixed(2) || "0.00"}
                                         </span>
                                     </div>
@@ -339,9 +339,9 @@ export function OrdersTab({
                                         </div>
                                     )}
                                     {/* ── Meta info grid ───────────────────────── */}
-                                    <div className="grid grid-cols-2 gap-1.5">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 md:gap-1.5">
                                         {/* Date */}
-                                        <div className="flex items-center gap-1.5 p-2 bg-slate-50 border border-slate-100 rounded-xl">
+                                        <div className="flex items-center gap-1.5 p-1.5 md:p-2 bg-slate-50 border border-slate-100 rounded-xl">
                                             <Calendar className="h-3.5 w-3.5 text-slate-400 shrink-0" />
                                             <div className="min-w-0">
                                                 <p className="text-[10px] text-slate-400">{ar ? "التاريخ" : "Date"}</p>
@@ -352,7 +352,7 @@ export function OrdersTab({
                                         </div>
 
                                         {/* Payment method */}
-                                        <div className="flex items-center gap-1.5 p-2 bg-slate-50 border border-slate-100 rounded-xl">
+                                        <div className="flex items-center gap-1.5 p-1.5 md:p-2 bg-slate-50 border border-slate-100 rounded-xl">
                                             <CreditCard className="h-3.5 w-3.5 text-slate-400 shrink-0" />
                                             <div className="min-w-0">
                                                 <p className="text-[10px] text-slate-400">{ar ? "الدفع" : "Payment"}</p>
@@ -363,7 +363,7 @@ export function OrdersTab({
                                         </div>
 
                                         {/* Delivery method */}
-                                        <div className="flex items-center gap-1.5 p-2 bg-slate-50 border border-slate-100 rounded-xl">
+                                        <div className="flex items-center gap-1.5 p-1.5 md:p-2 bg-slate-50 border border-slate-100 rounded-xl">
                                             <Truck className="h-3.5 w-3.5 text-slate-400 shrink-0" />
                                             <div className="min-w-0">
                                                 <p className="text-[10px] text-slate-400">{ar ? "التوصيل" : "Delivery"}</p>
@@ -373,7 +373,7 @@ export function OrdersTab({
                                         </div>
 
                                         {/* Address */}
-                                        <div className="flex items-center gap-1.5 p-2 bg-slate-50 border border-slate-100 rounded-xl">
+                                        <div className="flex items-center gap-1.5 p-1.5 md:p-2 bg-slate-50 border border-slate-100 rounded-xl">
                                             <MapPin className="h-3.5 w-3.5 text-slate-400 shrink-0" />
                                             <div className="min-w-0">
                                                 <p className="text-[10px] text-slate-400">{ar ? "العنوان" : "Address"}</p>
@@ -385,7 +385,7 @@ export function OrdersTab({
                                     </div>
 
                                     {/* Recipient */}
-                                    <div className="flex items-center gap-2 p-2.5 bg-slate-50 border border-slate-100 rounded-xl">
+                                    <div className="flex items-center gap-2 p-2 md:p-2.5 bg-slate-50 border border-slate-100 rounded-xl">
                                         <User className="h-3.5 w-3.5 text-slate-400 shrink-0" />
                                         <div className="flex-1 min-w-0">
                                             <p className="text-xs font-semibold text-slate-700 truncate">
@@ -434,15 +434,15 @@ export function OrdersTab({
                                         onClick={(e) => e.stopPropagation()}
                                     >
                                         {/* Payment status select */}
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-xs text-slate-400 w-24 shrink-0">
+                                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                                            <span className="text-xs text-slate-400 w-full sm:w-24 shrink-0">
                                                 {ar ? "حالة الدفع" : "Payment Status"}
                                             </span>
                                             <Select
                                                 value={order.paymentStatus || "pending"}
                                                 onValueChange={(value) => updatePaymentStatus(order._id, value)}
                                             >
-                                                <SelectTrigger className="h-9 flex-1 rounded-xl border-slate-200 bg-white text-xs">
+                                                <SelectTrigger className="h-9 w-full sm:flex-1 rounded-xl border-slate-200 bg-white text-xs">
                                                     <SelectValue />
                                                 </SelectTrigger>
                                                 <SelectContent className="rounded-xl">
@@ -454,15 +454,15 @@ export function OrdersTab({
                                         </div>
 
                                         {/* Delivery status select */}
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-xs text-slate-400 w-24 shrink-0">
+                                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                                            <span className="text-xs text-slate-400 w-full sm:w-24 shrink-0">
                                                 {ar ? "حالة التوصيل" : "Delivery Status"}
                                             </span>
                                             <Select
                                                 value={order.deliveryStatus || "pending"}
                                                 onValueChange={(value) => updateDeliveryStatus(order._id, value)}
                                             >
-                                                <SelectTrigger className="h-9 flex-1 rounded-xl border-slate-200 bg-white text-xs">
+                                                <SelectTrigger className="h-9 w-full sm:flex-1 rounded-xl border-slate-200 bg-white text-xs">
                                                     <SelectValue />
                                                 </SelectTrigger>
                                                 <SelectContent className="rounded-xl">
