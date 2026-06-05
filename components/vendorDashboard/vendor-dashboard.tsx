@@ -91,6 +91,9 @@ export function VendorDashboard() {
         const productsRes = await productService.getSellerProducts({ limit: 4 });
         setProducts(productsRes.data?.data || productsRes.data?.products || productsRes.data || []);
 
+        const categoriesRes = await categoryService.getCategories();
+
+        setCategories(categoriesRes.data ||[]);
         // Fetch seller orders for overview (recent orders)
         const ordersRes = await orderService.getSellerOrders();
         setOrders(ordersRes.data || []);
@@ -142,7 +145,7 @@ export function VendorDashboard() {
       setTransactionTotalPages(res.data?.pagination?.pages || 1);
     } catch (error) {
       console.error("Failed to fetch transactions:", error);
-      toast.error(language === "ar" ? "فشل جلب المعاملات" : "Failed to fetch transactions");
+      // toast.error(language === "ar" ? "فشل جلب المعاملات" : "Failed to fetch transactions");
     } finally {
       setTransactionsLoading(false);
     }
@@ -203,26 +206,90 @@ export function VendorDashboard() {
       setAnalyticsLoading(false);
     }
   };
+  const handleEditProduct = (product: any) => {
+  setEditingProductId(product._id);
 
-  const handleEditProduct = (product: Product) => {
-    setEditingProductId(product._id);
-    setEditingProductData({
-      title: product.title,
-      price: product.price,
-      discountPercentage: product.discountPercentage,
-      quantity: product.quantity,
-      status: product.status,
-      category: product.category
-    });
+  setEditingProductData({
+    title: product.title,
+    price: product.price,
+    discountPercentage: product.discountPercentage,
+    quantity: product.quantity,
+    status: product.status,
+    category: product.category,
+  });
+};
+
+  const handleUpdateProduct = async (productId: string) => {
+    try {
+      setUpdatingProductId(productId);
+
+      await productService.updateProduct(
+        productId,
+        editingProductData
+      );
+
+      setProducts(prev =>
+        prev.map(product =>
+          product._id === productId
+            ? {
+              ...product,
+              ...editingProductData,
+            }
+            : product
+        )
+      );
+
+      setEditingProductId(null);
+      setEditingProductData({});
+
+      toast.success(
+        language === "ar"
+          ? "تم تحديث المنتج بنجاح"
+          : "Product updated successfully"
+      );
+    } catch (error: any) {
+      console.error(error);
+
+      toast.error(
+        error?.response?.data?.message ||
+        (language === "ar"
+          ? "فشل تحديث المنتج"
+          : "Failed to update product")
+      );
+    } finally {
+      setUpdatingProductId(null);
+    }
   };
 
-  const handleUpdateProduct = async () => {
-    // Implementation for updating product
-  };
 
-  const handleDeleteProduct = async (productId: string) => {
-    // Implementation for deleting product
-  };
+const handleDeleteProduct = async (productId: string) => {
+  try {
+    setDeletingProductId(productId);
+
+    await productService.deleteProduct(productId);
+
+    setProducts(prev =>
+      prev.filter(product => product._id !== productId)
+    );
+
+    toast.success(
+      language === "ar"
+        ? "تم حذف المنتج"
+        : "Product deleted successfully"
+    );
+  } catch (error: any) {
+    console.error(error);
+
+    toast.error(
+      error?.response?.data?.message ||
+      (language === "ar"
+        ? "فشل حذف المنتج"
+        : "Failed to delete product")
+    );
+  } finally {
+    setDeletingProductId(null);
+  }
+};
 
   const clearProductFilters = () => {
     setSearchTerm("");
@@ -518,7 +585,8 @@ export function VendorDashboard() {
               onSortChange={setSortOption}
               onCategoryChange={(v) => v === "all" ? setSelectedCategories([]) : setSelectedCategories([v])}
               onClearFilters={clearProductFilters}
-              onEdit={handleEditProduct} onUpdate={handleUpdateProduct}
+              onEdit={handleEditProduct}
+              onUpdate={handleUpdateProduct}
               onDelete={handleDeleteProduct} onCancelEdit={() => { setEditingProductId(null); setEditingProductData({}) }}
               onEditDataChange={setEditingProductData}
               onPageChange={setPage}

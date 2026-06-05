@@ -118,8 +118,9 @@ export default function OrdersPage() {
     const fetchOrders = async () => {
         try {
             const response = await orderService.getUserOrders();
+            console.log(response,'ordss4')
             if (response?.data) {
-                setOrders(response.data);
+                setOrders(response.data.data);
             } else {
                 toast.error('حدث خطأ أثناء جلب الطلبات')
             }
@@ -635,7 +636,7 @@ export default function OrdersPage() {
                                                 <h4 className="text-sm font-bold text-slate-900">عنوان التوصيل</h4>
                                             </div>
                                             <p className="text-xs text-slate-600 leading-relaxed pl-8">
-                                                {order.deliveryAddress || 'لم يتم تحديد عنوان'}
+                                                {order.deliveryInfo.address || 'لم يتم تحديد عنوان'}
                                             </p>
                                         </div>
 
@@ -696,13 +697,13 @@ export default function OrdersPage() {
                                             >
                                                 التفاصيل
                                             </Button>
-
+{/* 
                                             {order.deliveryStatus === 'delivered' && (
                                                 <Button variant="outline" size="sm" className="w-full sm:w-auto rounded-xl text-xs h-9 bg-white">
                                                     <Star className="w-3.5 h-3.5 ml-1.5 text-amber-500" />
                                                     تقييم
                                                 </Button>
-                                            )}
+                                            )} */}
 
                                             <Button
                                                 variant="ghost"

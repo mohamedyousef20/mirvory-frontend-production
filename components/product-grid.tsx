@@ -284,78 +284,102 @@ export function ProductGrid() {
 
   const fetchProducts = useCallback(async () => {
     try {
-      setUiState(prev => ({ ...prev, isLoading: true, error: null }));
+      setUiState(prev => ({
+        ...prev,
+        isLoading: true,
+        error: null
+      }));
 
       let response;
 
-      // If there's a search query, use new advanced search endpoint
       if (filters.searchQuery.trim()) {
+        // Search products
         const searchParams: any = {
           q: filters.searchQuery.trim(),
           page: pagination.page,
           limit: pagination.pageSize,
         };
 
-        // Add optional filters
         if (filters.categories.length > 0) {
-          searchParams.category = filters.categories[0]; // Single category for now
+          searchParams.category = filters.categories[0];
         }
+
         if (filters.priceRange[0] > 0) {
           searchParams.minPrice = filters.priceRange[0];
         }
+
         if (filters.priceRange[1] < 10000) {
           searchParams.maxPrice = filters.priceRange[1];
         }
 
-        // Map sort options to new format
         const sortMap = {
           newest: "latest",
           priceHighToLow: "price_desc",
           priceLowToHigh: "price_asc",
           topRated: "top_rated",
         };
+
         searchParams.sort = sortMap[filters.sort] || "relevance";
 
         response = await productService.advancedSearch(searchParams);
-        console.log(response, 'response454545')
 
-        // Handle response format
-        const productsData = response.data?.products || [];
-        console.log(productsData, 'productsData147')
-        setProducts(productsData);
-        console.log(products, 'productsData148')
+        setProducts(response.data.products || []);
 
-        // Update pagination info based on new backend format
-        if (response.data?.pagination) {
-          const { page, totalPages, limit, total } = response.data.pagination;
-          setPagination(prev => ({
-            ...prev,
-            page,
-            pageSize: limit,
-            totalPages,
-            totalProducts: total || productsData.length
-          }));
-        } else {
-          // Fallback for old format
-          setPagination(prev => ({
-            ...prev,
-            totalProducts: productsData.length
-          }));
+        setPagination(prev => ({
+          ...prev,
+          totalPages: response.data.pagination?.totalPages || 1,
+          totalProducts: response.data.pagination?.total || 0
+        }));
+
+      } else {
+        // Get all products
+        const params: any = {
+          page: pagination.page,
+          limit: pagination.pageSize,
+        };
+
+        if (filters.categories.length > 0) {
+          params.category = filters.categories[0];
         }
+
+        if (filters.priceRange[0] > 0) {
+          params.minPrice = filters.priceRange[0];
+        }
+
+        if (filters.priceRange[1] < 10000) {
+          params.maxPrice = filters.priceRange[1];
+        }
+
+        params.sort =
+          filters.sort === "newest"
+            ? "-createdAt"
+            : filters.sort === "priceHighToLow"
+              ? "-price"
+              : filters.sort === "priceLowToHigh"
+                ? "price"
+                : "-ratings.average";
+
+        response = await productService.getProducts(params);
+
+        setProducts(response.data.data || []);
+
+        setPagination(prev => ({
+          ...prev,
+          totalPages: response.data.pagination?.pages || 1,
+          totalProducts: response.data.pagination?.total || 0
+        }));
       }
+
     } catch (error) {
-      console.error("Error fetching products:", error);
-      const message = language === "ar" ? "فشل جلب المنتجات" : "Failed to load products";
+      console.error(error);
+    } finally {
       setUiState(prev => ({
         ...prev,
-        error: message
+        isLoading: false
       }));
-      toast.error(message);
-    } finally {
-      setUiState(prev => ({ ...prev, isLoading: false }));
     }
-  }, [filters, pagination.page, pagination.pageSize, language]);
-
+  }, [filters, pagination.page, pagination.pageSize]);
+  
   useEffect(() => {
     fetchWishlistFavorites();
   }, [fetchWishlistFavorites]);

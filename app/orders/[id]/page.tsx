@@ -527,13 +527,12 @@ export default function OrderDetailsPage() {
                         </CardContent>
                     </Card>
 
-                    {/* Dynamic Action Buttons */}
                     <div className="space-y-2">
-                        {order.deliveryStatus === 'delivered' && (
+                        {/* {order.deliveryStatus === 'delivered' && (
                             <Button className="w-full" variant="outline" onClick={() => router.push(`/profile/orders/${order._id}/review`)}>
                                 تقييم الطلب
                             </Button>
-                        )}
+                        )} */}
                         {order.deliveryStatus === 'pending' && (
                             <Button className="w-full" variant="destructive" onClick={() => {
                                 // أضف منطق إلغاء الطلب هنا

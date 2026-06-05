@@ -114,8 +114,8 @@ export function OverviewTab({
     const displayProfits = counters.totalProfits || earningsSummary.totalCommission;
 
     return (
-        <div className="space-y-4 md:space-y-6">
-            <div className="grid gap-3 md:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="space-y-6">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 {[
                     {
                         key: 'new',
@@ -143,12 +143,12 @@ export function OverviewTab({
                     }
                 ].map((card) => (
                     <Card key={card.key} className="border border-primary/10">
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 md:p-6">
-                            <CardTitle className="text-xs md:text-sm font-medium">{card.title}</CardTitle>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">{card.title}</CardTitle>
                             {card.icon}
                         </CardHeader>
-                        <CardContent className="p-3 md:p-6 pt-0">
-                            <div className="text-2xl md:text-3xl font-semibold">{card.value}</div>
+                        <CardContent>
+                            <div className="text-3xl font-semibold">{card.value}</div>
                             <p className="text-xs text-muted-foreground">
                                 {isArabic ? "محدثة لحظيًا" : "Live data"}
                             </p>
@@ -157,16 +157,16 @@ export function OverviewTab({
                 ))}
             </div>
 
-            <div className="grid gap-3 md:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-8">
                 <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 md:p-6">
-                        <CardTitle className="text-xs md:text-sm font-medium">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">
                             {isArabic ? "إجمالي الأرباح" : "Total Earnings"}
                         </CardTitle>
                         <DollarSign className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
-                    <CardContent className="p-3 md:p-6 pt-0">
-                        <div className="text-xl md:text-2xl font-bold">
+                    <CardContent>
+                        <div className="text-2xl font-bold">
                             {loadingEarnings ? (
                                 <div className="h-8 bg-gray-200 rounded animate-pulse"></div>
                             ) : (
@@ -185,14 +185,14 @@ export function OverviewTab({
                 </Card>
 
                 <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 md:p-6">
-                        <CardTitle className="text-xs md:text-sm font-medium">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">
                             {isArabic ? "إجمالي الخصومات" : "Total Discounts"}
                         </CardTitle>
                         <TrendingDown className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
-                    <CardContent className="p-3 md:p-6 pt-0">
-                        <div className="text-xl md:text-2xl font-bold">
+                    <CardContent>
+                        <div className="text-2xl font-bold">
                             {loadingEarnings ? (
                                 <div className="h-8 bg-gray-200 rounded animate-pulse"></div>
                             ) : (
@@ -206,14 +206,14 @@ export function OverviewTab({
                 </Card>
 
                 <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 md:p-6">
-                        <CardTitle className="text-xs md:text-sm font-medium">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">
                             {isArabic ? "إجمالي العمولات" : "Total Commission"}
                         </CardTitle>
                         <DollarSign className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
-                    <CardContent className="p-3 md:p-6 pt-0">
-                        <div className="text-xl md:text-2xl font-bold">
+                    <CardContent>
+                        <div className="text-2xl font-bold">
                             {loadingEarnings ? (
                                 <div className="h-8 bg-gray-200 rounded animate-pulse"></div>
                             ) : (
@@ -227,14 +227,14 @@ export function OverviewTab({
                 </Card>
 
                 <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 md:p-6">
-                        <CardTitle className="text-xs md:text-sm font-medium">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">
                             {isArabic ? "إجمالي الأرباح" : "Total Profits"}
                         </CardTitle>
                         <TrendingUp className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
-                    <CardContent className="p-3 md:p-6 pt-0">
-                        <div className="text-xl md:text-2xl font-bold">
+                    <CardContent>
+                        <div className="text-2xl font-bold">
                             {loadingEarnings ? (
                                 <div className="h-8 bg-gray-200 rounded animate-pulse"></div>
                             ) : (
@@ -248,14 +248,14 @@ export function OverviewTab({
                 </Card>
 
                 <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 md:p-6">
-                        <CardTitle className="text-xs md:text-sm font-medium">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">
                             {isArabic ? "الطلبات" : "Orders"}
                         </CardTitle>
                         <ShoppingBag className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
-                    <CardContent className="p-3 md:p-6 pt-0">
-                        <div className="text-xl md:text-2xl font-bold">{counters.totalOrders || totalOrders}</div>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{counters.totalOrders || totalOrders}</div>
                         <p className="text-xs text-muted-foreground">
                             {isArabic ? "إجمالي الطلبات" : "total orders"}
                         </p>
@@ -263,14 +263,14 @@ export function OverviewTab({
                 </Card>
 
                 <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 md:p-6">
-                        <CardTitle className="text-xs md:text-sm font-medium">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">
                             {isArabic ? "المنتجات" : "Products"}
                         </CardTitle>
                         <Package className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
-                    <CardContent className="p-3 md:p-6 pt-0">
-                        <div className="text-xl md:text-2xl font-bold">{counters.totalProducts || totalProductsCount}</div>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{counters.totalProducts || totalProductsCount}</div>
                         <p className="text-xs text-muted-foreground">
                             {isArabic ? "إجمالي المنتجات" : "total products"}
                         </p>
@@ -278,14 +278,14 @@ export function OverviewTab({
                 </Card>
 
                 <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 md:p-6">
-                        <CardTitle className="text-xs md:text-sm font-medium">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">
                             {isArabic ? "البائعين" : "Sellers"}
                         </CardTitle>
                         <Users className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
-                    <CardContent className="p-3 md:p-6 pt-0">
-                        <div className="text-xl md:text-2xl font-bold">{counters.totalSellers || totalSellersCount}</div>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{counters.totalSellers || totalSellersCount}</div>
                         <p className="text-xs text-muted-foreground">
                             {isArabic ? "إجمالي البائعين" : "total sellers"}
                         </p>
@@ -293,14 +293,14 @@ export function OverviewTab({
                 </Card>
 
                 <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 md:p-6">
-                        <CardTitle className="text-xs md:text-sm font-medium">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">
                             {isArabic ? "المستخدمين" : "Users"}
                         </CardTitle>
                         <Users className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
-                    <CardContent className="p-3 md:p-6 pt-0">
-                        <div className="text-xl md:text-2xl font-bold">{counters.totalUsers || totalUsersCount}</div>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{counters.totalUsers || totalUsersCount}</div>
                         <p className="text-xs text-muted-foreground">
                             {isArabic ? "إجمالي المستخدمين" : "total users"}
                         </p>
@@ -308,33 +308,33 @@ export function OverviewTab({
                 </Card>
             </div>
 
-            <div className="grid gap-3 md:gap-4 grid-cols-1 lg:grid-cols-7">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
                 <Card className="lg:col-span-4">
-                    <CardHeader className="p-3 md:p-6">
-                        <CardTitle className="text-base md:text-lg">{isArabic ? "أحدث الطلبات" : "Recent Orders"}</CardTitle>
+                    <CardHeader>
+                        <CardTitle>{isArabic ? "أحدث الطلبات" : "Recent Orders"}</CardTitle>
                     </CardHeader>
-                    <CardContent className="p-3 md:p-6 pt-0">
+                    <CardContent>
                         <div className="overflow-x-auto">
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead className="text-xs md:text-sm">{isArabic ? "رقم الطلب" : "Order ID"}</TableHead>
-                                        <TableHead className="text-xs md:text-sm">{isArabic ? "التاريخ" : "Date"}</TableHead>
-                                        <TableHead className="text-xs md:text-sm">{isArabic ? "العميل" : "Customer"}</TableHead>
-                                        <TableHead className="text-xs md:text-sm">{isArabic ? "البائع" : "Vendor"}</TableHead>
-                                        <TableHead className="text-xs md:text-sm">{isArabic ? "الحالة" : "Status"}</TableHead>
-                                        <TableHead className="text-xs md:text-sm">{isArabic ? "الإجمالي" : "Total"}</TableHead>
-                                        <TableHead className="text-xs md:text-sm">{isArabic ? "العناصر" : "Items"}</TableHead>
-                                        <TableHead className="text-xs md:text-sm">{isArabic ? "طريقة الدفع" : "Payment"}</TableHead>
+                                        <TableHead>{isArabic ? "رقم الطلب" : "Order ID"}</TableHead>
+                                        <TableHead>{isArabic ? "التاريخ" : "Date"}</TableHead>
+                                        <TableHead>{isArabic ? "العميل" : "Customer"}</TableHead>
+                                        <TableHead>{isArabic ? "البائع" : "Vendor"}</TableHead>
+                                        <TableHead>{isArabic ? "الحالة" : "Status"}</TableHead>
+                                        <TableHead>{isArabic ? "الإجمالي" : "Total"}</TableHead>
+                                        <TableHead>{isArabic ? "العناصر" : "Items"}</TableHead>
+                                        <TableHead>{isArabic ? "طريقة الدفع" : "Payment"}</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {Array.isArray(orders) && orders.map((order: any) => (
                                         <TableRow key={order._id}>
-                                            <TableCell className="font-medium text-xs md:text-sm">#{order._id?.substring(0, 6) || 'N/A'}</TableCell>
-                                            <TableCell className="text-xs md:text-sm">{order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}</TableCell>
-                                            <TableCell className="text-xs md:text-sm">{order.buyer?.fullName || "N/A"}</TableCell>
-                                            <TableCell className="text-xs md:text-sm">{order.seller?.fullName}</TableCell>
+                                            <TableCell className="font-medium">#{order._id?.substring(0, 6) || 'N/A'}</TableCell>
+                                            <TableCell>{order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}</TableCell>
+                                            <TableCell>{order.buyer?.fullName || "N/A"}</TableCell>
+                                            <TableCell>{order.seller?.fullName}</TableCell>
                                             <TableCell>
                                                 <Badge variant={
                                                     order.deliveryStatus === "processing" ? "secondary"
@@ -376,10 +376,10 @@ export function OverviewTab({
                 </Card>
 
                 <Card className="lg:col-span-3">
-                    <CardHeader className="p-3 md:p-6">
-                        <CardTitle className="text-base md:text-lg">{isArabic ? "أحدث المنتجات" : "Recent Products"}</CardTitle>
+                    <CardHeader>
+                        <CardTitle>{isArabic ? "أحدث المنتجات" : "Recent Products"}</CardTitle>
                     </CardHeader>
-                    <CardContent className="p-3 md:p-6 pt-0">
+                    <CardContent>
                         {safeProducts.length > 0 ? (
                             safeProducts.slice(0, 5).map((product: any) => (
                                 <div key={product._id} className="flex items-center justify-between py-2 border-b last:border-b-0">
@@ -398,7 +398,7 @@ export function OverviewTab({
                                             </div>
                                         )}
                                         <div className="ml-3">
-                                            <p className="text-xs md:text-sm font-medium line-clamp-1">{isArabic ? product.title : product.nameEn}</p>
+                                            <p className="text-sm font-medium">{isArabic ? product.title : product.nameEn}</p>
                                             <p className="text-xs text-muted-foreground">{product.price || 0} {isArabic ? "ج.م" : "EGP"}</p>
                                         </div>
                                     </div>

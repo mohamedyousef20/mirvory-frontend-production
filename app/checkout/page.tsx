@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { orderService, addressService, cartService, pickupPointService } from '@/lib/api'
+import { orderService, cartService, pickupPointService } from '@/lib/api'
 import { useAuth } from "@/contexts/AuthProvider"
 import { useLanguage } from "@/components/language-provider"
 import { toast } from 'sonner'
@@ -17,16 +17,6 @@ import {
     Banknote, CheckCircle2
 } from 'lucide-react'
 import Image from 'next/image'
-
-interface Address {
-    _id: string
-    address: string
-    city: string
-    state: string
-    phoneNumber?: string
-    fullName?: string
-    isDefault?: boolean
-}
 
 interface PickupPoint {
     _id: string
@@ -48,21 +38,14 @@ export default function Checkout() {
     const [phone, setPhone] = useState('')
     const [deliveryMethod, setDeliveryMethod] = useState<'home' | 'pickup'>('home')
     const [paymentMethod, setPaymentMethod] = useState<'cash' | 'card'>('cash')
-
-    const [addresses, setAddresses] = useState<Address[]>([])
-    const [selectedAddressId, setSelectedAddressId] = useState('')
-    const [addressMode, setAddressMode] = useState<'saved' | 'new'>('saved')
-
-    const [pickupPoints, setPickupPoints] = useState<PickupPoint[]>([])
-    const [selectedPickupPointId, setSelectedPickupPointId] = useState('')
-
-    const [newAddress, setNewAddress] = useState({
+    const [address, setAddress] = useState({
         governorate: '',
         city: '',
         addressLine: '',
-        fullName: '',
-        phoneNumber: '',
     })
+    const [pickupPoints, setPickupPoints] = useState<PickupPoint[]>([])
+    const [selectedPickupPointId, setSelectedPickupPointId] = useState('')
+
 
     const [cartItems, setCartItems] = useState<any[]>([])
     const [appliedCoupon, setAppliedCoupon] = useState<any>(null)
@@ -77,19 +60,11 @@ export default function Checkout() {
         return finalTotal;
     }, [subtotal, shippingFee, appliedCoupon]);
 
-    const handleNewAddressChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = e.target
-        setNewAddress(prev => ({
-            ...prev,
-            [name]: value,
-            ...(name === 'governorate' ? { city: '' } : {})
-        }))
-    }
 
     const availableCities = useMemo(() => {
-        if (!newAddress.governorate) return []
-        return getCitiesByGovernorate(newAddress.governorate)
-    }, [newAddress.governorate])
+        if (!address.governorate) return []
+        return getCitiesByGovernorate(address.governorate)
+    }, [address.governorate])
 
     useEffect(() => {
         const loadCheckoutData = async () => {
@@ -100,27 +75,19 @@ export default function Checkout() {
                 const items = cartRes?.data?.items || []
                 setCartItems(items);
                 const couponData = cartRes?.data?.appliedCoupon || null;
-                setAppliedCoupon(couponData);              
+                setAppliedCoupon(couponData);
 
-                const sub = items.reduce((acc: number, item: any) =>
-                    acc + ((item?.price ?? item?.product?.price ?? 0) * (item?.quantity ?? 1)), 0
-                )
+                const sub = items.reduce(
+                    (acc: number, item: any) =>
+                        acc + ((item?.product?.discountedPrice ?? item?.price ?? 0) * (item?.quantity ?? 1)),
+                    0
+                );
                 setSubtotal(sub)
 
-                const addrRes = await addressService.getAddresses()
-                const addrs = addrRes?.data?.data || []
-                setAddresses(addrs)
-
-                if (addrs.length > 0) {
-                    const defaultAddr = addrs.find((a: Address) => a.isDefault) || addrs[0]
-                    setSelectedAddressId(defaultAddr._id)
-                    setAddressMode('saved')
-                } else {
-                    setAddressMode('new')
-                }
 
                 try {
-                    const pickupRes = await pickupPointService.getPickupPoints()
+                    const pickupRes = await pickupPointService.getPickupPoints();
+                    console.log(pickupRes, 'pickupRes')
                     setPickupPoints(pickupRes?.data || [])
                     if (pickupRes?.data?.[0]) setSelectedPickupPointId(pickupRes.data[0]._id)
                 } catch (pErr) {
@@ -130,6 +97,13 @@ export default function Checkout() {
                 if (user) {
                     setFullName(`${user.firstName || ''} ${user.lastName || ''}`.trim())
                     setPhone(user.phone || '')
+                    if (user?.address) {
+                        setAddress({
+                            governorate: user.address.governorate || '',
+                            city: user.address.city || '',
+                            addressLine: user.address.addressLine || '',
+                        })
+                    }
                 }
             } catch (err) {
                 console.error('Failed to load checkout data:', err)
@@ -159,30 +133,20 @@ export default function Checkout() {
         let finalFullName = fullName.trim()
 
         if (deliveryMethod === 'home') {
-            if (addressMode === 'saved') {
-                if (!selectedAddressId) {
-                    toast.error(isAr ? 'الرجاء اختيار عنوان التوصيل' : 'Please select a delivery address')
-                    return
-                }
-                const targetAddress = addresses.find(a => a._id === selectedAddressId)
-                if (targetAddress) {
-                    finalAddressStr = `${targetAddress.address}, ${targetAddress.city}, ${targetAddress.state}`
-                    if (targetAddress.phoneNumber) finalPhone = targetAddress.phoneNumber
-                    if (targetAddress.fullName) finalFullName = targetAddress.fullName
-                }
-            } else {
-                if (!newAddress.governorate || !newAddress.city || !newAddress.addressLine) {
-                    toast.error(isAr ? 'الرجاء إكمال بيانات العنوان الجديد بالكامل' : 'Please complete all new address fields')
-                    return
-                }
-                finalAddressStr = `${newAddress.addressLine}, ${newAddress.city}, ${newAddress.governorate}`
-                if (newAddress.phoneNumber && phoneRegex.test(newAddress.phoneNumber.trim())) {
-                    finalPhone = newAddress.phoneNumber.trim()
-                }
-                if (newAddress.fullName.trim()) {
-                    finalFullName = newAddress.fullName.trim()
-                }
+            if (
+                !address.governorate ||
+                !address.city ||
+                !address.addressLine
+            ) {
+                toast.error(
+                    isAr
+                        ? 'الرجاء إدخال بيانات العنوان كاملة'
+                        : 'Please complete address information'
+                )
+                return
             }
+
+            finalAddressStr = `${address.addressLine}, ${address.city}, ${address.governorate}`
         } else if (deliveryMethod === 'pickup' && !selectedPickupPointId) {
             toast.error(isAr ? 'الرجاء اختيار نقطة الاستلام المعتمدة' : 'Please select a pickup point')
             return
@@ -213,7 +177,7 @@ export default function Checkout() {
         } finally {
             setLoading(false)
         }
-    }, [fullName, phone, deliveryMethod, paymentMethod, selectedAddressId, selectedPickupPointId, addresses, newAddress, addressMode, isAr, router])
+    }, [fullName, phone, deliveryMethod, paymentMethod, address, selectedPickupPointId, isAr, router])
 
     if (loadingData) {
         return (
@@ -312,108 +276,126 @@ export default function Checkout() {
                                         <RadioGroupItem value="home" id="home" className="sr-only" />
                                         <Home className={`w-6 h-6 ${deliveryMethod === 'home' ? 'text-blue-600' : 'text-gray-400'}`} />
                                         <div>
-                                            <p className="font-bold text-sm text-gray-800">{isAr ? "توصيل للمنزل" : "Home Delivery"}</p>
+                                            <p className="font-bold text-sm text-gray-800">{isAr ? "توصيل للمنزل (طلب العنوان)" : "Home Delivery (Ask for Address)"}</p>
                                         </div>
                                     </Label>
                                     <Label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-all ${deliveryMethod === 'pickup' ? 'border-blue-600 bg-blue-50/50 ring-1 ring-blue-600' : 'border-gray-200 hover:border-blue-300'}`}>
                                         <RadioGroupItem value="pickup" id="pickup" className="sr-only" />
                                         <Store className={`w-6 h-6 ${deliveryMethod === 'pickup' ? 'text-blue-600' : 'text-gray-400'}`} />
                                         <div>
-                                            <p className="font-bold text-sm text-gray-800">{isAr ? "استلام من الفرع" : "Store Pickup"}</p>
+                                            <p className="font-bold text-sm text-gray-800">{isAr ? "استلام من نقطة استلام" : "Store Pickup (Show Pickup Points)"}</p>
                                         </div>
                                     </Label>
                                 </RadioGroup>
-
-                                {/* Address Details */}
                                 {deliveryMethod === 'home' && (
-                                    <div className="mt-4 animate-in fade-in">
-                                        <div className="flex bg-gray-100 p-1 rounded-xl w-fit mb-4">
-                                            {addresses.length > 0 && (
-                                                <button onClick={() => setAddressMode('saved')} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${addressMode === 'saved' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
-                                                    {isAr ? "العناوين المحفوظة" : "Saved Addresses"}
-                                                </button>
-                                            )}
-                                            <button onClick={() => setAddressMode('new')} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${addressMode === 'new' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
-                                                {isAr ? "عنوان جديد" : "New Address"}
-                                            </button>
+                                    <div className="mt-4 border border-gray-200 rounded-2xl p-5 space-y-4">
+                                        <h3 className="font-bold text-gray-800 flex items-center gap-2">
+                                            <MapPin className="w-5 h-5 text-blue-600" />
+                                            {isAr ? "عنوان التوصيل" : "Delivery Address"}
+                                        </h3>
+
+                                        {/* Governorate */}
+                                        <div>
+                                            <Label className="text-xs text-gray-500 mb-1 block">
+                                                {isAr ? "المحافظة" : "Governorate"}
+                                            </Label>
+                                            <select
+                                                value={address.governorate}
+                                                onChange={(e) =>
+                                                    setAddress({
+                                                        governorate: e.target.value,
+                                                        city: '',
+                                                        addressLine: address.addressLine
+                                                    })
+                                                }
+                                                className="w-full h-12 bg-gray-50 rounded-xl px-3 border"
+                                            >
+                                                <option value="">
+                                                    {isAr ? "اختر المحافظة" : "Select governorate"}
+                                                </option>
+
+                                                {GREATER_CAIRO_AREA.map((gov) => (
+                                                    <option key={gov.id} value={gov.id}>
+                                                        {isAr ? gov.nameAr : gov.nameEn}
+                                                    </option>
+                                                ))}
+                                            </select>
                                         </div>
 
-                                        {addressMode === 'saved' && addresses.length > 0 && (
-                                            <div className="grid grid-cols-1 gap-3">
-                                                {addresses.map((addr) => (
-                                                    <div key={addr._id} onClick={() => setSelectedAddressId(addr._id)} className={`p-4 rounded-xl border cursor-pointer transition-all ${selectedAddressId === addr._id ? 'border-blue-600 bg-blue-50/30 ring-1 ring-blue-600' : 'border-gray-200 hover:border-blue-300'}`}>
-                                                        <p className="font-bold text-gray-800 text-sm mb-1">{addr.address}</p>
-                                                        <p className="text-xs text-gray-500">{addr.city}، {addr.state}</p>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
+                                        {/* City */}
+                                        <div>
+                                            <Label className="text-xs text-gray-500 mb-1 block">
+                                                {isAr ? "المدينة" : "City"}
+                                            </Label>
+                                            <select
+                                                value={address.city}
+                                                onChange={(e) =>
+                                                    setAddress(prev => ({
+                                                        ...prev,
+                                                        city: e.target.value
+                                                    }))
+                                                }
+                                                className="w-full h-12 bg-gray-50 rounded-xl px-3 border"
+                                                disabled={!address.governorate}
+                                            >
+                                                <option value="">
+                                                    {isAr ? "اختر المدينة" : "Select city"}
+                                                </option>
 
-                                        {addressMode === 'new' && (
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl">
-                                                <div>
-                                                    <Label className="text-xs text-gray-500 mb-1 block">{isAr ? "المحافظة" : "Governorate"}</Label>
-                                                    <div className="relative">
-                                                        <select
-                                                            name="governorate"
-                                                            value={newAddress.governorate}
-                                                            onChange={handleNewAddressChange}
-                                                            className="w-full h-12 rounded-xl border-gray-200 bg-white px-4 text-sm outline-none border focus:border-blue-600 focus:ring-1 focus:ring-blue-600 appearance-none"
-                                                        >
-                                                            <option value="" disabled>{isAr ? "اختر المحافظة" : "Select..."}</option>
-                                                            {GREATER_CAIRO_AREA.map((gov) => (
-                                                                <option key={gov.id} value={gov.id}>
-                                                                    {gov.nameAr}
-                                                                </option>
-                                                            ))}
-                                                        </select>
-                                                        <MapPin className={`absolute ${isAr ? 'left-4' : 'right-4'} top-3.5 h-5 w-5 text-gray-400 pointer-events-none`} />
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <Label className="text-xs text-gray-500 mb-1 block">{isAr ? "المنطقة" : "City"}</Label>
-                                                    <div className="relative">
-                                                        <select
-                                                            name="city"
-                                                            value={newAddress.city}
-                                                            onChange={handleNewAddressChange}
-                                                            disabled={!newAddress.governorate}
-                                                            className="w-full h-12 rounded-xl border-gray-200 bg-white px-4 text-sm outline-none border focus:border-blue-600 focus:ring-1 focus:ring-blue-600 appearance-none disabled:bg-gray-100 disabled:opacity-50"
-                                                        >
-                                                            <option value="" disabled>{isAr ? "اختر المنطقة" : "Select..."}</option>
-                                                            {availableCities.map((city) => (
-                                                                <option key={city.id} value={city.id}>
-                                                                    {city.nameAr}
-                                                                </option>
-                                                            ))}
-                                                        </select>
-                                                        <MapPin className={`absolute ${isAr ? 'left-4' : 'right-4'} top-3.5 h-5 w-5 text-gray-400 pointer-events-none`} />
-                                                    </div>
-                                                </div>
-                                                <div className="sm:col-span-2">
-                                                    <Label className="text-xs text-gray-500 mb-1 block">{isAr ? "العنوان بالتفصيل" : "Address details"}</Label>
-                                                    <Input
-                                                        name="addressLine"
-                                                        value={newAddress.addressLine}
-                                                        onChange={handleNewAddressChange}
-                                                        placeholder={isAr ? "رقم المبنى، الشارع، علامة مميزة..." : "Building, Street..."}
-                                                        className="h-12 bg-white rounded-xl border-gray-200"
-                                                    />
-                                                </div>
-                                            </div>
-                                        )}
+                                                {availableCities.map((city) => (
+                                                    <option key={city.id} value={city.id}>
+                                                        {isAr ? city.nameAr : city.nameEn}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+
+                                        {/* Address Line */}
+                                        <div>
+                                            <Label className="text-xs text-gray-500 mb-1 block">
+                                                {isAr ? "تفاصيل العنوان" : "Street Address"}
+                                            </Label>
+                                            <Input
+                                                value={address.addressLine}
+                                                onChange={(e) =>
+                                                    setAddress(prev => ({
+                                                        ...prev,
+                                                        addressLine: e.target.value
+                                                    }))
+                                                }
+                                                placeholder={isAr ? "الشارع، رقم المنزل..." : "Street, building no..."}
+                                                className="h-12 bg-gray-50 rounded-xl"
+                                            />
+                                        </div>
                                     </div>
                                 )}
 
-                                {/* Pickup Details */}
+                                {/* Pickup Details - Shown dynamically when Store Pickup is selected */}
                                 {deliveryMethod === 'pickup' && (
                                     <div className="mt-4 space-y-3 animate-in fade-in">
-                                        {pickupPoints.map((point) => (
-                                            <div key={point._id} onClick={() => setSelectedPickupPointId(point._id)} className={`p-4 rounded-xl border cursor-pointer transition-all ${selectedPickupPointId === point._id ? 'border-blue-600 bg-blue-50/30 ring-1 ring-blue-600' : 'border-gray-200 hover:border-blue-300'}`}>
-                                                <h4 className="font-bold text-gray-800 text-sm">{point.stationName}</h4>
-                                                <p className="text-xs text-gray-500 mt-1">{point.address}</p>
-                                            </div>
-                                        ))}
+                                        <Label className="text-xs text-gray-500 mb-2 block">{isAr ? "اختر نقطة الاستلام المناسبة لك:" : "Select your preferred pickup point:"}</Label>
+                                        {pickupPoints.length === 0 ? (
+                                            <p className="text-sm text-gray-500 bg-gray-50 p-4 rounded-xl text-center">
+                                                {isAr ? "لا توجد نقاط استلام متاحة حالياً" : "No pickup points available currently"}
+                                            </p>
+                                        ) : (
+                                            pickupPoints.map((point) => (
+                                                <div
+                                                    key={point._id}
+                                                    onClick={() => setSelectedPickupPointId(point._id)}
+                                                    className={`p-4 rounded-xl border cursor-pointer transition-all ${selectedPickupPointId === point._id ? 'border-blue-600 bg-blue-50/30 ring-1 ring-blue-600' : 'border-gray-200 hover:border-blue-300'}`}
+                                                >
+                                                    <div className="flex justify-between items-start">
+                                                        <h4 className="font-bold text-gray-800 text-sm">{point.stationName}</h4>
+                                                        {selectedPickupPointId === point._id && <CheckCircle2 className="w-4 h-4 text-blue-600" />}
+                                                    </div>
+                                                    <p className="text-xs text-gray-500 mt-1">{point.address}</p>
+                                                    {point.workingHours && (
+                                                        <p className="text-[11px] text-gray-400 mt-1">{isAr ? `مواعيد العمل: ${point.workingHours}` : `Working Hours: ${point.workingHours}`}</p>
+                                                    )}
+                                                </div>
+                                            ))
+                                        )}
                                     </div>
                                 )}
                             </div>
@@ -429,28 +411,29 @@ export default function Checkout() {
                                     onValueChange={(v) => setPaymentMethod(v as 'cash' | 'card')}
                                     className="grid grid-cols-1 sm:grid-cols-2 gap-3"
                                 >
-                                    <Label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-all ${paymentMethod === 'cash' ? 'border-blue-600 bg-blue-50/50 ring-1 ring-blue-600' : 'border-gray-200 hover:border-blue-300'}`}>
-                                        <RadioGroupItem value="cash" id="cash" className="sr-only" />
-                                        <Banknote className={`w-6 h-6 ${paymentMethod === 'cash' ? 'text-blue-600' : 'text-gray-400'}`} />
-                                        <div>
-                                            <p className="font-bold text-sm text-gray-800">{isAr ? "الدفع عند الاستلام" : "Cash on Delivery"}</p>
-                                        </div>
-                                    </Label>
-                                    <Label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-all ${paymentMethod === 'card' ? 'border-blue-600 bg-blue-50/50 ring-1 ring-blue-600' : 'border-gray-200 hover:border-blue-300'}`}>
+                                    {/* <Label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-all ${paymentMethod === 'card' ? 'border-blue-600 bg-blue-50/50 ring-1 ring-blue-600' : 'border-gray-200 hover:border-blue-300'}`}>
                                         <RadioGroupItem value="card" id="card" className="sr-only" />
                                         <CreditCard className={`w-6 h-6 ${paymentMethod === 'card' ? 'text-blue-600' : 'text-gray-400'}`} />
                                         <div>
                                             <p className="font-bold text-sm text-gray-800">{isAr ? "بطاقة ائتمانية" : "Card Payment"}</p>
                                         </div>
+                                    </Label> */}
+                                    <Label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-all ${paymentMethod === 'cash' ? 'border-blue-600 bg-blue-50/50 ring-1 ring-blue-600' : 'border-gray-200 hover:border-blue-300'}`}>
+                                        <RadioGroupItem value="cash" id="cash" className="sr-only" />
+                                        <Banknote className={`w-12 h-12${paymentMethod === 'cash' ? 'text-blue-600' : 'text-gray-400'}`} />
+                                        <div>
+                                            <p className="font-bold text-sm text-gray-800">{isAr ? "الدفع عند الاستلام" : "Cash on Delivery"}</p>
+                                        </div>
                                     </Label>
+                                  
                                 </RadioGroup>
                             </div>
                         </div>
 
                     </div>
 
-                    {/* Right Column - Order Summary (MDB Blue Card Style) */}
-                    <div className="w-full lg:w-5/12 bg-[#0c264d] text-white p-6 lg:p-10 flex flex-col justify-between rounded-t-[2rem] lg:rounded-t-none lg:rounded-s-[2rem] rtl:lg:rounded-s-none rtl:lg:rounded-e-[2rem] shadow-2xl z-10 -mt-6 lg:mt-0 lg:-ms-6 rtl:lg:ms-0 rtl:lg:-me-6">
+                    {/* Right Column - Order Summary */}
+                    <div className="w-full lg:w-5/12 bg-[#3068e4] text-white p-6 lg:p-10 flex flex-col justify-between rounded-t-[2rem] lg:rounded-t-none lg:rounded-s-[2rem] rtl:lg:rounded-s-none rtl:lg:rounded-e-[2rem] shadow-2xl z-10 -mt-6 lg:mt-0 lg:-ms-6 rtl:lg:ms-0 rtl:lg:-me-6">
 
                         <div>
                             <div className="flex justify-between items-center mb-6">
@@ -462,14 +445,11 @@ export default function Checkout() {
 
                             {/* Cart Items Summary */}
                             <div className="max-h-[35vh] overflow-y-auto custom-scrollbar pe-2 space-y-4 mb-6">
-
-                                {/* COUPON DISPLAY */}
-                           
-                                {/* ITEMS LIST */}
                                 {cartItems.map((item: any) => {
                                     const product = item.product || {};
-                                    const itemTotal = (item.quantity || 0) * (item.price || 0);
-
+                                    const itemTotal =
+                                        (item.quantity || 0) *
+                                        ((item.product?.discountedPrice ?? item.price) || 0);
                                     return (
                                         <div
                                             key={item._id}
@@ -517,20 +497,18 @@ export default function Checkout() {
                                         </div>
                                     );
                                 })}
-
                             </div>
+
                             {appliedCoupon && (
                                 <div className="p-3 rounded-xl bg-green-500/10 border border-green-400/30 text-green-200">
                                     <div className="flex justify-between items-center">
                                         <span className="text-sm">
                                             {isAr ? "كوبون مطبق:" : "Coupon Applied:"} {appliedCoupon.code}
                                         </span>
-
                                         <span className="font-bold">
                                             -{appliedCoupon.discountAmount} ج.م
                                         </span>
                                     </div>
-
                                     <div className="text-xs mt-1 text-green-100/80">
                                         {isAr
                                             ? `قبل الخصم: ${appliedCoupon.originalTotal} ج.م`
@@ -561,7 +539,8 @@ export default function Checkout() {
                             <Button
                                 onClick={handleSubmit}
                                 disabled={loading}
-                                className="w-full h-14 bg-white hover:bg-gray-100 text-gray-900 border border-gray-200 rounded-xl text-lg font-bold flex justify-between items-center px-6 transition-transform active:scale-[0.98] disabled:opacity-70 disabled:active:scale-100 shadow-[0_4px_14px_0_rgba(0,0,0,0.08)]"                            >
+                                className="w-full h-14 bg-white hover:bg-gray-100 text-gray-900 border border-gray-200 rounded-xl text-lg font-bold flex justify-between items-center px-6 transition-transform active:scale-[0.98] disabled:opacity-70 disabled:active:scale-100 shadow-[0_4px_14px_0_rgba(0,0,0,0.08)]"
+                            >
                                 <span>ج.م{total.toFixed(2)}</span>
                                 <span className="flex items-center gap-2">
                                     {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (isAr ? "إتمام الطلب" : "Checkout")}
@@ -572,8 +551,6 @@ export default function Checkout() {
                     </div>
                 </div>
             </div>
-            {/* أضف هذا النمط (Style) لضبط شكل الـ scrollbar داخل الشريط الجانبي */}
-
         </section>
     )
 }

@@ -163,31 +163,30 @@ export function CouponsTab({
     }
 
     return (
-        <div className="space-y-4 md:space-y-6">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
-                <div className="w-full md:w-auto">
-                    <h2 className="text-lg md:text-2xl font-bold">{isArabic ? "كوبونات الخصم" : "Discount Coupons"}</h2>
-                    <Badge variant="secondary" className="mt-2">
-                        {coupons.length} {isArabic ? "كوبون" : "coupons"}
-                    </Badge>
-                </div>
-                <Button onClick={handleAddCoupon} className="w-full md:w-auto">
+        <div className="space-y-6">
+            <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-bold">{isArabic ? "كوبونات الخصم" : "Discount Coupons"}</h2>
+                <Badge variant="secondary">
+                    {coupons.length} {isArabic ? "كوبون" : "coupons"}
+                </Badge>
+                <Button onClick={handleAddCoupon}>
                     {isArabic ? "إضافة كوبون" : "Add Coupon"}
                 </Button>
             </div>
 
-            <div className="rounded-md border overflow-x-auto">
+            <div className="rounded-md border">
+                <div className="overflow-x-auto">
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead className="w-[120px] text-xs md:text-sm">{isArabic ? "الكود" : "Code"}</TableHead>
-                                <TableHead className="text-xs md:text-sm">{isArabic ? "نوع الخصم" : "Discount Type"}</TableHead>
-                                <TableHead className="text-xs md:text-sm">{isArabic ? "قيمة الخصم" : "Discount Value"}</TableHead>
-                                <TableHead className="text-xs md:text-sm">{isArabic ? "الحد الأدنى" : "Min Purchase"}</TableHead>
-                                <TableHead className="text-xs md:text-sm">{isArabic ? "الفترة" : "Validity Period"}</TableHead>
-                                <TableHead className="text-xs md:text-sm">{isArabic ? "الاستخدام" : "Usage"}</TableHead>
-                                <TableHead className="text-xs md:text-sm">{isArabic ? "الحالة" : "Status"}</TableHead>
-                                <TableHead className="w-[100px] text-center text-xs md:text-sm">{isArabic ? "الإجراءات" : "Actions"}</TableHead>
+                                <TableHead className="w-[120px]">{isArabic ? "الكود" : "Code"}</TableHead>
+                                <TableHead>{isArabic ? "نوع الخصم" : "Discount Type"}</TableHead>
+                                <TableHead>{isArabic ? "قيمة الخصم" : "Discount Value"}</TableHead>
+                                <TableHead>{isArabic ? "الحد الأدنى" : "Min Purchase"}</TableHead>
+                                <TableHead>{isArabic ? "الفترة" : "Validity Period"}</TableHead>
+                                <TableHead>{isArabic ? "الاستخدام" : "Usage"}</TableHead>
+                                <TableHead>{isArabic ? "الحالة" : "Status"}</TableHead>
+                                <TableHead className="w-[100px] text-center">{isArabic ? "الإجراءات" : "Actions"}</TableHead>
                             </TableRow>
                         </TableHeader>
 
@@ -200,33 +199,31 @@ export function CouponsTab({
 
                                     return (
                                         <TableRow key={coupon._id} className={expired ? "opacity-60" : ""}>
-                                            <TableCell className="font-medium text-xs md:text-sm">
+                                            <TableCell className="font-medium">
                                                 <div className="flex flex-col">
-                                                    <span className="font-bold text-base md:text-lg">{coupon.code}</span>
+                                                    <span className="font-bold text-lg">{coupon.code}</span>
                                                     <span className="text-xs text-muted-foreground">
                                                         {formatDate(coupon.createdAt)}
                                                     </span>
                                                 </div>
                                             </TableCell>
 
-                                            <TableCell className="text-xs md:text-sm">
+                                            <TableCell>
                                                 <div className="flex items-center">
                                                     {coupon.discountType === "percentage" ? (
                                                         <Percent className="h-4 w-4 mr-2 text-muted-foreground" />
                                                     ) : (
                                                         <DollarSign className="h-4 w-4 mr-2 text-muted-foreground" />
                                                     )}
-                                                    <span className="text-xs md:text-sm">
-                                                        {coupon.discountType === "percentage"
-                                                            ? (isArabic ? "نسبة مئوية" : "Percentage")
-                                                            : (isArabic ? "قيمة ثابتة" : "Fixed Amount")}
-                                                    </span>
+                                                    {coupon.discountType === "percentage"
+                                                        ? (isArabic ? "نسبة مئوية" : "Percentage")
+                                                        : (isArabic ? "قيمة ثابتة" : "Fixed Amount")}
                                                 </div>
                                             </TableCell>
 
-                                            <TableCell className="text-xs md:text-sm">
+                                            <TableCell>
                                                 <div className="flex flex-col">
-                                                    <span className="font-medium text-xs md:text-sm">
+                                                    <span className="font-medium">
                                                         {coupon.discountType === "percentage"
                                                             ? `${coupon.discountValue}%`
                                                             : `$${coupon.discountValue?.toFixed(2)}`}
@@ -239,17 +236,17 @@ export function CouponsTab({
                                                 </div>
                                             </TableCell>
 
-                                            <TableCell className="text-xs md:text-sm">
+                                            <TableCell>
                                                 ${coupon.minPurchaseAmount?.toFixed(2) || "0.00"}
                                             </TableCell>
 
-                                            <TableCell className="text-xs md:text-sm">
+                                            <TableCell>
                                                 <div className="flex flex-col space-y-1">
-                                                    <div className="flex items-center text-xs md:text-sm">
+                                                    <div className="flex items-center text-sm">
                                                         <Calendar className="h-3 w-3 mr-1 text-muted-foreground" />
                                                         {formatDate(coupon.validFrom)}
                                                     </div>
-                                                    <div className="flex items-center text-xs md:text-sm">
+                                                    <div className="flex items-center text-sm">
                                                         <Calendar className="h-3 w-3 mr-1 text-muted-foreground" />
                                                         {formatDate(coupon.validUntil)}
                                                     </div>
@@ -329,10 +326,10 @@ export function CouponsTab({
                             })
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={8} className="text-center py-6 md:py-8 text-xs md:text-sm">
+                                <TableCell colSpan={8} className="text-center py-8">
                                     <div className="flex flex-col items-center">
-                                        <Gift className="h-10 w-10 md:h-12 md:w-12 text-muted-foreground mb-4" />
-                                        <p className="text-muted-foreground text-xs md:text-sm">
+                                        <Gift className="h-12 w-12 text-muted-foreground mb-4" />
+                                        <p className="text-muted-foreground">
                                             {isArabic ? "لا توجد كوبونات حتى الآن" : "No coupons available yet"}
                                         </p>
                                     </div>
@@ -341,30 +338,31 @@ export function CouponsTab({
                         )}
                     </TableBody>
                 </Table>
+                </div>
             </div>
 
             {/* Built-in Add / Edit Form Modal Overlay */}
             {showAddCoupon && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-3 md:p-4">
-                    <div className="bg-white dark:bg-slate-900 rounded-lg shadow-xl border w-full max-w-xl max-h-[90vh] overflow-y-auto p-4 md:p-6" dir={isArabic ? "rtl" : "ltr"}>
-                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b pb-3 mb-4 gap-3">
-                            <h3 className="text-base md:text-xl font-semibold">
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-white dark:bg-slate-900 rounded-lg shadow-xl border w-full max-w-xl max-h-[90vh] overflow-y-auto p-6" dir={isArabic ? "rtl" : "ltr"}>
+                        <div className="flex justify-between items-center border-b pb-3 mb-4">
+                            <h3 className="text-xl font-semibold">
                                 {editingCoupon
                                     ? (isArabic ? "تعديل كوبون" : "Edit Coupon")
                                     : (isArabic ? "إضافة كوبون جديد" : "Add New Coupon")}
                             </h3>
-                            <button onClick={handleCloseCouponForm} className="text-muted-foreground hover:text-foreground text-lg self-start md:self-auto">✕</button>
+                            <button onClick={handleCloseCouponForm} className="text-muted-foreground hover:text-foreground text-lg">✕</button>
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-4">
                             {/* Code */}
                             <div>
-                                <label className="block text-xs md:text-sm font-medium mb-1">
+                                <label className="block text-sm font-medium mb-1">
                                     {isArabic ? "كود الكوبون" : "Coupon Code"}
                                 </label>
                                 <input
                                     type="text"
-                                    className="w-full rounded-md border p-2 bg-transparent uppercase font-bold text-sm md:text-base"
+                                    className="w-full rounded-md border p-2 bg-transparent uppercase font-bold"
                                     required
                                     value={editingCoupon ? editingCoupon.code : newCoupon.code}
                                     onChange={(e) => handleCouponInputChange('code', e.target.value.toUpperCase())}
@@ -372,7 +370,7 @@ export function CouponsTab({
                                 />
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-2 gap-4">
                                 {/* Discount Type */}
                                 <div>
                                     <label className="block text-sm font-medium mb-1">
@@ -404,16 +402,16 @@ export function CouponsTab({
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-2 gap-4">
                                 {/* Min Purchase Amount */}
                                 <div>
-                                    <label className="block text-xs md:text-sm font-medium mb-1">
+                                    <label className="block text-sm font-medium mb-1">
                                         {isArabic ? "الحد الأدنى للشراء" : "Min Purchase Amount"}
                                     </label>
                                     <input
                                         type="number"
                                         min="0"
-                                        className="w-full rounded-md border p-2 bg-transparent text-sm md:text-base"
+                                        className="w-full rounded-md border p-2 bg-transparent"
                                         required
                                         value={editingCoupon ? editingCoupon.minPurchaseAmount : newCoupon.minPurchaseAmount}
                                         onChange={(e) => handleCouponInputChange('minPurchaseAmount', Number(e.target.value))}
@@ -422,13 +420,13 @@ export function CouponsTab({
 
                                 {/* Max Uses */}
                                 <div>
-                                    <label className="block text-xs md:text-sm font-medium mb-1">
+                                    <label className="block text-sm font-medium mb-1">
                                         {isArabic ? "الحد الأقصى للاستخدام" : "Max Uses"}
                                     </label>
                                     <input
                                         type="number"
                                         min="1"
-                                        className="w-full rounded-md border p-2 bg-transparent text-sm md:text-base"
+                                        className="w-full rounded-md border p-2 bg-transparent"
                                         required
                                         value={editingCoupon ? editingCoupon.maxUses : newCoupon.maxUses}
                                         onChange={(e) => handleCouponInputChange('maxUses', Number(e.target.value))}
@@ -452,15 +450,15 @@ export function CouponsTab({
                                 </div>
                             )}
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-2 gap-4">
                                 {/* Valid From */}
                                 <div>
-                                    <label className="block text-xs md:text-sm font-medium mb-1">
+                                    <label className="block text-sm font-medium mb-1">
                                         {isArabic ? "تاريخ البدء" : "Valid From"}
                                     </label>
                                     <input
                                         type="date"
-                                        className="w-full rounded-md border p-2 bg-transparent text-sm md:text-base"
+                                        className="w-full rounded-md border p-2 bg-transparent"
                                         required
                                         value={getInputValueDate(editingCoupon ? editingCoupon.validFrom : newCoupon.validFrom)}
                                         onChange={(e) => handleCouponInputChange('validFrom', e.target.value)}
@@ -469,12 +467,12 @@ export function CouponsTab({
 
                                 {/* Valid Until */}
                                 <div>
-                                    <label className="block text-xs md:text-sm font-medium mb-1">
+                                    <label className="block text-sm font-medium mb-1">
                                         {isArabic ? "تاريخ الانتهاء" : "Valid Until"}
                                     </label>
                                     <input
                                         type="date"
-                                        className="w-full rounded-md border p-2 bg-transparent text-sm md:text-base"
+                                        className="w-full rounded-md border p-2 bg-transparent"
                                         required
                                         value={getInputValueDate(editingCoupon ? editingCoupon.validUntil : newCoupon.validUntil)}
                                         onChange={(e) => handleCouponInputChange('validUntil', e.target.value)}
@@ -483,11 +481,11 @@ export function CouponsTab({
                             </div>
 
                             {/* Form Actions */}
-                            <div className="flex flex-col md:flex-row justify-end gap-3 pt-4 border-t">
-                                <Button type="button" variant="outline" onClick={handleCloseCouponForm} className="w-full md:w-auto">
+                            <div className="flex justify-end gap-3 pt-4 border-t">
+                                <Button type="button" variant="outline" onClick={handleCloseCouponForm}>
                                     {isArabic ? "إلغاء" : "Cancel"}
                                 </Button>
-                                <Button type="submit" className="w-full md:w-auto">
+                                <Button type="submit">
                                     {isArabic ? "حفظ" : "Save"}
                                 </Button>
                             </div>

@@ -37,7 +37,7 @@ type ProductCardProduct = {
   ratings?: ProductRatings
   sold?: number
   isFeatured?: boolean
-  sellerTrusted?: boolean
+  isTrusted?: boolean
   isFavorite?: boolean
 }
 
@@ -190,7 +190,7 @@ const ProductCardComponent = function ProductCard({ product, language, onAddToCa
                 {language === "ar" ? "مميز" : "Featured"}
               </span>
             )}
-            {product.sellerTrusted && (
+            {product.isTrusted && (
               <div className="relative inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-sm font-semibold pl-3 pr-4 py-2 rounded-lg shadow-sm">
                 <div className="flex items-center justify-center w-5 h-5 bg-white/20 rounded-full">
                   <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">

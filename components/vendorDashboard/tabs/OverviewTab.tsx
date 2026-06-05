@@ -74,7 +74,7 @@ export function OverviewTab({ language, t, dashboardCounters, balance, orders, p
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {orders.slice(0, 5).map((order) => (
+                                    {orders?.data?.slice(0, 5).map((order) => (
                                         <TableRow key={order._id} className="hover:bg-slate-50 transition-colors">
                                             <TableCell className="font-medium text-slate-800 text-sm">#{order._id?.slice(-6)}</TableCell>
                                             <TableCell>

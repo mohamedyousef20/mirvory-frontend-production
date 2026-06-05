@@ -272,11 +272,9 @@ export const productService = {
 
   // Update product (expects ID in payload body)
   updateProduct: (id: string, updates: Record<string, any>) =>
-    api.patch(`/api/products/${id}`, updates),
-
+    api.patch(`/api/products`, { id, ...updates }),
   // Delete product
-  deleteProduct: (id: string) => api.delete(`/api/products/${id}`),
-
+  deleteProduct: (id: string | number) => api.delete("/api/products", { data: { id } }),
   // Featured products
   getFeaturedProducts: () => api.get("/api/products/featured/product"),
 
@@ -303,6 +301,8 @@ export const productService = {
   rejectProduct: (id: string, reason: string) =>
     api.patch(`/api/products/reject`, { id, reason }),
 
+  trustProduct: (id: string | number) =>
+    api.patch(`/api/products/trust`, { id }),
 
 
   // Advanced search with new endpoint

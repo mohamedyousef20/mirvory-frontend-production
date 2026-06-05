@@ -161,9 +161,9 @@ export default function Signup() {
     setLoading(true);
     setError('');
 
-    // Validate passwords match
-    if (formData.password !== formData.confirmPassword) {
-      setError('كلمات المرور غير متطابقة');
+    const validationError = validateForm();
+    if (validationError) {
+      setError(validationError);
       setLoading(false);
       return;
     }
@@ -216,7 +216,56 @@ export default function Signup() {
       setLoading(false);
     }
   };
+  const validateForm = () => {
+    // First name
+    if (!formData.firstName || formData.firstName.length < 3) {
+      return "الاسم الأول يجب أن يكون 3 أحرف على الأقل";
+    }
 
+    // Last name
+    if (!formData.lastName || formData.lastName.length < 3) {
+      return "الاسم الأخير يجب أن يكون 3 أحرف على الأقل";
+    }
+
+    // Email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      return "البريد الإلكتروني غير صالح";
+    }
+
+    // Password
+    if (!formData.password || formData.password.length < 8) {
+      return "كلمة المرور يجب أن تكون 8 أحرف على الأقل";
+    }
+
+    // Phone (Egypt)
+    const phoneRegex = /^01[0125][0-9]{8}$/;
+    if (!phoneRegex.test(formData.phone)) {
+      return "رقم الهاتف المصري غير صالح";
+    }
+
+    // Password match
+    if (formData.password !== formData.confirmPassword) {
+      return "كلمات المرور غير متطابقة";
+    }
+
+    // Address validation
+    if (!formData.address.governorate) {
+      return "المحافظة مطلوبة";
+    }
+
+    if (!formData.address.city) {
+      return "المدينة / المنطقة مطلوبة";
+    }
+
+    if (!formData.address.addressLine || formData.address.addressLine.length < 5) {
+      return "العنوان التفصيلي يجب أن يكون 5 أحرف على الأقل";
+    }
+
+
+
+    return null;
+  };
 
   return (
     <>
@@ -233,7 +282,7 @@ export default function Signup() {
             <p className="text-xl mb-8">انضم إلينا واستمتع بتجربة تسوق فريدة من نوعها</p>
             <div className="bg-white/10 p-6 rounded-lg">
               <p className="mb-4 text-lg">لديك حساب بالفعل؟</p>
-              <Link href="/login" className="block text-center bg-white text-blue-700 py-3 px-6 rounded-lg font-bold transition-all hover:bg-blue-50">
+              <Link href="/auth/login" className="block text-center bg-white text-blue-700 py-3 px-6 rounded-lg font-bold transition-all hover:bg-blue-50">
                 تسجيل الدخول
               </Link>
             </div>
@@ -275,7 +324,7 @@ export default function Signup() {
                       value={formData.firstName}
                       onChange={handleChange}
                       className="w-full pr-4 pl-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                      placeholder="الاسم الأول"
+                      placeholder="ثلاث احرف على الاقل الاسم الأول"
                       required
                     />
                     <User className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
@@ -291,7 +340,7 @@ export default function Signup() {
                       value={formData.lastName}
                       onChange={handleChange}
                       className="w-full pr-4 pl-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                      placeholder="الاسم الأخير"
+                      placeholder= "الاسم الأخير"
                       required
                     />
                     <User className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />

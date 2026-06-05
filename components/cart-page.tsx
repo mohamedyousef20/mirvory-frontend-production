@@ -900,11 +900,7 @@ export function CartPage() {
                               <span>{couponError}</span>
                             </div>
                           )}
-                          <div className="text-xs text-blue-600 text-center">
-                            {language === "ar"
-                              ? "جرب: WELCOME10 للخصم على أول طلب"
-                              : "Try: WELCOME10 for discount on first order"}
-                          </div>
+                       
                         </div>
                       )}
                     </div>

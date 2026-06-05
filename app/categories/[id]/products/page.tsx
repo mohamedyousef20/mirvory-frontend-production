@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/sheet"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { categoryService } from "@/lib/api"
+import { announcementService, categoryService } from "@/lib/api"
 import ImageSlider from "@/components/ui/ImageSlider"
 
 // Define Product type
@@ -63,28 +63,16 @@ interface Product {
 }
 
 
+interface Announcement {
+  _id: string;
+  title: string;
+  content: string;
+  image?: string;
+  isMain: boolean;
+  status: string;
+  link?: string;
+}
 
-// Mock announcements
-const announcements = [
-  {
-    id: '1',
-    title: {
-      ar: "شحن مجاني على جميع الطلبات فوق 500 ج.م",
-      en: "Free shipping on all orders over 500 EGP",
-    },
-    type: "info",
-    icon: Truck,
-  },
-  {
-    id: '2',
-    title: {
-      ar: "خصم 30% على جميع الكوتشيات الميرور",
-      en: "30% off all Mirror Sneakers",
-    },
-    type: "promotion",
-    icon: Megaphone,
-  },
-];
 
 export default function CategoryProductsGrid() {
   const { language, t } = useLanguage();
@@ -96,7 +84,7 @@ export default function CategoryProductsGrid() {
   const [brands, setBrands] = useState<{ id: string; name: string; count: number }[]>([]);
   const [category, setCategory] = useState<any>(null);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
-  const [priceRange, setPriceRange] = useState([0, 2000]);
+  const [priceRange, setPriceRange] = useState([0, 10000]);
   const [sortOption, setSortOption] = useState("newest");
   const [page, setPage] = useState(1);
   const [pageSize] = useState(12);
@@ -107,7 +95,7 @@ export default function CategoryProductsGrid() {
   const [isLoading, setIsLoading] = useState(false);
   const [currentAnnouncement, setCurrentAnnouncement] = useState(0);
   const [error, setError] = useState<string | null>(null);
-
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   // Fetch category details and products
   useEffect(() => {
     const fetchCategoryData = async () => {
@@ -133,7 +121,35 @@ export default function CategoryProductsGrid() {
 
     fetchCategoryData();
   }, [categoryId, language]);
+  useEffect(() => {
+    const fetchAnnouncements = async () => {
+      try {
+        setIsLoading(true);
 
+        const response = await announcementService.getAnnouncements();
+console.log(response,'an2525')
+        setAnnouncements(response?.data || []);
+      } catch (error) {
+        console.error("Failed to fetch announcements:", error);
+        setAnnouncements([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAnnouncements();
+  }, []);
+  useEffect(() => {
+    if (!announcements.length) return;
+
+    const interval = setInterval(() => {
+      setCurrentAnnouncement((prev) =>
+        (prev + 1) % announcements.length
+      );
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [announcements]);
   // Fetch products when filters change
   const fetchCategoryProducts = async () => {
     if (!categoryId) return;
@@ -152,9 +168,9 @@ export default function CategoryProductsGrid() {
       };
 
       const response = await categoryService.getProductsByCategory(categoryId, params);
-      //console.log(response, 're')
+      console.log(response, 're14')
       if (response.data) {
-        const fetchedProducts: Product[] = response.data.products || [];
+        const fetchedProducts: Product[] = response.data.data || [];
         setProducts(fetchedProducts);
 
         // Derive brands list with counts
@@ -216,7 +232,7 @@ export default function CategoryProductsGrid() {
 
   const resetFilters = () => {
     setSelectedBrands([]);
-    setPriceRange([0, 2000]);
+    setPriceRange([0, 10000]);
     setSortOption("newest");
     setPage(1);
   };
@@ -284,8 +300,8 @@ export default function CategoryProductsGrid() {
                   <div className="py-4">
                     <Accordion type="multiple" className="w-full" defaultValue={["brands", "price"]}>
                       <AccordionItem value="brands">
-                        <AccordionTrigger>{language === "ar" ? "الماركات" : "Brands"}</AccordionTrigger>
-                        <AccordionContent>
+                        {/* <AccordionTrigger>{language === "ar" ? "الماركات" : "Brands"}</AccordionTrigger> */}
+                        {/* <AccordionContent>
                           <div className="space-y-2">
                             {brands.map((brand) => (
                               <div key={brand.id} className="flex items-center space-x-2 rtl:space-x-reverse">
@@ -300,7 +316,7 @@ export default function CategoryProductsGrid() {
                               </div>
                             ))}
                           </div>
-                        </AccordionContent>
+                        </AccordionContent> */}
                       </AccordionItem>
                       <AccordionItem value="price">
                         <AccordionTrigger>{language === "ar" ? "السعر" : "Price"}</AccordionTrigger>
@@ -308,7 +324,7 @@ export default function CategoryProductsGrid() {
                           <div className="space-y-4">
                             <Slider
                               value={priceRange}
-                              max={2000}
+                              max={10000}
                               step={50}
                               onValueChange={handlePriceChange}
                             />
@@ -356,7 +372,7 @@ export default function CategoryProductsGrid() {
           {/* Filters Sidebar */}
           <div className="hidden md:block space-y-6">
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
+              {/* <div className="flex items-center justify-between">
                 <h3 className="font-medium">{language === "ar" ? "الماركات" : "Brands"}</h3>
                 {selectedBrands.length > 0 && (
                   <Button variant="ghost" size="sm" onClick={() => setSelectedBrands([])}>
@@ -364,7 +380,7 @@ export default function CategoryProductsGrid() {
                     {language === "ar" ? "مسح" : "Clear"}
                   </Button>
                 )}
-              </div>
+              </div> */}
               <div className="space-y-2">
                 {brands.map((brand) => (
                   <div key={brand.id} className="flex items-center space-x-2 rtl:space-x-reverse">
@@ -385,7 +401,7 @@ export default function CategoryProductsGrid() {
               <div className="space-y-4">
                 <Slider
                   value={priceRange}
-                  max={2000}
+                  max={10000}
                   step={50}
                   onValueChange={handlePriceChange}
                 />
@@ -399,7 +415,7 @@ export default function CategoryProductsGrid() {
                 </div>
               </div>
             </div>
-            {(selectedBrands.length > 0 || priceRange[0] > 0 || priceRange[1] < 2000) && (
+            {(selectedBrands.length > 0 || priceRange[0] > 0 || priceRange[1] < 10000) && (
               <Button variant="outline" onClick={resetFilters} className="w-full">
                 {language === "ar" ? "إعادة ضبط الفلاتر" : "Reset Filters"}
               </Button>
@@ -409,14 +425,34 @@ export default function CategoryProductsGrid() {
           {/* Products Grid */}
           <div className="space-y-6">
             {/* Announcements Section */}
-            <Alert className={`transition-all duration-500 ${getAnnouncementStyle(announcements[currentAnnouncement].type)}`}>
-              {React.createElement(announcements[currentAnnouncement].icon, { className: "h-4 w-4" })}
-              <AlertDescription>
-                {language === "ar"
-                  ? announcements[currentAnnouncement].title.ar
-                  : announcements[currentAnnouncement].title.en}
-              </AlertDescription>
-            </Alert>
+            {announcements.length > 0 && (
+              <Alert className="transition-all duration-500 border-primary/20">
+                <Megaphone className="h-4 w-4" />
+
+                <AlertDescription>
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <h3 className="font-semibold">
+                        {announcements[currentAnnouncement]?.title}
+                      </h3>
+
+                      <p className="text-sm text-muted-foreground">
+                        {announcements[currentAnnouncement]?.content}
+                      </p>
+                    </div>
+
+                    {announcements[currentAnnouncement]?.link && (
+                      <Link
+                        href={announcements[currentAnnouncement].link}
+                        className="text-primary text-sm font-medium"
+                      >
+                        {language === "ar" ? "عرض" : "View"}
+                      </Link>
+                    )}
+                  </div>
+                </AlertDescription>
+              </Alert>
+            )}
 
             {/* Error state */}
             {error && (
@@ -470,8 +506,8 @@ export default function CategoryProductsGrid() {
                       className="overflow-hidden group shadow-md hover:shadow-lg transition-all duration-300"
                     >
                       <Link href={`/products/${product._id}`} className="relative block">
-                        <ImageSlider images={product.images} alt={product.title} 
-                        variant="card" />
+                        <ImageSlider images={product.images} alt={product.title}
+                          variant="card" />
                         {(product.ratings?.average ?? 0) > 4.5 && (
                           <Badge className="absolute top-2 right-2 bg-red-500 hover:bg-red-600">
                             {language === "ar" ? "مميز" : "Top Rated"}

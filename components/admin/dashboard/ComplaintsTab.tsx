@@ -96,7 +96,7 @@ export function ComplaintsTab() {
       } else {
         setTotalPages(1);
       }
-    } catch (err: any) {
+    } catch (err: any) {int
       const msg =
         err?.response?.data?.message ||
         (isArabic ? "فشل جلب الشكاوى" : "Failed to fetch complaints");
@@ -144,35 +144,43 @@ export function ComplaintsTab() {
   };
 
   return (
-    <div className="space-y-4 md:space-y-6" >
+    <div className="space-y-6" >
       {loading ? (
         <div className="flex justify-center py-10">
           <Loader2 className="h-6 w-6 animate-spin" />
         </div>
       ) : error ? (
-        <p className="text-destructive text-center py-6 text-sm md:text-base">{error}</p>
+        <p className="text-destructive text-center py-6">{error}</p>
       ) : (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="overflow-x-auto rounded-lg border bg-background">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-muted text-muted-foreground text-right">
+                <th className="p-2">{isArabic ? "العنوان" : "Title"}</th>
+                <th className="p-2">{isArabic ? "الحالة" : "Status"}</th>
+                <th className="p-2">{isArabic ? "المستخدم" : "User"}</th>
+                <th className="p-2">{isArabic ? "الصور" : "Images"}</th>
+                <th className="p-2">{isArabic ? "التاريخ" : "Date"}</th>
+                <th className="p-2">{isArabic ? "إجراءات" : "Actions"}</th>
+              </tr>
+            </thead>
+
+            <tbody>
               {complaints.length > 0 ? (
                 complaints.map((c) => (
-                  <div
-                    key={c._id}
-                    className="border rounded-lg bg-background p-4 space-y-3 shadow-sm"
-                  >
-                    {/* Title */}
-                    <div>
-                      <div className="font-medium text-sm truncate" title={c.title}>
+                  <tr key={c._id} className="border-b text-right align-top">
+                    <td className="p-2 max-w-xs">
+                      <div className="font-medium truncate" title={c.title}>
                         {c.title}
                       </div>
                       {c.message && (
-                        <div className="text-xs text-muted-foreground line-clamp-2 mt-1">
+                        <div className="text-xs text-muted-foreground mt-1 line-clamp-2">
                           {c.message}
                         </div>
                       )}
-                    </div>
+                    </td>
 
-                    {/* Status */}
-                    <div className="space-y-2">
+                    <td className="p-2">
                       <span
                         className={`inline-flex items-center px-2 py-1 rounded-full border text-xs font-medium ${getStatusClass(
                           c.status
@@ -181,49 +189,47 @@ export function ComplaintsTab() {
                         {getStatusLabel(c.status)}
                       </span>
 
-                      <select
-                        className="bg-transparent border rounded p-1 text-xs w-full"
-                        value={c.status}
-                        onChange={(e) =>
-                          handleStatusChange(
-                            c._id,
-                            e.target.value as "open" | "in_progress" | "resolved"
-                          )
-                        }
-                      >
-                        {statusOptions.map((s) => (
-                          <option key={s.value} value={s.value}>
-                            {isArabic ? s.labelAr : s.labelEn}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                      <div className="mt-2">
+                        <select
+                          className="bg-transparent border rounded p-1 text-sm w-full max-w-[160px]"
+                          value={c.status}
+                          onChange={(e) =>
+                            handleStatusChange(
+                              c._id,
+                              e.target.value as "open" | "in_progress" | "resolved"
+                            )
+                          }
+                        >
+                          {statusOptions.map((s) => (
+                            <option key={s.value} value={s.value}>
+                              {isArabic ? s.labelAr : s.labelEn}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </td>
 
-                    {/* User */}
-                    <div className="text-xs">
-                      <span className="text-muted-foreground">
-                        {isArabic ? "المستخدم: " : "User: "}
-                      </span>
+                    <td className="p-2">
                       {c.user?.email ||
                         `${c.user?.firstName || ""} ${c.user?.lastName || ""}`.trim() ||
                         (isArabic ? "غير متوفر" : "N/A")}
-                    </div>
+                    </td>
 
-                    {/* Images */}
-                    <button
-                      onClick={() => setSelectedComplaint(c)}
-                      className="inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-xs hover:bg-muted w-full justify-center"
-                    >
-                      <Eye className="h-4 w-4" />
-                      {isArabic ? `عرض (${c.images?.length || 0})` : `View (${c.images?.length || 0})`}
-                    </button>
+                    <td className="p-2">
+                      <button
+                        onClick={() => setSelectedComplaint(c)}
+                        className="inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-xs hover:bg-muted"
+                      >
+                        <Eye className="h-4 w-4" />
+                        {isArabic ? `عرض (${c.images?.length || 0})` : `View (${c.images?.length || 0})`}
+                      </button>
+                    </td>
 
-                    {/* Date + Delete */}
-                    <div className="flex items-center justify-between pt-2 border-t">
-                      <span className="text-xs text-muted-foreground">
-                        {new Date(c.createdAt).toLocaleDateString()}
-                      </span>
+                    <td className="p-2 whitespace-nowrap">
+                      {new Date(c.createdAt).toLocaleDateString()}
+                    </td>
 
+                    <td className="p-2">
                       <button
                         onClick={() => handleDelete(c._id)}
                         className="text-destructive hover:opacity-80"
@@ -231,15 +237,19 @@ export function ComplaintsTab() {
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
-                    </div>
-                  </div>
+                    </td>
+                  </tr>
                 ))
               ) : (
-                <div className="col-span-full text-center text-muted-foreground py-10">
-                  {isArabic ? "لا توجد شكاوى" : "No complaints found"}
-                </div>
+                <tr>
+                  <td colSpan={6} className="p-8 text-center text-muted-foreground">
+                    {isArabic ? "لا توجد شكاوى" : "No complaints found"}
+                  </td>
+                </tr>
               )}
-            </div>
+            </tbody>
+          </table>
+        </div>
       )}
 
       {complaints.length > 0 && (
@@ -252,28 +262,28 @@ export function ComplaintsTab() {
       )}
 
       {selectedComplaint && (
-        <div className="fixed inset-0 z-50 bg-black/60 p-3 md:p-4 flex items-center justify-center">
+        <div className="fixed inset-0 z-50 bg-black/60 p-4 flex items-center justify-center">
           <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white shadow-xl">
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between border-b p-3 md:p-4 gap-3">
-              <div className="w-full md:w-auto">
-                <h3 className="text-base md:text-lg font-semibold">
+            <div className="flex items-center justify-between border-b p-4">
+              <div>
+                <h3 className="text-lg font-semibold">
                   {isArabic ? "تفاصيل الشكوى" : "Complaint Details"}
                 </h3>
-                <p className="text-xs md:text-sm text-muted-foreground line-clamp-2">{selectedComplaint.title}</p>
+                <p className="text-sm text-muted-foreground">{selectedComplaint.title}</p>
               </div>
               <button
                 onClick={() => setSelectedComplaint(null)}
-                className="rounded-full p-2 hover:bg-muted self-start md:self-auto"
+                className="rounded-full p-2 hover:bg-muted"
                 aria-label="Close"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            <div className="grid gap-4 md:gap-6 p-3 md:p-4 grid-cols-1 md:grid-cols-2">
+            <div className="grid gap-6 p-4 md:grid-cols-2">
               <div className="space-y-4">
                 <div>
-                  <p className="text-xs md:text-sm font-medium text-muted-foreground">
+                  <p className="text-sm font-medium text-muted-foreground">
                     {isArabic ? "الحالة" : "Status"}
                   </p>
                   <span
@@ -286,19 +296,19 @@ export function ComplaintsTab() {
                 </div>
 
                 <div>
-                  <p className="text-xs md:text-sm font-medium text-muted-foreground">
+                  <p className="text-sm font-medium text-muted-foreground">
                     {isArabic ? "الرسالة" : "Message"}
                   </p>
-                  <p className="mt-2 rounded-lg border bg-muted/30 p-3 text-xs md:text-sm">
+                  <p className="mt-2 rounded-lg border bg-muted/30 p-3 text-sm">
                     {selectedComplaint.message || (isArabic ? "لا توجد رسالة" : "No message")}
                   </p>
                 </div>
 
                 <div>
-                  <p className="text-xs md:text-sm font-medium text-muted-foreground">
+                  <p className="text-sm font-medium text-muted-foreground">
                     {isArabic ? "المستخدم" : "User"}
                   </p>
-                  <p className="mt-2 text-xs md:text-sm">
+                  <p className="mt-2 text-sm">
                     {selectedComplaint.user?.email ||
                       `${selectedComplaint.user?.firstName || ""} ${selectedComplaint.user?.lastName || ""}`.trim() ||
                       (isArabic ? "غير متوفر" : "N/A")}
@@ -306,17 +316,17 @@ export function ComplaintsTab() {
                 </div>
 
                 <div>
-                  <p className="text-xs md:text-sm font-medium text-muted-foreground">
+                  <p className="text-sm font-medium text-muted-foreground">
                     {isArabic ? "تاريخ الإنشاء" : "Created At"}
                   </p>
-                  <p className="mt-2 text-xs md:text-sm">
+                  <p className="mt-2 text-sm">
                     {new Date(selectedComplaint.createdAt).toLocaleString()}
                   </p>
                 </div>
               </div>
 
               <div className="space-y-3">
-                <p className="text-xs md:text-sm font-medium text-muted-foreground">
+                <p className="text-sm font-medium text-muted-foreground">
                   {isArabic ? "الصور المرفقة" : "Attached Images"}
                 </p>
 
@@ -330,7 +340,7 @@ export function ComplaintsTab() {
                     priority
                   />
                 ) : (
-                  <div className="flex h-48 md:h-64 items-center justify-center rounded-2xl border bg-muted/30 text-xs md:text-sm text-muted-foreground">
+                  <div className="flex h-64 items-center justify-center rounded-2xl border bg-muted/30 text-sm text-muted-foreground">
                     {isArabic ? "لا توجد صور مرفقة" : "No images attached"}
                   </div>
                 )}

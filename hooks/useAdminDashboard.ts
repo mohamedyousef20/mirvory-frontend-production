@@ -205,7 +205,7 @@ export function useAdminDashboard() {
                 }
             }
         } catch (err: any) {
-            toast.error(err?.response?.data?.message || (isArabic ? 'فشل جلب المعاملات' : 'Failed to fetch transactions'));
+            // toast.error(err?.response?.data?.message || (isArabic ? 'فشل جلب المعاملات' : 'Failed to fetch transactions'));
         } finally {
             setTransactionsLoading(false);
         }
@@ -228,7 +228,8 @@ export function useAdminDashboard() {
     const fetchDashboardCounters = async () => {
         try {
             const res = await adminDashboardService.getCounters();
-            setDashboardCounters(res.data?.data || res.data);
+            console.log(res,'countss')
+            setDashboardCounters(res.data?.data );
         } catch (err) {
             console.error('Failed to fetch dashboard counters', err);
         }
@@ -938,6 +939,7 @@ export function useAdminDashboard() {
         try {
             setLoadingAnnouncements(true);
             const response = await announcementService.getAllAnnouncementsForAdmin();
+            console.log(response,'addnn')
             setAnnouncements(response.data);
         } catch (error: any) {
             setErrorAnnouncements(error.response?.data?.message || 'Failed to fetch announcements');
@@ -949,6 +951,7 @@ export function useAdminDashboard() {
     const fetchSellers = async () => {
         try {
             const response = await userService.getSellerForAdmin({ page: sellersPage, limit: SELLERS_LIMIT });
+            console.log(response,'rdseller')
             if (response.data?.data) {
                 setSellers(response.data.data);
             }
@@ -1041,7 +1044,26 @@ export function useAdminDashboard() {
             toast.error(err.message || (isArabic ? "حدث خطأ أثناء الموافقة على المنتج" : "Error approving product"));
         }
     };
+    const handleTrustProduct = async (productId: string) => {
+        try {
+            await productService.trustProduct(productId);
 
+            toast.success(
+                isArabic
+                    ? "تم توثيق المنتج بنجاح"
+                    : "Product trusted successfully"
+            );
+
+            await fetchProducts();
+        } catch (error: any) {
+            toast.error(
+                error?.response?.data?.message ||
+                (isArabic
+                    ? "فشل توثيق المنتج"
+                    : "Failed to trust product")
+            );
+        }
+    };
     // Reject product
     const handleRejectProduct = async (productId: string, sellerId: string, title: string, reason: string) => {
         if (!reason) return;
@@ -1330,6 +1352,7 @@ export function useAdminDashboard() {
         handleEditCategory,
         handleDeleteCategory,
         handleApproveProduct,
+        handleTrustProduct,
         handleRejectProduct,
         handleSaveAnnouncement,
         handleDeleteAnnouncement,

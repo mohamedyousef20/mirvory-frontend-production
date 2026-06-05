@@ -16,6 +16,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { ChromePicker } from 'react-color';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useAuth } from '@/contexts/AuthProvider';
+import Joi from "joi"; // استيراد مكتبة Joi
 
 interface AddProductFormProps {
   onClose: () => void;
@@ -54,7 +55,6 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
     quantity: '0',
     isFeatured: false,
     status: 'available' as 'available' | 'pending',
-    // Removed fixed sellerPercentage from state since it's calculated dynamically
   });
   const [showCategoryDialog, setShowCategoryDialog] = useState(false);
   const [newCategory, setNewCategory] = useState({
@@ -66,14 +66,73 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
     status: 'active' as 'active' | 'inactive'
   });
 
+  // بناء مخطط التحقق Joi داخل المكون لتخصيص رسائل الخطأ ديناميكياً بناءً على اللغة المتوفرة
+  const productValidationSchema = Joi.object({
+    title: Joi.string().trim().min(3).max(200).required().messages({
+      "string.empty": language === 'ar' ? "عنوان المنتج مطلوب" : "Product title is required",
+      "string.min": language === 'ar' ? "اسم المنتج يجب ألا يقل عن 3 أحرف" : "Title must be at least 3 characters",
+      "any.required": language === 'ar' ? "عنوان المنتج مطلوب" : "Product title is required"
+    }),
+
+    description: Joi.string().trim().min(20).max(5000).required().messages({
+      "string.empty": language === 'ar' ? "وصف المنتج مطلوب" : "Product description is required",
+      "string.min": language === 'ar' ? "الوصف يجب ألا يقل عن 20 حرفًا" : "Description must be at least 20 characters"
+    }),
+
+    price: Joi.number().positive().required().messages({
+      "number.base": language === 'ar' ? "السعر يجب أن يكون رقمًا" : "Price must be a number",
+      "number.positive": language === 'ar' ? "السعر يجب أن يكون أكبر من صفر" : "Price must be greater than zero",
+      "any.required": language === 'ar' ? "السعر مطلوب" : "Price is required"
+    }),
+
+    discountPercentage: Joi.number().min(0).max(100).default(0).messages({
+      "number.min": language === 'ar' ? "نسبة الخصم لا يمكن أن تقل عن 0%" : "Discount cannot be less than 0%",
+      "number.max": language === 'ar' ? "نسبة الخصم لا يمكن أن تتجاوز 100%" : "Discount cannot exceed 100%"
+    }),
+
+    category: Joi.string().required().messages({
+      "any.required": language === 'ar' ? "القسم / الفئة مطلوبة" : "Category is required",
+      "string.empty": language === 'ar' ? "الرجاء اختيار الفئة" : "Please select a category"
+    }),
+
+    brand: Joi.string().trim().max(100).allow("").default(""),
+
+    quantity: Joi.number().integer().min(1).required().messages({
+      "number.base": language === 'ar' ? "الكمية يجب أن تكون رقمًا" : "Quantity must be a number",
+      "number.min": language === 'ar' ? "الكمية لا يمكن أن تكون أقل من صفر" : "Quantity cannot be less than zero"
+    }),
+
+    images: Joi.array().items(Joi.string().trim()).min(1).required().messages({
+      "array.min": language === 'ar' ? "يجب إضافة صورة واحدة على الأقل" : "Please add at least one image"
+    }),
+
+    sizes: Joi.array().items(Joi.string().trim().required().max(50)).default([]),
+
+    colors: Joi.array().items(
+      Joi.object({
+        name: Joi.string().trim().required().messages({
+          "string.empty": language === 'ar' ? "اسم اللون مطلوب" : "Color name is required"
+        }),
+        value: Joi.string().pattern(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/).required().messages({
+          "string.pattern.base": language === 'ar' ? "قيمة اللون يجب أن تكون HEX صحيحة" : "Color value must be a valid HEX code"
+        }),
+        available: Joi.boolean().default(true)
+      })
+    ).required().default([]),
+
+    isFeatured: Joi.boolean().default(false),
+    status: Joi.string().valid('available', 'pending').default('available'),
+    discountedPrice: Joi.any() 
+  });
+
   // Helper function to get platform fee based on price
   function getPlatformFeeByPrice(price: number): number {
-    if (!price || price <= 0) return 0.10; // Default
+    if (!price || price <= 0) return 0.10;
 
     if (price < 300) return 0.18;
     if (price >= 300 && price <= 799) return 0.15;
     if (price >= 800 && price <= 1999) return 0.12;
-    return 0.10; // more than 2000
+    return 0.10;
   }
 
   // Helper function to explain the price range
@@ -118,16 +177,7 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
         toast.error(language === 'ar' ? 'فشل جلب الفئات' : 'Failed to fetch categories');
       }
     };
-    // const fetchBrands = async () => {
-    //   try {
-    //     const res = await (await import('@/lib/api')).brandService.getBrands();
-    //     setBrands(res.data);
-    //   } catch (err) {
-    //     toast.error(language === 'ar' ? 'فشل جلب الماركات' : 'Failed to fetch brands');
-    //   }
-    // };
     fetchCategories();
-    // fetchBrands();
   }, [language]);
 
   // Calculate discounted price when price or discount percentage changes
@@ -157,7 +207,6 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
 
   const handleNumberInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    // Allow only numbers and decimal points
     if (value === '' || /^\d*\.?\d*$/.test(value)) {
       setNewProduct(prev => ({ ...prev, [name]: value }));
     }
@@ -187,41 +236,6 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
     });
   };
 
-  // const handleCreateCategory = async () => {
-  //   try {
-  //     if (!newCategory.name || !newCategory.nameEn) {
-  //       toast.error(language === 'ar' ? 'الرجاء إدخال اسم الفئة بالعربية والإنجليزية' : 'Please enter category name in Arabic and English');
-  //       return;
-  //     }
-
-  // const response = await categoryService.createCategory(newCategory);
-  // toast.success(language === 'ar' ? 'تم إنشاء الفئة بنجاح' : 'Category created successfully');
-
-  // // Refresh categories list
-  // const categoriesResponse = await categoryService.getCategories();
-  // setCategories(categoriesResponse.data);
-
-  // // Set the newly created category as selected
-  // setNewProduct(prev => ({ ...prev, category: response.data._id }));
-
-  // Reset form and close dialog
-  //     setNewCategory({
-  //       name: '',
-  //       nameEn: '',
-  //       description: '',
-  //       descriptionEn: '',
-  //       image: '',
-  //       status: 'active'
-  //     });
-  //     setShowCategoryDialog(false);
-  //   } catch (error: any) {
-  //     toast.error(
-  //       error.response?.data?.message ||
-  //       (language === 'ar' ? 'فشل إنشاء الفئة' : 'Failed to create category')
-  //     );
-  //   }
-  // };
-
   const addSize = () => {
     if (sizeInput.trim() && !newProduct.sizes.includes(sizeInput.trim())) {
       setNewProduct(prev => ({
@@ -248,7 +262,6 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
 
   const addColor = () => {
     if (colorInput.name.trim() && colorInput.value) {
-      // Check if color with same value already exists
       const colorExists = newProduct.colors.some(color =>
         color.value.toLowerCase() === colorInput.value.toLowerCase()
       );
@@ -269,7 +282,6 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
         colors: [...prev.colors, newColor],
       }));
 
-      // Reset color input
       setColorInput({
         name: '',
         value: '#000000',
@@ -306,26 +318,30 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
       return;
     }
 
-    // Validate required fields
-    if (newProduct.images.length === 0) {
-      toast.error(language === 'ar' ? 'الرجاء إضافة صورة واحدة على الأقل' : 'Please add at least one image');
-      return;
-    }
+    // تجهيز كائن البيانات مع تحويل النصوص الرقمية إلى أرقام حقيقية من أجل مطابقة الـ Validation وقاعدة البيانات
+    const preparedDataToValidate = {
+      ...newProduct,
+      price: newProduct.price === '' ? undefined : parseFloat(newProduct.price),
+      discountPercentage: parseFloat(newProduct.discountPercentage) || 0,
+      quantity: parseInt(newProduct.quantity) || 0,
+    };
 
-    if (!newProduct.category) {
-      toast.error(language === 'ar' ? 'الرجاء اختيار فئة' : 'Please select a category');
+    // تنفيذ عملية التحقق باستخدام Joi قبل الإرسال
+    const { error } = productValidationSchema.validate(preparedDataToValidate, { abortEarly: true });
+
+    if (error) {
+      // عرض رسالة الخطأ المخصصة الأولى للمستخدم مباشرة
+      toast.error(error.details[0].message);
       return;
     }
 
     setLoading(true);
 
     try {
-      // Calculate dynamic seller percentage
       const price = parseFloat(newProduct.discountedPrice) || parseFloat(newProduct.price) || 0;
       const platformFee = getPlatformFeeByPrice(price);
       const calculatedSellerPercentage = (1 - platformFee) * 100;
 
-      // Prepare product data according to the model
       const productData = {
         title: newProduct.title,
         description: newProduct.description,
@@ -340,16 +356,14 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
         quantity: parseInt(newProduct.quantity) || 0,
         isFeatured: newProduct.isFeatured,
         status: newProduct.status,
-        sellerPercentage: calculatedSellerPercentage // Dynamic percentage based on price
+        sellerPercentage: calculatedSellerPercentage
       };
 
-      // Create product
       const response = await productService.createProduct(productData);
-      console.log(response,'adpro')
       if (response.data.success) {
         toast.success(language === 'ar' ? 'تم إنشاء المنتج بنجاح وتم إرسال طلب الاعتماد ' : 'Product added successfully');
       }
-       onClose();
+      onClose();
     } catch (error: any) {
       console.error('Error creating product:', error);
       toast.error(
@@ -381,7 +395,6 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
               value={newProduct.title}
               onChange={handleInputChange}
               placeholder={language === 'ar' ? 'أدخل عنوان المنتج' : 'Enter product title'}
-              required
             />
           </div>
 
@@ -396,7 +409,6 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
               value={newProduct.description}
               onChange={handleInputChange}
               placeholder={language === 'ar' ? 'أدخل وصف المنتج' : 'Enter product description'}
-              required
               rows={4}
             />
           </div>
@@ -412,7 +424,6 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
                 value={newProduct.price}
                 onChange={handleNumberInputChange}
                 placeholder="0.00"
-                required
               />
             </div>
 
@@ -459,7 +470,7 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {/* Platform Fee Percentage (Dynamic) */}
+              {/* Platform Fee Percentage */}
               <div>
                 <Label htmlFor="platformFee">
                   {language === 'ar' ? 'رسوم المنصة %' : 'Platform Fee %'}
@@ -479,7 +490,7 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
                 </p>
               </div>
 
-              {/* Seller Percentage (Dynamic) */}
+              {/* Seller Percentage */}
               <div>
                 <Label htmlFor="sellerPercentage">
                   {language === 'ar' ? 'نسبة البائع %' : 'Seller Percentage %'}
@@ -499,7 +510,7 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
                 </p>
               </div>
 
-              {/* Seller Amount (Auto-calculated) */}
+              {/* Seller Amount */}
               <div>
                 <Label htmlFor="sellerAmount">
                   {language === 'ar' ? 'مبلغ البائع' : 'Seller Amount'}
@@ -548,7 +559,6 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
             </div>
           </div>
 
-
           {/* Sizes */}
           <div>
             <Label htmlFor="sizes">{language === 'ar' ? 'المقاسات' : 'Sizes'}</Label>
@@ -590,7 +600,6 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
           <div>
             <Label htmlFor="colors">{language === 'ar' ? 'الألوان' : 'Colors'}</Label>
             <div className="space-y-4">
-              {/* Color Input Form */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 border rounded-lg">
                 <div>
                   <Label htmlFor="colorName">
@@ -645,7 +654,6 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
                 </div>
               </div>
 
-              {/* Colors List */}
               <div className="flex flex-wrap gap-3">
                 {newProduct.colors.map((color, index) => (
                   <div
@@ -718,7 +726,6 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
             </Select>
           </div>
 
-
           {/* Quantity */}
           <div>
             <Label htmlFor="quantity">
@@ -731,7 +738,6 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
               value={newProduct.quantity}
               onChange={handleNumberInputChange}
               placeholder="0"
-              required
             />
           </div>
 

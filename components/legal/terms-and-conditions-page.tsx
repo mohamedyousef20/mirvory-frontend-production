@@ -13,16 +13,16 @@ const sections = [
     titleAr: "التعريفات",
     icon: Info,
     contentEn: [
-      "Mirvory is a multi-vendor commerce platform operated by Mirvory LLC.",
+      "Mirvory is a multi-vendor commerce platform operated as a digital marketplace.",
       "User refers to any visitor, buyer, or seller using the platform.",
       "Seller is a registered user who publishes products on Mirvory.",
-      "Services include browsing, carts, checkout, reviews, notifications, dashboards, loyalty programs, returns, and pick-up services."
+      "Services include browsing, carts, checkout, reviews, notifications, dashboards, loyalty programs, returns, and pickup services."
     ],
     contentAr: [
-      "Mirvory: منصة تجارة إلكترونية متعددة البائعين تديرها شركة Mirvory.",
+      "Mirvory: منصة تجارة إلكترونية متعددة البائعين تعمل كسوق رقمي.",
       "المستخدم: أي شخص يستخدم المنصة كمشتري أو بائع أو زائر.",
-      "البائع: مستخدم مسجَّل يعرض منتجاته عبر Mirvory.",
-      "الخدمات: جميع الميزات المتاحة مثل عرض المنتجات، السلة، الدفع، التقييمات، الإشعارات، لوحة البائع، النقاط، الاسترجاع ونقاط الاستلام."
+      "البائع: مستخدم مسجّل يعرض منتجاته عبر Mirvory.",
+      "الخدمات: جميع الميزات مثل عرض المنتجات، السلة، الدفع، التقييمات، الإشعارات، لوحة البائع، نظام النقاط، الاسترجاع ونقاط الاستلام."
     ],
   },
   {
@@ -31,12 +31,12 @@ const sections = [
     titleAr: "الموافقة على الشروط",
     icon: CheckCircle,
     contentEn: [
-      "Using Mirvory implies acceptance of these terms. If you disagree, please stop using the platform.",
-      "Mirvory may update the Terms periodically; continued use means acceptance of the updates."
+      "Using Mirvory implies acceptance of these terms. If you disagree, stop using the platform.",
+      "Mirvory may update the Terms at any time, and continued use means acceptance of changes."
     ],
     contentAr: [
       "استخدامك لـ Mirvory يعني قبولك لهذه الشروط، وفي حال عدم الموافقة يجب التوقف عن استخدام المنصة.",
-      "يحق لـ Mirvory تعديل الشروط ونشرها، واستمرار الاستخدام بعد التعديل يُعد موافقة صريحة."
+      "يحق لـ Mirvory تعديل الشروط، واستمرار الاستخدام بعد التعديل يُعد قبولاً لها."
     ],
   },
   {
@@ -45,64 +45,66 @@ const sections = [
     titleAr: "الأهلية والحساب",
     icon: Shield,
     contentEn: [
-      "You must be 18+ or legally authorized to represent the account holder.",
+      "You must be legally eligible to create an account.",
       "Provide accurate registration information and keep your credentials secure.",
-      "Verification (email, phone, ID) may be required for certain operations."
+      "Verification may be required for security purposes."
     ],
     contentAr: [
-      "يجب أن يكون عمر المستخدم 18 سنة فأكثر أو أن يكون ممثلاً قانونياً للحساب.",
-      "يجب إدخال معلومات صحيحة عند التسجيل والحفاظ على سرية بيانات الدخول.",
-      "قد تطلب Mirvory التحقق عبر البريد أو الهاتف أو الهوية لبعض العمليات."
+      "يجب أن يكون المستخدم مؤهلاً قانونياً لإنشاء حساب.",
+      "يجب إدخال بيانات صحيحة والحفاظ على سرية الحساب.",
+      "قد يتم طلب التحقق من البيانات لأسباب أمنية."
     ],
   },
   {
-    id: "pricing",
+    id: "products",
     titleEn: "Products, Pricing & Payments",
-    titleAr: "المنتجات، الأسعار والدفع",
+    titleAr: "المنتجات والدفع",
     icon: Scale,
     contentEn: [
-      "Sellers are responsible for accurate listings, stock, and pricing unless otherwise agreed.",
-      "Mirvory may review or remove non-compliant listings.",
-      "Default revenue split: 85% seller / 15% Mirvory (13% platform + 2% promos).",
-      "Payments are processed through approved gateways (e.g., Stripe)."
+      "Sellers are responsible for product accuracy, availability, and descriptions.",
+      "Mirvory may review or remove listings that violate platform policies.",
+      "Payments are processed through approved third-party payment providers.",
+      "Mirvory may operate a marketplace fee model without exposing fixed public rates."
     ],
     contentAr: [
-      "البائع مسؤول عن دقة الوصف والمخزون والأسعار ما لم ينص خلاف ذلك.",
-      "يحق لـ Mirvory مراجعة أو إيقاف المنتجات المخالفة للسياسات.",
-      "نسبة مشاركة العائد الافتراضية: 85% للبائع و15% للمنصة (13% للموقع + 2% خصومات).",
-      "تُعالج المدفوعات عبر بوابات معتمدة مثل Stripe وتقديم معلومات الدفع يعني قبول تعامل الطرف الثالث."
+      "البائع مسؤول عن دقة وصف المنتجات وتوفرها.",
+      "يحق للمنصة مراجعة أو إزالة المنتجات المخالفة للسياسات.",
+      "تتم عمليات الدفع عبر مزودي خدمات دفع معتمدين.",
+      "قد تطبق المنصة نموذج رسوم تشغيل داخلي دون إعلان نسب ثابتة."
+    ],
+  },
+  {
+    id: "trust",
+    titleEn: "Trusted Products, Returns & Protection",
+    titleAr: "المنتجات الموثوقة والحماية والاسترجاع",
+    icon: CheckCircle,
+    contentEn: [
+      "Mirvory provides protection mechanisms for products marked as Trusted Product.",
+      "Eligible Trusted Products may include return, replacement, or compensation options under platform policy.",
+      "Cases are evaluated individually to ensure fairness for both buyer and seller.",
+      "Misuse of ratings or fake claims is strictly prohibited."
+    ],
+    contentAr: [
+      "توفر Mirvory آليات حماية للمنتجات التي تحمل شارة 'منتج موثوق'.",
+      "قد تشمل المنتجات الموثوقة خيارات استرجاع أو استبدال أو تعويض حسب سياسة المنصة.",
+      "يتم تقييم الحالات بشكل فردي لضمان العدالة بين البائع والمشتري.",
+      "يُمنع تماماً إساءة استخدام التقييمات أو تقديم بلاغات كاذبة."
     ],
   },
   {
     id: "shipping",
-    titleEn: "Shipping & Returns",
-    titleAr: "الشحن والاسترجاع",
+    titleEn: "Shipping & Delivery",
+    titleAr: "الشحن والتوصيل",
     icon: Info,
     contentEn: [
-      "Shipping timelines and fees are handled by the seller or agreed logistics partner.",
-      "Pickup points and secret PIN confirmations may be used based on coverage.",
-      "Return / exchange policies vary per seller; each listing clarifies the applicable policy."
+      "Shipping and delivery are handled by sellers or logistics partners.",
+      "Pickup points and verification codes may be used for secure delivery.",
+      "Delivery experience may vary depending on location and seller."
     ],
     contentAr: [
-      "تفاصيل الشحن والمهل والتكاليف تقع ضمن مسؤولية البائع أو مزوّد الخدمة.",
-      "قد توفر Mirvory نقاط استلام ودعم رمز تأكيد سري لتسليم الطلب.",
-      "سياسات الإرجاع والاستبدال تختلف حسب البائع ونوع المنتج، وتعرض في صفحة المنتج."
-    ],
-  },
-  {
-    id: "ratings",
-    titleEn: "Content & Ratings",
-    titleAr: "المحتوى والتقييمات",
-    icon: Info,
-    contentEn: [
-      "Registered users can leave one review per product and may edit or delete it.",
-      "Mirvory may moderate or remove offensive, fraudulent, or promotional content.",
-      "Manipulating ratings or creating fake accounts is prohibited."
-    ],
-    contentAr: [
-      "يمكن للمستخدمين المسجّلين إضافة تقييم واحد لكل منتج مع إمكانية التعديل أو الحذف.",
-      "يحق لـ Mirvory إزالة المحتوى المخالف أو المسيء أو الاحتيالي.",
-      "ممنوع التلاعب بالتقييمات أو إنشاء حسابات مزيفة لهذا الغرض."
+      "تتم عمليات الشحن والتوصيل من خلال البائع أو شركاء الشحن.",
+      "قد يتم استخدام نقاط استلام ورموز تحقق لضمان أمان التسليم.",
+      "قد تختلف تجربة التوصيل حسب الموقع والبائع."
     ],
   },
   {
@@ -111,18 +113,17 @@ const sections = [
     titleAr: "المسؤولية وإنهاء الحساب",
     icon: Shield,
     contentEn: [
-      "Mirvory acts as a marketplace intermediary and is not liable for indirect losses beyond statutory limits.",
-      "Mirvory may suspend or terminate accounts for policy violations or fraud.",
-      "Disputes fall under Egyptian law unless another governing law is agreed."
+      "Mirvory acts as a marketplace intermediary between buyers and sellers.",
+      "Accounts may be suspended in case of fraud or policy violations.",
+      "Disputes are handled according to applicable local regulations."
     ],
     contentAr: [
-      "تعمل Mirvory كوسيط ولا تتحمل مسؤولية الأضرار غير المباشرة إلا وفق ما يفرضه القانون.",
-      "يحق للمنصة تعليق أو إنهاء الحساب عند مخالفة الشروط أو الاشتباه في الاحتيال.",
-      "تُطبق قوانين جمهورية مصر العربية على النزاعات ما لم يُتّفق على غير ذلك."
+      "تعمل Mirvory كوسيط بين البائع والمشتري.",
+      "يمكن إيقاف الحسابات في حال المخالفة أو الاحتيال.",
+      "تتم معالجة النزاعات وفق القوانين المحلية المعمول بها."
     ],
   },
 ]
-
 export default function TermsAndConditionsPage() {
   const { language } = useLanguage()
   const isArabic = language === "ar"
@@ -214,8 +215,8 @@ export default function TermsAndConditionsPage() {
           </h3>
           <p className="text-muted-foreground">
             {isArabic
-              ? "للأسئلة القانونية أو التعاقدية راسلنا على mohamedyousefle@gmail.com أو استخدم صفحة الاتصال."
-              : "For legal or commercial queries, email mohamedyousefle@gmail.com or use the contact form."}
+              ? "للأسئلة القانونية أو التعاقدية راسلنا على support.mirvory@gmail.com أو استخدم صفحة الاتصال."
+              : "For legal or commercial queries, email support.mirvory@gmail.com or use the contact form."}
           </p>
         </CardContent>
       </Card>

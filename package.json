@@ -58,6 +58,7 @@
     "embla-carousel-react": "^8.5.1",
     "express-async-handler": "^1.2.0",
     "input-otp": "1.4.1",
+    "joi": "^18.2.1",
     "jose": "^6.1.2",
     "js-cookie": "^3.0.5",
     "jsonwebtoken": "^9.0.3",

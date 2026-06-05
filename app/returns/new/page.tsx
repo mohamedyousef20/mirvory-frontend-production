@@ -272,7 +272,7 @@ export default function ReturnPageRequest() {
             </div>
 
             {/* Policy reminder */}
-            <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+            {/* <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
               <div className="px-5 py-4 border-b border-slate-100">
                 <p className="text-sm font-bold text-slate-800">
                   {isArabic ? "تذكير بسياسة الإرجاع" : "Quick policy reminder"}
@@ -294,7 +294,7 @@ export default function ReturnPageRequest() {
                   ))}
                 </ul>
               </div>
-            </div>
+            </div> */}
           </aside>
 
           {/* ── Form card ───────────────────────────────────────────── */}

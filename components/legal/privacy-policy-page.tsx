@@ -153,8 +153,8 @@ export default function PrivacyPolicyPage() {
               </h3>
               <p className="text-sm">
                 {isArabic
-                  ? "لأي طلب متعلق بالخصوصية، راسل: mohamedyousefle@gmail.com"
-                  : "For privacy inquiries email: mohamedyousefle@gmail.com"}
+                  ? "لأي طلب متعلق بالخصوصية، راسل: support.mirvory@gmail.com"
+                  : "For privacy inquiries email: support.mirvory@gmail.com"}
               </p>
             </div>
           </div>

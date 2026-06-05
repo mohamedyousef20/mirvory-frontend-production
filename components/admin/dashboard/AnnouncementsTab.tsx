@@ -192,32 +192,32 @@ export function AnnouncementsTab({
     };
 
     return (
-        <div className="space-y-4 md:space-y-6">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 md:mb-6">
-                <div className="w-full md:w-auto">
-                    <h2 className="text-lg md:text-xl font-bold">{isArabic ? "إدارة الإعلانات" : "Announcements Management"}</h2>
-                    <p className="text-sm md:text-base text-muted-foreground">
+        <div className="space-y-6">
+            <div className="flex justify-between items-center mb-6">
+                <div>
+                    <h2 className="text-xl font-bold">{isArabic ? "إدارة الإعلانات" : "Announcements Management"}</h2>
+                    <p className="text-muted-foreground">
                         {isArabic
                             ? "إدارة الإعلانات والتحكم في عرضها في المتجر"
                             : "Manage announcements and control how they appear in your store"}
                     </p>
                 </div>
-                <Button onClick={() => handleEditOrCreate(null)} className="w-full md:w-auto">
+                <Button onClick={() => handleEditOrCreate(null)}>
                     <Plus className="mr-2 h-4 w-4" />
                     {isArabic ? "إضافة إعلان" : "Add Announcement"}
                 </Button>
             </div>
 
             {showAddAnnouncement && (
-                <Card className="mb-4 md:mb-6">
-                    <CardHeader className="p-4 md:p-6">
-                        <CardTitle className="text-base md:text-lg">
+                <Card className="mb-6">
+                    <CardHeader>
+                        <CardTitle>
                             {selectedAnnouncement?._id
                                 ? isArabic ? "تعديل الإعلان" : "Edit Announcement"
                                 : isArabic ? "إضافة إعلان جديد" : "Add New Announcement"}
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="p-4 md:p-6">
+                    <CardContent>
                         <div className="space-y-4">
                             {/* Image Uploader for announcements */}
                             <div>
@@ -269,7 +269,7 @@ export function AnnouncementsTab({
                             </div>
 
                             {/* Title Fields */}
-                            <div className="grid grid-cols-1 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <Label htmlFor="title">{isArabic ? "العنوان (عربي)" : "Title (Arabic)"} *</Label>
                                     <Input
@@ -354,7 +354,7 @@ export function AnnouncementsTab({
                             </div>
 
                             {/* Date Fields */}
-                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <Label htmlFor="startDate">
                                         <Calendar className="h-4 w-4 inline mr-2" />
@@ -398,7 +398,7 @@ export function AnnouncementsTab({
                             </div>
 
                             {/* Status and Main Announcement Fields */}
-                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <Label htmlFor="status">{isArabic ? "الحالة" : "Status"} *</Label>
                                     <Select
@@ -419,14 +419,14 @@ export function AnnouncementsTab({
                                     </Select>
                                 </div>
 
-                                <div className="flex flex-col md:flex-row items-start md:items-center justify-between p-4 border rounded-lg gap-3">
-                                    <div className="flex items-center space-x-3 w-full md:w-auto">
+                                <div className="flex items-center justify-between p-4 border rounded-lg">
+                                    <div className="flex items-center space-x-3">
                                         <Star className={`h-5 w-5 ${(selectedAnnouncement?.isMain ?? newAnnouncement.isMain) ? 'text-yellow-500 fill-yellow-500' : 'text-gray-400'}`} />
                                         <div className="flex flex-col space-y-1">
                                             <Label htmlFor="isMain-toggle" className="text-sm font-medium">
                                                 {isArabic ? "الإعلان الرئيسي" : "Main Announcement"}
                                             </Label>
-                                            <p className="text-xs md:text-sm text-gray-500">
+                                            <p className="text-sm text-gray-500">
                                                 {isArabic
                                                     ? "يظهر بشكل بارز في الصفحة الرئيسية"
                                                     : "Prominently displayed on homepage"
@@ -456,7 +456,7 @@ export function AnnouncementsTab({
                             </div>
                         </div>
 
-                        <div className="flex flex-col md:flex-row justify-end mt-6 space-y-2 md:space-y-0 md:space-x-2">
+                        <div className="flex justify-end mt-6 space-x-2">
                             <Button
                                 variant="outline"
                                 onClick={() => {
@@ -464,11 +464,10 @@ export function AnnouncementsTab({
                                     setSelectedAnnouncement(null);
                                     setImageUrl("");
                                 }}
-                                className="w-full md:w-auto"
                             >
                                 {isArabic ? "إلغاء" : "Cancel"}
                             </Button>
-                            <Button onClick={handleSave} className="w-full md:w-auto">
+                            <Button onClick={handleSave}>
                                 {selectedAnnouncement?._id
                                     ? (isArabic ? "تحديث" : "Update")
                                     : (isArabic ? "إنشاء" : "Create")}
@@ -510,7 +509,7 @@ export function AnnouncementsTab({
             ) : (
                 <>
                     {/* Stats Summary */}
-                    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                         <Card>
                             <CardHeader className="pb-2">
                                 <CardTitle className="text-sm font-medium">
@@ -560,13 +559,13 @@ export function AnnouncementsTab({
                     </div>
 
                     {/* Announcements Grid View */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 mb-6 md:mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
                         {announcements.map((announcement: any) => {
                             const statusInfo = getAnnouncementStatus(announcement);
                             return (
                                 <Card key={announcement._id} className="hover:shadow-md transition-shadow overflow-hidden">
                                     {announcement.image && (
-                                        <div className="relative h-40 md:h-48 overflow-hidden">
+                                        <div className="relative h-48 overflow-hidden">
                                             <img
                                                 src={announcement.image}
                                                 alt={isArabic ? announcement.title : announcement.titleEn}
@@ -582,14 +581,14 @@ export function AnnouncementsTab({
                                             )}
                                         </div>
                                     )}
-                                    <CardHeader className={!announcement.image ? "pb-2 p-3 md:p-6" : "p-3 md:p-6 pb-2"}>
+                                    <CardHeader className={!announcement.image ? "pb-2" : ""}>
                                         <div className="flex items-start justify-between">
-                                            <CardTitle className="text-sm md:text-lg line-clamp-2">
+                                            <CardTitle className="text-lg">
                                                 {isArabic ? announcement.title : announcement.titleEn}
                                             </CardTitle>
                                         </div>
                                     </CardHeader>
-                                    <CardContent className="space-y-3 p-3 md:p-6">
+                                    <CardContent className="space-y-3">
                                         <div className="flex flex-wrap gap-2">
                                             <Badge variant={statusInfo.variant} className={statusInfo.color}>
                                                 {statusInfo.label}
@@ -601,17 +600,17 @@ export function AnnouncementsTab({
                                                 </Badge>
                                             )}
                                         </div>
-                                        <p className="text-xs md:text-sm text-muted-foreground line-clamp-2">
+                                        <p className="text-sm text-muted-foreground line-clamp-2">
                                             {isArabic ? announcement.content : announcement.contentEn}
                                         </p>
                                         <div className="text-xs text-muted-foreground space-y-1">
-                                            <div className="flex justify-between text-xs">
+                                            <div className="flex justify-between">
                                                 <span>{isArabic ? "بداية:" : "Start:"}</span>
-                                                <span className="truncate ml-2">{formatDate(announcement.startDate)}</span>
+                                                <span>{formatDate(announcement.startDate)}</span>
                                             </div>
-                                            <div className="flex justify-between text-xs">
+                                            <div className="flex justify-between">
                                                 <span>{isArabic ? "نهاية:" : "End:"}</span>
-                                                <span className="truncate ml-2">{formatDate(announcement.endDate)}</span>
+                                                <span>{formatDate(announcement.endDate)}</span>
                                             </div>
                                         </div>
                                         {announcement.link && (
@@ -627,12 +626,11 @@ export function AnnouncementsTab({
                                                 </a>
                                             </div>
                                         )}
-                                        <div className="flex flex-col md:flex-row justify-end space-y-2 md:space-y-0 md:space-x-2 pt-2">
+                                        <div className="flex justify-end space-x-2 pt-2">
                                             <Button
                                                 variant="outline"
                                                 size="sm"
                                                 onClick={() => handleEditOrCreate(announcement)}
-                                                className="w-full md:w-auto"
                                             >
                                                 <Edit className="h-4 w-4 mr-1" />
                                                 {isArabic ? "تعديل" : "Edit"}
@@ -640,7 +638,7 @@ export function AnnouncementsTab({
                                             <Button
                                                 variant="outline"
                                                 size="sm"
-                                                className="text-destructive hover:bg-destructive/10 w-full md:w-auto"
+                                                className="text-destructive hover:bg-destructive/10"
                                                 onClick={() => handleDeleteAnnouncement(announcement._id)}
                                             >
                                                 <Trash className="h-4 w-4 mr-1" />
@@ -654,10 +652,11 @@ export function AnnouncementsTab({
                     </div>
 
                     {/* Detailed Table View */}
-                    <div className="mt-6 md:mt-8">
-                        <h3 className="text-base md:text-lg font-semibold mb-3 md:mb-4">{isArabic ? "جميع الإعلانات" : "All Announcements"}</h3>
-                        <div className="rounded-md border overflow-x-auto">
-                            <Table>
+                    <div className="mt-8">
+                        <h3 className="text-lg font-semibold mb-4">{isArabic ? "جميع الإعلانات" : "All Announcements"}</h3>
+                        <div className="rounded-md border">
+                            <div className="overflow-x-auto">
+                                <Table>
                                     <TableHeader>
                                         <TableRow>
                                             <TableHead className="w-[100px]">{isArabic ? "المعرف" : "ID"}</TableHead>
@@ -731,12 +730,11 @@ export function AnnouncementsTab({
                                                     <TableCell>{formatDate(announcement.startDate)}</TableCell>
                                                     <TableCell>{formatDate(announcement.endDate)}</TableCell>
                                                     <TableCell>
-                                                        <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
+                                                        <div className="flex space-x-2">
                                                             <Button
                                                                 variant="ghost"
                                                                 size="sm"
                                                                 onClick={() => handleEditOrCreate(announcement)}
-                                                                className="w-full md:w-auto"
                                                             >
                                                                 <Edit className="h-4 w-4 mr-1" />
                                                                 {isArabic ? "تعديل" : "Edit"}
@@ -744,7 +742,7 @@ export function AnnouncementsTab({
                                                             <Button
                                                                 variant="ghost"
                                                                 size="sm"
-                                                                className="text-destructive hover:text-destructive w-full md:w-auto"
+                                                                className="text-destructive hover:text-destructive"
                                                                 onClick={() => handleDeleteAnnouncement(announcement._id)}
                                                             >
                                                                 <Trash className="h-4 w-4 mr-1" />
@@ -757,6 +755,7 @@ export function AnnouncementsTab({
                                     })}
                                 </TableBody>
                             </Table>
+                            </div>
                         </div>
                     </div>
                 </>

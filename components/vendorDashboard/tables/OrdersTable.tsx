@@ -134,8 +134,8 @@ export function OrdersTable({
                                             <div className="space-y-3 min-w-[320px]">
                                                 {order.items?.map((item: any) => {
                                                     const product = item.product
-                                                    const itemTotal = item.price * item.quantity
-                                                    const isItemPrepared = item.isPrepared
+                                                    const unitPrice =item.discountedPrice != null ? item.discountedPrice : item.price;
+                                                    const itemTotal = unitPrice * (item.quantity || 1);                                                    const isItemPrepared = item.isPrepared
 
                                                     return (
                                                         <div key={item._id} className="flex items-center gap-3 p-2 rounded-lg border border-slate-100">
@@ -215,8 +215,10 @@ export function OrdersTable({
                                                         <p className="text-sm font-bold text-slate-800">
                                                             {language === "ar" ? "إجمالي الطلب:" : "Order Total:"}{" "}
                                                             <span className="text-emerald-600">
-                                                                {order.items.reduce((acc: number, item: any) => acc + (item.price * item.quantity), 0)}{" "}
-                                                                {language === "ar" ? "ج.م" : "EGP"}
+                                                                {order.items.reduce((acc: number, item: any) => {
+                                                                    const price = item.discountedPrice ?? item.price ?? 0;
+                                                                    return acc + price * (item.quantity ?? 1);
+                                                                }, 0)}                                                                {language === "ar" ? "ج.م" : "EGP"}
                                                             </span>
                                                         </p>
                                                     </div>
@@ -241,7 +243,7 @@ export function OrdersTable({
                                                         <p className="text-xs text-slate-500">{order.deliveryInfo.pickupPoint.address}</p>
                                                     </div>
                                                 ) : (
-                                                    <span className="text-slate-400 text-xs">{language === "ar" ? "غير متوفر" : "N/A"}</span>
+                                                    <span className="text-slate-400 text-xs">{language === "ar" ?  " الطلب من الادارة غير متوفر" : "N/A"}</span>
                                                 )}
                                             </div>
                                         </TableCell>
