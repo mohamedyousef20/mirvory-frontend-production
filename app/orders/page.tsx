@@ -295,8 +295,10 @@ export default function OrdersPage() {
 
     if (orders.length === 0) {
         return (
-            <div className="min-h-screen bg-slate-50 py-12 px-4">
-                <div className="container mx-auto max-w-4xl">
+            <>
+                <style>{`@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap'); * { font-family: 'Cairo', sans-serif !important; }`}</style>
+                <div className="min-h-screen bg-[#f4f6fb] py-12 px-4" dir="rtl">
+                    <div className="max-w-7xl mx-auto px-6 py-8 space-y-6">
                     <div className="text-center">
                         <div className="relative inline-block mb-8">
                             <div className="w-32 h-32 bg-primary/10 rounded-full flex items-center justify-center">
@@ -364,6 +366,7 @@ export default function OrdersPage() {
                     </div>
                 </div>
             </div>
+            </>
         );
     }
 
@@ -377,10 +380,12 @@ export default function OrdersPage() {
     ];
 
     return (
-        <div className="min-h-screen bg-slate-50/50 pb-20">
+        <>
+            <style>{`@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap'); * { font-family: 'Cairo', sans-serif !important; }`}</style>
+            <div className="min-h-screen bg-[#f4f6fb] pb-20" dir="rtl">
             {/* Mobile/Desktop Glass Header */}
-            <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200">
-                <div className="container mx-auto px-4 py-4 md:py-6">
+            <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-100">
+                <div className="max-w-7xl mx-auto px-6 py-4 md:py-6">
                     <div className="flex flex-row items-center justify-between gap-4">
                         <div className="flex items-center gap-3">
                             <div className="p-2 md:p-3 bg-primary/10 rounded-xl md:rounded-2xl shrink-0">
@@ -421,7 +426,7 @@ export default function OrdersPage() {
             </div>
 
             {/* Stats Grid - Swipeable on mobile */}
-            <div className="container mx-auto px-4 pt-6 pb-2">
+            <div className="max-w-7xl mx-auto px-6 pt-6 pb-2">
                 <div className="flex overflow-x-auto snap-x snap-mandatory gap-3 pb-4 hide-scrollbar">
                     <div className="snap-start min-w-[130px] flex-1 bg-white p-4 rounded-2xl border border-slate-100 shadow-sm shrink-0">
                         <div className="text-xl md:text-2xl font-bold text-slate-900">{stats.total}</div>
@@ -448,7 +453,7 @@ export default function OrdersPage() {
                 </div>
             </div>
 
-            <div className="container mx-auto px-4 py-2">
+            <div className="max-w-7xl mx-auto px-6 py-2">
                 {/* Scrollable Mobile Tabs & Filters */}
                 <div className="mb-6 flex flex-col md:flex-row justify-between gap-4">
                     <div className="flex overflow-x-auto hide-scrollbar gap-2 pb-2 -mx-4 px-4 md:mx-0 md:px-0">
@@ -498,8 +503,8 @@ export default function OrdersPage() {
                         const isExpanded = expandedOrder === order._id;
 
                         return (
-                            <Card key={order._id} className={`overflow-hidden border transition-all duration-300 hover:shadow-lg rounded-2xl ${statusConfig.borderColor} bg-white`}>
-                                <CardHeader className="p-4 md:p-6 pb-2 md:pb-4 border-b border-slate-50 bg-slate-50/30">
+                            <div key={order._id} className={`overflow-hidden border transition-all duration-300 hover:shadow-lg rounded-2xl ${statusConfig.borderColor} bg-white`}>
+                                <div className="p-4 md:p-6 pb-2 md:pb-4 border-b border-slate-50 bg-slate-50/30">
                                     <div className="flex flex-row items-start justify-between gap-2 md:gap-4">
                                         <div className="flex items-start gap-3 md:gap-4">
                                             <div className={`p-2.5 md:p-3 rounded-2xl shrink-0 ${statusConfig.bgColor}`}>
@@ -534,9 +539,9 @@ export default function OrdersPage() {
                                             </Badge>
                                         </div>
                                     </div>
-                                </CardHeader>
+                                </div>
 
-                                <CardContent className="p-4 md:p-6">
+                                <div className="p-4 md:p-6">
                                     {/* Progress Bar */}
                                     <div className="mb-6 bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
                                         <div className="flex items-center justify-between mb-3">
@@ -682,9 +687,9 @@ export default function OrdersPage() {
                                             </div>
                                         </div>
                                     </div>
-                                </CardContent>
+                                </div>
 
-                                <CardFooter className="bg-slate-50/50 border-t border-slate-100 p-4">
+                                <div className="bg-slate-50/50 border-t border-slate-100 p-4">
                                     <div className="flex flex-col sm:flex-row items-center justify-between gap-3 w-full">
 
                                         {/* Actions for Mobile: Full width buttons. For Desktop: inline */}
@@ -747,8 +752,8 @@ export default function OrdersPage() {
                                             </DropdownMenu>
                                         )}
                                     </div>
-                                </CardFooter>
-                            </Card>
+                                </div>
+                            </div>
                         );
                     })}
                 </div>
@@ -790,5 +795,6 @@ export default function OrdersPage() {
                 `
             }} />
         </div>
+        </>
     );
 }

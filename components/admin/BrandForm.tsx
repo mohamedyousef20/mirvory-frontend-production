@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import ImageUploader from "@/components/ImageUploader";
 import { toast } from "sonner";
-import { brandService } from "@/lib/api";
+// import { brandService } from "@/lib/api";
 import { useLanguage } from "@/components/language-provider";
 
 interface Brand {

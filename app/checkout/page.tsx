@@ -181,33 +181,41 @@ export default function Checkout() {
 
     if (loadingData) {
         return (
-            <div className="min-h-screen bg-[#eee] flex items-center justify-center" dir={isAr ? "rtl" : "ltr"}>
-                <div className="flex flex-col items-center gap-3">
-                    <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-                    <p className="text-sm text-gray-600 font-medium">{isAr ? "جاري التحميل..." : "Loading..."}</p>
+            <>
+                <style>{`@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap'); * { font-family: 'Cairo', sans-serif !important; }`}</style>
+                <div className="min-h-screen bg-[#f4f6fb] flex items-center justify-center" dir={isAr ? "rtl" : "ltr"}>
+                    <div className="flex flex-col items-center gap-3">
+                        <Loader2 className="h-8 w-8 animate-spin text-[#1a4fba]" />
+                        <p className="text-sm text-slate-500 font-medium">{isAr ? "جاري التحميل..." : "Loading..."}</p>
+                    </div>
                 </div>
-            </div>
+            </>
         )
     }
 
     if (cartItems.length === 0) {
         return (
-            <div className="min-h-screen bg-[#eee] flex items-center justify-center px-4" dir={isAr ? "rtl" : "ltr"}>
-                <div className="text-center space-y-4 max-w-sm bg-white p-8 rounded-2xl shadow-sm">
-                    <ShoppingBag className="h-10 w-10 text-gray-400 mx-auto" />
-                    <h2 className="text-xl font-bold">{isAr ? "سلة التسوق فارغة" : "Cart is empty"}</h2>
-                    <Button onClick={() => router.push('/products')} className="w-full bg-blue-600 hover:bg-blue-700 h-12 rounded-xl">
-                        {isAr ? "العودة للتسوق" : "Back to shop"}
-                    </Button>
+            <>
+                <style>{`@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap'); * { font-family: 'Cairo', sans-serif !important; }`}</style>
+                <div className="min-h-screen bg-[#f4f6fb] flex items-center justify-center px-4" dir={isAr ? "rtl" : "ltr"}>
+                    <div className="text-center space-y-4 max-w-sm bg-white rounded-2xl border border-slate-100 p-5 shadow-sm">
+                        <ShoppingBag className="h-10 w-10 text-slate-400 mx-auto" />
+                        <h2 className="text-xl font-bold text-slate-800">{isAr ? "سلة التسوق فارغة" : "Cart is empty"}</h2>
+                        <Button onClick={() => router.push('/products')} className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#1a4fba] text-white text-sm font-semibold rounded-xl hover:bg-[#1640a0] transition shadow-md shadow-blue-200 h-12">
+                            {isAr ? "العودة للتسوق" : "Back to shop"}
+                        </Button>
+                    </div>
                 </div>
-            </div>
+            </>
         )
     }
 
     return (
-        <section className="min-h-screen bg-[#eee] py-8 lg:py-12 antialiased" dir={isAr ? "rtl" : "ltr"}>
-            <div className="container mx-auto px-4 max-w-6xl">
-                <div className="bg-white rounded-[1.5rem] shadow-lg overflow-hidden flex flex-col lg:flex-row min-h-[80vh]">
+        <>
+            <style>{`@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap'); * { font-family: 'Cairo', sans-serif !important; }`}</style>
+            <section className="min-h-screen bg-[#f4f6fb] py-8 lg:py-12 antialiased" dir={isAr ? "rtl" : "ltr"}>
+                <div className="max-w-7xl mx-auto px-6 py-8 space-y-6">
+                    <div className="bg-white rounded-2xl border border-slate-100 shadow-lg overflow-hidden flex flex-col lg:flex-row min-h-[80vh]">
 
                     {/* Left Column - Forms (Order Details) */}
                     <div className="w-full lg:w-10/12 p-6 lg:p-10 bg-white">
@@ -232,28 +240,28 @@ export default function Checkout() {
 
                         <div className="space-y-4">
                             {/* 1. Customer Information Card */}
-                            <div className="border border-gray-200 rounded-2xl p-5">
-                                <h3 className="font-bold flex items-center gap-2 mb-4 text-gray-800">
-                                    <User className="w-5 h-5 text-blue-600" />
+                            <div className="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm">
+                                <h3 className="font-bold flex items-center gap-2 mb-4 text-slate-800">
+                                    <User className="w-5 h-5 text-[#1a4fba]" />
                                     {isAr ? "معلومات الاتصال" : "Contact Information"}
                                 </h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
-                                        <Label className="text-xs text-gray-500 mb-1 block">{isAr ? "الاسم الكامل" : "Full Name"}</Label>
+                                        <Label className="text-xs text-slate-500 mb-1 block">{isAr ? "الاسم الكامل" : "Full Name"}</Label>
                                         <Input
                                             value={fullName}
                                             onChange={(e) => setFullName(e.target.value)}
                                             placeholder={isAr ? "الاسم الأول واللقب" : "John Doe"}
-                                            className="h-12 bg-gray-50 rounded-xl"
+                                            className="h-12 bg-slate-50 rounded-xl border-slate-200"
                                         />
                                     </div>
                                     <div>
-                                        <Label className="text-xs text-gray-500 mb-1 block">{isAr ? "رقم الهاتف" : "Phone"}</Label>
+                                        <Label className="text-xs text-slate-500 mb-1 block">{isAr ? "رقم الهاتف" : "Phone"}</Label>
                                         <Input
                                             value={phone}
                                             onChange={(e) => setPhone(e.target.value)}
                                             placeholder="01XXXXXXXXX"
-                                            className="h-12 bg-gray-50 rounded-xl text-left"
+                                            className="h-12 bg-slate-50 rounded-xl border-slate-200 text-left"
                                             dir="ltr"
                                         />
                                     </div>
@@ -261,9 +269,9 @@ export default function Checkout() {
                             </div>
 
                             {/* 2. Delivery Method Card */}
-                            <div className="border border-gray-200 rounded-2xl p-5">
-                                <h3 className="font-bold flex items-center gap-2 mb-4 text-gray-800">
-                                    <Truck className="w-5 h-5 text-blue-600" />
+                            <div className="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm">
+                                <h3 className="font-bold flex items-center gap-2 mb-4 text-slate-800">
+                                    <Truck className="w-5 h-5 text-[#1a4fba]" />
                                     {isAr ? "طريقة التوصيل" : "Delivery Method"}
                                 </h3>
 
@@ -272,31 +280,31 @@ export default function Checkout() {
                                     onValueChange={(v) => setDeliveryMethod(v as 'home' | 'pickup')}
                                     className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5"
                                 >
-                                    <Label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-all ${deliveryMethod === 'home' ? 'border-blue-600 bg-blue-50/50 ring-1 ring-blue-600' : 'border-gray-200 hover:border-blue-300'}`}>
+                                    <Label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-all ${deliveryMethod === 'home' ? 'border-[#1a4fba] bg-blue-50/50 ring-1 ring-[#1a4fba]' : 'border-slate-200 hover:border-[#1a4fba]'}`}>
                                         <RadioGroupItem value="home" id="home" className="sr-only" />
-                                        <Home className={`w-6 h-6 ${deliveryMethod === 'home' ? 'text-blue-600' : 'text-gray-400'}`} />
+                                        <Home className={`w-6 h-6 ${deliveryMethod === 'home' ? 'text-[#1a4fba]' : 'text-slate-400'}`} />
                                         <div>
-                                            <p className="font-bold text-sm text-gray-800">{isAr ? "توصيل للمنزل (طلب العنوان)" : "Home Delivery (Ask for Address)"}</p>
+                                            <p className="font-bold text-sm text-slate-800">{isAr ? "توصيل للمنزل (طلب العنوان)" : "Home Delivery (Ask for Address)"}</p>
                                         </div>
                                     </Label>
-                                    <Label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-all ${deliveryMethod === 'pickup' ? 'border-blue-600 bg-blue-50/50 ring-1 ring-blue-600' : 'border-gray-200 hover:border-blue-300'}`}>
+                                    <Label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-all ${deliveryMethod === 'pickup' ? 'border-[#1a4fba] bg-blue-50/50 ring-1 ring-[#1a4fba]' : 'border-slate-200 hover:border-[#1a4fba]'}`}>
                                         <RadioGroupItem value="pickup" id="pickup" className="sr-only" />
-                                        <Store className={`w-6 h-6 ${deliveryMethod === 'pickup' ? 'text-blue-600' : 'text-gray-400'}`} />
+                                        <Store className={`w-6 h-6 ${deliveryMethod === 'pickup' ? 'text-[#1a4fba]' : 'text-slate-400'}`} />
                                         <div>
-                                            <p className="font-bold text-sm text-gray-800">{isAr ? "استلام من نقطة استلام" : "Store Pickup (Show Pickup Points)"}</p>
+                                            <p className="font-bold text-sm text-slate-800">{isAr ? "استلام من نقطة استلام" : "Store Pickup (Show Pickup Points)"}</p>
                                         </div>
                                     </Label>
                                 </RadioGroup>
                                 {deliveryMethod === 'home' && (
-                                    <div className="mt-4 border border-gray-200 rounded-2xl p-5 space-y-4">
-                                        <h3 className="font-bold text-gray-800 flex items-center gap-2">
-                                            <MapPin className="w-5 h-5 text-blue-600" />
+                                    <div className="mt-4 bg-white rounded-2xl border border-slate-100 p-5 shadow-sm space-y-4">
+                                        <h3 className="font-bold text-slate-800 flex items-center gap-2">
+                                            <MapPin className="w-5 h-5 text-[#1a4fba]" />
                                             {isAr ? "عنوان التوصيل" : "Delivery Address"}
                                         </h3>
 
                                         {/* Governorate */}
                                         <div>
-                                            <Label className="text-xs text-gray-500 mb-1 block">
+                                            <Label className="text-xs text-slate-500 mb-1 block">
                                                 {isAr ? "المحافظة" : "Governorate"}
                                             </Label>
                                             <select
@@ -308,7 +316,7 @@ export default function Checkout() {
                                                         addressLine: address.addressLine
                                                     })
                                                 }
-                                                className="w-full h-12 bg-gray-50 rounded-xl px-3 border"
+                                                className="w-full h-12 bg-slate-50 rounded-xl px-3 border border-slate-200"
                                             >
                                                 <option value="">
                                                     {isAr ? "اختر المحافظة" : "Select governorate"}
@@ -324,7 +332,7 @@ export default function Checkout() {
 
                                         {/* City */}
                                         <div>
-                                            <Label className="text-xs text-gray-500 mb-1 block">
+                                            <Label className="text-xs text-slate-500 mb-1 block">
                                                 {isAr ? "المدينة" : "City"}
                                             </Label>
                                             <select
@@ -335,7 +343,7 @@ export default function Checkout() {
                                                         city: e.target.value
                                                     }))
                                                 }
-                                                className="w-full h-12 bg-gray-50 rounded-xl px-3 border"
+                                                className="w-full h-12 bg-slate-50 rounded-xl px-3 border border-slate-200"
                                                 disabled={!address.governorate}
                                             >
                                                 <option value="">
@@ -352,7 +360,7 @@ export default function Checkout() {
 
                                         {/* Address Line */}
                                         <div>
-                                            <Label className="text-xs text-gray-500 mb-1 block">
+                                            <Label className="text-xs text-slate-500 mb-1 block">
                                                 {isAr ? "تفاصيل العنوان" : "Street Address"}
                                             </Label>
                                             <Input
@@ -364,7 +372,7 @@ export default function Checkout() {
                                                     }))
                                                 }
                                                 placeholder={isAr ? "الشارع، رقم المنزل..." : "Street, building no..."}
-                                                className="h-12 bg-gray-50 rounded-xl"
+                                                className="h-12 bg-slate-50 rounded-xl border-slate-200"
                                             />
                                         </div>
                                     </div>
@@ -373,9 +381,9 @@ export default function Checkout() {
                                 {/* Pickup Details - Shown dynamically when Store Pickup is selected */}
                                 {deliveryMethod === 'pickup' && (
                                     <div className="mt-4 space-y-3 animate-in fade-in">
-                                        <Label className="text-xs text-gray-500 mb-2 block">{isAr ? "اختر نقطة الاستلام المناسبة لك:" : "Select your preferred pickup point:"}</Label>
+                                        <Label className="text-xs text-slate-500 mb-2 block">{isAr ? "اختر نقطة الاستلام المناسبة لك:" : "Select your preferred pickup point:"}</Label>
                                         {pickupPoints.length === 0 ? (
-                                            <p className="text-sm text-gray-500 bg-gray-50 p-4 rounded-xl text-center">
+                                            <p className="text-sm text-slate-500 bg-slate-50 p-4 rounded-xl text-center">
                                                 {isAr ? "لا توجد نقاط استلام متاحة حالياً" : "No pickup points available currently"}
                                             </p>
                                         ) : (
@@ -383,15 +391,15 @@ export default function Checkout() {
                                                 <div
                                                     key={point._id}
                                                     onClick={() => setSelectedPickupPointId(point._id)}
-                                                    className={`p-4 rounded-xl border cursor-pointer transition-all ${selectedPickupPointId === point._id ? 'border-blue-600 bg-blue-50/30 ring-1 ring-blue-600' : 'border-gray-200 hover:border-blue-300'}`}
+                                                    className={`p-4 rounded-xl border cursor-pointer transition-all ${selectedPickupPointId === point._id ? 'border-[#1a4fba] bg-blue-50/30 ring-1 ring-[#1a4fba]' : 'border-slate-200 hover:border-[#1a4fba]'}`}
                                                 >
                                                     <div className="flex justify-between items-start">
-                                                        <h4 className="font-bold text-gray-800 text-sm">{point.stationName}</h4>
-                                                        {selectedPickupPointId === point._id && <CheckCircle2 className="w-4 h-4 text-blue-600" />}
+                                                        <h4 className="font-bold text-slate-800 text-sm">{point.stationName}</h4>
+                                                        {selectedPickupPointId === point._id && <CheckCircle2 className="w-4 h-4 text-[#1a4fba]" />}
                                                     </div>
-                                                    <p className="text-xs text-gray-500 mt-1">{point.address}</p>
+                                                    <p className="text-xs text-slate-500 mt-1">{point.address}</p>
                                                     {point.workingHours && (
-                                                        <p className="text-[11px] text-gray-400 mt-1">{isAr ? `مواعيد العمل: ${point.workingHours}` : `Working Hours: ${point.workingHours}`}</p>
+                                                        <p className="text-[11px] text-slate-400 mt-1">{isAr ? `مواعيد العمل: ${point.workingHours}` : `Working Hours: ${point.workingHours}`}</p>
                                                     )}
                                                 </div>
                                             ))
@@ -401,9 +409,9 @@ export default function Checkout() {
                             </div>
 
                             {/* 3. Payment Method Card */}
-                            <div className="border border-gray-200 rounded-2xl p-5">
-                                <h3 className="font-bold flex items-center gap-2 mb-4 text-gray-800">
-                                    <CreditCard className="w-5 h-5 text-blue-600" />
+                            <div className="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm">
+                                <h3 className="font-bold flex items-center gap-2 mb-4 text-slate-800">
+                                    <CreditCard className="w-5 h-5 text-[#1a4fba]" />
                                     {isAr ? "طريقة الدفع" : "Payment"}
                                 </h3>
                                 <RadioGroup
@@ -418,11 +426,11 @@ export default function Checkout() {
                                             <p className="font-bold text-sm text-gray-800">{isAr ? "بطاقة ائتمانية" : "Card Payment"}</p>
                                         </div>
                                     </Label> */}
-                                    <Label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-all ${paymentMethod === 'cash' ? 'border-blue-600 bg-blue-50/50 ring-1 ring-blue-600' : 'border-gray-200 hover:border-blue-300'}`}>
+                                    <Label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-all ${paymentMethod === 'cash' ? 'border-[#1a4fba] bg-blue-50/50 ring-1 ring-[#1a4fba]' : 'border-slate-200 hover:border-[#1a4fba]'}`}>
                                         <RadioGroupItem value="cash" id="cash" className="sr-only" />
-                                        <Banknote className={`w-12 h-12${paymentMethod === 'cash' ? 'text-blue-600' : 'text-gray-400'}`} />
+                                        <Banknote className={`w-12 h-12${paymentMethod === 'cash' ? 'text-[#1a4fba]' : 'text-slate-400'}`} />
                                         <div>
-                                            <p className="font-bold text-sm text-gray-800">{isAr ? "الدفع عند الاستلام" : "Cash on Delivery"}</p>
+                                            <p className="font-bold text-sm text-slate-800">{isAr ? "الدفع عند الاستلام" : "Cash on Delivery"}</p>
                                         </div>
                                     </Label>
                                   
@@ -433,7 +441,7 @@ export default function Checkout() {
                     </div>
 
                     {/* Right Column - Order Summary */}
-                    <div className="w-full lg:w-5/12 bg-[#3068e4] text-white p-6 lg:p-10 flex flex-col justify-between rounded-t-[2rem] lg:rounded-t-none lg:rounded-s-[2rem] rtl:lg:rounded-s-none rtl:lg:rounded-e-[2rem] shadow-2xl z-10 -mt-6 lg:mt-0 lg:-ms-6 rtl:lg:ms-0 rtl:lg:-me-6">
+                    <div className="w-full lg:w-5/12 bg-[#1a4fba] text-white p-6 lg:p-10 flex flex-col justify-between rounded-t-[2rem] lg:rounded-t-none lg:rounded-s-[2rem] rtl:lg:rounded-s-none rtl:lg:rounded-e-[2rem] shadow-2xl z-10 -mt-6 lg:mt-0 lg:-ms-6 rtl:lg:ms-0 rtl:lg:-me-6">
 
                         <div>
                             <div className="flex justify-between items-center mb-6">
@@ -552,5 +560,6 @@ export default function Checkout() {
                 </div>
             </div>
         </section>
+        </>
     )
 }

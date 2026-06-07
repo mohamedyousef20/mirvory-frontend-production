@@ -148,7 +148,7 @@ export function ProductsTable({
 
 }: ProductsTableProps) {
 
-    console.log(products,'2526');
+    console.log(products, '2526');
 
 
 
@@ -406,9 +406,9 @@ export function ProductsTable({
 
                                             className={`text-xs rounded-full px-2 py-1 flex items-center gap-1 w-fit ${product.isApproved
 
-                                                    ? "bg-green-50 text-green-700 border border-green-200"
+                                                ? "bg-green-50 text-green-700 border border-green-200"
 
-                                                    : "bg-yellow-50 text-yellow-700 border border-yellow-200"
+                                                : "bg-yellow-50 text-yellow-700 border border-yellow-200"
 
                                                 }`}
 

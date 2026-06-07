@@ -66,7 +66,7 @@ export function OrdersTable({
         language === "ar" ? "حالة التوصيل" : "Delivery Status",
         language === "ar" ? "إجراءات" : "Actions",
     ]
-
+console.log(orders,'orde2526')
     const getDeliveryBadge = (status: string) => {
         switch (status) {
             case "delivered":
@@ -82,7 +82,7 @@ export function OrdersTable({
             case "cancelled":
                 return {
                     label: language === "ar" ? "ملغي" : "Cancelled",
-                    className: "bg-red-50 text-red-700 border-red-200"
+                    className: "bg-rose-50 text-rose-700 border-rose-200"
                 }
             default:
                 return {
@@ -95,7 +95,7 @@ export function OrdersTable({
     return (
         <div className="w-full space-y-4">
             {/* Desktop View Table - Hidden on Mobile Screens */}
-            <div className="hidden md:block bg-white border border-slate-200 rounded-2xl shadow-sm overflow-x-auto">
+            <div className="hidden md:block bg-white border border-slate-100 rounded-2xl shadow-sm overflow-x-auto">
                 <Table>
                     <TableHeader>
                         <TableRow className="bg-slate-50">
@@ -193,7 +193,7 @@ export function OrdersTable({
                                                                     <Button
                                                                         size="sm"
                                                                         variant="outline"
-                                                                        className="h-8 text-xs border-amber-200 text-amber-600 hover:bg-amber-50"
+                                                                        className="h-8 text-xs px-5 py-2 bg-slate-100 text-slate-700 font-semibold rounded-xl hover:bg-slate-200 transition"
                                                                         onClick={() => onConfirmPreparation(order._id, item._id)}
                                                                         disabled={preparingOrderId === `${order._id}-${item._id}`}
                                                                     >
@@ -300,7 +300,7 @@ export function OrdersTable({
                         const deliveryBadge = getDeliveryBadge(order.deliveryStatus)
 
                         return (
-                            <div key={order._id} className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-4">
+                            <div key={order._id} className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm space-y-4">
                                 {/* Header Info */}
                                 <div className="flex justify-between items-start border-b border-slate-100 pb-3">
                                     <div className="space-y-1">
@@ -411,7 +411,7 @@ export function OrdersTable({
                                                         <Button
                                                             size="sm"
                                                             variant="outline"
-                                                            className="h-8 text-xs border-amber-200 text-amber-600 bg-white hover:bg-amber-50"
+                                                            className="h-8 text-xs px-5 py-2 bg-slate-100 text-slate-700 font-semibold rounded-xl hover:bg-slate-200 transition"
                                                             onClick={() => onConfirmPreparation(order._id, item._id)}
                                                             disabled={preparingOrderId === `${order._id}-${item._id}`}
                                                         >
@@ -467,7 +467,7 @@ export function OrdersTable({
                         )
                     })
                 ) : (
-                    <div className="bg-white border border-slate-200 rounded-2xl p-8 text-center text-slate-400 text-sm flex flex-col items-center justify-center space-y-2">
+                    <div className="bg-white border border-slate-100 rounded-2xl p-5 text-center text-slate-400 text-sm flex flex-col items-center justify-center space-y-2">
                         <Package className="h-8 w-8 text-slate-300" />
                         <span>{language === "ar" ? "لا توجد طلبات" : "No orders found"}</span>
                     </div>

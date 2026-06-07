@@ -18,7 +18,7 @@ const nextConfig = {
     ],
   },
   env: {
-    JWT_SECRET: process.env.JWT_SECRET,
+    // JWT_SECRET removed - frontend should never have access to JWT secret
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000",
   },
   async rewrites() {

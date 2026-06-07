@@ -328,7 +328,7 @@ export default function VendorOrderDetailsPage() {
                  
 
                     {/* Delivery Info */}
-                    <Card>
+                    {/* <Card>
                         <CardHeader>
                             <CardTitle>{language === 'ar' ? 'معلومات التوصيل' : 'Delivery Info'}</CardTitle>
                         </CardHeader>
@@ -384,7 +384,7 @@ export default function VendorOrderDetailsPage() {
                                 </Badge>
                             </div>
                         </CardContent>
-                    </Card>
+                    </Card> */}
 
                     {/* Payment Info */}
                     <Card>

@@ -2,7 +2,7 @@ import { ProductGrid } from "@/components/product-grid"
 import { SiteFooter } from "@/components/site-footer"
 import { HeroCarousel } from "@/components/hero-carousel"
 import { CategorySection } from "@/components/category-section"
-import { BrandSection } from "@/components/brand-section"
+// import { BrandSection } from "@/components/brand-section"
 // import { DiscountBanner } from "@/components/discount-banner"
 import dynamic from 'next/dynamic';
 import { FeaturedProducts } from "@/components/featured-products"

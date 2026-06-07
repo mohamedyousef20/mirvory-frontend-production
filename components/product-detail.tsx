@@ -208,7 +208,7 @@ const ProductDetail = ({ productId }: { productId: string }) => {
   }, [productId, product])
 
   const handleQuantityChange = useCallback((value: number) => {
-    const maxQuantity = product?.quantity || 10
+    const maxQuantity = product?.quantity 
     const next = Math.max(1, Math.min(value, maxQuantity))
     setQuantity(next)
     setSelectedSizes(prev => {

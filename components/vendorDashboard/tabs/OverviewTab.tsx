@@ -16,12 +16,12 @@ interface OverviewTabProps {
 export function OverviewTab({ language, t, dashboardCounters, balance, orders, products }: OverviewTabProps) {
     // Map backend fields to UI fields
     const counterStats = [
-        { key: 'totalOrders', title: language === 'ar' ? 'إجمالي الطلبات' : 'Total Orders', value: dashboardCounters.totalOrders ?? 0, icon: <ShoppingBag className="h-5 w-5 text-blue-500" />, bg: 'bg-blue-50' },
+        { key: 'totalOrders', title: language === 'ar' ? 'إجمالي الطلبات' : 'Total Orders', value: dashboardCounters.totalOrders ?? 0, icon: <ShoppingBag className="h-5 w-5 text-[#1a4fba]" />, bg: 'bg-blue-50' },
         { key: 'pendingOrders', title: language === 'ar' ? 'طلبات قيد الانتظار' : 'Pending Orders', value: dashboardCounters.pendingOrders ?? 0, icon: <Clock className="h-5 w-5 text-amber-500" />, bg: 'bg-amber-50' },
-        { key: 'completedOrders', title: language === 'ar' ? 'طلبات مكتملة' : 'Completed Orders', value: dashboardCounters.completedOrders ?? 0, icon: <Star className="h-5 w-5 text-green-500" />, bg: 'bg-green-50' },
+        { key: 'completedOrders', title: language === 'ar' ? 'طلبات مكتملة' : 'Completed Orders', value: dashboardCounters.completedOrders ?? 0, icon: <Star className="h-5 w-5 text-emerald-500" />, bg: 'bg-emerald-50' },
         { key: 'activeProducts', title: language === 'ar' ? 'منتجات نشطة' : 'Active Products', value: dashboardCounters.activeProducts ?? 0, icon: <Package className="h-5 w-5 text-purple-500" />, bg: 'bg-purple-50' },
     ]
-
+console.log(orders,'ovdo')
     // Calculate total balance from available + pending
     const availableBalance = balance?.availableBalance ?? 0;
     const pendingBalance = balance?.pendingBalance ?? 0;
@@ -29,15 +29,12 @@ export function OverviewTab({ language, t, dashboardCounters, balance, orders, p
 
     const balanceStats = [
         { key: 'totalRevenue', title: language === "ar" ? "إجمالي الإيرادات" : "Total Revenue", value: totalRevenue.toFixed(2), icon: <DollarSign className="h-5 w-5 text-emerald-500" />, suffix: language === "ar" ? "ج.م" : "EGP", subtext: language === "ar" ? "إجمالي المبيعات" : "Total Sales" },
-        { key: 'orders', title: language === "ar" ? "الطلبات" : "Orders", value: orders?.length ?? 0, icon: <ShoppingBag className="h-5 w-5 text-blue-500" />, subtext: dashboardCounters?.totalOrders ? `${dashboardCounters.totalOrders} ${language === 'ar' ? 'كلي' : 'total'}` : '' },
+        { key: 'orders', title: language === "ar" ? "الطلبات" : "Orders", value: orders?.length ?? 0, icon: <ShoppingBag className="h-5 w-5 text-[#1a4fba]" />, subtext: dashboardCounters?.totalOrders ? `${dashboardCounters.totalOrders} ${language === 'ar' ? 'كلي' : 'total'}` : '' },
         { key: 'products', title: language === "ar" ? "المنتجات" : "Products", value: products?.length ?? 0, icon: <Package className="h-5 w-5 text-purple-500" />, subtext: dashboardCounters?.totalProducts ? `${dashboardCounters.totalProducts} ${language === 'ar' ? 'كلي' : 'total'}` : '' },
         { key: 'availableBalance', title: language === "ar" ? "الرصيد المتاح" : "Available Balance", value: availableBalance.toFixed(2), icon: <BarChart className="h-5 w-5 text-teal-500" />, suffix: language === "ar" ? "ج.م" : "EGP", subtext: language === "ar" ? "متاح للسحب" : "Available" },
         { key: 'pendingBalance', title: language === "ar" ? "الرصيد المعلق" : "Pending Balance", value: pendingBalance.toFixed(2), icon: <BarChart className="h-5 w-5 text-orange-500" />, suffix: language === "ar" ? "ج.م" : "EGP", subtext: language === "ar" ? "قيد المراجعة" : "Pending" },
     ]
-    console.log("dashboardCounters:", dashboardCounters)
-    console.log("balance:", balance)
-    console.log("orders:", orders)
-    console.log("products:", products)
+  
 
     return (
         <div className="space-y-6">
@@ -57,13 +54,13 @@ export function OverviewTab({ language, t, dashboardCounters, balance, orders, p
 
             <div className="grid gap-4 lg:grid-cols-7">
                 {/* Recent Orders */}
-                <Card className="lg:col-span-4 border border-slate-200 rounded-2xl shadow-sm">
-                    <CardHeader className="pb-3 px-5 pt-5">
-                        <CardTitle className="text-base font-semibold text-slate-800">
+                <div className="lg:col-span-4 bg-white border border-slate-100 rounded-2xl shadow-sm p-5">
+                    <div className="pb-3">
+                        <h3 className="text-base font-semibold text-slate-800">
                             {language === "ar" ? "أحدث الطلبات" : "Recent Orders"}
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="px-5 pb-5">
+                        </h3>
+                    </div>
+                    <div>
                         <div className="rounded-xl border border-slate-100 overflow-hidden">
                             <Table>
                                 <TableHeader>
@@ -74,9 +71,9 @@ export function OverviewTab({ language, t, dashboardCounters, balance, orders, p
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {orders?.data?.slice(0, 5).map((order) => (
+                                    {orders?.slice(0, 5).map((order) => (
                                         <TableRow key={order._id} className="hover:bg-slate-50 transition-colors">
-                                            <TableCell className="font-medium text-slate-800 text-sm">#{order._id?.slice(-6)}</TableCell>
+                                            <TableCell className="font-medium text-slate-800 text-sm">#{order.orderNumber}</TableCell>
                                             <TableCell>
                                                 <div className="flex flex-wrap gap-1 max-w-[200px]">
                                                     {/* Use items from backend, fallback to formattedItems if available */}
@@ -98,17 +95,17 @@ export function OverviewTab({ language, t, dashboardCounters, balance, orders, p
                                 </TableBody>
                             </Table>
                         </div>
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
 
                 {/* Top Products */}
-                <Card className="lg:col-span-3 border border-slate-200 rounded-2xl shadow-sm">
-                    <CardHeader className="pb-3 px-5 pt-5">
-                        <CardTitle className="text-base font-semibold text-slate-800">
+                <div className="lg:col-span-3 bg-white border border-slate-100 rounded-2xl shadow-sm p-5">
+                    <div className="pb-3">
+                        <h3 className="text-base font-semibold text-slate-800">
                             {language === "ar" ? "المنتجات الأكثر مبيعًا" : "Top Selling Products"}
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="px-5 pb-5">
+                        </h3>
+                    </div>
+                    <div>
                         <div className="space-y-3">
                             {products.slice(0, 4).map((product) => (
                                 <div key={product._id} className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
@@ -125,8 +122,8 @@ export function OverviewTab({ language, t, dashboardCounters, balance, orders, p
                                 </div>
                             ))}
                         </div>
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
             </div>
         </div>
     )

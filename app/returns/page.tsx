@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from "sonner"
 import { format } from 'date-fns';
-import { returnService } from '@/lib/api';
+import { returnService, authService } from '@/lib/api';
 import { MirvoryPageLoader } from '@/components/MirvoryLoader';
 import { Plus, ExternalLink, ChevronRight } from 'lucide-react';
 
@@ -43,9 +43,20 @@ interface ReturnRequest {
 export default function ReturnsPage() {
     const [returns, setReturns] = useState<ReturnRequest[]>([]);
     const [loading, setLoading] = useState(true);
+    const [userRole, setUserRole] = useState<string | null>(null);
     const router = useRouter();
 
     useEffect(() => {
+        const fetchUserRole = async () => {
+            try {
+                const response = await authService.getMe();
+                const user = response.data.data?.user || response.data;
+                setUserRole(user?.role || null);
+            } catch (error) {
+                console.error('Error fetching user role:', error);
+            }
+        };
+
         const fetchReturns = async () => {
             try {
                 const response = await returnService.getReturnRequests();
@@ -66,6 +77,7 @@ export default function ReturnsPage() {
             }
         };
 
+        fetchUserRole();
         fetchReturns();
     }, []);
 
@@ -115,6 +127,14 @@ export default function ReturnsPage() {
         if (!confirm('هل أنت متأكد من حذف طلب الإرجاع هذا؟')) return;
 
         try {
+            const response = await authService.getMe();
+            const user = response.data.data?.user || response.data;
+            
+            if (user?.role === 'seller') {
+                toast.error('التجار لا يمكنهم حذف طلبات الإرجاع');
+                return;
+            }
+
             await returnService.deleteReturnRequest(returnId);
             setReturns(returns.filter(r => r._id !== returnId));
             toast.success('تم حذف طلب الإرجاع بنجاح');
@@ -280,8 +300,8 @@ export default function ReturnsPage() {
                                         <ExternalLink className="w-4 h-4" />
                                     </button>
 
-                                    {/* Delete Button (only for certain statuses) */}
-                                    {(returnRequest.status === 'pending' || returnRequest.status === 'approved') && (
+                                    {/* Delete Button (only for certain statuses and non-sellers) */}
+                                    {(returnRequest.status === 'pending' || returnRequest.status === 'approved') && userRole !== 'seller' && (
                                         <button
                                             onClick={() => handleDeleteReturn(returnRequest._id)}
                                             className="px-4 py-2 text-sm bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"

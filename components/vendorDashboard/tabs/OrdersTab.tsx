@@ -37,8 +37,8 @@ export function OrdersTab({
 
             {/* ── Page heading strip ───────────────────────────────── */}
             <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
-                    <ShoppingBag className="h-4 w-4 text-blue-500" />
+                <div className="w-9 h-9 rounded-xl bg-blue-50 border border-slate-100 flex items-center justify-center shrink-0">
+                    <ShoppingBag className="h-4 w-4 text-[#1a4fba]" />
                 </div>
                 <div>
                     <h2 className="text-base font-bold text-slate-800">
@@ -106,7 +106,7 @@ export function OrdersTab({
             />
 
             {/* ── Orders table card ────────────────────────────────── */}
-            <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+            <div className="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm overflow-hidden">
                 <OrdersTable
                     orders={filteredOrders}
                     language={language}

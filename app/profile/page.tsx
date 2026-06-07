@@ -361,10 +361,12 @@ const Profile = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-            {/* Header */}
-            <div className="bg-gradient-to-r from-slate-900 via-primary to-slate-800 shadow-xl">
-                <div className="container mx-auto px-4 py-8">
+        <>
+            <style>{`@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap'); * { font-family: 'Cairo', sans-serif !important; }`}</style>
+            <div className="min-h-screen bg-[#f4f6fb]" dir="rtl">
+                {/* Header */}
+                <div className="bg-gradient-to-r from-[#1a4fba] to-[#1640a0] shadow-xl">
+                    <div className="max-w-7xl mx-auto px-6 py-8">
                     <div className="flex flex-col md:flex-row items-center md:items-center justify-between gap-6">
 
                         {/* Left Side - Profile Info */}
@@ -439,12 +441,11 @@ const Profile = () => {
             </div>
 
             {/* Main Content */}
-            <div className="container mx-auto px-4 py-8">
+            <div className="max-w-7xl mx-auto px-6 py-8">
                 <div className="grid lg:grid-cols-4 gap-8">
                     {/* Sidebar Navigation */}
                     <div className="lg:col-span-1">
-                        <Card className="sticky top-24">
-                            <CardContent className="p-6">
+                        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm sticky top-24 p-6">
                                 <nav className="space-y-2">
                                     <Button
                                         variant={activeTab === 'personal' ? 'default' : 'ghost'}
@@ -507,25 +508,25 @@ const Profile = () => {
                                         تسجيل الخروج
                                     </Button>
                                 </nav>
-                            </CardContent>
-                        </Card>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Main Content Area */}
                     <div className="lg:col-span-3">
                         {/* Personal Information */}
                         {activeTab === 'personal' && (
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                        <User className="h-5 w-5" />
+                            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm">
+                                <div className="p-5">
+                                    <h3 className="flex items-center gap-2 text-base font-semibold text-slate-800">
+                                        <User className="h-5 w-5 text-[#1a4fba]" />
                                         المعلومات الشخصية
-                                    </CardTitle>
-                                    <CardDescription>
+                                    </h3>
+                                    <p className="text-slate-500 text-sm mt-1">
                                         إدارة معلوماتك الشخصية وبيانات الاتصال
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent>
+                                    </p>
+                                </div>
+                                <div className="p-5">
                                     {error && (
                                         <Alert variant="destructive" className="mb-6">
                                             <AlertCircle className="h-4 w-4" />
@@ -641,24 +642,24 @@ const Profile = () => {
                                             </div>
                                         )}
                                     </form>
-                                </CardContent>
-                            </Card>
+                                </div>
+                            </div>
                         )}
 
                         {/* Account Information */}
                         {activeTab === 'account' && (
                             <div className="space-y-6">
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle className="flex items-center gap-2">
-                                            <Shield className="h-5 w-5" />
+                                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm">
+                                    <div className="p-5">
+                                        <h3 className="flex items-center gap-2 text-base font-semibold text-slate-800">
+                                            <Shield className="h-5 w-5 text-[#1a4fba]" />
                                             معلومات الحساب
-                                        </CardTitle>
-                                        <CardDescription>
+                                        </h3>
+                                        <p className="text-slate-500 text-sm mt-1">
                                             تفاصيل حسابك وإعدادات الأمان
-                                        </CardDescription>
-                                    </CardHeader>
-                                    <CardContent>
+                                        </p>
+                                    </div>
+                                    <div className="p-5">
                                         <div className="grid md:grid-cols-2 gap-6">
                                             <div className="space-y-4">
                                                 <div className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
@@ -714,19 +715,19 @@ const Profile = () => {
                                                 </div>
                                             </div>
                                         </div>
-                                    </CardContent>
-                                </Card>
+                                    </div>
+                                </div>
 
                                 {/* Wallet Information for Sellers */}
                                 {user?.role === 'seller' && user?.wallet && (
-                                    <Card>
-                                        <CardHeader>
-                                            <CardTitle className="flex items-center gap-2">
-                                                <Wallet className="h-5 w-5" />
+                                    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm">
+                                        <div className="p-5">
+                                            <h3 className="flex items-center gap-2 text-base font-semibold text-slate-800">
+                                                <Wallet className="h-5 w-5 text-[#1a4fba]" />
                                                 المحفظة
-                                            </CardTitle>
-                                        </CardHeader>
-                                        <CardContent>
+                                            </h3>
+                                        </div>
+                                        <div>
                                             <div className="grid md:grid-cols-3 gap-4">
                                                 <div className="p-6 bg-gradient-to-r from-green-50 to-green-100 rounded-xl border border-green-200">
                                                     <div className="flex items-center gap-3 mb-3">
@@ -770,25 +771,25 @@ const Profile = () => {
                                                     </div>
                                                 </div>
                                             </div>
-                                        </CardContent>
-                                    </Card>
+                                        </div>
+                                    </div>
                                 )}
                             </div>
                         )}
 
                         {/* Vendor Information */}
                         {activeTab === 'vendor' && user?.vendorProfile && (
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                        <Building className="h-5 w-5" />
+                            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm">
+                                <div className="p-5">
+                                    <h3 className="flex items-center gap-2 text-base font-semibold text-slate-800">
+                                        <Building className="h-5 w-5 text-[#1a4fba]" />
                                         معلومات التاجر
-                                    </CardTitle>
-                                    <CardDescription>
+                                    </h3>
+                                    <p className="text-slate-500 text-sm mt-1">
                                         تفاصيل نشاطك التجاري
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent>
+                                    </p>
+                                </div>
+                                <div>
                                     <div className="grid md:grid-cols-2 gap-6">
                                         <div className="space-y-4">
                                             <div className="p-4 bg-gray-50 rounded-lg">
@@ -839,23 +840,23 @@ const Profile = () => {
                                             )}
                                         </div>
                                     </div>
-                                </CardContent>
-                            </Card>
+                                </div>
+                            </div>
                         )}
                         {/* Security & Password */}
                         {activeTab === 'security' && (
                             <div className="space-y-6">
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle className="flex items-center gap-2">
-                                            <Lock className="h-5 w-5" />
+                                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm">
+                                    <div className="p-5">
+                                        <h3 className="flex items-center gap-2 text-base font-semibold text-slate-800">
+                                            <Lock className="h-5 w-5 text-[#1a4fba]" />
                                             تغيير كلمة المرور
-                                        </CardTitle>
-                                        <CardDescription>
+                                        </h3>
+                                        <p className="text-slate-500 text-sm mt-1">
                                             قم بتحديث كلمة المرور الخاصة بك لتأمين حسابك
-                                        </CardDescription>
-                                    </CardHeader>
-                                    <CardContent>
+                                        </p>
+                                    </div>
+                                    <div>
                                         <form onSubmit={handlePasswordChange} className="space-y-4">
                                             <div className="space-y-2">
                                                 <Label htmlFor="currentPassword">كلمة المرور الحالية</Label>
@@ -965,17 +966,17 @@ const Profile = () => {
                                                 ) : 'تغيير كلمة المرور'}
                                             </Button>
                                         </form>
-                                    </CardContent>
-                                </Card>
+                                    </div>
+                                </div>
 
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle className="flex items-center gap-2">
-                                            <ShieldCheck className="h-5 w-5" />
+                                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm">
+                                    <div className="p-5">
+                                        <h3 className="flex items-center gap-2 text-base font-semibold text-slate-800">
+                                            <ShieldCheck className="h-5 w-5 text-[#1a4fba]" />
                                             نصائح الأمان
-                                        </CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
+                                        </h3>
+                                    </div>
+                                    <div>
                                         <ul className="space-y-3 text-sm">
                                             <li className="flex items-start gap-2">
                                                 <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
@@ -991,24 +992,24 @@ const Profile = () => {
                                             </li>
                                         
                                         </ul>
-                                    </CardContent>
-                                </Card>
+                                    </div>
+                                </div>
                             </div>
                         )}
 
                         {/* Activity */}
                         {activeTab === 'activity' && (
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                        <Activity className="h-5 w-5" />
+                            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm">
+                                <div className="p-5">
+                                    <h3 className="flex items-center gap-2 text-base font-semibold text-slate-800">
+                                        <Activity className="h-5 w-5 text-[#1a4fba]" />
                                         النشاطات الأخيرة
-                                    </CardTitle>
-                                    <CardDescription>
+                                    </h3>
+                                    <p className="text-slate-500 text-sm mt-1">
                                         سجل نشاطات حسابك
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent>
+                                    </p>
+                                </div>
+                                <div>
                                     <div className="space-y-6">
                                         <div className="space-y-4">
                                             <h3 className="font-semibold text-lg">ملخص النشاط</h3>
@@ -1061,13 +1062,13 @@ const Profile = () => {
                                             </div>
                                         </div>
                                     </div>
-                                </CardContent>
-                            </Card>
+                                </div>
+                            </div>
                         )}
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 

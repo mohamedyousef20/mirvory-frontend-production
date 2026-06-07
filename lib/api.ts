@@ -333,27 +333,27 @@ export const productService = {
 };
 
 // Brand Services
-export const brandService = {
-  getBrands: (params?: { status?: 'active' | 'inactive'; }) =>
-    api.get('/api/brands', { params }),
+// export const brandService = {
+//   getBrands: (params?: { status?: 'active' | 'inactive'; }) =>
+//     api.get('/api/brands', { params }),
 
-  getProductsByBrand: (brandId: string, params?: { limit?: number; page?: number; sort?: string; }) =>
-    api.get(`/api/brands/${brandId}/products`, { params }),
+//   getProductsByBrand: (brandId: string, params?: { limit?: number; page?: number; sort?: string; }) =>
+//     api.get(`/api/brands/${brandId}/products`, { params }),
 
-  createBrand: (data: FormData | any) =>
-    api.post('/api/brands', data, {
-      headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : undefined,
-    }),
+//   createBrand: (data: FormData | any) =>
+//     api.post('/api/brands', data, {
+//       headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : undefined,
+//     }),
 
-  getBrandById: (id: string) => api.get(`/api/brands/${id}`),
+//   getBrandById: (id: string) => api.get(`/api/brands/${id}`),
 
-  updateBrand: (id: string, data: FormData | any) =>
-    api.put(`/api/brands/${id}`, data, {
-      headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : undefined,
-    }),
+//   updateBrand: (id: string, data: FormData | any) =>
+//     api.put(`/api/brands/${id}`, data, {
+//       headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : undefined,
+//     }),
 
-  deleteBrand: (id: string) => api.delete(`/api/brands/${id}`),
-};
+//   deleteBrand: (id: string) => api.delete(`/api/brands/${id}`),
+// };
 
 // Category Services
 export const categoryService = {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/components/language-provider";
 import { toast } from "sonner";
@@ -9,7 +9,6 @@ import {
     productService,
     pickupPointService,
     announcementService,
-    brandService,
     couponService,
     returnService,
     userService,
@@ -76,13 +75,13 @@ export function useAdminDashboard() {
     const [errorCoupons, setErrorCoupons] = useState<string | null>(null);
     const [categories, setCategories] = useState([]);
     // Brands state
-    const [brands, setBrands] = useState<any[]>([]);
-    const [loadingBrands, setLoadingBrands] = useState(false);
-    const [errorBrands, setErrorBrands] = useState<string | null>(null);
+    // const [brands, setBrands] = useState<any[]>([]);
+    // const [loadingBrands, setLoadingBrands] = useState(false);
+    // const [errorBrands, setErrorBrands] = useState<string | null>(null);
     // Brand form states
-    const [newBrand, setNewBrand] = useState({ name: "", description: "", image: "", status: "active" });
-    const [isCreatingBrand, setIsCreatingBrand] = useState(false);
-    const [editingBrand, setEditingBrand] = useState<any>(null);
+    // const [newBrand, setNewBrand] = useState({ name: "", description: "", image: "", status: "active" });
+    // const [isCreatingBrand, setIsCreatingBrand] = useState(false);
+    // const [editingBrand, setEditingBrand] = useState<any>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [announcementImage, setAnnouncementImage] = useState<File | null>(null);
@@ -181,48 +180,48 @@ export function useAdminDashboard() {
     const [transactionsPages, setTransactionsPages] = useState(1);
 
     // Admin transactions fetching
-    const fetchAdminTransactions = async () => {
-        try {
-            setTransactionsLoading(true);
-            const TRANSACTIONS_LIMIT = 20;
-            const params: any = { page: transactionsPage, limit: TRANSACTIONS_LIMIT };
-            if (transactionFilters.type !== 'all') params.type = transactionFilters.type;
-            if (transactionFilters.sellerId !== 'all') params.sellerId = transactionFilters.sellerId;
-            const res = await adminDashboardService.getTransactions(params);
-            if (res.data) {
-                if (res.data.transactions) {
-                    setTransactions(res.data.transactions);
-                } else if (res.data.data) {
-                    setTransactions(res.data.data);
-                } else {
-                    setTransactions(res.data);
-                }
-                if (res.data.pagination) {
-                    setTransactionsPage(res.data.pagination.currentPage);
-                    setTransactionsPages(res.data.pagination.totalPages);
-                } else if (res.data.pages) {
-                    setTransactionsPages(res.data.pages);
-                }
-            }
-        } catch (err: any) {
-            // toast.error(err?.response?.data?.message || (isArabic ? 'فشل جلب المعاملات' : 'Failed to fetch transactions'));
-        } finally {
-            setTransactionsLoading(false);
-        }
-    };
+    // const fetchAdminTransactions = async () => {
+    //     try {
+    //         setTransactionsLoading(true);
+    //         const TRANSACTIONS_LIMIT = 20;
+    //         const params: any = { page: transactionsPage, limit: TRANSACTIONS_LIMIT };
+    //         if (transactionFilters.type !== 'all') params.type = transactionFilters.type;
+    //         if (transactionFilters.sellerId !== 'all') params.sellerId = transactionFilters.sellerId;
+    //         const res = await adminDashboardService.getTransactions(params);
+    //         if (res.data) {
+    //             if (res.data.transactions) {
+    //                 setTransactions(res.data.transactions);
+    //             } else if (res.data.data) {
+    //                 setTransactions(res.data.data);
+    //             } else {
+    //                 setTransactions(res.data);
+    //             }
+    //             if (res.data.pagination) {
+    //                 setTransactionsPage(res.data.pagination.currentPage);
+    //                 setTransactionsPages(res.data.pagination.totalPages);
+    //             } else if (res.data.pages) {
+    //                 setTransactionsPages(res.data.pages);
+    //             }
+    //         }
+    //     } catch (err: any) {
+    //         // toast.error(err?.response?.data?.message || (isArabic ? 'فشل جلب المعاملات' : 'Failed to fetch transactions'));
+    //     } finally {
+    //         setTransactionsLoading(false);
+    //     }
+    // };
 
     // Platform earnings fetching
-    const fetchPlatformEarnings = async () => {
-        try {
-            setLoadingEarnings(true);
-            const res = await platformEarningsService.getSummary();
-            setPlatformEarnings(res.data);
-        } catch (err: any) {
-            setErrorEarnings(err?.response?.data?.message || 'Failed to fetch platform earnings');
-        } finally {
-            setLoadingEarnings(false);
-        }
-    };
+    // const fetchPlatformEarnings = async () => {
+    //     try {
+    //         setLoadingEarnings(true);
+    //         const res = await platformEarningsService.getSummary();
+    //         setPlatformEarnings(res.data);
+    //     } catch (err: any) {
+    //         setErrorEarnings(err?.response?.data?.message || 'Failed to fetch platform earnings');
+    //     } finally {
+    //         setLoadingEarnings(false);
+    //     }
+    // };
 
     // Dashboard counters fetching
     const fetchDashboardCounters = async () => {
@@ -276,29 +275,44 @@ export function useAdminDashboard() {
             }
         }
     }, [user, isArabic, router]);
-    // Brand CRUD
-    const handleDeleteBrand = async (id: string) => {
-        if (!confirm(isArabic ? 'حذف هذه الماركة؟' : 'Delete this brand?')) return;
-        try {
-            await brandService.deleteBrand(id);
-            setBrands(prev => prev.filter(b => b._id !== id));
-            toast.success(isArabic ? 'تم الحذف' : 'Deleted');
-        } catch (err: any) {
-            toast.error(err?.response?.data?.message || 'Error');
-        }
-    };
+    // // Brand CRUD
+    // const handleDeleteBrand = async (id: string) => {
+    //     if (!confirm(isArabic ? 'حذف هذه الماركة؟' : 'Delete this brand?')) return;
+    //     try {
+    //         await brandService.deleteBrand(id);
+    //         setBrands(prev => prev.filter(b => b._id !== id));
+    //         toast.success(isArabic ? 'تم الحذف' : 'Deleted');
+    //     } catch (err: any) {
+    //         toast.error(err?.response?.data?.message || 'Error');
+    //     }
+    // };
 
-    // Brand fetching
-    const fetchBrands = async () => {
-        try {
-            setLoadingBrands(true);
-            const res = await brandService.getBrands();
-            setBrands(res.data);
-        } catch (err: any) {
-            setErrorBrands(err?.response?.data?.message || 'Failed to fetch brands');
-        } finally {
-            setLoadingBrands(false);
-        }
+    // // Brand fetching
+    // const fetchBrands = async () => {
+    //     try {
+    //         setLoadingBrands(true);
+    //         const res = await brandService.getBrands();
+    //         setBrands(res.data);
+    //     } catch (err: any) {
+    //         setErrorBrands(err?.response?.data?.message || 'Failed to fetch brands');
+    //     } finally {
+    //         setLoadingBrands(false);
+    //     }
+    // };
+    const fetchInitialData = async () => {
+        await Promise.all([
+            fetchOrders(),
+            fetchCategories(),
+            // fetchBrands(),
+            fetchProducts(),
+            fetchPickupPoints(),
+            fetchAnnouncements(),
+            fetchSellers(),
+            fetchUsers(),
+            fetchCoupons(),
+            // fetchPlatformEarnings(),
+            fetchDashboardCounters()
+        ]);
     };
 
     // Category fetching based on active tab
@@ -308,7 +322,7 @@ export function useAdminDashboard() {
         }
     }, [isAuthenticated, isAdmin]);
 
-    useEffect(() => { fetchCategories(); fetchBrands(); }, []);
+    useEffect(() => { fetchCategories(); }, []);
 
     // Refetch sellers when page changes
     useEffect(() => {
@@ -320,7 +334,7 @@ export function useAdminDashboard() {
         if (isAuthenticated && isAdmin) {
             switch (activeTab) {
                 case 'overview':
-                    fetchPlatformEarnings();
+                    // fetchPlatformEarnings();
                     fetchDashboardCounters();
                     break;
                 case 'complaints':
@@ -365,26 +379,11 @@ export function useAdminDashboard() {
         fetchUsers();
     }, [usersPage]);
 
+ 
     // refetch transactions when page changes
-    useEffect(() => {
-        fetchAdminTransactions();
-    }, [transactionsPage]);
-
-    const fetchInitialData = async () => {
-        await Promise.all([
-            fetchOrders(),
-            fetchCategories(),
-            fetchBrands(),
-            fetchProducts(),
-            fetchPickupPoints(),
-            fetchAnnouncements(),
-            fetchSellers(),
-            fetchUsers(),
-            fetchCoupons(),
-            fetchPlatformEarnings(),
-            fetchDashboardCounters()
-        ]);
-    };
+    // useEffect(() => {
+    //     fetchAdminTransactions();
+    // }, [transactionsPage]);
 
     // Complaints operations
     const fetchComplaints = async () => {
@@ -1362,7 +1361,6 @@ export function useAdminDashboard() {
         handleRemoveImage,
         fetchProducts,
         fetchCategories,
-        fetchBrands,
         fetchCoupons,
         fetchOrders,
         updateDeliveryStatus,
@@ -1400,12 +1398,11 @@ export function useAdminDashboard() {
         platformEarnings,
         loadingEarnings,
         // Brands
-        brands,
-        loadingBrands,
-        errorBrands,
-        fetchBrands,
-        handleDeleteBrand,
-        fetchPlatformEarnings,
+        // brands,
+        // loadingBrands,
+        // errorBrands,
+        // handleDeleteBrand,
+        // fetchPlatformEarnings,
         dashboardCounters,
         fetchDashboardCounters,
         // User management
@@ -1419,7 +1416,7 @@ export function useAdminDashboard() {
         transactionsPage,
         setTransactionsPage,
         transactionsPages,
-        fetchAdminTransactions,
+        // fetchAdminTransactions,
         analytics,
         analyticsLoading,
         analyticsError,

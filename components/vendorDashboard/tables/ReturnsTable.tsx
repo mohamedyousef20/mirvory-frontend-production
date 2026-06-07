@@ -44,136 +44,81 @@ export function ReturnsTable({
     }
 
     return (
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {data.map((request) => (
+                <div
+                    key={request._id}
+                    className="rounded-2xl border border-slate-200 bg-white p-5 hover:shadow-md transition-all"
+                >
+                    <div className="flex gap-4">
+                        {/* Bigger Image */}
+                        <div className="w-28 h-28 flex-shrink-0">
+                            <DashboardImageSlider
+                                images={
+                                    request.images?.length
+                                        ? request.images.map((img: string) =>
+                                            normalizeImageUrl(img)
+                                        )
+                                        : ["/placeholder.svg"]
+                                }
+                                alt="product"
+                                layout="square"
+                            />
+                        </div>
 
-            <div className="overflow-x-auto">
+                        {/* Content */}
+                        <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-3">
+                                <div>
+                                    <h3 className="font-bold text-slate-900">
+                                        {language === "ar"
+                                            ? request.product?.title
+                                            : request.product?.titleEn ||
+                                            request.product?.title}
+                                    </h3>
 
-                <Table>
+                                    <p className="text-xs text-slate-500 mt-1">
+                                        #{request.order?._id?.slice(-6) ||
+                                            request._id.slice(-6)}
+                                    </p>
+                                </div>
 
-                    {/* HEADER */}
-                    <TableHeader>
-                        <TableRow className="bg-slate-50 dark:bg-slate-800/50">
+                                <Badge className="rounded-full">
+                                    {request.status === "pending" && (
+                                        <Clock className="h-3 w-3 mr-1" />
+                                    )}
 
-                            <TableHead>
-                                {language === "ar" ? "الطلب" : "Order"}
-                            </TableHead>
-
-                            <TableHead className="hidden md:table-cell">
-                                {language === "ar" ? "المنتج" : "Product"}
-                            </TableHead>
-
-                            <TableHead className="hidden md:table-cell">
-                                {language === "ar" ? "السبب" : "Reason"}
-                            </TableHead>
-
-                            <TableHead>
-                                {language === "ar" ? "الحالة" : "Status"}
-                            </TableHead>
-
-                            <TableHead className="hidden md:table-cell">
-                                {language === "ar" ? "آخر تحديث" : "Updated"}
-                            </TableHead>
-
-                        </TableRow>
-                    </TableHeader>
-
-                    {/* BODY */}
-                    <TableBody>
-
-                        {data.map((request) => (
-                            <TableRow
-                                key={request._id}
-                                className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors"
-                            >
-
-                                {/* ORDER ID */}
-                                <TableCell>
-
-                                    <div className="flex flex-col">
-
-                                        <span className="font-semibold text-sm text-slate-800 dark:text-white">
-                                            #{request.order?._id?.slice(-6) || request._id.slice(-6)}
-                                        </span>
-
-                                        {/* mobile reason preview */}
-                                        <span className="text-xs text-slate-400 md:hidden truncate max-w-[140px]">
-                                            {request.reason}
-                                        </span>
-
-                                    </div>
-
-                                </TableCell>
-
-                                {/* PRODUCT */}
-                                <TableCell className="hidden md:table-cell">
-
-                                    <div className="flex items-center gap-2">
-
-                                        <div className="w-12">
-
-                                            <DashboardImageSlider
-                                                images={
-                                                    request.images?.length
-                                                        ? request.images.map((img: string) =>
-                                                            normalizeImageUrl(img)
-                                                        )
-                                                        : ["/placeholder.svg"]
-                                                }
-                                                alt="product"
-                                                layout="square"
-                                            />
-
-                                        </div>
-
-                                        <div className="flex flex-col">
-
-                                            <span className="text-sm font-medium text-slate-800">
-                                                {language === "ar"
-                                                    ? request.product?.title
-                                                    : request.product?.titleEn || request.product?.title || "—"}
-                                            </span>
-
-                                        </div>
-
-                                    </div>
-
-                                </TableCell>
-
-                                {/* REASON */}
-                                <TableCell className="hidden md:table-cell">
-                                    <span className="text-sm text-slate-600 max-w-[200px] truncate block">
-                                        {request.reason}
-                                    </span>
-                                </TableCell>
-
-                                {/* STATUS */}
-                                <TableCell>
-
-                                    <Badge
-                                        className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full w-fit border"
-                                    >
-
-                                        {request.status === "pending" && (
-                                            <Clock className="h-3 w-3 text-amber-500" />
+                                    {(request.status === "approved" ||
+                                        request.status === "processing") && (
+                                            <Check className="h-3 w-3 mr-1" />
                                         )}
 
-                                        {(request.status === "approved" ||
-                                            request.status === "processing") && (
-                                                <Check className="h-3 w-3 text-green-500" />
-                                            )}
+                                    {request.status === "rejected" && (
+                                        <XCircle className="h-3 w-3 mr-1" />
+                                    )}
 
-                                        {request.status === "rejected" && (
-                                            <XCircle className="h-3 w-3 text-red-500" />
-                                        )}
+                                    {getReturnStatusLabel(request.status)}
+                                </Badge>
+                            </div>
 
-                                        {getReturnStatusLabel(request.status)}
+                            <div className="mt-4">
+                                <p className="text-xs font-medium text-slate-500 mb-1">
+                                    {language === "ar" ? "سبب الإرجاع" : "Return Reason"}
+                                </p>
 
-                                    </Badge>
+                                <p className="text-sm text-slate-700 line-clamp-3">
+                                    {request.reason}
+                                </p>
+                            </div>
 
-                                </TableCell>
+                            <div className="mt-4 flex items-center justify-between border-t pt-3">
+                                <span className="text-xs text-slate-500">
+                                    {language === "ar"
+                                        ? "آخر تحديث"
+                                        : "Last Updated"}
+                                </span>
 
-                                {/* UPDATED */}
-                                <TableCell className="hidden md:table-cell text-sm text-slate-500">
+                                <span className="text-sm font-medium">
                                     {new Date(request.updatedAt).toLocaleDateString(
                                         language === "ar" ? "ar-EG" : "en-US",
                                         {
@@ -182,17 +127,12 @@ export function ReturnsTable({
                                             year: "numeric",
                                         }
                                     )}
-                                </TableCell>
-
-                            </TableRow>
-                        ))}
-
-                    </TableBody>
-
-                </Table>
-
-            </div>
-
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            ))}
         </div>
     );
 }

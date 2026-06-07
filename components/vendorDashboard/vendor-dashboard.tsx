@@ -70,7 +70,7 @@ export function VendorDashboard() {
   const [currentReturnList, setCurrentReturnList] = useState([])
 
   // ── useEffects and handlers ────────────────────────────────────────────────
-
+  console.log(filteredOrders,'filteredOrders')
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
@@ -93,11 +93,12 @@ export function VendorDashboard() {
 
         const categoriesRes = await categoryService.getCategories();
 
-        setCategories(categoriesRes.data ||[]);
+        setCategories(categoriesRes.data || []);
         // Fetch seller orders for overview (recent orders)
         const ordersRes = await orderService.getSellerOrders();
-        setOrders(ordersRes.data || []);
-        setFilteredOrders(ordersRes.data || []);
+        console.log(ordersRes, 'ordersRes159')
+        setOrders(ordersRes?.data.data || []);
+        setFilteredOrders(ordersRes?.data?.data || []);
 
       } catch (error: any) {
         console.error('Failed to fetch initial data:', error);
@@ -124,8 +125,8 @@ export function VendorDashboard() {
     try {
       const response = await orderService.getSellerOrders();
       console.log(response, 'seller order ')
-      setOrders(response.data);
-      setFilteredOrders(response.data);
+      setOrders(response?.data?.data);
+      setFilteredOrders(response?.data?.data);
     } catch (error: any) {
       console.error('Failed to fetch orders:', error);
       toast.error(language === 'ar' ? 'فشل جلب الطلبات' : 'Failed to fetch orders');
@@ -187,8 +188,8 @@ export function VendorDashboard() {
 
   if (error) {
     return (
-      <div className="container px-4 py-10">
-        <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl p-4">{error}</div>
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="bg-rose-50 border border-rose-200 text-rose-700 text-sm rounded-xl p-4">{error}</div>
       </div>
     )
   }
@@ -207,17 +208,17 @@ export function VendorDashboard() {
     }
   };
   const handleEditProduct = (product: any) => {
-  setEditingProductId(product._id);
+    setEditingProductId(product._id);
 
-  setEditingProductData({
-    title: product.title,
-    price: product.price,
-    discountPercentage: product.discountPercentage,
-    quantity: product.quantity,
-    status: product.status,
-    category: product.category,
-  });
-};
+    setEditingProductData({
+      title: product.title,
+      price: product.price,
+      discountPercentage: product.discountPercentage,
+      quantity: product.quantity,
+      status: product.status,
+      category: product.category,
+    });
+  };
 
   const handleUpdateProduct = async (productId: string) => {
     try {
@@ -262,34 +263,34 @@ export function VendorDashboard() {
   };
 
 
-const handleDeleteProduct = async (productId: string) => {
-  try {
-    setDeletingProductId(productId);
+  const handleDeleteProduct = async (productId: string) => {
+    try {
+      setDeletingProductId(productId);
 
-    await productService.deleteProduct(productId);
+      await productService.deleteProduct(productId);
 
-    setProducts(prev =>
-      prev.filter(product => product._id !== productId)
-    );
+      setProducts(prev =>
+        prev.filter(product => product._id !== productId)
+      );
 
-    toast.success(
-      language === "ar"
-        ? "تم حذف المنتج"
-        : "Product deleted successfully"
-    );
-  } catch (error: any) {
-    console.error(error);
+      toast.success(
+        language === "ar"
+          ? "تم حذف المنتج"
+          : "Product deleted successfully"
+      );
+    } catch (error: any) {
+      console.error(error);
 
-    toast.error(
-      error?.response?.data?.message ||
-      (language === "ar"
-        ? "فشل حذف المنتج"
-        : "Failed to delete product")
-    );
-  } finally {
-    setDeletingProductId(null);
-  }
-};
+      toast.error(
+        error?.response?.data?.message ||
+        (language === "ar"
+          ? "فشل حذف المنتج"
+          : "Failed to delete product")
+      );
+    } finally {
+      setDeletingProductId(null);
+    }
+  };
 
   const clearProductFilters = () => {
     setSearchTerm("");
@@ -514,7 +515,7 @@ const handleDeleteProduct = async (productId: string) => {
     try {
       const response = await returnService.getReturnRequests();
       setReturnRequests(response.data || []);
-      
+
       // Set up tab metadata
       const meta = [
         { key: 'adminPending', title: language === 'ar' ? 'قيد المراجعة' : 'Admin Review', description: language === 'ar' ? 'بانتظار موافقة الإدارة' : 'Waiting for admin approval', count: (response.data || []).filter((r: any) => r.status === 'pending').length },
@@ -524,7 +525,7 @@ const handleDeleteProduct = async (productId: string) => {
         { key: 'rejected', title: language === 'ar' ? 'مرفوض' : 'Rejected', description: language === 'ar' ? 'تم رفض الإرجاع' : 'Return rejected', count: (response.data || []).filter((r: any) => r.status === 'rejected').length }
       ];
       setCurrentReturnTabMeta(meta);
-      
+
       // Set current list based on active tab
       const filtered = (response.data || []).filter((r: any) => {
         if (returnTab === 'adminPending') return r.status === 'pending';
@@ -542,8 +543,10 @@ const handleDeleteProduct = async (productId: string) => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="container px-4 py-8 md:py-10 max-w-screen-xl mx-auto">
+    <>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap'); * { font-family: 'Cairo', sans-serif !important; }`}</style>
+      <div dir="rtl" className="min-h-screen bg-[#f4f6fb]">
+        <div className="max-w-7xl mx-auto px-6 py-8 space-y-6">
 
         <VendorHeader
           title={t("vendorDashboard")}
@@ -597,7 +600,8 @@ const handleDeleteProduct = async (productId: string) => {
 
           <TabsContent value="orders">
             <OrdersTab
-              language={language} filteredOrders={filteredOrders}
+              language={language}
+              filteredOrders={filteredOrders}
               searchTerm={searchTerm} filters={filters} sortBy={sortBy}
               preparingOrderId={preparingOrderId}
               cancellingOrderId={cancellingOrderId}
@@ -623,5 +627,6 @@ const handleDeleteProduct = async (productId: string) => {
         </Tabs>
       </div>
     </div>
+    </>
   )
 }

@@ -33,33 +33,43 @@ export default function Login() {
 
     try {
       const response = await authService.login({ email, password });
-      console.log(response, 'login')
-      if (response.data.success) {
-        toast.success('تم تسجيل الدخول بنجاح');
+      console.log(response,'23565');
+      if (!response.data.success) {
+        const message =
+          response.data.message || "فشل تسجيل الدخول";
 
-        // الحصول على الدور من الاستجابة مباشرة إن أمكن
-        const role = response.data.data?.user?.role || response.data.role;
-
-        // أو الانتظار قليلاً للتأكد من تعيين الكوكيز قبل إعادة التوجيه
-        setTimeout(() => {
-          if (role === 'seller') {
-
-            window.location.href = '/vendor/dashboard';
-          } else {
-            window.location.href = '/';
-          }
-        }, 100); // تأخير بسيط للتأكد من تعيين الكوكيز
+        setError(message);
+        toast.error(message);
+        return;
       }
+
+      toast.success("تم تسجيل الدخول بنجاح");
+
+      const role =
+        response.data.data?.user?.role ||
+        response.data.role;
+
+      setTimeout(() => {
+        if (role === "seller") {
+          window.location.href = "/vendor/dashboard";
+        } else {
+          window.location.href = "/";
+        }
+      }, 100);
+
     } catch (err: any) {
-      // الحصول على رسالة الخطأ من الاستجابة إن وجدت
-      const errorMessage = err.response?.data?.message || 'فشل تسجيل الدخول';
+      const errorMessage =
+        err?.response?.data?.message ||
+        err?.message ||
+        "فشل تسجيل الدخول";
+
       setError(errorMessage);
+      console.error("Login Error:", err);
       toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
   };
-
   return (
     <>
       <Head>

@@ -259,14 +259,16 @@ export function WishlistPage() {
   }
 
   return (
-    <div className="space-y-8 py-6" dir={isArabic ? "rtl" : "ltr"}>
-      <div className="space-y-6">
+    <>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap'); * { font-family: 'Cairo', sans-serif !important; }`}</style>
+      <div className="min-h-screen bg-[#f4f6fb] py-8" dir={isArabic ? "rtl" : "ltr"}>
+        <div className="max-w-7xl mx-auto px-6 py-8 space-y-6">
         <div className={`space-y-2 ${isArabic ? "text-right" : "text-left"}`}>
           <Badge variant="outline" className="px-3 py-1 w-fit">
             {isArabic ? "قائمتك الخاصة" : "Your curated list"}
           </Badge>
-          <h1 className="text-2xl font-bold tracking-tight">{isArabic ? "قائمة المفضلة" : "My Wishlist"}</h1>
-          <p className="text-muted-foreground text-sm">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-800">{isArabic ? "قائمة المفضلة" : "My Wishlist"}</h1>
+          <p className="text-slate-500 text-sm">
             {isArabic
               ? "احتفظ بكل المنتجات التي تحبها في مكان واحد وارجع إليها بسرعة."
               : "Keep every product you love in one place and revisit them quickly."}
@@ -275,16 +277,16 @@ export function WishlistPage() {
 
         {wishlistItems.length === 0 ? (
           <div className="text-center py-12">
-            <Heart className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-            <h2 className="text-xl font-medium mb-2">
+            <Heart className="h-12 w-12 mx-auto text-slate-400 mb-4" />
+            <h2 className="text-xl font-medium mb-2 text-slate-800">
               {language === "ar" ? "قائمة المفضلة فارغة" : "Your wishlist is empty"}
             </h2>
-            <p className="text-muted-foreground mb-6">
+            <p className="text-slate-500 mb-6">
               {language === "ar"
                 ? "لم تقم بإضافة أي منتجات إلى المفضلة بعد. استعرض المنتجات وابدأ بإضافة منتجاتك المفضلة!"
                 : "You haven't added any products to your wishlist yet. Browse products and start adding your favorites!"}
             </p>
-            <Button asChild>
+            <Button asChild className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#1a4fba] text-white text-sm font-semibold rounded-xl hover:bg-[#1640a0] transition shadow-md shadow-blue-200">
               <Link href="/products">{language === "ar" ? "تصفح المنتجات" : "Browse Products"}</Link>
             </Button>
           </div>
@@ -333,7 +335,7 @@ export function WishlistPage() {
                       )}
                       {isArabic ? "مسح المفضلة" : "Clear wishlist"}
                     </Button>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-xs text-slate-500">
                       {isArabic
                         ? "نصيحة: امسح القائمة بالكامل لبدء قائمة مفضلة جديدة بسرعة"
                         : "Tip: Clear your wishlist to start a fresh favorites list fast."}
@@ -361,13 +363,13 @@ export function WishlistPage() {
             </div>
 
             {selectedItems.length > 0 && (
-              <div className="flex items-center gap-3 bg-muted/60 p-3 rounded-xl">
+              <div className="flex items-center gap-3 bg-slate-100/60 p-3 rounded-xl">
                 <Checkbox
                   id="select-all"
                   checked={selectedItems.length === filteredItems.length && filteredItems.length > 0}
                   onCheckedChange={selectAllItems}
                 />
-                <Label htmlFor="select-all" className="text-sm">
+                <Label htmlFor="select-all" className="text-sm text-slate-700">
                   {isArabic
                     ? `تم تحديد ${selectedItems.length} من ${filteredItems.length}`
                     : `${selectedItems.length} of ${filteredItems.length} selected`}
@@ -413,20 +415,21 @@ export function WishlistPage() {
         {/* Empty state for filtered results */}
         {wishlistItems.length > 0 && sortedItems.length === 0 && (
           <div className="text-center py-8">
-            <h3 className="text-lg font-medium mb-2">
+            <h3 className="text-lg font-medium mb-2 text-slate-800">
               {language === "ar" ? "لا توجد منتجات مطابقة" : "No matching products"}
             </h3>
-            <p className="text-muted-foreground mb-4">
+            <p className="text-slate-500 mb-4">
               {language === "ar"
                 ? "لا توجد منتجات تطابق معايير التصفية المحددة"
                 : "There are no products matching your selected filters"}
             </p>
-            <Button variant="outline" onClick={() => setFilterOption("all")}>
+            <Button variant="outline" onClick={() => setFilterOption("all")} className="px-5 py-2 bg-slate-100 text-slate-700 text-sm font-semibold rounded-xl hover:bg-slate-200 transition">
               {language === "ar" ? "عرض جميع المنتجات" : "Show all products"}
             </Button>
           </div>
         )}
       </div>
     </div>
+    </>
   )
 }
