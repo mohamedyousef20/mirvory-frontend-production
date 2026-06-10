@@ -159,15 +159,15 @@ function AuthContextWrapper({
         }
     }, [clearTimers]);
 
-    const resetInactivityTimer = useCallback(() => {
-        if (inactivityTimerRef.current) {
-            clearTimeout(inactivityTimerRef.current);
-        }
+    // const resetInactivityTimer = useCallback(() => {
+    //     if (inactivityTimerRef.current) {
+    //         clearTimeout(inactivityTimerRef.current);
+    //     }
 
-        inactivityTimerRef.current = setTimeout(() => {
-            logout();
-        }, 90 * 60 * 1000); // 90 min
-    }, [logout]);
+    //     inactivityTimerRef.current = setTimeout(() => {
+    //         logout();
+    //     }, 10 * 24 * 60 * 60 * 1000);
+    // }, [logout]);
 
     const setupTokenRefresh = useCallback(
         (user: any) => {
@@ -210,10 +210,11 @@ function AuthContextWrapper({
 
             if (normalized) {
                 setupTokenRefresh(normalized);
-                resetInactivityTimer();
+                // resetInactivityTimer();
             }
         },
-        [clearTimers, resetInactivityTimer, setupTokenRefresh]
+        // [clearTimers, resetInactivityTimer, setupTokenRefresh]
+        [clearTimers, setupTokenRefresh]
     );
 
     // ===== Refresh User =====

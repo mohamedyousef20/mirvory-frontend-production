@@ -40,15 +40,7 @@ export default function SellerSignup() {
     }
   });
 
-  const handleGoogleSignIn = async () => {
-    try {
-      signIn("google", { callbackUrl: "/seller/onboarding" })
-    }
-    catch (err) {
-      console.error(err);
-      toast.error('تعذر تسجيل الدخول عبر جوجل في الوقت الحالي');
-    }
-  };
+
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -545,11 +537,11 @@ export default function SellerSignup() {
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-300"></div>
                 </div>
-                <div className="relative flex justify-center text-sm">
+                {/* <div className="relative flex justify-center text-sm">
                   <span className="px-4 bg-gray-50 text-gray-500">أو التسجيل باستخدام</span>
-                </div>
+                </div> */}
               </div>
-
+{/* 
               <div className="mt-6">
                 <button
                   type="button"
@@ -578,7 +570,7 @@ export default function SellerSignup() {
 
                   <span>تسجيل الدخول عبر جوجل</span>
                 </button>
-              </div>
+              </div> */}
 
             </div>
           </div>
