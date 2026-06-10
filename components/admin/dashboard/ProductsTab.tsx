@@ -10,7 +10,9 @@ import {
     Plus,
     CheckCircle,
     XCircle,
-    Search
+    Search,
+    ShieldCheck
+
 } from "lucide-react";
 
 import Link from "next/link";
@@ -34,8 +36,8 @@ interface ProductsTabProps {
         title: string,
         reason: string
     ) => void;
+    handleTrustProduct: (productId: string) => void;
 }
-
 export function ProductsTab({
     products,
     loadingProducts,
@@ -44,7 +46,9 @@ export function ProductsTab({
     pagination,
     onPageChange,
     handleApproveProduct,
-    handleRejectProduct
+    handleRejectProduct,
+    handleTrustProduct,
+
 }: ProductsTabProps) {
 
     const [sellerSearch, setSellerSearch] = useState("");
@@ -249,230 +253,253 @@ export function ProductsTab({
                                             </div>
                                         </TableCell>
 
-                                    {/* Seller */}
-                                    <TableCell>
-                                        <div className="space-y-1">
-                                            <p className="font-medium">
-                                                {product.seller
-                                                    ? `${product.seller.firstName || ""} ${product.seller.lastName || ""}`.trim()
-                                                    : "Unknown"}
-                                            </p>
-
-                                            {product.seller?.email && (
-                                                <p className="text-xs text-muted-foreground truncate max-w-[120px]">
-                                                    {product.seller.email}
+                                        {/* Seller */}
+                                        <TableCell>
+                                            <div className="space-y-1">
+                                                <p className="font-medium">
+                                                    {product.seller
+                                                        ? `${product.seller.firstName || ""} ${product.seller.lastName || ""}`.trim()
+                                                        : "Unknown"}
                                                 </p>
-                                            )}
-                                        </div>
-                                    </TableCell>
 
-                                    {/* Price */}
-                                    <TableCell>
-                                        {product.discountPercentage > 0 ? (
-                                            <div className="flex flex-col">
-                                                <span className="font-medium text-green-600">
-                                                    {parseFloat(
-                                                        product.discountedPrice ||
-                                                        product.price ||
-                                                        0
-                                                    ).toFixed(2)}{" "}
-                                                    {isArabic ? "ج.م" : "EGP"}
-                                                </span>
-
-                                                <span className="text-xs line-through text-muted-foreground">
-                                                    {parseFloat(
-                                                        product.price || 0
-                                                    ).toFixed(2)}{" "}
-                                                    {isArabic ? "ج.م" : "EGP"}
-                                                </span>
+                                                {product.seller?.email && (
+                                                    <p className="text-xs text-muted-foreground truncate max-w-[120px]">
+                                                        {product.seller.email}
+                                                    </p>
+                                                )}
                                             </div>
-                                        ) : (
-                                            <span className="font-medium">
-                                                {parseFloat(product.price || 0).toFixed(2)}{" "}
-                                                {isArabic ? "ج.م" : "EGP"}
-                                            </span>
-                                        )}
-                                    </TableCell>
+                                        </TableCell>
 
-                                    {/* Stock */}
-                                    <TableCell>
-                                        <div className="flex items-center gap-1">
-                                            {product.quantity || 0}
+                                        {/* Price */}
+                                        <TableCell>
+                                            {product.discountPercentage > 0 ? (
+                                                <div className="flex flex-col">
+                                                    <span className="font-medium text-green-600">
+                                                        {parseFloat(
+                                                            product.discountedPrice ||
+                                                            product.price ||
+                                                            0
+                                                        ).toFixed(2)}{" "}
+                                                        {isArabic ? "ج.م" : "EGP"}
+                                                    </span>
 
-                                            {product.quantity < 10 &&
-                                                product.quantity > 0 && (
+                                                    <span className="text-xs line-through text-muted-foreground">
+                                                        {parseFloat(
+                                                            product.price || 0
+                                                        ).toFixed(2)}{" "}
+                                                        {isArabic ? "ج.م" : "EGP"}
+                                                    </span>
+                                                </div>
+                                            ) : (
+                                                <span className="font-medium">
+                                                    {parseFloat(product.price || 0).toFixed(2)}{" "}
+                                                    {isArabic ? "ج.م" : "EGP"}
+                                                </span>
+                                            )}
+                                        </TableCell>
+
+                                        {/* Stock */}
+                                        <TableCell>
+                                            <div className="flex items-center gap-1">
+                                                {product.quantity || 0}
+
+                                                {product.quantity < 10 &&
+                                                    product.quantity > 0 && (
+                                                        <Badge
+                                                            variant="outline"
+                                                            className="bg-orange-100 text-orange-800 border-orange-200 text-xs"
+                                                        >
+                                                            {isArabic ? "منخفض" : "Low"}
+                                                        </Badge>
+                                                    )}
+
+                                                {product.quantity === 0 && (
                                                     <Badge
                                                         variant="outline"
-                                                        className="bg-orange-100 text-orange-800 border-orange-200 text-xs"
+                                                        className="bg-red-100 text-red-800 border-red-200 text-xs"
                                                     >
-                                                        {isArabic ? "منخفض" : "Low"}
+                                                        {isArabic ? "نفذ" : "Out"}
                                                     </Badge>
                                                 )}
-
-                                            {product.quantity === 0 && (
-                                                <Badge
-                                                    variant="outline"
-                                                    className="bg-red-100 text-red-800 border-red-200 text-xs"
-                                                >
-                                                    {isArabic ? "نفذ" : "Out"}
-                                                </Badge>
-                                            )}
-                                        </div>
-                                    </TableCell>
-
-                                    {/* Sold */}
-                                    <TableCell>
-                                        <div className="flex items-center gap-1">
-                                            {product.sold || 0}
-
-                                            {product.sold > 50 && (
-                                                <Badge
-                                                    variant="outline"
-                                                    className="bg-green-100 text-green-800 border-green-200 text-xs"
-                                                >
-                                                    {isArabic ? "مباع" : "Sold"}
-                                                </Badge>
-                                            )}
-                                        </div>
-                                    </TableCell>
-
-                                    {/* Rating */}
-                                    <TableCell>
-                                        <div className="flex flex-col">
-                                            <div className="flex items-center gap-1">
-                                                <span className="font-medium">
-                                                    {product.ratingsAverage?.toFixed(1) || "0.0"}
-                                                </span>
-
-                                                <span className="text-yellow-500">★</span>
                                             </div>
+                                        </TableCell>
 
-                                            <span className="text-xs text-muted-foreground">
-                                                ({product.ratingsQuantity || 0}{" "}
-                                                {isArabic ? "تقييم" : "reviews"})
-                                            </span>
-                                        </div>
-                                    </TableCell>
+                                        {/* Sold */}
+                                        <TableCell>
+                                            <div className="flex items-center gap-1">
+                                                {product.sold || 0}
 
-                                    {/* Category */}
-                                    <TableCell>
-                                        <Badge variant="outline" className="bg-blue-50">
-                                            {product.category
-                                                ? (
-                                                    isArabic
-                                                        ? product.category.name
-                                                        : product.category.nameEn ||
-                                                        product.category.name
-                                                )
-                                                : "N/A"}
-                                        </Badge>
-                                    </TableCell>
-
-                                    {/* Status */}
-                                    <TableCell>
-                                        <Badge
-                                            variant={
-                                                product.isApproved
-                                                    ? "default"
-                                                    : "secondary"
-                                            }
-                                            className={
-                                                product.isApproved
-                                                    ? "bg-green-100 text-green-800 border-green-200"
-                                                    : "bg-amber-100 text-amber-800 border-amber-200"
-                                            }
-                                        >
-                                            {isArabic
-                                                ? product.isApproved
-                                                    ? "معتمد"
-                                                    : "قيد المراجعة"
-                                                : product.isApproved
-                                                    ? "Approved"
-                                                    : "Pending"}
-                                        </Badge>
-                                    </TableCell>
-
-                                    {/* Date */}
-                                    <TableCell>
-                                        <div className="text-sm">
-                                            {new Date(product.createdAt).toLocaleDateString(
-                                                isArabic ? "ar-EG" : "en-US",
-                                                {
-                                                    year: "numeric",
-                                                    month: "short",
-                                                    day: "numeric"
-                                                }
-                                            )}
-                                        </div>
-                                    </TableCell>
-
-                                    {/* Actions */}
-                                    <TableCell>
-                                        <div className="flex flex-col gap-2">
-
-                                            {!product.isApproved && (
-                                                <>
-                                                    <Button
+                                                {product.sold > 50 && (
+                                                    <Badge
                                                         variant="outline"
-                                                        size="sm"
-                                                        className="w-full justify-start text-green-600 hover:bg-green-50"
-                                                        onClick={() =>
-                                                            handleApproveProduct(product._id)
-                                                        }
+                                                        className="bg-green-100 text-green-800 border-green-200 text-xs"
                                                     >
-                                                        <CheckCircle className="h-4 w-4 mr-2" />
+                                                        {isArabic ? "مباع" : "Sold"}
+                                                    </Badge>
+                                                )}
+                                            </div>
+                                        </TableCell>
 
-                                                        {isArabic ? "موافقة" : "Approve"}
-                                                    </Button>
+                                        {/* Rating */}
+                                        <TableCell>
+                                            <div className="flex flex-col">
+                                                <div className="flex items-center gap-1">
+                                                    <span className="font-medium">
+                                                        {product.ratingsAverage?.toFixed(1) || "0.0"}
+                                                    </span>
 
-                                                    <Button
-                                                        variant="outline"
-                                                        size="sm"
-                                                        className="w-full justify-start text-red-600 hover:bg-red-50"
-                                                        onClick={() => {
-                                                            const reason = prompt(
-                                                                isArabic
-                                                                    ? `أدخل سبب رفض المنتج "${product.title}"`
-                                                                    : `Enter rejection reason`
-                                                            );
+                                                    <span className="text-yellow-500">★</span>
+                                                </div>
 
-                                                            if (reason) {
-                                                                handleRejectProduct(
-                                                                    product._id,
-                                                                    product.seller?._id ||
-                                                                    product.seller,
-                                                                    product.title,
-                                                                    reason
-                                                                );
-                                                            }
-                                                        }}
-                                                    >
-                                                        <XCircle className="h-4 w-4 mr-2" />
+                                                <span className="text-xs text-muted-foreground">
+                                                    ({product.ratingsQuantity || 0}{" "}
+                                                    {isArabic ? "تقييم" : "reviews"})
+                                                </span>
+                                            </div>
+                                        </TableCell>
 
-                                                        {isArabic ? "رفض" : "Reject"}
-                                                    </Button>
-                                                </>
-                                            )}
+                                        {/* Category */}
+                                        <TableCell>
+                                            <Badge variant="outline" className="bg-blue-50">
+                                                {product.category
+                                                    ? (
+                                                        isArabic
+                                                            ? product.category.name
+                                                            : product.category.nameEn ||
+                                                            product.category.name
+                                                    )
+                                                    : "N/A"}
+                                            </Badge>
+                                        </TableCell>
 
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                className="w-full justify-start"
-                                                asChild
-                                            >
-                                                <Link href={`/products/${product._id}`}>
+                                        {/* Status */}
+                                        <TableCell>
+                                            <div className="flex flex-col gap-1">
+                                                <Badge
+                                                    variant={
+                                                        product.isApproved
+                                                            ? "default"
+                                                            : "secondary"
+                                                    }
+                                                    className={
+                                                        product.isApproved
+                                                            ? "bg-green-100 text-green-800 border-green-200"
+                                                            : "bg-amber-100 text-amber-800 border-amber-200"
+                                                    }
+                                                >
                                                     {isArabic
-                                                        ? "عرض التفاصيل"
-                                                        : "View Details"}
-                                                </Link>
-                                            </Button>
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                            ))
-                        )}
-                    </TableBody>
-                </Table>
+                                                        ? product.isApproved
+                                                            ? "معتمد"
+                                                            : "قيد المراجعة"
+                                                        : product.isApproved
+                                                            ? "Approved"
+                                                            : "Pending"}
+                                                </Badge>
+
+                                                {product.isTrusted && (
+                                                    <Badge
+                                                        variant="outline"
+                                                        className="bg-blue-100 text-blue-800 border-blue-200"
+                                                    >
+                                                        {isArabic ? "موثق" : "Trusted"}
+                                                    </Badge>
+                                                )}
+                                            </div>
+                                        </TableCell>
+                                        {/* Date */}
+                                        <TableCell>
+                                            <div className="text-sm">
+                                                {new Date(product.createdAt).toLocaleDateString(
+                                                    isArabic ? "ar-EG" : "en-US",
+                                                    {
+                                                        year: "numeric",
+                                                        month: "short",
+                                                        day: "numeric"
+                                                    }
+                                                )}
+                                            </div>
+                                        </TableCell>
+
+                                        {/* Actions */}
+                                        <TableCell>
+                                            <div className="flex flex-col gap-2">
+
+                                                {!product.isApproved && (
+                                                    <>
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            className="w-full justify-start text-green-600 hover:bg-green-50"
+                                                            onClick={() =>
+                                                                handleApproveProduct(product._id)
+                                                            }
+                                                        >
+                                                            <CheckCircle className="h-4 w-4 mr-2" />
+
+                                                            {isArabic ? "موافقة" : "Approve"}
+                                                        </Button>
+
+
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            className="w-full justify-start text-red-600 hover:bg-red-50"
+                                                            onClick={() => {
+                                                                const reason = prompt(
+                                                                    isArabic
+                                                                        ? `أدخل سبب رفض المنتج "${product.title}"`
+                                                                        : `Enter rejection reason`
+                                                                );
+
+                                                                if (reason) {
+                                                                    handleRejectProduct(
+                                                                        product._id,
+                                                                        product.seller?._id ||
+                                                                        product.seller,
+                                                                        product.title,
+                                                                        reason
+                                                                    );
+                                                                }
+                                                            }}
+                                                        >
+                                                            <XCircle className="h-4 w-4 mr-2" />
+
+                                                            {isArabic ? "رفض" : "Reject"}
+                                                        </Button>
+                                                    </>
+                                                )}
+                                                {product.isApproved && !product.isTrusted && (
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        className="w-full justify-start text-blue-600 hover:bg-blue-50"
+                                                        onClick={() => handleTrustProduct(product._id)}
+                                                    >
+                                                        <ShieldCheck className="h-4 w-4 mr-2" />
+
+                                                        {isArabic ? "توثيق المنتج" : "Trust Product"}
+                                                    </Button>
+                                                )}
+
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className="w-full justify-start"
+                                                    asChild
+                                                >
+                                                    <Link href={`/products/${product._id}`}>
+                                                        {isArabic
+                                                            ? "عرض التفاصيل"
+                                                            : "View Details"}
+                                                    </Link>
+                                                </Button>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            )}
+                        </TableBody>
+                    </Table>
                 </div>
             </div>
 

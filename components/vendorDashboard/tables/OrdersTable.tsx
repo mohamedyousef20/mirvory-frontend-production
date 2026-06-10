@@ -66,7 +66,7 @@ export function OrdersTable({
         language === "ar" ? "حالة التوصيل" : "Delivery Status",
         language === "ar" ? "إجراءات" : "Actions",
     ]
-console.log(orders,'orde2526')
+    console.log(orders, 'orde2526')
     const getDeliveryBadge = (status: string) => {
         switch (status) {
             case "delivered":
@@ -134,8 +134,8 @@ console.log(orders,'orde2526')
                                             <div className="space-y-3 min-w-[320px]">
                                                 {order.items?.map((item: any) => {
                                                     const product = item.product
-                                                    const unitPrice =item.discountedPrice != null ? item.discountedPrice : item.price;
-                                                    const itemTotal = unitPrice * (item.quantity || 1);                                                    const isItemPrepared = item.isPrepared
+                                                    const unitPrice = item.discountedPrice != null ? item.discountedPrice : item.price;
+                                                    const itemTotal = unitPrice * (item.quantity || 1); const isItemPrepared = item.isPrepared
 
                                                     return (
                                                         <div key={item._id} className="flex items-center gap-3 p-2 rounded-lg border border-slate-100">
@@ -243,7 +243,7 @@ console.log(orders,'orde2526')
                                                         <p className="text-xs text-slate-500">{order.deliveryInfo.pickupPoint.address}</p>
                                                     </div>
                                                 ) : (
-                                                    <span className="text-slate-400 text-xs">{language === "ar" ?  " الطلب من الادارة غير متوفر" : "N/A"}</span>
+                                                    <span className="text-slate-400 text-xs">{language === "ar" ? " الطلب من الادارة " : "N/A"}</span>
                                                 )}
                                             </div>
                                         </TableCell>

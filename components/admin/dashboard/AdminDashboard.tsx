@@ -120,6 +120,7 @@ export function AdminDashboard() {
     handleDeleteCategory,
     handleApproveProduct,
     handleRejectProduct,
+    handleTrustProduct,
     handleSaveAnnouncement,
     handleDeleteAnnouncement,
     handleSubmitPickupPoint,
@@ -197,7 +198,7 @@ export function AdminDashboard() {
       </div>
     );
   }
-    
+
   return (
     <div className="max-w-screen-2xl w-full px-4 py-6 md:py-12 mx-auto" dir={isArabic ? "rtl" : "ltr"}>
       {/* Header Section */}
@@ -284,6 +285,7 @@ export function AdminDashboard() {
             onPageChange={setProductsPage}
             handleApproveProduct={handleApproveProduct}
             handleRejectProduct={handleRejectProduct}
+            handleTrustProduct={handleTrustProduct}
           />
         </TabsContent>
 
