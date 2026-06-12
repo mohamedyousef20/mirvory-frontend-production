@@ -172,7 +172,7 @@ export default function TermsAndConditionsPage() {
               </h3>
               <p className="text-sm">
                 {isArabic
-                  ? "النسبة الافتراضية 85% للبائع / 15% للمنصة (13% تشغيل + 2% خصومات)."
+                  ? "النسبة الافتراضية 90% للبائع / 10% للمنصة (13% تشغيل + 2% خصومات)."
                   : "Default split: 85% seller / 15% Mirvory (13% ops + 2% promos)."}
               </p>
             </div>
