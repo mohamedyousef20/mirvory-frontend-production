@@ -4,9 +4,7 @@ import type { JWT } from 'next-auth/jwt';
 import GoogleProvider from 'next-auth/providers/google';
 
 const backendBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
-  throw new Error('Missing Google OAuth credentials in environment variables');
-}
+
 
 type BackendUser = {
   id: string;
@@ -43,7 +41,8 @@ export const authOptions: NextAuthConfig = {
           avatar: (profile as any).picture,
         };
 
-        const response = await fetch(`${backendBaseUrl}/api/users/auth/google`, {          method: 'POST',
+        const response = await fetch(`${backendBaseUrl}/api/users/auth/google`, {
+          method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
