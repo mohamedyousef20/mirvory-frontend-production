@@ -166,16 +166,7 @@ export default function TermsAndConditionsPage() {
                   : "Sellers/logistics partners handle shipping timelines; pickup hubs may apply."}
               </p>
             </div>
-            <div className="rounded-lg border bg-muted/40 p-4" dir={isArabic ? "rtl" : "ltr"}>
-              <h3 className="text-sm font-semibold text-muted-foreground">
-                {isArabic ? "سياسة العمولات" : "Revenue Split"}
-              </h3>
-              <p className="text-sm">
-                {isArabic
-                  ? "النسبة الافتراضية 90% للبائع / 10% للمنصة (13% تشغيل + 2% خصومات)."
-                  : "Default split: 85% seller / 15% Mirvory (13% ops + 2% promos)."}
-              </p>
-            </div>
+         
           </div>
         </CardContent>
       </Card>

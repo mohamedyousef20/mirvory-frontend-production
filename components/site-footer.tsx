@@ -20,7 +20,7 @@ export function SiteFooter() {
             </Link>
             <p className="text-muted-foreground mb-4">
               {language === "ar"
-                ? "متجر متخصص في بيع الكوتشيات الميرور والملابس العصرية بأفضل الأسعار وأعلى جودة."
+                ? "متجر متخصص في بيع الكوتشيات الميرور والاوريجينال العصرية بأفضل الأسعار وأعلى جودة."
                 : "A store specializing in selling mirror sneakers and modern clothing at the best prices and highest quality."}
             </p>
             <div className="flex items-center gap-4">
