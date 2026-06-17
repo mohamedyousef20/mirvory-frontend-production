@@ -55,11 +55,11 @@ export function SiteFooter() {
                   {t("products")}
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link href="/offers" className="text-muted-foreground hover:text-foreground transition-colors">
                   {t("offers")}
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link href="/about" className="text-muted-foreground hover:text-foreground transition-colors">
                   {language === "ar" ? "من نحن" : "About Us"}
@@ -95,11 +95,11 @@ export function SiteFooter() {
                   {language === "ar" ? "سياسة الإرجاع" : "Return Policy"}
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link href="/shipping-policy" className="text-muted-foreground hover:text-foreground transition-colors">
                   {language === "ar" ? "سياسة الشحن" : "Shipping Policy"}
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </div>
           <div>
@@ -108,7 +108,7 @@ export function SiteFooter() {
               <li className="flex items-start gap-2">
                 <MapPin className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
                 <span className="text-muted-foreground">
-                  {language === "ar" ? "123 شارع النصر، القاهرة، مصر" : "123 El-Nasr St, Cairo, Egypt"}
+                  {language === "ar" ? "  فيصل، الجيزة، مصر" : "123 El-Nasr St, Cairo, Egypt"}
                 </span>
               </li>
               <li className="flex items-center gap-2">
@@ -120,10 +120,10 @@ export function SiteFooter() {
               <li className="flex items-center gap-2">
                 <Mail className="h-5 w-5 text-muted-foreground" />
                 <a
-                  href="mailto:info@mirvory.com"
+                  href="mailto:support.mirvory@gmail.com"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  info@mirvory.com
+                  support.mirvory@gmail.com
                 </a>
               </li>
             </ul>
