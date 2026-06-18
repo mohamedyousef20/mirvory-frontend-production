@@ -85,12 +85,12 @@ const faqCategories = [
             //     aAr: "حالياً، الانضمام متاح لتجار الدفعة الأولى عبر دعوات حصرية أو من خلال تسجيل بياناتك في قائمة الانتظار ليتم مراجعة طلبك من قبل فريقنا.",
             //     aEn: "Currently, joining is available for the first batch of sellers via exclusive invitations or by joining the waitlist for our team to review your application."
             // },
-            {
-                qAr: "متى يتم تحويل أرباح المبيعات لحسابي؟",
-                qEn: "When are sales profits transferred to my account?",
-                aAr: "يتم تحويل الأرباح بشكل دوري (أسبوعياً أو نصف شهرياً) بعد انتهاء فترة الاسترجاع القانونية للطلبات المسلمة بنجاح.",
-                aEn: "Profits are transferred periodically (weekly or bi-weekly) after the legal return period for successfully delivered orders has expired."
-            },
+            // {
+            //     qAr: "متى يتم تحويل أرباح المبيعات لحسابي؟",
+            //     qEn: "When are sales profits transferred to my account?",
+            //     aAr: "يتم تحويل الأرباح بشكل دوري (أسبوعياً أو نصف شهرياً) بعد انتهاء فترة الاسترجاع القانونية للطلبات المسلمة بنجاح.",
+            //     aEn: "Profits are transferred periodically (weekly or bi-weekly) after the legal return period for successfully delivered orders has expired."
+            // },
             {
                 qAr: "كيف تساعدني المنصة في تقليل المرتجعات؟",
                 qEn: "How does the platform help me reduce returns?",
