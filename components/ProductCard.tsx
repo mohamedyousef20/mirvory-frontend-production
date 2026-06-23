@@ -8,6 +8,8 @@ import { ShoppingCart, Heart, Star, Package } from "lucide-react"
 import { toast } from 'sonner';
 import { cartService, wishlistService } from "@/lib/api"
 import { normalizeImageUrl } from "@/src/lib/normalizeImageUrl"
+import { ref } from "joi"
+import router from "next/dist/shared/lib/router/router"
 
 type ProductColorOption = {
   name: string
@@ -150,7 +152,10 @@ const ProductCardComponent = function ProductCard({ product, language, onAddToCa
         colors: selectedColor ? [selectedColor] : undefined
       })
 
+     
       toast.success(language === "ar" ? "تمت الإضافة إلى السلة" : "Added to cart")
+
+window.location.reload();
     } catch (error) {
       console.error('Add to cart error:', error)
       toast.error(language === "ar" ? "فشل إضافة المنتج إلى السلة" : "Failed to add product to cart")
