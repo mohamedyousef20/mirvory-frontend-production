@@ -39,6 +39,7 @@ import { ProductCard } from "@/components/ProductCard"
 import { ProductSearch } from "@/components/ProductSearch"
 import { announcementService, categoryService, productService, wishlistService, brandService, cartService } from "@/lib/api"
 import { useAuth } from "@/contexts/AuthProvider"
+import { addToGuestCart } from "@/lib/guestCart"
 
 // Types
 interface Product {
@@ -511,19 +512,30 @@ export function ProductGrid() {
   }, [isAuthenticated, language, uiState.favorites]);
 
   const addToCart = useCallback(async (productId: string) => {
-    if (!isAuthenticated) {
-      toast.error(language === "ar" ? "يرجى تسجيل الدخول لإضافة المنتجات للسلة" : "Please sign in to add products to cart");
-      return;
-    }
-
-    try {
-      await cartService.addToCart({ productId, quantity: 1 });
+    if (isAuthenticated) {
+      try {
+        await cartService.addToCart({ productId, quantity: 1 });
+        toast.success(language === "ar" ? "تمت إضافة المنتج للسلة" : "Product added to cart");
+      } catch (error) {
+        console.error("Error adding to cart:", error);
+        toast.error(language === "ar" ? "فشل إضافة المنتج للسلة" : "Failed to add product to cart");
+      }
+    } else {
+      // Guest: find product details and save to localStorage
+      const product = products.find(p => p._id === productId);
+      addToGuestCart({
+        productId,
+        quantity: 1,
+        size: null,
+        color: null,
+        title: product?.title,
+        image: product?.images?.[0] ?? null,
+        price: product?.discountedPrice || product?.price,
+        maxQuantity: product?.quantity,
+      });
       toast.success(language === "ar" ? "تمت إضافة المنتج للسلة" : "Product added to cart");
-    } catch (error) {
-      console.error("Error adding to cart:", error);
-      toast.error(language === "ar" ? "فشل إضافة المنتج للسلة" : "Failed to add product to cart");
     }
-  }, [isAuthenticated, language]);
+  }, [isAuthenticated, language, products]);
 
 
   const setPage = useCallback((page: number) => {

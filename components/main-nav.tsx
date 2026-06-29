@@ -51,6 +51,7 @@ import { ProductSearch } from "./ProductSearch"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/AuthProvider"
 import { authService, cartService, notificationService, wishlistService } from "@/lib/api"
+import { getGuestCartCount } from "@/lib/guestCart"
 
 // Update your interfaces at the top
 interface ProductDetails {
@@ -140,7 +141,7 @@ export function MainNav() {
   // Fetch counts from API
   const fetchCounts = useCallback(async () => {
     if (!isLoggedIn) {
-      setCounts({ cart: 0, wishlist: 0, notifications: 0 })
+      setCounts({ cart: getGuestCartCount(), wishlist: 0, notifications: 0 })
       return
     }
     console.log(user, 'user***')
@@ -253,10 +254,20 @@ export function MainNav() {
       fetchCounts()
       fetchCartItems()
     } else {
-      setCounts({ cart: 0, wishlist: 0, notifications: 0 })
+      setCounts({ cart: getGuestCartCount(), wishlist: 0, notifications: 0 })
       setEnhancedCartItems([])
     }
   }, [isLoggedIn, fetchCounts, fetchCartItems])
+
+  // Listen for guest cart updates so the badge stays in sync
+  useEffect(() => {
+    if (isLoggedIn) return
+    const onGuestCartUpdated = () => {
+      setCounts(prev => ({ ...prev, cart: getGuestCartCount() }))
+    }
+    window.addEventListener('guest-cart-updated', onGuestCartUpdated)
+    return () => window.removeEventListener('guest-cart-updated', onGuestCartUpdated)
+  }, [isLoggedIn])
 
   // Handle remove from cart
   // Handle remove from cart

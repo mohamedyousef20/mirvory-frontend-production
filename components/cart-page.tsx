@@ -41,6 +41,8 @@ import {
 } from "lucide-react"
 import { cartService, couponService } from "@/lib/api"
 import { MirvoryPageLoader } from "./MirvoryLoader"
+import { useAuth } from "@/contexts/AuthProvider"
+import { GuestCartPage } from "@/components/guest-cart-page"
 
 interface CartItem {
   _id: string
@@ -88,6 +90,28 @@ interface CartData {
 }
 
 export function CartPage() {
+  const { language, t } = useLanguage()
+  const { user, cookiesReady } = useAuth()
+  const isLoggedIn = Boolean(user)
+
+  // Show loading spinner while auth cookies are being read
+  if (!cookiesReady) {
+    return (
+      <div className="min-h-[50vh] flex items-center justify-center">
+        <MirvoryPageLoader text={language === "ar" ? "جاري التحقق..." : "Loading..."} />
+      </div>
+    )
+  }
+
+  // Guest users see the guest cart UI
+  if (!isLoggedIn) {
+    return <GuestCartPage />
+  }
+
+  return <AuthenticatedCartPage />
+}
+
+function AuthenticatedCartPage() {
   const { language, t } = useLanguage()
   const [cartItems, setCartItems] = useState<CartItem[]>([])
   const [cartData, setCartData] = useState<CartData | null>(null)
