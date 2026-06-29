@@ -9,6 +9,8 @@ import { ShoppingCart, Heart, Star, ChevronLeft, ChevronRight, Megaphone } from 
 import { useState, useRef, useEffect, AwaitedReactNode, JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal } from "react"
 import { cartService, productService } from "@/lib/api"
 import { toast } from "sonner"
+import { useAuth } from "@/contexts/AuthProvider"
+import { addToGuestCart } from "@/lib/guestCart"
 import { ProductCard } from "./ProductCard"
 // import { addToCart as addToCartAction } from "@/src/redux/slices/cartSlice"
 
@@ -31,6 +33,8 @@ interface NewestProductsProps {
 
 export function NewestProducts({ title }: NewestProductsProps) {
     const { language, t } = useLanguage();
+    const { user } = useAuth();
+    const isLoggedIn = Boolean(user);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
     // State for products and loading status
@@ -99,14 +103,28 @@ export function NewestProducts({ title }: NewestProductsProps) {
     };
 
     const addToCart = async (productId: string) => {
-        try {
-            //console.log(productId);
-            await cartService.addToCart(productId);
+        if (isLoggedIn) {
+            try {
+                await cartService.addToCart({ productId, quantity: 1 });
+                toast.success(language === "ar" ? "تمت الإضافة إلى السلة" : "Added to cart");
+            } catch (error) {
+                toast.error(language === "ar" ? "فشل في إضافة المنتج إلى السلة" : "Failed to add product to cart");
+            }
+        } else {
+            const product = products.find((p: any) => p._id === productId);
+            addToGuestCart({
+                productId,
+                quantity: 1,
+                size: null,
+                color: null,
+                title: (product as any)?.title,
+                image: (product as any)?.images?.[0] ?? null,
+                price: (product as any)?.discountedPrice || (product as any)?.price,
+                maxQuantity: (product as any)?.quantity,
+            });
             toast.success(language === "ar" ? "تمت الإضافة إلى السلة" : "Added to cart");
-        } catch (error) {
-            toast.error(language === "ar" ? "فشل في إضافة المنتج إلى السلة" : "Failed to add product to cart");
         }
-    };// TODO
+    };
 
     return (
         <div className="bg-white shadow-sm rounded-lg p-6">

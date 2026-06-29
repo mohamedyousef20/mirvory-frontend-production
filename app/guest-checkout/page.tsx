@@ -1,12 +1,14 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { Loader2, ShoppingBag, User, Phone, Mail, MapPin, Package } from 'lucide-react';
+import { guestCartService } from '@/lib/api';
+import { getGuestCart, clearGuestCart } from '@/lib/guestCart';
 
 interface GuestItem {
   productId: string;
@@ -24,10 +26,7 @@ interface GuestCheckoutForm {
   deliveryMethod: 'home' | 'pickup';
   paymentMethod: 'cash';
   address: string;
-  items: GuestItem[];
 }
-
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
 
 export default function GuestCheckoutPage() {
   const router = useRouter();
@@ -39,22 +38,12 @@ export default function GuestCheckoutPage() {
     deliveryMethod: 'home',
     paymentMethod: 'cash',
     address: '',
-    items: [],
   });
   const [trackingToken, setTrackingToken] = useState<string | null>(null);
   const [orderNumber, setOrderNumber] = useState<string | null>(null);
 
-  // In a real flow, items come from URL params / cart stored in localStorage
-  // For demo, we parse from localStorage key 'guest_cart'
-  const [demoItems] = useState<GuestItem[]>(() => {
-    if (typeof window === 'undefined') return [];
-    try {
-      const raw = localStorage.getItem('guest_cart');
-      return raw ? JSON.parse(raw) : [];
-    } catch {
-      return [];
-    }
-  });
+  // Read cart items from localStorage using the shared guestCart utility
+  const [cartItems] = useState<GuestItem[]>(() => getGuestCart() as GuestItem[]);
 
   const handleChange = (field: keyof GuestCheckoutForm, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -68,7 +57,7 @@ export default function GuestCheckoutPage() {
       return 'رقم الهاتف غير صالح. يجب أن يكون رقمًا مصريًا صحيحًا';
     if (form.deliveryMethod === 'home' && !form.address.trim())
       return 'عنوان التوصيل مطلوب';
-    if (demoItems.length === 0)
+    if (cartItems.length === 0)
       return 'السلة فارغة. أضف منتجات قبل إتمام الطلب';
     return null;
   };
@@ -80,37 +69,32 @@ export default function GuestCheckoutPage() {
 
     setLoading(true);
     try {
-      const payload = {
+      const response = await guestCartService.createOrder({
         guestName: form.guestName.trim(),
         guestEmail: form.guestEmail.toLowerCase().trim(),
         guestPhone: form.guestPhone.trim(),
         deliveryMethod: form.deliveryMethod,
-        paymentMethod: form.paymentMethod,
+        paymentMethod: 'cash',
         deliveryInfo: { address: form.address.trim() },
-        items: demoItems,
-      };
-
-      const res = await fetch(`${BACKEND_URL}/api/guest-orders`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        items: cartItems.map(item => ({
+          productId: item.productId,
+          quantity: item.quantity,
+          size: item.size ?? null,
+          color: item.color ?? null,
+        })),
       });
 
-      const data = await res.json();
+      const data = response.data;
 
-      if (!res.ok) {
-        toast.error(data.message || 'حدث خطأ أثناء إنشاء الطلب');
-        return;
-      }
-
-      // Clear guest cart
-      localStorage.removeItem('guest_cart');
+      // Clear guest cart using the shared utility (also fires guest-cart-updated event)
+      clearGuestCart();
 
       setTrackingToken(data.trackingToken);
       setOrderNumber(data.orderNumber);
       toast.success('تم إنشاء طلبك بنجاح!');
-    } catch {
-      toast.error('حدث خطأ في الاتصال. تحقق من اتصالك بالإنترنت وحاول مرة أخرى.');
+    } catch (err: any) {
+      const message = err?.response?.data?.message || 'حدث خطأ في الاتصال. تحقق من اتصالك بالإنترنت وحاول مرة أخرى.';
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -235,22 +219,31 @@ export default function GuestCheckoutPage() {
           </section>
 
           {/* Summary */}
-          {demoItems.length > 0 && (
+          {cartItems.length > 0 && (
             <section className="bg-gray-50 rounded-xl p-4">
               <h3 className="font-semibold mb-3">ملخص الطلب</h3>
               <div className="space-y-2">
-                {demoItems.map((item, idx) => (
+                {cartItems.map((item, idx) => (
                   <div key={idx} className="flex justify-between text-sm">
                     <span className="text-gray-600">{item.title || `منتج ${idx + 1}`}</span>
-                    <span>x{item.quantity}</span>
+                    <span className="font-medium">
+                      x{item.quantity}
+                      {item.price ? ` · ${(item.price * item.quantity).toLocaleString()} ج.م` : ''}
+                    </span>
                   </div>
                 ))}
+                <div className="border-t pt-2 flex justify-between font-semibold">
+                  <span>المجموع</span>
+                  <span>
+                    {cartItems.reduce((sum, i) => sum + (i.price || 0) * i.quantity, 0).toLocaleString()} ج.م
+                  </span>
+                </div>
               </div>
             </section>
           )}
 
           {/* Warning for empty cart */}
-          {demoItems.length === 0 && (
+          {cartItems.length === 0 && (
             <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
               <p className="text-amber-700 text-sm">السلة فارغة. يرجى إضافة منتجات أولاً.</p>
               <Button variant="link" onClick={() => router.push('/products')} className="text-amber-700 mt-1">
@@ -262,7 +255,7 @@ export default function GuestCheckoutPage() {
           <Button
             type="submit"
             className="w-full h-12 text-base font-semibold"
-            disabled={loading || demoItems.length === 0}
+            disabled={loading || cartItems.length === 0}
           >
             {loading ? (
               <><Loader2 className="h-4 w-4 animate-spin ml-2" /> جاري تأكيد الطلب...</>
