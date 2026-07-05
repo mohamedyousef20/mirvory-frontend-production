@@ -1,20 +1,18 @@
 /**
- * lib/guestCart.ts
- * ─────────────────────────────────────────────────────────────────────────────
- * Client-side guest cart stored in localStorage.
- * Key: "guest_cart"
- * Fires the custom event "guest-cart-updated" on every mutation so any
- * component (e.g. the navbar badge) can react without polling.
+ * guestCart.ts
+ * Client-side guest cart management using localStorage.
+ * Works alongside the existing authenticated cart system.
+ * When a guest checks out, items are submitted to /api/guest-orders.
  */
 
-export const GUEST_CART_KEY = 'guest_cart';
+const GUEST_CART_KEY = 'guest_cart';
 
 export interface GuestCartItem {
   productId: string;
   quantity: number;
   size?: string | null;
   color?: string | null;
-  // Enriched fields – filled after backend validation
+  // Enriched fields (filled by validateGuestCart API call)
   title?: string;
   titleEn?: string;
   image?: string | null;
@@ -23,8 +21,9 @@ export interface GuestCartItem {
   available?: boolean;
 }
 
-// ─── Read ─────────────────────────────────────────────────────────────────────
-
+/**
+ * Read the current guest cart from localStorage.
+ */
 export function getGuestCart(): GuestCartItem[] {
   if (typeof window === 'undefined') return [];
   try {
@@ -35,44 +34,48 @@ export function getGuestCart(): GuestCartItem[] {
   }
 }
 
-export function getGuestCartCount(): number {
-  return getGuestCart().reduce((sum, item) => sum + item.quantity, 0);
-}
-
-// ─── Write ────────────────────────────────────────────────────────────────────
-
-function persist(items: GuestCartItem[]): GuestCartItem[] {
-  if (typeof window === 'undefined') return items;
+/**
+ * Persist the guest cart to localStorage and notify other components.
+ * Pass silent=true to skip firing the event (used for internal enrichment).
+ */
+export function saveGuestCart(items: GuestCartItem[], silent = false): void {
+  if (typeof window === 'undefined') return;
   try {
     localStorage.setItem(GUEST_CART_KEY, JSON.stringify(items));
-    window.dispatchEvent(new Event('guest-cart-updated'));
+    if (!silent) {
+      window.dispatchEvent(new Event('guest-cart-updated'));
+    }
   } catch {
-    // ignore quota errors
+    // Ignore storage errors (e.g. private browsing quota)
   }
-  return items;
 }
 
-// ─── Mutations ────────────────────────────────────────────────────────────────
-
 /**
- * Add an item (or increment quantity if same productId+size+color already exists).
+ * Add (or increment) an item in the guest cart.
+ * If the same productId + size + color already exists, quantity is incremented.
  */
 export function addToGuestCart(item: GuestCartItem): GuestCartItem[] {
   const items = getGuestCart();
 
-  const idx = items.findIndex(
+  const existingIndex = items.findIndex(
     (i) =>
       i.productId === item.productId &&
-      (i.size ?? null) === (item.size ?? null) &&
-      (i.color ?? null) === (item.color ?? null)
+      (i.size || null) === (item.size || null) &&
+      (i.color || null) === (item.color || null)
   );
 
-  if (idx >= 0) {
-    const existing = items[idx];
+  if (existingIndex >= 0) {
+    const existing = items[existingIndex];
     const newQty = existing.quantity + item.quantity;
-    items[idx] = {
+    // Respect maxQuantity if known
+    items[existingIndex] = {
       ...existing,
-      ...item,                                         // keep fresh enriched fields
+      // Always refresh enriched fields when adding
+      ...(item.title ? { title: item.title } : {}),
+      ...(item.titleEn ? { titleEn: item.titleEn } : {}),
+      ...(item.image ? { image: item.image } : {}),
+      ...(item.price !== undefined ? { price: item.price } : {}),
+      ...(item.maxQuantity !== undefined ? { maxQuantity: item.maxQuantity } : {}),
       quantity:
         existing.maxQuantity != null
           ? Math.min(newQty, existing.maxQuantity)
@@ -82,12 +85,13 @@ export function addToGuestCart(item: GuestCartItem): GuestCartItem[] {
     items.push({ ...item });
   }
 
-  return persist(items);
+  saveGuestCart(items);
+  return items;
 }
 
 /**
- * Change quantity of a specific item (by productId + size + color).
- * Passing quantity ≤ 0 removes the item.
+ * Update the quantity of a specific item.
+ * Identified by productId + size + color.
  */
 export function updateGuestCartItem(
   productId: string,
@@ -96,28 +100,39 @@ export function updateGuestCartItem(
   color?: string | null
 ): GuestCartItem[] {
   const items = getGuestCart();
-  const idx = items.findIndex(
+  const index = items.findIndex(
     (i) =>
       i.productId === productId &&
-      (i.size ?? null) === (size ?? null) &&
-      (i.color ?? null) === (color ?? null)
+      (i.size || null) === (size || null) &&
+      (i.color || null) === (color || null)
   );
 
-  if (idx >= 0) {
+  if (index >= 0) {
     if (quantity <= 0) {
-      items.splice(idx, 1);
+      items.splice(index, 1);
     } else {
-      items[idx] = { ...items[idx], quantity };
+      items[index] = { ...items[index], quantity };
     }
   }
 
-  return persist(items);
+  saveGuestCart(items);
+  return items;
+}
+
+/**
+ * Remove an item from the guest cart by index.
+ */
+export function removeGuestCartItem(index: number): GuestCartItem[] {
+  const items = getGuestCart();
+  items.splice(index, 1);
+  saveGuestCart(items);
+  return items;
 }
 
 /**
  * Remove an item by productId + size + color.
  */
-export function removeGuestCartItem(
+export function removeGuestCartItemByKey(
   productId: string,
   size?: string | null,
   color?: string | null
@@ -126,15 +141,16 @@ export function removeGuestCartItem(
     (i) =>
       !(
         i.productId === productId &&
-        (i.size ?? null) === (size ?? null) &&
-        (i.color ?? null) === (color ?? null)
+        (i.size || null) === (size || null) &&
+        (i.color || null) === (color || null)
       )
   );
-  return persist(items);
+  saveGuestCart(items);
+  return items;
 }
 
 /**
- * Wipe the whole guest cart.
+ * Clear the entire guest cart.
  */
 export function clearGuestCart(): void {
   if (typeof window === 'undefined') return;
@@ -143,8 +159,17 @@ export function clearGuestCart(): void {
 }
 
 /**
- * Overwrite cart with server-validated/enriched items.
+ * Return the total number of items (sum of quantities) in the guest cart.
+ */
+export function getGuestCartCount(): number {
+  return getGuestCart().reduce((sum, item) => sum + item.quantity, 0);
+}
+
+/**
+ * Merge validated enriched items back into localStorage SILENTLY.
+ * This does NOT fire 'guest-cart-updated' to avoid re-render loops.
+ * The caller is responsible for updating component state directly.
  */
 export function mergeValidatedItems(validated: GuestCartItem[]): void {
-  persist(validated);
+  saveGuestCart(validated, true); // silent = no event
 }
