@@ -202,26 +202,49 @@ export function MainNav() {
     }
   }, [isLoggedIn, user])
   // Fetch cart items
-  // Fetch cart items
+
+  const loadGuestCart = useCallback((): CartItem[] => {
+    if (typeof window === "undefined") return [];
+
+    try {
+      const guestCartData = localStorage.getItem("guest_cart");
+      if (!guestCartData) return [];
+
+      const parsedCart = JSON.parse(guestCartData);
+
+      return parsedCart.map((item: any, index: number) => ({
+        _id: `guest-${item.productId}-${index}`, // Synthetic ID for React keys and removal
+        price: item.price || 0,
+        quantity: item.quantity || 1,
+        sizes: item.size ? [item.size] : [],
+        colors: item.color ? [item.color] : [],
+        product: {
+          _id: item.productId,
+          id: item.productId,
+          title: item.title || "Product",
+          images: item.images || (item.image ? [item.image] : []),
+          price: item.price || 0,
+        }
+      }));
+    } catch (error) {
+      console.error("Failed to parse guest cart from localStorage:", error);
+      return [];
+    }
+  }, []);
+
   const fetchCartItems = useCallback(async () => {
     if (!isLoggedIn) {
-      setEnhancedCartItems([])
-      return
+      const guestItems = loadGuestCart();
+      setEnhancedCartItems(guestItems);
+      return;
     }
-
 
     try {
       const response = await cartService.getCart()
-      //console.log('Cart API Response:', response)
-
       if (response.data.items) {
         setEnhancedCartItems(response.data.items);
-
-        const cartCount = response.data.items.reduce((sum, item) => sum + item.quantity, 0)
+        const cartCount = response.data.items.reduce((sum: number, item: any) => sum + item.quantity, 0)
         setCounts(prev => ({ ...prev, cart: cartCount }))
-
-
-
       } else {
         console.warn('No items found in cart data')
         setEnhancedCartItems([])
@@ -237,7 +260,12 @@ export function MainNav() {
       console.error('Error fetching cart items:', error)
       setEnhancedCartItems([])
     }
-  }, [isLoggedIn, user])
+  }, [isLoggedIn, user, loadGuestCart])
+
+
+
+
+  
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 10)
@@ -260,26 +288,47 @@ export function MainNav() {
   }, [isLoggedIn, fetchCounts, fetchCartItems])
 
   // Listen for guest cart updates so the badge stays in sync
+  // Listen for guest cart updates so the badge and items stay in sync
   useEffect(() => {
-    if (isLoggedIn) return
+    if (isLoggedIn) return;
+
     const onGuestCartUpdated = () => {
-      setCounts(prev => ({ ...prev, cart: getGuestCartCount() }))
-    }
-    window.addEventListener('guest-cart-updated', onGuestCartUpdated)
-    return () => window.removeEventListener('guest-cart-updated', onGuestCartUpdated)
-  }, [isLoggedIn])
+      setCounts(prev => ({ ...prev, cart: getGuestCartCount() }));
+      setEnhancedCartItems(loadGuestCart());
+    };
+
+    window.addEventListener('guest-cart-updated', onGuestCartUpdated);
+    return () => window.removeEventListener('guest-cart-updated', onGuestCartUpdated);
+  }, [isLoggedIn, loadGuestCart]);
 
   // Handle remove from cart
-  // Handle remove from cart
   const handleRemoveFromCart = async (cartItemId: string) => {
+    // 1. Handle Guest Cart Deletion
+    if (!isLoggedIn) {
+      try {
+        const currentCart = localStorage.getItem('guest_cart');
+        if (currentCart) {
+          const parsed = JSON.parse(currentCart);
+          // Filter out the item based on the index embedded in the synthetic ID
+          const indexToRemove = parseInt(cartItemId.split('-').pop() || "0");
+          const updatedCart = parsed.filter((_: any, index: number) => index !== indexToRemove);
+
+          localStorage.setItem('guest_cart', JSON.stringify(updatedCart));
+          window.dispatchEvent(new Event('guest-cart-updated')); // Triggers state sync
+          toast.success(language === "ar" ? "تمت إزالة المنتج من السلة" : "Product removed from cart");
+        }
+      } catch (error) {
+        console.error("Error modifying guest cart:", error);
+      }
+      return;
+    }
+
+    // 2. Handle Authenticated User Cart Deletion
     try {
       setLoading(prev => ({ ...prev, cart: true }))
       await cartService.removeFromCart(cartItemId)
 
-      // Optimistic update
       setEnhancedCartItems(prev => prev.filter(item => item._id !== cartItemId))
-
-      // Update counts
       setCounts(prev => ({
         ...prev,
         cart: Math.max(0, prev.cart - 1)
@@ -866,12 +915,12 @@ export function MainNav() {
                       </div>
                       <div className="grid grid-cols-2 gap-2">
                         <Button variant="outline" asChild>
-                          <Link href="/cart">
+                          <Link href={user ? "/cart" : "/guest-checkout"}>
                             {language === "ar" ? "عرض السلة" : "View Cart"}
                           </Link>
                         </Button>
                         <Button asChild>
-                          <Link href="/checkout">
+                          <Link href={user ? "/checkout" : "/guest-checkout"}>
                             {language === "ar" ? "الدفع" : "Checkout"}
                           </Link>
                         </Button>
