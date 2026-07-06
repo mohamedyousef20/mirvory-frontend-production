@@ -28,6 +28,7 @@ import {
 } from "lucide-react"
 import { toast } from "sonner"
 import { cartService, productService, ratingService, wishlistService } from "@/lib/api"
+import { addToGuestCart } from "@/lib/guestCart"
 import RatingStars from "@/components/Rating/RatingStars"
 import { Separator } from "@/components/ui/separator"
 import { useAuth } from "@/contexts/AuthProvider"
@@ -99,6 +100,7 @@ interface RelatedProduct {
 const ProductDetail = ({ productId }: { productId: string }) => {
   const { language, t } = useLanguage()
   const { user } = useAuth()
+  const isLoggedIn = Boolean(user)
 
   const [product, setProduct] = useState<Product | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -263,13 +265,28 @@ const ProductDetail = ({ productId }: { productId: string }) => {
     }
 
     try {
-      const response = await cartService.addToCart({
-        productId,
-        quantity,
-        sizes: selectedSizes,
-        colors: selectedColors
-      })
-      //console.log(response, 'response')
+      if (isLoggedIn) {
+        await cartService.addToCart({
+          productId,
+          quantity,
+          sizes: selectedSizes,
+          colors: selectedColors
+        })
+      } else {
+        // Guest: save to localStorage (one entry per size+color combination)
+        const size = selectedSizes[0] ?? null
+        const color = selectedColors[0] ?? null
+        addToGuestCart({
+          productId,
+          quantity,
+          size,
+          color,
+          title: product?.title,
+          image: product?.images?.[0] ?? null,
+          price: product?.discountedPrice || product?.price,
+          maxQuantity: product?.quantity,
+        })
+      }
       toast.success(language === 'ar' ? 'تم إضافة المنتج إلى السلة بنجاح' : 'Product added to cart successfully')
     } catch (err: any) {
       const msg = err?.response?.data?.message || (language === 'ar' ? 'فشل إضافة المنتج إلى السلة' : 'Failed to add product to cart')

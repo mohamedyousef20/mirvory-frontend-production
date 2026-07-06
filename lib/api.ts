@@ -687,6 +687,52 @@ export const complaintService = {
   // Get unresolved complaints count (admin only)
   getUnresolvedCount: () => api.get('/api/complaints/unresolved-count'),
 };
+// ─── Guest Cart Service ───────────────────────────────────────────────────────
+// Guest cart items live in localStorage (lib/guestCart.ts).
+// These API calls hit public (no-auth) backend endpoints.
+
+export const guestCartService = {
+  /**
+   * Validate guest cart items against the backend.
+   * Returns enriched items: current price, title, image, stock status.
+   * POST /api/guest-cart/validate
+   */
+  validateCart: (
+    items: Array<{
+      productId: string;
+      quantity: number;
+      size?: string | null;
+      color?: string | null;
+    }>
+  ) => api.post('/api/guest-cart/validate', { items }),
+
+  /**
+   * Place a guest order (no auth required).
+   * POST /api/guest-orders
+   */
+  createOrder: (payload: {
+    guestName: string;
+    guestEmail: string;
+    guestPhone: string;
+    deliveryMethod: 'home' | 'pickup';
+    paymentMethod: 'cash';
+    deliveryInfo: { address?: string; pickupPoint?: string };
+    items: Array<{
+      productId: string;
+      quantity: number;
+      size?: string | null;
+      color?: string | null;
+    }>;
+  }) => api.post('/api/guest-orders', payload),
+
+  /**
+   * Track a guest order by its tracking token.
+   * GET /api/guest-orders/track/:token
+   */
+  trackOrder: (token: string) =>
+    api.get(`/api/guest-orders/track/${encodeURIComponent(token)}`),
+};
+
 // Export all services
 export const apiServices = {
   api,
@@ -696,6 +742,7 @@ export const apiServices = {
   categoryService,
   orderService,
   cartService,
+  guestCartService,
   wishlistService,
   ratingService,
   announcementService,

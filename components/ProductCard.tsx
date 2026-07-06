@@ -8,8 +8,8 @@ import { ShoppingCart, Heart, Star, Package } from "lucide-react"
 import { toast } from 'sonner';
 import { cartService, wishlistService } from "@/lib/api"
 import { normalizeImageUrl } from "@/src/lib/normalizeImageUrl"
-import { ref } from "joi"
-import router from "next/dist/shared/lib/router/router"
+import { useAuth } from "@/contexts/AuthProvider"
+import { addToGuestCart } from "@/lib/guestCart"
 
 type ProductColorOption = {
   name: string
@@ -52,6 +52,8 @@ interface ProductCardProps {
 }
 
 const ProductCardComponent = function ProductCard({ product, language, onAddToCart, onToggleWishlist, isFavorite: isFavoriteProp }: ProductCardProps) {
+  const { user } = useAuth()
+  const isLoggedIn = Boolean(user)
   const [isFavorite, setIsFavorite] = useState(product.isFavorite || false)
   const [isAddingToCart, setIsAddingToCart] = useState(false)
   const [isTogglingFavorite, setIsTogglingFavorite] = useState(false)
@@ -145,17 +147,26 @@ const ProductCardComponent = function ProductCard({ product, language, onAddToCa
 
     setIsAddingToCart(true)
     try {
-      await cartService.addToCart({
-        productId: product._id,
-        quantity: 1,
-        sizes: selectedSize ? [selectedSize] : undefined,
-        colors: selectedColor ? [selectedColor] : undefined
-      })
-
-     
+      if (isLoggedIn) {
+        await cartService.addToCart({
+          productId: product._id,
+          quantity: 1,
+          sizes: selectedSize ? [selectedSize] : undefined,
+          colors: selectedColor ? [selectedColor] : undefined
+        })
+      } else {
+        addToGuestCart({
+          productId: product._id,
+          quantity: 1,
+          size: selectedSize ?? null,
+          color: selectedColor ?? null,
+          title: product.title,
+          image: product.images?.[0] ?? null,
+          price: computedDiscountedPrice,
+          maxQuantity: product.quantity,
+        })
+      }
       toast.success(language === "ar" ? "تمت الإضافة إلى السلة" : "Added to cart")
-
-window.location.reload();
     } catch (error) {
       console.error('Add to cart error:', error)
       toast.error(language === "ar" ? "فشل إضافة المنتج إلى السلة" : "Failed to add product to cart")

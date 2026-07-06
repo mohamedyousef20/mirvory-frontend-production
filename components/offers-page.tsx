@@ -13,6 +13,8 @@ import { cartService, productService } from "@/lib/api"
 import couponService from "@/lib/api/services/couponService"
 import { MirvoryPageLoader } from "./MirvoryLoader"
 import { toast } from "sonner"
+import { useAuth } from "@/contexts/AuthProvider"
+import { addToGuestCart } from "@/lib/guestCart"
 import { ProductCard } from "./ProductCard"
 
 interface Coupon {
@@ -47,6 +49,8 @@ interface DiscountProduct {
 
 export function OffersPage() {
   const { language } = useLanguage()
+  const { user } = useAuth()
+  const isLoggedIn = Boolean(user)
   const [favorites, setFavorites] = useState<Set<string>>(new Set())
   const [copiedCode, setCopiedCode] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState("discounts")
@@ -117,12 +121,26 @@ export function OffersPage() {
   )
 
   const handleAddToCart = async (productId: string) => {
-    try {
-      await cartService.addToCart({ productId, quantity: 1 })
+    if (isLoggedIn) {
+      try {
+        await cartService.addToCart({ productId, quantity: 1 })
+        toast.success(language === "ar" ? "تمت إضافة المنتج إلى السلة" : "Added to cart")
+      } catch (err: any) {
+        const message = err?.response?.data?.message || (language === "ar" ? "فشل إضافة المنتج" : "Failed to add product")
+        toast.error(message)
+      }
+    } else {
+      const product = discountProducts.find(p => p._id === productId)
+      addToGuestCart({
+        productId,
+        quantity: 1,
+        size: null,
+        color: null,
+        title: product?.title,
+        image: product?.images?.[0] ?? null,
+        price: product?.discountedPrice || product?.price,
+      })
       toast.success(language === "ar" ? "تمت إضافة المنتج إلى السلة" : "Added to cart")
-    } catch (err: any) {
-      const message = err?.response?.data?.message || (language === "ar" ? "فشل إضافة المنتج" : "Failed to add product")
-      toast.error(message)
     }
   }
 
