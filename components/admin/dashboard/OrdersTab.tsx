@@ -183,12 +183,12 @@ export function OrdersTab({
                                         <div className="flex-1 min-w-0">
                                             <p className="text-sm font-semibold text-slate-800 truncate">
                                                 {order.buyer?.fullName ||
-                                                    `${order.buyer?.firstName || ''} ${order.buyer?.lastName || ''}`.trim() || "N/A"}
+                                                    `${order.buyer?.firstName || ''} ${order.buyer?.lastName || ''}`.trim() || order.deliveryInfo.fullName || "N/A"}
                                             </p>
                                             <p className="text-xs text-slate-400 truncate">{order.buyer?.email || ""}</p>
                                         </div>
                                         <div className="shrink-0 text-xs text-slate-400">
-                                            {order.buyer?.phone || ""}
+                                            {order.buyer?.phone || order.deliveryInfo.phone || ""}
                                         </div>
                                     </div>
 
@@ -392,7 +392,7 @@ export function OrdersTab({
                                                 {order.deliveryInfo?.fullName || order.buyer?.fullName || "N/A"}
                                             </p>
                                             <p className="text-xs text-slate-400">
-                                                {order.deliveryInfo?.phoneNumber || order.buyer?.phone || "N/A"}
+                                                {order.deliveryInfo?.phone || order.buyer?.phone || "N/A"}
                                             </p>
                                         </div>
                                     </div>

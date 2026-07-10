@@ -148,6 +148,7 @@ const ProductCardComponent = function ProductCard({ product, language, onAddToCa
     setIsAddingToCart(true)
     try {
       if (isLoggedIn) {
+        console.log('im herman')
         await cartService.addToCart({
           productId: product._id,
           quantity: 1,

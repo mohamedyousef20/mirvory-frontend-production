@@ -124,10 +124,12 @@ interface FilterState {
 }
 
 // Constants
+const MAX_PRICE = 10000;
+
 const INITIAL_FILTERS: FilterState = {
   categories: [],
   brands: [],
-  priceRange: [0, 10000],
+  priceRange: [0, MAX_PRICE],
   sort: "newest",
   searchQuery: ""
 };
@@ -138,17 +140,6 @@ const SORT_OPTIONS = [
   { value: "priceLowToHigh", label: { ar: "السعر: من الأدنى للأعلى", en: "Price: Low to High" } },
   { value: "topRated", label: { ar: "الأعلى تقييماً", en: "Top Rated" } },
 ];
-
-// Fallback brands list (used when backend returns none)
-// const DEFAULT_BRANDS: Brand[] = [
-//   { id: "nike", name: "Nike", count: 0 },
-//   { id: "adidas", name: "Adidas", count: 0 },
-//   { id: "puma", name: "Puma", count: 0 },
-//   { id: "reebok", name: "Reebok", count: 0 },
-//   { id: "under-armour", name: "Under Armour", count: 0 },
-// ];
-
-
 
 const getAnnouncementIcon = (type: string) => {
   switch (type) {
@@ -189,12 +180,18 @@ export function ProductGrid() {
   const { user } = useAuth();
   const isAuthenticated = Boolean(user?.id || user?._id);
 
+  // استخراج قيمة البحث الأولية من الرابط
+  const initialQuery = searchParams.get('q') || "";
+
   // State
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
-  // const [brands, setBrands] = useState<Brand[]>(DEFAULT_BRANDS);
-  const [filters, setFilters] = useState<FilterState>(INITIAL_FILTERS);
+  const [filters, setFilters] = useState<FilterState>({
+    ...INITIAL_FILTERS,
+    searchQuery: initialQuery
+  });
+
   const [pagination, setPagination] = useState({
     page: 1,
     pageSize: 12,
@@ -239,9 +236,8 @@ export function ProductGrid() {
   // Memoized values
   const hasActiveFilters = React.useMemo(() =>
     filters.categories.length > 0 ||
-    // filters.brands.length > 0 ||
     filters.priceRange[0] > 0 ||
-    filters.priceRange[1] < 2000 ||
+    filters.priceRange[1] < MAX_PRICE ||
     filters.searchQuery.trim() !== ""
     , [filters]);
 
@@ -257,18 +253,11 @@ export function ProductGrid() {
       const [categoriesResponse, announcementsResponse] = await Promise.all([
         categoryService.getCategories(),
         announcementService.getAnnouncements(),
-        // brandService.getBrands()
       ]);
 
       setCategories(categoriesResponse.data || []);
-      // only keep announcements that are NOT main
       const nonMainAnnouncements = (announcementsResponse.data || []).filter((a: any) => !a.isMain);
       setAnnouncements(nonMainAnnouncements);
-
-      // update brands list from backend, fallback to default if empty
-      // if (Array.isArray(brandsResponse.data) && brandsResponse.data.length) {
-      //   setBrands(brandsResponse.data);
-      // }
 
     } catch (error) {
       console.error("Error fetching initial data:", error);
@@ -295,34 +284,34 @@ export function ProductGrid() {
 
       if (filters.searchQuery.trim()) {
         // Search products
-        const searchParams: any = {
+        const searchParamsData: any = {
           q: filters.searchQuery.trim(),
           page: pagination.page,
           limit: pagination.pageSize,
         };
 
         if (filters.categories.length > 0) {
-          searchParams.category = filters.categories[0];
+          searchParamsData.category = filters.categories[0];
         }
 
         if (filters.priceRange[0] > 0) {
-          searchParams.minPrice = filters.priceRange[0];
+          searchParamsData.minPrice = filters.priceRange[0];
         }
 
-        if (filters.priceRange[1] < 10000) {
-          searchParams.maxPrice = filters.priceRange[1];
+        if (filters.priceRange[1] < MAX_PRICE) {
+          searchParamsData.maxPrice = filters.priceRange[1];
         }
 
-        const sortMap = {
+        const sortMap: Record<string, string> = {
           newest: "latest",
           priceHighToLow: "price_desc",
           priceLowToHigh: "price_asc",
           topRated: "top_rated",
         };
 
-        searchParams.sort = sortMap[filters.sort] || "relevance";
+        searchParamsData.sort = sortMap[filters.sort] || "relevance";
 
-        response = await productService.advancedSearch(searchParams);
+        response = await productService.advancedSearch(searchParamsData);
 
         setProducts(response.data.products || []);
 
@@ -347,7 +336,7 @@ export function ProductGrid() {
           params.minPrice = filters.priceRange[0];
         }
 
-        if (filters.priceRange[1] < 10000) {
+        if (filters.priceRange[1] < MAX_PRICE) {
           params.maxPrice = filters.priceRange[1];
         }
 
@@ -380,23 +369,23 @@ export function ProductGrid() {
       }));
     }
   }, [filters, pagination.page, pagination.pageSize]);
-  
+
   useEffect(() => {
     fetchWishlistFavorites();
   }, [fetchWishlistFavorites]);
 
-  // Effects
   useEffect(() => {
     fetchInitialData();
   }, [fetchInitialData]);
 
-  // Read search query from URL params
+  // Read search query from URL params and sync with state
   useEffect(() => {
-    const searchQuery = searchParams.get('q');
+    const searchQuery = searchParams.get('q') || "";
 
-    if (searchQuery) {
-      setFilters(prev => ({ ...prev, searchQuery }));
-    }
+    setFilters(prev => {
+      if (prev.searchQuery === searchQuery) return prev;
+      return { ...prev, searchQuery };
+    });
   }, [searchParams]);
 
   useEffect(() => {
@@ -409,12 +398,8 @@ export function ProductGrid() {
 
     const interval = setInterval(() => {
       setUiState(prev => {
-        // إذا لم يكن هناك إعلانات نشطة، توقف
         if (activeAnnouncements.length === 0) return prev;
-
-        // الانتقال للإعلان التالي
         const nextAnnouncement = (prev.currentAnnouncement + 1) % activeAnnouncements.length;
-
         return {
           ...prev,
           currentAnnouncement: nextAnnouncement
@@ -424,6 +409,7 @@ export function ProductGrid() {
 
     return () => clearInterval(interval);
   }, [activeAnnouncements]);
+
   // Filter handlers
   const updateFilter = useCallback((key: keyof FilterState, value: any) => {
     setFilters(prev => ({ ...prev, [key]: value }));
@@ -443,20 +429,6 @@ export function ProductGrid() {
         : [...prev.categories, categoryId]
     }));
   }, [updateFilter]);
-
-  // const handleBrandChange = useCallback((brandId: string) => {
-  //   if (brandId === 'clear') {
-  //     updateFilter('brands', []);
-  //     return;
-  //   }
-
-  //   setFilters(prev => ({
-  //     ...prev,
-  //     brands: prev.brands.includes(brandId)
-  //       ? prev.brands.filter(id => id !== brandId)
-  //       : [...prev.brands, brandId]
-  //   }));
-  // }, [updateFilter]);
 
   const handlePriceChange = useCallback((value: number[]) => {
     updateFilter('priceRange', value as [number, number]);
@@ -521,7 +493,6 @@ export function ProductGrid() {
         toast.error(language === "ar" ? "فشل إضافة المنتج للسلة" : "Failed to add product to cart");
       }
     } else {
-      // Guest: find product details and save to localStorage
       const product = products.find(p => p._id === productId);
       addToGuestCart({
         productId,
@@ -536,7 +507,6 @@ export function ProductGrid() {
       toast.success(language === "ar" ? "تمت إضافة المنتج للسلة" : "Product added to cart");
     }
   }, [isAuthenticated, language, products]);
-
 
   const setPage = useCallback((page: number) => {
     setPagination(prev => ({ ...prev, page }));
@@ -726,19 +696,6 @@ export function ProductGrid() {
                         </AccordionContent>
                       </AccordionItem>
 
-                      {/* Brands Accordion */}
-                      {/* <AccordionItem value="brands">
-                        <AccordionTrigger>{t("brands")}</AccordionTrigger>
-                        <AccordionContent>
-                          {renderFilterSection(
-                            t("brands"),
-                            brands,
-                            filters.brands,
-                            handleBrandChange
-                          )}
-                        </AccordionContent>
-                      </AccordionItem> */}
-
                       {/* Price Accordion */}
                       <AccordionItem value="price">
                         <AccordionTrigger>{t("price")}</AccordionTrigger>
@@ -746,7 +703,7 @@ export function ProductGrid() {
                           <div className="space-y-4">
                             <Slider
                               value={filters.priceRange}
-                              max={10000}
+                              max={MAX_PRICE}
                               step={50}
                               onValueChange={handlePriceChange}
                             />
@@ -812,20 +769,13 @@ export function ProductGrid() {
               handleCategoryChange
             )}
 
-            {/* {renderFilterSection(
-              t("brands"),
-              brands,
-              filters.brands,
-              handleBrandChange
-            )} */}
-
             {/* Price Filter */}
             <div className="space-y-4">
               <h3 className="font-medium">{t("price")}</h3>
               <div className="space-y-4">
                 <Slider
                   value={filters.priceRange}
-                  max={2000}
+                  max={MAX_PRICE}
                   step={50}
                   onValueChange={handlePriceChange}
                 />

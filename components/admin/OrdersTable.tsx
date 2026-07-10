@@ -95,10 +95,20 @@ export function OrdersTable() {
 
   const filteredOrders = orders.filter((order) => {
     const id = order.id ?? order._id;
+    const orderData = order as any; // للوصول الآمن لبيانات deliveryInfo غير المضافة للنوع الافتراضي
 
-    const matchesSearch = id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.customer?.name?.toLowerCase().includes(searchTerm.toLowerCase());
+    // استخراج اسم العميل (مسجل أو ضيف)
+    const customerName = order.customer?.name || orderData.deliveryInfo?.fullName || '';
+    // استخراج بيانات الاتصال (بريد مسجل أو هاتف ضيف)
+    const customerContact = order.customer?.email || orderData.deliveryInfo?.phone || '';
+
+    const matchesSearch =
+      id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      customerContact.toLowerCase().includes(searchTerm.toLowerCase());
+
     const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
+
     return matchesSearch && matchesStatus;
   });
 
@@ -176,6 +186,13 @@ export function OrdersTable() {
             ) : (
               filteredOrders.map((order) => {
                 const id = order.id ?? order._id;
+                const orderData = order as any;
+
+                // تحديد بيانات العميل (سواء كان مسجل أو زائر/ضيف)
+                const customerName = order.customer?.name || orderData.deliveryInfo?.fullName || (isArabic ? 'زائر' : 'Guest');
+                const customerContact = order.customer?.email || orderData.deliveryInfo?.phone || 'N/A';
+                const isGuest = !order.customer?.name && !!orderData.deliveryInfo?.fullName;
+
                 return (
                   <TableRow key={id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
                     <TableCell className="font-medium">
@@ -187,8 +204,15 @@ export function OrdersTable() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="font-medium">{order.customer?.name || 'N/A'}</div>
-                      <div className="text-sm text-gray-500">{order.customer?.email || ''}</div>
+                      <div className="font-medium flex items-center gap-2">
+                        {customerName}
+                        {isGuest && (
+                          <span className="bg-gray-100 text-gray-600 text-[10px] px-2 py-0.5 rounded-full border">
+                            {isArabic ? 'ضيف' : 'Guest'}
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-sm text-gray-500">{customerContact}</div>
                     </TableCell>
                     <TableCell className="hidden md:table-cell">
                       <div className="text-sm text-gray-500">

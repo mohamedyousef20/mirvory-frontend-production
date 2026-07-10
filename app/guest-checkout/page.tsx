@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { Loader2, ShoppingBag, User, Phone, Mail, MapPin, Package } from 'lucide-react';
-import { guestCartService } from '@/lib/api';
+import { Loader2, ShoppingBag, User, Phone, Mail, MapPin, Package, Store } from 'lucide-react';
+import { guestCartService, pickupPointService } from '@/lib/api';
 import { getGuestCart, clearGuestCart } from '@/lib/guestCart';
 
 interface GuestItem {
@@ -26,11 +26,20 @@ interface GuestCheckoutForm {
   deliveryMethod: 'home' | 'pickup';
   paymentMethod: 'cash';
   address: string;
+  pickupPoint: string;
+}
+
+interface PickupPoint {
+  _id?: string;
+  id?: string;
+  name: string;
+  address?: string;
 }
 
 export default function GuestCheckoutPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [pickupPoints, setPickupPoints] = useState<PickupPoint[]>([]);
   const [form, setForm] = useState<GuestCheckoutForm>({
     guestName: '',
     guestEmail: '',
@@ -38,16 +47,34 @@ export default function GuestCheckoutPage() {
     deliveryMethod: 'home',
     paymentMethod: 'cash',
     address: '',
+    pickupPoint: '',
   });
   const [trackingToken, setTrackingToken] = useState<string | null>(null);
   const [orderNumber, setOrderNumber] = useState<string | null>(null);
 
-  // Read cart items from localStorage using the shared guestCart utility
   const [cartItems] = useState<GuestItem[]>(() => getGuestCart() as GuestItem[]);
+
+  useEffect(() => {
+    const fetchPickupPoints = async () => {
+      try {
+        const response = await pickupPointService.getPickupPoints();
+        // Adjust the data path based on your API response structure (e.g., response.data.data or response.data)
+        const points = response.data?.data || response.data || [];
+        setPickupPoints(points);
+      } catch (error) {
+        console.error('Error fetching pickup points:', error);
+      }
+    };
+    fetchPickupPoints();
+  }, []);
 
   const handleChange = (field: keyof GuestCheckoutForm, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
+
+  const subtotal = cartItems.reduce((sum, i) => sum + (i.price || 0) * i.quantity, 0);
+  const shippingFee = (subtotal > 4000 || form.deliveryMethod === 'pickup') ? 0 : 70;
+  const totalAmount = subtotal + shippingFee;
 
   const validate = (): string | null => {
     if (!form.guestName.trim()) return 'الاسم مطلوب';
@@ -57,6 +84,8 @@ export default function GuestCheckoutPage() {
       return 'رقم الهاتف غير صالح. يجب أن يكون رقمًا مصريًا صحيحًا';
     if (form.deliveryMethod === 'home' && !form.address.trim())
       return 'عنوان التوصيل مطلوب';
+    if (form.deliveryMethod === 'pickup' && !form.pickupPoint)
+      return 'نقطة الاستلام مطلوبة';
     if (cartItems.length === 0)
       return 'السلة فارغة. أضف منتجات قبل إتمام الطلب';
     return null;
@@ -75,7 +104,10 @@ export default function GuestCheckoutPage() {
         guestPhone: form.guestPhone.trim(),
         deliveryMethod: form.deliveryMethod,
         paymentMethod: 'cash',
-        deliveryInfo: { address: form.address.trim() },
+        deliveryInfo: {
+          address: form.deliveryMethod === 'home' ? form.address.trim() : undefined,
+          pickupPoint: form.deliveryMethod === 'pickup' ? form.pickupPoint : undefined,
+        },
         items: cartItems.map(item => ({
           productId: item.productId,
           quantity: item.quantity,
@@ -85,10 +117,7 @@ export default function GuestCheckoutPage() {
       });
 
       const data = response.data;
-
-      // Clear guest cart using the shared utility (also fires guest-cart-updated event)
       clearGuestCart();
-
       setTrackingToken(data.trackingToken);
       setOrderNumber(data.orderNumber);
       toast.success('تم إنشاء طلبك بنجاح!');
@@ -100,7 +129,6 @@ export default function GuestCheckoutPage() {
     }
   };
 
-  // ── Order Confirmation Screen ───────────────────────────────────────────────
   if (trackingToken) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4" dir="rtl">
@@ -139,7 +167,6 @@ export default function GuestCheckoutPage() {
     );
   }
 
-  // ── Checkout Form ──────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4" dir="rtl">
       <div className="max-w-2xl mx-auto">
@@ -203,19 +230,75 @@ export default function GuestCheckoutPage() {
           {/* Delivery */}
           <section>
             <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <MapPin className="h-5 w-5 text-primary" /> عنوان التوصيل
+              <MapPin className="h-5 w-5 text-primary" /> طريقة التوصيل
             </h2>
-            <div>
-              <Label htmlFor="address">العنوان التفصيلي *</Label>
-              <Input
-                id="address"
-                value={form.address}
-                onChange={(e) => handleChange('address', e.target.value)}
-                placeholder="المحافظة، المدينة، الشارع، رقم المبنى"
-                required
-                className="mt-1"
-              />
+
+            <div className="flex gap-4 mb-4">
+              <label className={`flex-1 flex items-center justify-center gap-2 p-3 border rounded-xl cursor-pointer transition-colors ${form.deliveryMethod === 'home' ? 'border-primary bg-primary/5 text-primary font-medium' : 'bg-gray-50 text-gray-600'}`}>
+                <input
+                  type="radio"
+                  name="deliveryMethod"
+                  value="home"
+                  checked={form.deliveryMethod === 'home'}
+                  onChange={() => handleChange('deliveryMethod', 'home')}
+                  className="hidden"
+                />
+                <MapPin className="h-4 w-4" /> توصيل للمنزل
+              </label>
+              <label className={`flex-1 flex items-center justify-center gap-2 p-3 border rounded-xl cursor-pointer transition-colors ${form.deliveryMethod === 'pickup' ? 'border-primary bg-primary/5 text-primary font-medium' : 'bg-gray-50 text-gray-600'}`}>
+                <input
+                  type="radio"
+                  name="deliveryMethod"
+                  value="pickup"
+                  checked={form.deliveryMethod === 'pickup'}
+                  onChange={() => handleChange('deliveryMethod', 'pickup')}
+                  className="hidden"
+                />
+                <Store className="h-4 w-4" /> استلام من نقطة
+              </label>
             </div>
+
+            {form.deliveryMethod === 'home' && (
+              <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
+                <Label htmlFor="address">العنوان التفصيلي *</Label>
+                <Input
+                  id="address"
+                  value={form.address}
+                  onChange={(e) => handleChange('address', e.target.value)}
+                  placeholder="المحافظة، المدينة، الشارع، رقم المبنى"
+                  required={form.deliveryMethod === 'home'}
+                  className="mt-1"
+                />
+                {subtotal > 4000 ? (
+                  <p className="text-sm text-green-600">الشحن مجاني لطلبك الحالي لتجاوزه 4000 ج.م</p>
+                ) : (
+                  <p className="text-sm text-blue-600">
+                    أضف منتجات بقيمة {(4000 - subtotal).toLocaleString()} ج.م للحصول على شحن مجاني
+                  </p>
+                )}
+              </div>
+            )}
+
+            {form.deliveryMethod === 'pickup' && (
+              <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
+                <Label htmlFor="pickupPoint">اختر نقطة الاستلام *</Label>
+                <select
+                  id="pickupPoint"
+                  value={form.pickupPoint}
+                  onChange={(e) => handleChange('pickupPoint', e.target.value)}
+                  required={form.deliveryMethod === 'pickup'}
+                  className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <option value="" disabled>اختر الفرع الأقرب إليك</option>
+                  {pickupPoints.map((point) => (
+                    <option key={point._id || point.id} value={point._id || point.id}>
+                      {point.name} {point.address ? `- ${point.address}` : ''}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-sm text-green-600">الاستلام من نقاط البيع مجاني دائمًا</p>
+              </div>
+            )}
           </section>
 
           {/* Summary */}
@@ -232,11 +315,22 @@ export default function GuestCheckoutPage() {
                     </span>
                   </div>
                 ))}
-                <div className="border-t pt-2 flex justify-between font-semibold">
-                  <span>المجموع</span>
-                  <span>
-                    {cartItems.reduce((sum, i) => sum + (i.price || 0) * i.quantity, 0).toLocaleString()} ج.م
-                  </span>
+
+                <div className="border-t pt-2 mt-2 space-y-2">
+                  <div className="flex justify-between text-sm text-gray-600">
+                    <span>المجموع الفرعي</span>
+                    <span>{subtotal.toLocaleString()} ج.م</span>
+                  </div>
+                  <div className="flex justify-between text-sm text-gray-600">
+                    <span>رسوم الشحن</span>
+                    <span className={shippingFee === 0 ? "text-green-600 font-medium" : ""}>
+                      {shippingFee === 0 ? 'مجاني' : `${shippingFee.toLocaleString()} ج.م`}
+                    </span>
+                  </div>
+                  <div className="border-t pt-2 flex justify-between font-bold text-lg">
+                    <span>الإجمالي</span>
+                    <span>{totalAmount.toLocaleString()} ج.م</span>
+                  </div>
                 </div>
               </div>
             </section>
@@ -263,13 +357,6 @@ export default function GuestCheckoutPage() {
               'تأكيد الطلب'
             )}
           </Button>
-
-          <p className="text-center text-sm text-gray-500">
-            لديك حساب؟{' '}
-            <a href="/auth/login" className="text-primary hover:underline font-medium">
-              تسجيل الدخول
-            </a>
-          </p>
         </form>
       </div>
     </div>

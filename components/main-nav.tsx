@@ -276,18 +276,18 @@ export function MainNav() {
   }, [])
 
   // Fetch data when component mounts or auth status changes
+  // Fetch data when component mounts or auth status changes
   useEffect(() => {
-    //console.log(isAdmin,'n8n')
     if (isLoggedIn) {
       fetchCounts()
-      fetchCartItems()
     } else {
       setCounts({ cart: getGuestCartCount(), wishlist: 0, notifications: 0 })
-      setEnhancedCartItems([])
     }
+
+    // استدعاء الدالة في جميع الحالات لأنها تعالج حالة الضيف (Guest) بداخلها
+    fetchCartItems()
   }, [isLoggedIn, fetchCounts, fetchCartItems])
 
-  // Listen for guest cart updates so the badge stays in sync
   // Listen for guest cart updates so the badge and items stay in sync
   useEffect(() => {
     if (isLoggedIn) return;
