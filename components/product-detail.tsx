@@ -99,7 +99,7 @@ interface RelatedProduct {
 
 const ProductDetail = ({ productId }: { productId: string }) => {
   const { language, t } = useLanguage()
-  const { user } = useAuth()
+  const { user, cookiesReady } = useAuth()
   const isLoggedIn = Boolean(user)
 
   const [product, setProduct] = useState<Product | null>(null)
@@ -266,6 +266,10 @@ const ProductDetail = ({ productId }: { productId: string }) => {
 
     try {
       if (isLoggedIn) {
+        // If cookies aren't ready yet (Google OAuth race condition), wait briefly
+        if (!cookiesReady) {
+          await new Promise(resolve => setTimeout(resolve, 1500));
+        }
         await cartService.addToCart({
           productId,
           quantity,
