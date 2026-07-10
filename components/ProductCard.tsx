@@ -52,7 +52,7 @@ interface ProductCardProps {
 }
 
 const ProductCardComponent = function ProductCard({ product, language, onAddToCart, onToggleWishlist, isFavorite: isFavoriteProp }: ProductCardProps) {
-  const { user } = useAuth()
+  const { user, cookiesReady } = useAuth()
   const isLoggedIn = Boolean(user)
   const [isFavorite, setIsFavorite] = useState(product.isFavorite || false)
   const [isAddingToCart, setIsAddingToCart] = useState(false)
@@ -148,7 +148,10 @@ const ProductCardComponent = function ProductCard({ product, language, onAddToCa
     setIsAddingToCart(true)
     try {
       if (isLoggedIn) {
-        console.log('im herman')
+        // If cookies aren't ready yet (Google OAuth race condition), wait briefly
+        if (!cookiesReady) {
+          await new Promise(resolve => setTimeout(resolve, 1500));
+        }
         await cartService.addToCart({
           productId: product._id,
           quantity: 1,

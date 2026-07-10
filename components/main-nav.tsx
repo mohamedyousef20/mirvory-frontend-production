@@ -108,7 +108,7 @@ export function MainNav() {
   const { theme, setTheme } = useTheme()
   const { colorTheme, setColorTheme } = useColorTheme()
   const router = useRouter()
-  const { user } = useAuth()
+  const { user, cookiesReady } = useAuth()
   const [searchQuery, setSearchQuery] = useState("")
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
@@ -144,6 +144,8 @@ export function MainNav() {
       setCounts({ cart: getGuestCartCount(), wishlist: 0, notifications: 0 })
       return
     }
+    // Wait until auth cookies are ready (important for Google OAuth users)
+    if (!cookiesReady) return
     console.log(user, 'user***')
     try {
 
@@ -200,44 +202,16 @@ export function MainNav() {
     } finally {
       setLoading(prev => ({ ...prev, cart: false, wishlist: false, notifications: false }))
     }
-  }, [isLoggedIn, user])
+  }, [isLoggedIn, cookiesReady, user])
   // Fetch cart items
-
-  const loadGuestCart = useCallback((): CartItem[] => {
-    if (typeof window === "undefined") return [];
-
-    try {
-      const guestCartData = localStorage.getItem("guest_cart");
-      if (!guestCartData) return [];
-
-      const parsedCart = JSON.parse(guestCartData);
-
-      return parsedCart.map((item: any, index: number) => ({
-        _id: `guest-${item.productId}-${index}`, // Synthetic ID for React keys and removal
-        price: item.price || 0,
-        quantity: item.quantity || 1,
-        sizes: item.size ? [item.size] : [],
-        colors: item.color ? [item.color] : [],
-        product: {
-          _id: item.productId,
-          id: item.productId,
-          title: item.title || "Product",
-          images: item.images || (item.image ? [item.image] : []),
-          price: item.price || 0,
-        }
-      }));
-    } catch (error) {
-      console.error("Failed to parse guest cart from localStorage:", error);
-      return [];
-    }
-  }, []);
-
   const fetchCartItems = useCallback(async () => {
     if (!isLoggedIn) {
       const guestItems = loadGuestCart();
       setEnhancedCartItems(guestItems);
       return;
     }
+    // Wait until auth cookies are ready (important for Google OAuth users)
+    if (!cookiesReady) return
 
     try {
       const response = await cartService.getCart()
@@ -260,7 +234,7 @@ export function MainNav() {
       console.error('Error fetching cart items:', error)
       setEnhancedCartItems([])
     }
-  }, [isLoggedIn, user, loadGuestCart])
+  }, [isLoggedIn, user, ,cookiesReady,loadGuestCart])
 
 
 
@@ -281,12 +255,19 @@ export function MainNav() {
     if (isLoggedIn) {
       fetchCounts()
     } else {
+  // cookiesReady ensures Google OAuth tokens are written to cookies before API calls
+  useEffect(() => {
+    if (isLoggedIn && cookiesReady) {
+      fetchCounts()
+      fetchCartItems()
+    } else if (!isLoggedIn) {
       setCounts({ cart: getGuestCartCount(), wishlist: 0, notifications: 0 })
     }
 
     // استدعاء الدالة في جميع الحالات لأنها تعالج حالة الضيف (Guest) بداخلها
     fetchCartItems()
   }, [isLoggedIn, fetchCounts, fetchCartItems])
+  }, [isLoggedIn, cookiesReady, fetchCounts, fetchCartItems])
 
   // Listen for guest cart updates so the badge and items stay in sync
   useEffect(() => {

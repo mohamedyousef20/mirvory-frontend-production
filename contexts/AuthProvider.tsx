@@ -290,32 +290,52 @@ function AuthContextWrapper({
                 return;
             }
 
-            // Priority 2: NextAuth session
+            // Priority 2: NextAuth session (Google OAuth flow)
             if (session?.user) {
                 setUser(session.user);
 
+                const cookiePayload = {
+                    accessToken: (session.user as any).accessToken,
+                    refreshToken: (session.user as any).refreshToken,
+                    role: (session.user as any).role,
+                };
+
+                // Step 1: Try the Next.js same-origin route first (no CORS / SameSite issues)
+                let cookiesSynced = false;
                 try {
-                    await fetch(
-                        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/social-set-cookies`,
-                        {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                            credentials: "include",
-                            body: JSON.stringify({
-                                accessToken: (session.user as any).accessToken,
-                                refreshToken: (session.user as any).refreshToken,
-                                role: (session.user as any).role,
-                            }),
-                        }
-                    );
-                } catch (error) {
-                    console.error("Cookie sync failed:", error);
-                } finally {
-                    if (mounted) {
-                        setCookiesReady(true);
+                    const nextRes = await fetch("/api/auth/social-set-cookies", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        credentials: "include",
+                        body: JSON.stringify(cookiePayload),
+                    });
+                    if (nextRes.ok) {
+                        cookiesSynced = true;
                     }
+                } catch (err) {
+                    console.warn("[AuthProvider] Next.js cookie route failed, trying backend:", err);
+                }
+
+                // Step 2: Also call the backend so its own session/cookie store is updated
+                if (!cookiesSynced || process.env.NEXT_PUBLIC_API_URL) {
+                    try {
+                        await fetch(
+                            `${process.env.NEXT_PUBLIC_API_URL}/api/auth/social-set-cookies`,
+                            {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                credentials: "include",
+                                body: JSON.stringify(cookiePayload),
+                            }
+                        );
+                        cookiesSynced = true;
+                    } catch (error) {
+                        console.error("[AuthProvider] Backend cookie sync failed:", error);
+                    }
+                }
+
+                if (mounted) {
+                    setCookiesReady(true);
                 }
 
                 return;
