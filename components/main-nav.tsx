@@ -108,7 +108,7 @@ export function MainNav() {
   const { theme, setTheme } = useTheme()
   const { colorTheme, setColorTheme } = useColorTheme()
   const router = useRouter()
-  const { user } = useAuth()
+  const { user, cookiesReady } = useAuth()
   const [searchQuery, setSearchQuery] = useState("")
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
@@ -144,6 +144,8 @@ export function MainNav() {
       setCounts({ cart: getGuestCartCount(), wishlist: 0, notifications: 0 })
       return
     }
+    // Wait until auth cookies are ready (important for Google OAuth users)
+    if (!cookiesReady) return
     console.log(user, 'user***')
     try {
 
@@ -200,14 +202,15 @@ export function MainNav() {
     } finally {
       setLoading(prev => ({ ...prev, cart: false, wishlist: false, notifications: false }))
     }
-  }, [isLoggedIn, user])
-  // Fetch cart items
+  }, [isLoggedIn, cookiesReady, user])
   // Fetch cart items
   const fetchCartItems = useCallback(async () => {
     if (!isLoggedIn) {
       setEnhancedCartItems([])
       return
     }
+    // Wait until auth cookies are ready (important for Google OAuth users)
+    if (!cookiesReady) return
 
 
     try {
@@ -237,7 +240,7 @@ export function MainNav() {
       console.error('Error fetching cart items:', error)
       setEnhancedCartItems([])
     }
-  }, [isLoggedIn, user])
+  }, [isLoggedIn, cookiesReady, user])
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 10)
@@ -248,16 +251,16 @@ export function MainNav() {
   }, [])
 
   // Fetch data when component mounts or auth status changes
+  // cookiesReady ensures Google OAuth tokens are written to cookies before API calls
   useEffect(() => {
-    //console.log(isAdmin,'n8n')
-    if (isLoggedIn) {
+    if (isLoggedIn && cookiesReady) {
       fetchCounts()
       fetchCartItems()
-    } else {
+    } else if (!isLoggedIn) {
       setCounts({ cart: getGuestCartCount(), wishlist: 0, notifications: 0 })
       setEnhancedCartItems([])
     }
-  }, [isLoggedIn, fetchCounts, fetchCartItems])
+  }, [isLoggedIn, cookiesReady, fetchCounts, fetchCartItems])
 
   // Listen for guest cart updates so the badge stays in sync
   useEffect(() => {
