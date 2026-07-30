@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
 const PROTECTED_ROUTES = ["/account", "/vendor", "/admin", "/driver"];
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'pure-courtesy-production-8cb1.up.railway.app';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -45,7 +45,7 @@ export async function middleware(request: NextRequest) {
   try {
     const { payload } = await jwtVerify(token, SECRET_KEY);
     const decoded: any = payload;
-    
+
     // Role-based protection
     const adminRoles = ["admin", "super_admin"];
     if (pathname.startsWith("/admin") && !adminRoles.includes(decoded.role)) {

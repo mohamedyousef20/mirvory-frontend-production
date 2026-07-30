@@ -19,7 +19,7 @@ const nextConfig = {
   },
   env: {
     // JWT_SECRET removed - frontend should never have access to JWT secret
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000",
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || "pure-courtesy-production-8cb1.up.railway.app",
   },
   async rewrites() {
     return [
@@ -29,11 +29,11 @@ const nextConfig = {
       },
       {
         source: "/api/:path*",
-        destination: `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/:path*`,
+        destination: `${process.env.NEXT_PUBLIC_API_URL || "pure-courtesy-production-8cb1.up.railway.app"}/api/:path*`,
       },
       {
         source: "/auth/:path*",
-        destination: `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/auth/:path*`,
+        destination: `${process.env.NEXT_PUBLIC_API_URL || "pure-courtesy-production-8cb1.up.railway.app"}/auth/:path*`,
       },
     ]
   },

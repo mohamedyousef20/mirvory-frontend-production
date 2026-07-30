@@ -51,8 +51,7 @@ import { ProductSearch } from "./ProductSearch"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/AuthProvider"
 import { authService, cartService, notificationService, wishlistService } from "@/lib/api"
-import { getGuestCartCount } from "@/lib/guestCart"
-
+import { getGuestCartCount, getGuestCart as loadGuestCart } from "@/lib/guestCart"
 // Update your interfaces at the top
 interface ProductDetails {
   _id: string;
@@ -234,7 +233,7 @@ export function MainNav() {
       console.error('Error fetching cart items:', error)
       setEnhancedCartItems([])
     }
-  }, [isLoggedIn, user, ,cookiesReady,loadGuestCart])
+  }, [isLoggedIn, user,cookiesReady,loadGuestCart])
 
 
 
@@ -251,24 +250,16 @@ export function MainNav() {
 
   // Fetch data when component mounts or auth status changes
   // Fetch data when component mounts or auth status changes
-  useEffect(() => {
-    if (isLoggedIn) {
-      fetchCounts()
-    } else {
-  // cookiesReady ensures Google OAuth tokens are written to cookies before API calls
+  // ✅ الكود الصحيح والمعدل:
   useEffect(() => {
     if (isLoggedIn && cookiesReady) {
-      fetchCounts()
-      fetchCartItems()
+      fetchCounts();
+      fetchCartItems();
     } else if (!isLoggedIn) {
-      setCounts({ cart: getGuestCartCount(), wishlist: 0, notifications: 0 })
+      setCounts({ cart: getGuestCartCount(), wishlist: 0, notifications: 0 });
+      fetchCartItems(); // استدعاء الدالة لمعالجة حالة الضيف (Guest) بداخلها
     }
-
-    // استدعاء الدالة في جميع الحالات لأنها تعالج حالة الضيف (Guest) بداخلها
-    fetchCartItems()
-  }, [isLoggedIn, fetchCounts, fetchCartItems])
-  }, [isLoggedIn, cookiesReady, fetchCounts, fetchCartItems])
-
+  }, [isLoggedIn, cookiesReady, fetchCounts, fetchCartItems]);
   // Listen for guest cart updates so the badge and items stay in sync
   useEffect(() => {
     if (isLoggedIn) return;
@@ -831,7 +822,7 @@ export function MainNav() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium truncate">
-                              {item.product?.title || `Product ${item._id.substring(0, 6)}`}
+                              {item.product?.title || `Product ${item._id?.substring(0, 6)}`}
                             </p>
                             <p className="text-xs text-muted-foreground">
                               {language === "ar"

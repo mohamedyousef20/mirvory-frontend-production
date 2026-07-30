@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { Loader2, Package, Truck, CheckCircle, Clock, Search } from 'lucide-react';
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'pure-courtesy-production-8cb1.up.railway.app';
 
 const STATUS_MAP: Record<string, { label: string; icon: React.ReactNode; color: string }> = {
   pending: { label: 'قيد الانتظار', icon: <Clock className="h-5 w-5" />, color: 'text-yellow-500' },
@@ -67,7 +67,7 @@ export default function TrackOrderPage() {
   // Auto-track if token is in URL
   useEffect(() => {
     if (tokenFromUrl) handleTrack(tokenFromUrl);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const status = order ? STATUS_MAP[order.deliveryStatus] || STATUS_MAP.pending : null;

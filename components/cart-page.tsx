@@ -424,7 +424,7 @@ function AuthenticatedCartPage() {
     return sum + (item.price * item.quantity);
   }, 0)
 
-  const shipping = subtotal > 500 ? 0 : 30
+  const shipping = subtotal > 500 ? 0 : 70
   const total = cartData?.total !== undefined
     ? cartData.total + shipping
     : subtotal + shipping;
