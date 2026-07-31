@@ -2,7 +2,7 @@ import axios, { AxiosError, AxiosRequestConfig, InternalAxiosRequestConfig } fro
 import { toast } from 'sonner';
 import { clearAuth, refreshToken as fallbackRefresh } from './api/core/auth';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'pure-courtesy-production-8cb1.up.railway.app';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://pure-courtesy-production-8cb1.up.railway.app';
 
 // Flag to prevent multiple refresh attempts
 let isRefreshing = false;
