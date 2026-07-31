@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'pure-courtesy-production-8cb1.up.railway.app/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://pure-courtesy-production-8cb1.up.railway.app';
 
 // Create axios instance
 const apiService = axios.create({
