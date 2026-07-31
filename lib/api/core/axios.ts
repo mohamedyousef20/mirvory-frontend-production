@@ -8,7 +8,7 @@ import axios, {
 import { clearAuth, refreshToken as fallbackRefresh } from './auth';
 import { ApiResponse } from './types';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'pure-courtesy-production-8cb1.up.railway.app';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://pure-courtesy-production-8cb1.up.railway.app';
 
 type QueueEntry = {
   resolve: (value: unknown) => void;
