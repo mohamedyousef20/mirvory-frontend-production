@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
 const PROTECTED_ROUTES = ["/account", "/vendor", "/admin", "/driver"];
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'pure-courtesy-production-8cb1.up.railway.app';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://pure-courtesy-production-8cb1.up.railway.app';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;

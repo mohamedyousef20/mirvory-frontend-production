@@ -33,7 +33,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
       return
     }
 
-    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'pure-courtesy-production-8cb1.up.railway.app'
+    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'https://pure-courtesy-production-8cb1.up.railway.app'
     console.log('Connecting to socket at:', socketUrl, 'for user:', user._id)
 
     const newSocket = io(socketUrl, {

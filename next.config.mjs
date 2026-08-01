@@ -11,7 +11,7 @@ const nextConfig = {
   },
   images: {
     remotePatterns: [
-      { protocol: "http", hostname: "localhost" },
+      { protocol: "https", hostname: "pure-courtesy-production-8cb1.up.railway.app" },
       { protocol: "https", hostname: "example.com" },
       { protocol: "https", hostname: "your-image-host.com" },
       { protocol: "https", hostname: "res.cloudinary.com" },
@@ -19,7 +19,7 @@ const nextConfig = {
   },
   env: {
     // JWT_SECRET removed - frontend should never have access to JWT secret
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || "pure-courtesy-production-8cb1.up.railway.app",
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || "https://pure-courtesy-production-8cb1.up.railway.app",
   },
   async rewrites() {
     return [
@@ -29,11 +29,11 @@ const nextConfig = {
       },
       {
         source: "/api/:path*",
-        destination: `${process.env.NEXT_PUBLIC_API_URL || "pure-courtesy-production-8cb1.up.railway.app"}/api/:path*`,
+        destination: `${process.env.NEXT_PUBLIC_API_URL || "https://pure-courtesy-production-8cb1.up.railway.app"}/api/:path*`,
       },
       {
         source: "/auth/:path*",
-        destination: `${process.env.NEXT_PUBLIC_API_URL || "pure-courtesy-production-8cb1.up.railway.app"}/auth/:path*`,
+        destination: `${process.env.NEXT_PUBLIC_API_URL || "https://pure-courtesy-production-8cb1.up.railway.app"}/auth/:path*`,
       },
     ]
   },
@@ -60,7 +60,9 @@ const nextConfig = {
         source: "/api/:path*",
         headers: [
           { key: "Access-Control-Allow-Credentials", value: "true" },
-          { key: "Access-Control-Allow-Origin", value: process.env.NEXTAUTH_URL || "http://localhost:3000" },
+          // Allow-Origin must be the FRONTEND origin (Vercel URL), not the backend URL.
+          // NEXTAUTH_URL must be set to your Vercel deployment URL in the Vercel dashboard.
+          { key: "Access-Control-Allow-Origin", value: process.env.NEXTAUTH_URL || "*" },
           { key: "Access-Control-Allow-Methods", value: "GET,OPTIONS,PATCH,DELETE,POST,PUT" },
           {
             key: "Access-Control-Allow-Headers",
