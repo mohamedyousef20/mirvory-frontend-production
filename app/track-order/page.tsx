@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { Loader2, Package, Truck, CheckCircle, Clock, Search } from 'lucide-react';
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'pure-courtesy-production-8cb1.up.railway.app';
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'https://pure-courtesy-production-8cb1.up.railway.app';
 
 const STATUS_MAP: Record<string, { label: string; icon: React.ReactNode; color: string }> = {
   pending: { label: 'قيد الانتظار', icon: <Clock className="h-5 w-5" />, color: 'text-yellow-500' },

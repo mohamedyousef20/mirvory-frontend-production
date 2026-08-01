@@ -38,13 +38,14 @@
 //   const lastScannedCode = useRef<string>('');
 
 //   // ✅ تهيئة Socket
-//   useEffect(() => {
-//     const socketInstance = io(
-//       process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001',
-//       {
-//         transports: ['websocket'],
-//       }
-//     );
+//   // useEffect(() => {
+//   //   const socketInstance = io(
+//   //     process.env.NEXT_PUBLIC_SOCKET_URL || 'https://pure-courtesy-production-8cb1.up.railway.app',
+//   //     {
+//   //       transports: ['websocket'],
+//   //       withCredentials: true,
+//   //     }
+//   //   );
 
 //     setSocket(socketInstance);
 

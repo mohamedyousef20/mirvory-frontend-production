@@ -45,8 +45,9 @@ export const getTokenExpiration = (token: string): number | null => {
 };
 
 export const refreshToken = async (): Promise<string | null> => {
+  const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://pure-courtesy-production-8cb1.up.railway.app';
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/refresh-token`, {
+    const response = await fetch(`${apiBase}/api/users/refresh-token`, {
       method: 'POST',
       credentials: 'include',
     });

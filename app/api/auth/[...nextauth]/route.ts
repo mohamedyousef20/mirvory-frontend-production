@@ -3,7 +3,7 @@ import type { NextAuthConfig, Session, Account, Profile } from 'next-auth';
 import type { JWT } from 'next-auth/jwt';
 import GoogleProvider from 'next-auth/providers/google';
 
-const backendBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'pure-courtesy-production-8cb1.up.railway.app';
+const backendBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://pure-courtesy-production-8cb1.up.railway.app';
 
 
 type BackendUser = {
