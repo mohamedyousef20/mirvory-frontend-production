@@ -144,7 +144,7 @@ export default function SellerSignup() {
       });
 
       toast.success("تم إنشاء حساب البائع بنجاح");
-      router.push("/verifyEmail");
+      router.push("/login");
     } catch (e: any) {
       setError(e.response?.data?.message || "حدث خطأ غير متوقع");
     } finally {
