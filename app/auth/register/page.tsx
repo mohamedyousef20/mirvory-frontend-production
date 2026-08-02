@@ -324,7 +324,7 @@ export default function Signup() {
                       value={formData.firstName}
                       onChange={handleChange}
                       className="w-full pr-4 pl-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                      placeholder="ثلاث احرف على الاقل الاسم الأول"
+                      {/* placeholder="ثلاث احرف على الاقل الاسم الأول" */}
                       required
                     />
                     <User className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
