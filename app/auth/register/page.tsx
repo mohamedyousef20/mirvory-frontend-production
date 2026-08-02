@@ -207,8 +207,8 @@ export default function Signup() {
 
       const response = await authService.register(payload);
       if (response.data) {
-        toast.success('تم التسجيل بنجاح، يرجى تفعيل البريد الإلكتروني');
-        router.push('/verifyEmail');
+        toast.success('تم التسجيل بنجاح');
+        router.push('/login');
       }
     } catch (err: any) {
       setError(err.response?.data?.message || err.message || 'حدث خطأ غير متوقع');
