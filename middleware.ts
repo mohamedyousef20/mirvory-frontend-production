@@ -9,15 +9,12 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://pure-courtesy-produc
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // تحقق من وجود الـ JWT secret
+  // JWT_SECRET must be set in the Vercel dashboard for protected-route
+  // verification to work.  If it is missing in production we still let the
+  // request through to the page — the page's own auth guard / SSR check will
+  // handle unauthenticated users.  Redirecting to /auth/login here would
+  // cause an infinite redirect loop on Vercel when JWT_SECRET is not yet set.
   const JWT_SECRET = process.env.JWT_SECRET;
-
-  if (!JWT_SECRET) {
-    console.error("❌ JWT_SECRET is missing in .env.local");
-    return NextResponse.redirect(new URL("/auth/login", request.url));
-  }
-
-  const SECRET_KEY = new TextEncoder().encode(JWT_SECRET);
 
   // Check if route is protected
   const isProtected = PROTECTED_ROUTES.some((route) =>
@@ -25,6 +22,15 @@ export async function middleware(request: NextRequest) {
   );
 
   if (!isProtected) return NextResponse.next();
+
+  // If JWT_SECRET is not configured, skip token verification and let the
+  // page-level auth handle it (avoids hard redirect loop on misconfigured env).
+  if (!JWT_SECRET) {
+    console.warn("⚠️  JWT_SECRET not set – skipping edge token verification");
+    return NextResponse.next();
+  }
+
+  const SECRET_KEY = new TextEncoder().encode(JWT_SECRET);
 
   // Get token from multiple possible sources
   let token = request.cookies.get("accessToken")?.value;
