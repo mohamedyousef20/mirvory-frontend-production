@@ -21,19 +21,25 @@ const nextConfig = {
     // JWT_SECRET removed - frontend should never have access to JWT secret
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || "https://pure-courtesy-production-8cb1.up.railway.app",
   },
+  // ⚠️  NO rewrites to the Railway backend.
+  //
+  // A Next.js rewrite proxies the request server-side, which means the
+  // browser never sees the Railway domain.  When Railway's Set-Cookie header
+  // arrives at the Vercel edge it is dropped because the cookie's Domain
+  // (railway.app) does not match the response origin (vercel.app).
+  // The browser therefore never stores the accessToken / refreshToken cookies,
+  // which causes every authenticated request to fail and the user to be
+  // redirected back to /auth/login.
+  //
+  // Fix: axios already sends directly to Railway with withCredentials: true
+  // so CORS + SameSite=None; Secure handles it correctly.  No rewrites needed.
   async rewrites() {
     return [
+      // Keep only the NextAuth self-referencing rule so /api/auth/* is
+      // handled by the Next.js App Router, not proxied anywhere.
       {
         source: "/api/auth/:path*",
         destination: "/api/auth/:path*",
-      },
-      {
-        source: "/api/:path*",
-        destination: `${process.env.NEXT_PUBLIC_API_URL || "https://pure-courtesy-production-8cb1.up.railway.app"}/api/:path*`,
-      },
-      {
-        source: "/auth/:path*",
-        destination: `${process.env.NEXT_PUBLIC_API_URL || "https://pure-courtesy-production-8cb1.up.railway.app"}/auth/:path*`,
       },
     ]
   },
