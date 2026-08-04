@@ -55,7 +55,7 @@ export default function Login() {
         } else {
           window.location.href = "/";
         }
-      }, 100);
+      }, 500);
 
     } catch (err: any) {
       const errorMessage =
