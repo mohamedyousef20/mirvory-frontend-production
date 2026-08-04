@@ -1,4 +1,3 @@
-// middleware.ts
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
@@ -9,34 +8,25 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://pure-courtesy-produc
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // JWT_SECRET must be set in the Vercel dashboard for protected-route
-  // verification to work.  If it is missing in production we still let the
-  // request through to the page — the page's own auth guard / SSR check will
-  // handle unauthenticated users.  Redirecting to /auth/login here would
-  // cause an infinite redirect loop on Vercel when JWT_SECRET is not yet set.
-  const JWT_SECRET = process.env.JWT_SECRET;
-
-  // Check if route is protected
   const isProtected = PROTECTED_ROUTES.some((route) =>
     pathname.startsWith(route)
   );
 
   if (!isProtected) return NextResponse.next();
 
-  // If JWT_SECRET is not configured, skip token verification and let the
-  // page-level auth handle it (avoids hard redirect loop on misconfigured env).
+  const JWT_SECRET = process.env.JWT_SECRET;
+
+  // تجاوز الفحص عند غياب المفتاح (لتفادي Loops في Vercel)
   if (!JWT_SECRET) {
-    console.warn("⚠️  JWT_SECRET not set – skipping edge token verification");
+    console.warn("⚠️ JWT_SECRET not set – skipping edge token verification");
     return NextResponse.next();
   }
 
   const SECRET_KEY = new TextEncoder().encode(JWT_SECRET);
 
-  // Get token from multiple possible sources
   let token = request.cookies.get("accessToken")?.value;
-  let refreshToken = request.cookies.get("refreshToken")?.value;
+  const refreshToken = request.cookies.get("refreshToken")?.value;
 
-  // If no cookie, check Authorization header
   if (!token) {
     const authHeader = request.headers.get("authorization");
     if (authHeader && authHeader.startsWith("Bearer ")) {
@@ -51,22 +41,22 @@ export async function middleware(request: NextRequest) {
   try {
     const { payload } = await jwtVerify(token, SECRET_KEY);
     const decoded: any = payload;
+    const userRole = (decoded.role || "").toLowerCase();
 
-    // Role-based protection
+    // 1. تفعيل حماية الأدوار بالكامل (RBAC)
     const adminRoles = ["admin", "super_admin"];
-    if (pathname.startsWith("/admin") && !adminRoles.includes(decoded.role)) {
+    if (pathname.startsWith("/admin") && !adminRoles.includes(userRole)) {
       return NextResponse.redirect(new URL("/unauthorized", request.url));
     }
 
-    if (pathname.startsWith("/vendor") && decoded.role !== "seller") {
-      // return NextResponse.redirect(new URL("/unauthorized", request.url));
+    if (pathname.startsWith("/vendor") && userRole !== "seller") {
+      return NextResponse.redirect(new URL("/unauthorized", request.url));
     }
 
-    if (pathname.startsWith("/driver") && decoded.role !== "driver") {
-      // return NextResponse.redirect(new URL("/unauthorized", request.url));
+    if (pathname.startsWith("/driver") && userRole !== "driver") {
+      return NextResponse.redirect(new URL("/unauthorized", request.url));
     }
 
-    // Add user info to headers for API routes
     const requestHeaders = new Headers(request.headers);
     requestHeaders.set("x-user-id", decoded.id);
     requestHeaders.set("x-user-role", decoded.role);
@@ -83,7 +73,7 @@ export async function middleware(request: NextRequest) {
       code: error.code
     });
 
-    // 🔄 AUTO REFRESH: Try to refresh token if it's expired
+    // 2. تجديد التوكن تلقائياً مع إصلاح كتابة الكوكي
     if (error.code === 'ERR_JWT_EXPIRED' && refreshToken) {
       try {
         console.log("🔄 Attempting token refresh...");
@@ -97,7 +87,6 @@ export async function middleware(request: NextRequest) {
 
         if (refreshResponse.ok) {
           console.log("✅ Token refreshed successfully");
-          // Get new token from response body (not from cookies)
           const refreshData = await refreshResponse.json();
           const newToken = refreshData.accessToken;
 
@@ -110,17 +99,16 @@ export async function middleware(request: NextRequest) {
             requestHeaders.set("x-user-role", decoded.role);
             requestHeaders.set("x-user-email", decoded.email);
 
-            // 🔄 CRITICAL FIX: Set new token in response cookies to prevent infinite refresh loop
             const response = NextResponse.next({
               request: {
                 headers: requestHeaders,
               },
             });
 
-            // Extract Set-Cookie headers from refresh response and set them in the response
+            // ✅ التمرير الصحيح لهيدرات Set-Cookie المستلمة من السيرفر
             const setCookieHeaders = refreshResponse.headers.getSetCookie();
             setCookieHeaders.forEach(cookie => {
-              response.cookies.set(cookie);
+              response.headers.append("set-cookie", cookie);
             });
 
             return response;
@@ -131,7 +119,6 @@ export async function middleware(request: NextRequest) {
       }
     }
 
-    // Clear invalid cookies
     const response = NextResponse.redirect(new URL("/auth/login", request.url));
     response.cookies.delete("accessToken");
     response.cookies.delete("refreshToken");
