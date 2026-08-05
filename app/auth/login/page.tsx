@@ -1,9 +1,8 @@
-// pages/auth/login.js
+// app/auth/login/page.tsx
 "use client"
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import Head from 'next/head';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import { signIn } from 'next-auth/react';
@@ -33,11 +32,9 @@ export default function Login() {
 
     try {
       const response = await authService.login({ email, password });
-      console.log(response,'23565');
-      if (!response.data.success) {
-        const message =
-          response.data.message || "فشل تسجيل الدخول";
 
+      if (!response.data.success) {
+        const message = response.data.message || "فشل تسجيل الدخول";
         setError(message);
         toast.error(message);
         return;
@@ -45,17 +42,46 @@ export default function Login() {
 
       toast.success("تم تسجيل الدخول بنجاح");
 
+      // FIX: Backend returns { tokens: { accessToken, refreshToken }, data: { user } }
+      // Correct path is response.data.tokens.accessToken
+      const accessToken =
+        response.data.tokens?.accessToken ||
+        response.data.data?.accessToken ||
+        response.data.accessToken;
+
+      const refreshToken =
+        response.data.tokens?.refreshToken ||
+        response.data.data?.refreshToken ||
+        response.data.refreshToken;
+
       const role =
         response.data.data?.user?.role ||
         response.data.role;
 
-      setTimeout(() => {
-        if (role === "seller") {
-          window.location.href = "/vendor/dashboard";
-        } else {
-          window.location.href = "/";
+      // ─── PRIMARY FIX: Set cookies on Vercel domain ───────────────────────
+      // Railway backend sets cookies on railway.app domain only.
+      // Next.js middleware runs on vercel.app and cannot see railway.app cookies.
+      // We call our own Next.js API route to set the same tokens on Vercel domain
+      // so middleware can read them on the next request.
+      if (accessToken) {
+        try {
+          await fetch('/api/auth/set-token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ accessToken, refreshToken, role }),
+          });
+        } catch (cookieErr) {
+          console.warn('[login] Failed to set Vercel-domain cookies:', cookieErr);
         }
-      }, 500);
+      }
+
+      // Navigate AFTER await (no setTimeout race condition)
+      if (role === "seller") {
+        router.push("/vendor/dashboard");
+      } else {
+        router.push("/");
+      }
 
     } catch (err: any) {
       const errorMessage =
@@ -70,13 +96,9 @@ export default function Login() {
       setLoading(false);
     }
   };
+
   return (
     <>
-      <Head>
-        <title>تسجيل الدخول | ميرفوري</title>
-        <meta name="description" content="تسجيل الدخول إلى حساب ميرفوري الخاص بك" />
-      </Head>
-
       <div className="min-h-screen flex flex-col md:flex-row-reverse bg-gray-50" dir="rtl">
         {/* Brand Section */}
         <div className="bg-blue-700 text-white md:w-1/2 p-8 flex flex-col justify-center items-center">
@@ -85,7 +107,10 @@ export default function Login() {
             <p className="text-xl mb-8">منصة التسوق الإلكتروني المميزة لكل احتياجاتك</p>
             <div className="bg-white/10 p-6 rounded-lg">
               <p className="mb-4 text-lg">لم تقم بإنشاء حساب بعد؟</p>
-              <Link href="/auth/register" className="block text-center bg-white text-blue-700 py-3 px-6 rounded-lg font-bold transition-all hover:bg-blue-50">
+              <Link
+                href="/auth/register"
+                className="block text-center bg-white text-blue-700 py-3 px-6 rounded-lg font-bold transition-all hover:bg-blue-50"
+              >
                 إنشاء حساب جديد
               </Link>
             </div>
@@ -108,7 +133,9 @@ export default function Login() {
 
             <form onSubmit={handleSubmit}>
               <div className="mb-6">
-                <label htmlFor="email" className="block text-gray-700 mb-2">البريد الإلكتروني</label>
+                <label htmlFor="email" className="block text-gray-700 mb-2">
+                  البريد الإلكتروني
+                </label>
                 <div className="relative">
                   <input
                     id="email"
@@ -124,7 +151,9 @@ export default function Login() {
               </div>
 
               <div className="mb-6">
-                <label htmlFor="password" className="block text-gray-700 mb-2">كلمة المرور</label>
+                <label htmlFor="password" className="block text-gray-700 mb-2">
+                  كلمة المرور
+                </label>
                 <div className="relative">
                   <input
                     id="password"
@@ -160,7 +189,10 @@ export default function Login() {
                     تذكرني
                   </label>
                 </div>
-                <Link href="/auth/password-reset-request" className="text-sm text-blue-600 hover:text-blue-800">
+                <Link
+                  href="/auth/password-reset-request"
+                  className="text-sm text-blue-600 hover:text-blue-800"
+                >
                   نسيت كلمة المرور؟
                 </Link>
               </div>
@@ -168,8 +200,9 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={loading}
-                className={`w-full bg-blue-600 text-white py-3 rounded-lg font-medium transition-colors ${loading ? 'bg-blue-400 cursor-not-allowed' : 'hover:bg-blue-700'
-                  }`}
+                className={`w-full bg-blue-600 text-white py-3 rounded-lg font-medium transition-colors ${
+                  loading ? 'bg-blue-400 cursor-not-allowed' : 'hover:bg-blue-700'
+                }`}
               >
                 {loading ? 'جاري تسجيل الدخول...' : 'تسجيل الدخول'}
               </button>
@@ -189,33 +222,17 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={handleGoogleSignIn}
-                  className="
-      w-full flex items-center justify-center gap-3
-      rounded-xl border border-gray-300
-      bg-white px-5 py-3
-      text-sm font-medium text-gray-700
-      shadow-sm
-      transition-all duration-200
-      hover:bg-gray-50 hover:shadow-md
-      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
-      active:scale-[0.98]
-    "
+                  className="w-full flex items-center justify-center gap-3 rounded-xl border border-gray-300 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm transition-all duration-200 hover:bg-gray-50 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:scale-[0.98]"
                 >
-                  <svg
-                    className="h-5 w-5"
-                    viewBox="0 0 48 48"
-                  >
+                  <svg className="h-5 w-5" viewBox="0 0 48 48">
                     <path fill="#EA4335" d="M24 9.5c3.54 0 6.72 1.22 9.22 3.61l6.9-6.9C35.9 2.38 30.47 0 24 0 14.64 0 6.59 5.38 2.56 13.22l8.02 6.22C12.5 13.13 17.77 9.5 24 9.5z" />
                     <path fill="#4285F4" d="M46.1 24.55c0-1.6-.14-3.14-.41-4.63H24v9.02h12.43c-.54 2.9-2.16 5.36-4.59 7.01l7.06 5.47C43.87 37.13 46.1 31.4 46.1 24.55z" />
                     <path fill="#FBBC05" d="M10.58 28.44a14.5 14.5 0 010-8.88l-8.02-6.22a24.003 24.003 0 000 21.32l8.02-6.22z" />
                     <path fill="#34A853" d="M24 48c6.48 0 11.93-2.14 15.9-5.78l-7.06-5.47c-1.96 1.32-4.47 2.1-8.84 2.1-6.23 0-11.5-3.63-13.42-8.94l-8.02 6.22C6.59 42.62 14.64 48 24 48z" />
                   </svg>
-
                   <span>تسجيل الدخول عبر جوجل</span>
                 </button>
               </div>
-
-
             </div>
           </div>
         </div>
