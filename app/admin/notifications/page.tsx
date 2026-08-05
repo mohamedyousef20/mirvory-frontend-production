@@ -101,7 +101,6 @@ export default function NotificationsPage() {
                 searchQuery,
                 role
             )
-            console.log(response,'4578')
             // معالجة الاستجابة بشكل صحيح
             let results;
             if (response.data && response.data.data) {

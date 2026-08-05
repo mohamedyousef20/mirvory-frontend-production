@@ -136,9 +136,6 @@ const ProductDetail = ({ productId }: { productId: string }) => {
         setError(null)
 
         const response = await productService.getProductById(productId)
-        console.log('Product response:', response.data.product)
-        console.log(user, 'user147')
-        console.log(userId, 'user148')
         if (response.data && response.data.product) {
           const productData = response.data?.product
           setProduct(productData)
@@ -317,15 +314,10 @@ const ProductDetail = ({ productId }: { productId: string }) => {
 
       setIsLoadingReviews(true)
       const ratingResponse = await ratingService.getProductRatings(productId)
-      console.log(ratingResponse.data, "ratingResponse")
       // Handle the nested response structure
       const ratingData = ratingResponse?.data?.data || {}
 
       setReviews(ratingData)
-      if (reviews) {
-        console.log(reviews, 'reviews1')
-
-      }
       //console.log('Processed reviews:', reviewsData)
     } catch (err) {
       console.error('Failed to load ratings', err)
@@ -869,13 +861,6 @@ const ProductDetail = ({ productId }: { productId: string }) => {
                     {reviews.map((review) => {
                       const reviewUserId = review?.user?._id
                       const isUserReview = userId && reviewUserId === userId
-                      console.log('=== Review Debug ===')
-                      console.log('review?.user?._id:', review?.user?._id, 'type:', typeof review?.user?._id)
-                      console.log('userId:', userId, 'type:', typeof userId)
-                      console.log('reviewUserId:', reviewUserId, 'type:', typeof reviewUserId)
-                      console.log('isUserReview:', isUserReview)
-                      console.log('String comparison:', String(reviewUserId) === String(userId))
-                      console.log('===================')
                       const ratingId = review?._id
                       const isDeletingThisReview = deletingReviewId === ratingId
 

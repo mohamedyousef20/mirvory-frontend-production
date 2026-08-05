@@ -118,7 +118,6 @@ export default function OrdersPage() {
     const fetchOrders = async () => {
         try {
             const response = await orderService.getUserOrders();
-            console.log(response,'ordss4')
             if (response?.data) {
                 setOrders(response.data.data);
             } else {

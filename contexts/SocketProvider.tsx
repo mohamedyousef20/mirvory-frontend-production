@@ -29,12 +29,10 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     // Only connect when user is authenticated and cookies are ready
     if (!cookiesReady || !user) {
-      console.log('Waiting for authentication before connecting socket')
       return
     }
 
     const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'https://pure-courtesy-production-8cb1.up.railway.app'
-    console.log('Connecting to socket at:', socketUrl, 'for user:', user._id)
 
     const newSocket = io(socketUrl, {
       withCredentials: true,
@@ -44,11 +42,10 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     setSocket(newSocket)
 
     newSocket.on('connect', () => {
-      console.log('Socket connected successfully for user:', user._id)
+      // socket connected
     })
 
     newSocket.on('notification', (notif: NotificationPayload) => {
-      console.log('Notification received:', notif)
       toast.message(notif.title, {
         description: notif.message,
       })
@@ -60,11 +57,10 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     })
 
     newSocket.on('disconnect', () => {
-      console.log('Socket disconnected')
+      // socket disconnected
     })
 
     return () => {
-      console.log('Cleaning up socket connection')
       newSocket.disconnect()
     }
   }, [cookiesReady, user])

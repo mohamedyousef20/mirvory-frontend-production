@@ -3,94 +3,106 @@
  *
  * PRIMARY FIX for the Railway-cookie domain mismatch problem.
  *
- * ─── Root Cause ───────────────────────────────────────────────────────────────
- * Railway backend's res.cookie() has NO Domain attribute.
- * Browser rule: no Domain → cookie scoped to EXACT response domain only
- * (pure-courtesy-production-8cb1.up.railway.app).
+ * Root Cause:
+ *   Railway backend sets cookies on railway.app domain only (no Domain attribute).
+ *   Next.js middleware runs on vercel.app → request.cookies.get("accessToken") = undefined
+ *   → Middleware redirects every request to /auth/login (redirect loop).
  *
- * Next.js middleware runs on Vercel's domain.
- * request.cookies.get("accessToken") = undefined (browser never sends
- * Railway-scoped cookies to Vercel requests).
- * → Middleware redirects to /auth/login every time.
+ * Fix:
+ *   Login page calls this Next.js API route (same origin as Vercel) BEFORE navigating.
+ *   This route sets accessToken + refreshToken cookies on the VERCEL domain.
+ *   Middleware then sees them correctly on subsequent requests.
  *
- * ─── Fix ──────────────────────────────────────────────────────────────────────
- * Login page calls this Next.js API route (same origin as Vercel frontend)
- * BEFORE navigating. This route sets accessToken + refreshToken cookies on the
- * VERCEL domain. Middleware then sees them correctly.
- *
- * The tokens are extracted from the Railway login response body (not cookies),
- * which is why we need the backend to return them in the JSON body too.
- * The backend already returns: { success: true, data: { user: { id, role } } }
- * but does NOT return the tokens in the body — only via Set-Cookie.
- *
- * IMPORTANT: We accept the tokens as POST body from the login page, which
- * reads them from the Axios response (the backend must include them in the
- * response body for this pattern to work — see backend note below).
- *
- * Alternative (if backend can't be changed): The login page reads the
- * Set-Cookie header from the Railway response via document.cookie after the
- * cross-origin request — but HttpOnly cookies are NOT readable by JS.
- *
- * THEREFORE: This route accepts tokens passed explicitly from login page.
- * The login page must get them from the response body (requires backend change)
- * OR the backend must expose a separate endpoint that returns tokens in body.
- *
- * ─── Current interim solution ─────────────────────────────────────────────────
- * This route sets cookies from whatever tokens the login page passes to it.
- * Login page is updated to call this route right after successful login,
- * passing any tokens received in response.data (if backend includes them).
- *
- * If backend does NOT include tokens in body, this route acts as a bridge for
- * the Google OAuth flow (already working via social-set-cookies).
+ * Security:
+ *   - Origin validation: rejects requests from any domain other than own Vercel origin
+ *   - JWT structure validation: verifies 3-part base64url format before storing
+ *   - Signature verification: if JWT_SECRET is set, verifies the token signature
+ *   - httpOnly cookies: tokens inaccessible from JavaScript
+ *   - SameSite=lax: safe for same-origin login flow
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { jwtVerify } from 'jose';
+
+async function isValidJwt(token: string): Promise<boolean> {
+  const parts = token.split('.');
+  if (parts.length !== 3) return false;
+
+  const base64urlPattern = /^[A-Za-z0-9_-]+$/;
+  if (!parts.every((p) => p.length > 0 && base64urlPattern.test(p))) return false;
+
+  const jwtSecret = process.env.JWT_SECRET;
+  if (jwtSecret) {
+    try {
+      await jwtVerify(token, new TextEncoder().encode(jwtSecret));
+    } catch {
+      return false;
+    }
+  }
+  return true;
+}
 
 export async function POST(request: NextRequest) {
   try {
+    // ── CSRF / Origin check ──────────────────────────────────────────────────
+    const origin = request.headers.get('origin');
+    const host   = request.headers.get('host');
+
+    if (origin) {
+      const allowed = [
+        `https://${host}`,
+        `http://${host}`,
+        'http://localhost:3000',
+        'http://localhost:3001',
+      ];
+      if (!allowed.includes(origin)) {
+        return NextResponse.json({ success: false, message: 'Origin not allowed' }, { status: 403 });
+      }
+    }
+
+    // ── Parse body ───────────────────────────────────────────────────────────
     const body = await request.json();
     const { accessToken, refreshToken, role } = body;
 
-    if (!accessToken) {
-      return NextResponse.json(
-        { success: false, message: 'accessToken is required' },
-        { status: 400 }
-      );
+    if (!accessToken || typeof accessToken !== 'string') {
+      return NextResponse.json({ success: false, message: 'accessToken is required' }, { status: 400 });
+    }
+
+    // ── JWT format / signature validation ───────────────────────────────────
+    if (!(await isValidJwt(accessToken))) {
+      return NextResponse.json({ success: false, message: 'Invalid token format' }, { status: 400 });
+    }
+
+    if (refreshToken !== undefined && refreshToken !== null) {
+      if (typeof refreshToken !== 'string' || refreshToken.split('.').length !== 3) {
+        return NextResponse.json({ success: false, message: 'Invalid refreshToken format' }, { status: 400 });
+      }
     }
 
     const isProd = process.env.NODE_ENV === 'production';
+    const res    = NextResponse.json({ success: true, message: 'Cookies set on Vercel domain' });
 
-    const response = NextResponse.json({ success: true, message: 'Cookies set on Vercel domain' });
-
-    // Set accessToken cookie on the VERCEL domain (same origin as this route)
-    response.cookies.set('accessToken', accessToken, {
+    res.cookies.set('accessToken', accessToken, {
       httpOnly: true,
       secure: isProd,
-      // lax is fine here — this is the SAME origin (Vercel) setting the cookie
-      // so SameSite=None is not needed (that's only for cross-origin requests)
       sameSite: 'lax',
       path: '/',
-      // 15 minutes (900 seconds) — should match backend JWT_EXPIRE
-      // TODO: align with process.env.COOKIE_EXPIRE when exposed as NEXT_PUBLIC
-      maxAge: 15 * 60,
+      maxAge: 15 * 60, // 15 minutes — matches backend JWT_EXPIRE default
     });
 
     if (refreshToken) {
-      // Set refreshToken cookie on the VERCEL domain
-      response.cookies.set('refreshToken', refreshToken, {
+      res.cookies.set('refreshToken', refreshToken, {
         httpOnly: true,
         secure: isProd,
         sameSite: 'lax',
         path: '/',
-        // 7 days — should match backend COOKIE_REFRESH_EXPIRE
-        maxAge: 7 * 24 * 60 * 60,
+        maxAge: 7 * 24 * 60 * 60, // 7 days
       });
     }
 
-    if (role) {
-      // Non-HttpOnly so client JS can read it for UI decisions (e.g. showing
-      // vendor-only links without an extra API call)
-      response.cookies.set('userRole', role, {
+    if (role && typeof role === 'string') {
+      // Non-HttpOnly — readable by client JS for UI decisions (role-based nav)
+      res.cookies.set('userRole', role, {
         httpOnly: false,
         secure: isProd,
         sameSite: 'lax',
@@ -99,12 +111,9 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    return response;
+    return res;
   } catch (error) {
-    console.error('[set-token] Error setting cookies:', error);
-    return NextResponse.json(
-      { success: false, message: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error('[set-token] Error:', error);
+    return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
 }

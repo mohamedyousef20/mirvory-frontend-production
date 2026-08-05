@@ -67,7 +67,6 @@ export function ProductsTab({
             onRemove: () => setSearchTerm("")
         },
     ].filter(Boolean) as { label: string; onRemove: () => void }[]
-    console.log("categories =", categories);
     return (
         <div className="space-y-5">
 

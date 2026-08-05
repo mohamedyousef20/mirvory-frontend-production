@@ -66,7 +66,6 @@ export function OrdersTable({
         language === "ar" ? "حالة التوصيل" : "Delivery Status",
         language === "ar" ? "إجراءات" : "Actions",
     ]
-    console.log(orders, 'orde2526')
     const getDeliveryBadge = (status: string) => {
         switch (status) {
             case "delivered":

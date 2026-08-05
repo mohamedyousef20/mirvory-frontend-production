@@ -127,7 +127,6 @@ export default function CategoryProductsGrid() {
         setIsLoading(true);
 
         const response = await announcementService.getAnnouncements();
-console.log(response,'an2525')
         setAnnouncements(response?.data || []);
       } catch (error) {
         console.error("Failed to fetch announcements:", error);
@@ -168,7 +167,6 @@ console.log(response,'an2525')
       };
 
       const response = await categoryService.getProductsByCategory(categoryId, params);
-      console.log(response, 're14')
       if (response.data) {
         const fetchedProducts: Product[] = response.data.data || [];
         setProducts(fetchedProducts);

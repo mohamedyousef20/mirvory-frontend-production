@@ -1,22 +1,26 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { jwtVerify } from "jose";
+import { jwtVerify, type JWTPayload } from "jose";
+
+// ── Typed JWT payload ────────────────────────────────────────────────────────
+interface AppJwtPayload extends JWTPayload {
+  id?: string;
+  role?: string;
+  email?: string;
+}
 
 const PROTECTED_ROUTES = ["/account", "/vendor", "/admin", "/driver"];
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://pure-courtesy-production-8cb1.up.railway.app';
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://pure-courtesy-production-8cb1.up.railway.app";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  const isProtected = PROTECTED_ROUTES.some((route) =>
-    pathname.startsWith(route)
-  );
-
+  const isProtected = PROTECTED_ROUTES.some((r) => pathname.startsWith(r));
   if (!isProtected) return NextResponse.next();
 
   const JWT_SECRET = process.env.JWT_SECRET;
-
-  // تجاوز الفحص عند غياب المفتاح (لتفادي Loops في Vercel)
   if (!JWT_SECRET) {
     console.warn("⚠️ JWT_SECRET not set – skipping edge token verification");
     return NextResponse.next();
@@ -29,9 +33,7 @@ export async function middleware(request: NextRequest) {
 
   if (!token) {
     const authHeader = request.headers.get("authorization");
-    if (authHeader && authHeader.startsWith("Bearer ")) {
-      token = authHeader.substring(7);
-    }
+    if (authHeader?.startsWith("Bearer ")) token = authHeader.substring(7);
   }
 
   if (!token) {
@@ -40,86 +42,66 @@ export async function middleware(request: NextRequest) {
 
   try {
     const { payload } = await jwtVerify(token, SECRET_KEY);
-    const decoded: any = payload;
-    const userRole = (decoded.role || "").toLowerCase();
+    const decoded = payload as AppJwtPayload;
 
-    // 1. تفعيل حماية الأدوار بالكامل (RBAC)
-    const adminRoles = ["admin", "super_admin"];
-    if (pathname.startsWith("/admin") && !adminRoles.includes(userRole)) {
+    // Null-safe extraction — never pass undefined to headers
+    const userId    = decoded.id    ?? "";
+    const userRole  = (decoded.role ?? "").toLowerCase();
+    const userEmail = decoded.email ?? "";
+
+    // ── RBAC guards ──────────────────────────────────────────────────────────
+    if (pathname.startsWith("/admin") && !["admin", "super_admin"].includes(userRole)) {
       return NextResponse.redirect(new URL("/unauthorized", request.url));
     }
-
-    // RBAC: vendor and driver route guards
-    // NOTE: These guards redirect to /unauthorized — ensure that route exists.
-    if (pathname.startsWith("/vendor") && decoded.role !== "seller") {
+    if (pathname.startsWith("/vendor") && userRole !== "seller") {
       return NextResponse.redirect(new URL("/unauthorized", request.url));
     }
-
-    if (pathname.startsWith("/driver") && decoded.role !== "driver") {
+    if (pathname.startsWith("/driver") && userRole !== "driver") {
       return NextResponse.redirect(new URL("/unauthorized", request.url));
     }
 
     const requestHeaders = new Headers(request.headers);
-    requestHeaders.set("x-user-id", decoded.id);
-    requestHeaders.set("x-user-role", decoded.role);
-    requestHeaders.set("x-user-email", decoded.email);
+    if (userId)    requestHeaders.set("x-user-id",    userId);
+    if (userRole)  requestHeaders.set("x-user-role",  userRole);
+    if (userEmail) requestHeaders.set("x-user-email", userEmail);
 
-    return NextResponse.next({
-      request: {
-        headers: requestHeaders,
-      },
-    });
-  } catch (error: any) {
-    console.error("❌ Token verification failed:", {
-      error: error.message,
-      code: error.code
-    });
+    return NextResponse.next({ request: { headers: requestHeaders } });
 
-    // 2. تجديد التوكن تلقائياً مع إصلاح كتابة الكوكي
-    if (error.code === 'ERR_JWT_EXPIRED' && refreshToken) {
+  } catch (error: unknown) {
+    const err = error as { message?: string; code?: string };
+    // Log code/message only — never log the token value itself
+    console.error("❌ Token verification failed:", { code: err.code, message: err.message });
+
+    // ── Auto-refresh on expiry ───────────────────────────────────────────────
+    if (err.code === "ERR_JWT_EXPIRED" && refreshToken) {
       try {
-        console.log("🔄 Attempting token refresh...");
-        const refreshResponse = await fetch(`${API_URL}/api/users/refresh-token`, {
-          method: 'POST',
-          credentials: 'include',
-          headers: {
-            'Cookie': request.headers.get('cookie') || ''
-          }
+        const refreshRes = await fetch(`${API_URL}/api/users/refresh-token`, {
+          method: "POST",
+          credentials: "include",
+          headers: { Cookie: request.headers.get("cookie") || "" },
         });
 
-        if (refreshResponse.ok) {
-          console.log("✅ Token refreshed successfully");
-          const refreshData = await refreshResponse.json();
-          const newToken = refreshData.accessToken;
+        if (refreshRes.ok) {
+          const data = await refreshRes.json();
+          const newToken: string | undefined = data.accessToken;
 
           if (newToken) {
             const { payload } = await jwtVerify(newToken, SECRET_KEY);
-            const decoded: any = payload;
+            const d = payload as AppJwtPayload;
 
             const requestHeaders = new Headers(request.headers);
-            requestHeaders.set("x-user-id", decoded.id);
-            requestHeaders.set("x-user-role", decoded.role);
-            requestHeaders.set("x-user-email", decoded.email);
+            const uid   = d.id    ?? "";
+            const urole = (d.role ?? "").toLowerCase();
+            const umail = d.email ?? "";
+            if (uid)   requestHeaders.set("x-user-id",    uid);
+            if (urole) requestHeaders.set("x-user-role",  urole);
+            if (umail) requestHeaders.set("x-user-email", umail);
 
-            const response = NextResponse.next({
-              request: {
-                headers: requestHeaders,
-              },
+            const response = NextResponse.next({ request: { headers: requestHeaders } });
+            const isProd = process.env.NODE_ENV === "production";
+            response.cookies.set("accessToken", newToken, {
+              httpOnly: true, secure: isProd, sameSite: "lax", path: "/", maxAge: 15 * 60,
             });
-
-            // Set the refreshed accessToken directly on the Vercel response.
-            // We do NOT forward Railway's Set-Cookie headers — those are
-            // railway.app-scoped and the browser would not send them to Vercel.
-            // Since we already verified newToken above, we set it ourselves.
-            const isProd = process.env.NODE_ENV === 'production';
-            response.cookies.set('accessToken', newToken, {
-              httpOnly: true,
-              secure: isProd,
-              sameSite: 'lax',
-              path: '/',
-              maxAge: 15 * 60, // 15 minutes
-            });
-
             return response;
           }
         }
@@ -131,16 +113,10 @@ export async function middleware(request: NextRequest) {
     const response = NextResponse.redirect(new URL("/auth/login", request.url));
     response.cookies.delete("accessToken");
     response.cookies.delete("refreshToken");
-
     return response;
   }
 }
 
 export const config = {
-  matcher: [
-    "/account/:path*",
-    "/vendor/:path*",
-    "/admin/:path*",
-    "/driver/:path*",
-  ],
+  matcher: ["/account/:path*", "/vendor/:path*", "/admin/:path*", "/driver/:path*"],
 };

@@ -227,7 +227,6 @@ export function useAdminDashboard() {
     const fetchDashboardCounters = async () => {
         try {
             const res = await adminDashboardService.getCounters();
-            console.log(res,'countss')
             setDashboardCounters(res.data?.data );
         } catch (err) {
             console.error('Failed to fetch dashboard counters', err);
@@ -439,7 +438,6 @@ export function useAdminDashboard() {
             setLoadingReturns(true);
             setErrorReturns(null);
             const response = await returnService.getReturnRequestsForAdmin({ page: returnsPage, limit: RETURNS_LIMIT });
-            console.log(response,'1425')
             if (response.data?.data) {
                 setReturnRequests(response.data.data);
             } else {
@@ -584,8 +582,6 @@ export function useAdminDashboard() {
             setLoadingProducts(true);
 
             const response = await productService.getProductsForAdmin({ page: productsPage, limit: PRODUCTS_LIMIT });
-            console.log(response, 'zz456')
-
             const data = response.data;
 
             if (data?.data) {
@@ -846,7 +842,6 @@ export function useAdminDashboard() {
         try {
             setLoadingOrders(true);
             const response = await orderService.getAdminOrders({ page: ordersPage, limit: ORDERS_LIMIT });
-            console.log(response,'admin order')
             if (response.data?.data) {
                 setOrders(response.data.data);
             } 
@@ -938,7 +933,6 @@ export function useAdminDashboard() {
         try {
             setLoadingAnnouncements(true);
             const response = await announcementService.getAllAnnouncementsForAdmin();
-            console.log(response,'addnn')
             setAnnouncements(response.data);
         } catch (error: any) {
             setErrorAnnouncements(error.response?.data?.message || 'Failed to fetch announcements');
@@ -950,7 +944,6 @@ export function useAdminDashboard() {
     const fetchSellers = async () => {
         try {
             const response = await userService.getSellerForAdmin({ page: sellersPage, limit: SELLERS_LIMIT });
-            console.log(response,'rdseller')
             if (response.data?.data) {
                 setSellers(response.data.data);
             }
