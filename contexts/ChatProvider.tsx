@@ -4,7 +4,9 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { useSocket } from './SocketProvider';
 import { chatService, Chat, Message } from '@/lib/api/services/chat.service';
-import { useAuth } from './RootLayout';
+// FIX: was incorrectly importing from RootLayout which does NOT export useAuth.
+// useAuth is only exported from AuthProvider.
+import { useAuth } from './AuthProvider';
 
 interface ChatContextType {
   chats: Chat[];

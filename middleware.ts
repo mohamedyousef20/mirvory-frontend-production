@@ -49,11 +49,13 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL("/unauthorized", request.url));
     }
 
-    if (pathname.startsWith("/vendor") && userRole !== "seller") {
+    // RBAC: vendor and driver route guards
+    // NOTE: These guards redirect to /unauthorized — ensure that route exists.
+    if (pathname.startsWith("/vendor") && decoded.role !== "seller") {
       return NextResponse.redirect(new URL("/unauthorized", request.url));
     }
 
-    if (pathname.startsWith("/driver") && userRole !== "driver") {
+    if (pathname.startsWith("/driver") && decoded.role !== "driver") {
       return NextResponse.redirect(new URL("/unauthorized", request.url));
     }
 
@@ -105,10 +107,17 @@ export async function middleware(request: NextRequest) {
               },
             });
 
-            // ✅ التمرير الصحيح لهيدرات Set-Cookie المستلمة من السيرفر
-            const setCookieHeaders = refreshResponse.headers.getSetCookie();
-            setCookieHeaders.forEach(cookie => {
-              response.headers.append("set-cookie", cookie);
+            // Set the refreshed accessToken directly on the Vercel response.
+            // We do NOT forward Railway's Set-Cookie headers — those are
+            // railway.app-scoped and the browser would not send them to Vercel.
+            // Since we already verified newToken above, we set it ourselves.
+            const isProd = process.env.NODE_ENV === 'production';
+            response.cookies.set('accessToken', newToken, {
+              httpOnly: true,
+              secure: isProd,
+              sameSite: 'lax',
+              path: '/',
+              maxAge: 15 * 60, // 15 minutes
             });
 
             return response;

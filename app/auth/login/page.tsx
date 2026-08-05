@@ -49,13 +49,46 @@ export default function Login() {
         response.data.data?.user?.role ||
         response.data.role;
 
-      setTimeout(() => {
-        if (role === "seller") {
-          window.location.href = "/vendor/dashboard";
-        } else {
-          window.location.href = "/";
+      // ─── PRIMARY FIX: Set cookies on Vercel domain ───────────────────────
+      // The Railway backend sets cookies on railway.app domain via Set-Cookie.
+      // Next.js middleware runs on vercel.app — it cannot see railway.app cookies.
+      // We call our own Next.js API route to set the same tokens on the Vercel
+      // domain so middleware can read them on the next request.
+      //
+      // The backend login response includes accessToken/refreshToken in the
+      // response body (if configured). If not, the bridge still works for the
+      // middleware-bypass path (JWT_SECRET check).
+      const accessToken =
+        response.data.data?.accessToken ||
+        response.data.accessToken ||
+        response.data.data?.token ||
+        response.data.token;
+
+      const refreshToken =
+        response.data.data?.refreshToken ||
+        response.data.refreshToken;
+
+      if (accessToken) {
+        try {
+          await fetch('/api/auth/set-token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ accessToken, refreshToken, role }),
+          });
+        } catch (cookieErr) {
+          // Non-fatal: middleware will fall through to page-level auth if
+          // JWT_SECRET is not configured, so the user can still use the site.
+          console.warn('[login] Failed to set Vercel-domain cookies:', cookieErr);
         }
-      }, 500);
+      }
+
+      // Navigate AFTER await (no setTimeout race condition)
+      if (role === "seller") {
+        router.push("/vendor/dashboard");
+      } else {
+        router.push("/");
+      }
 
     } catch (err: any) {
       const errorMessage =
