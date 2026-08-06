@@ -71,7 +71,6 @@ export default function Checkout() {
             try {
                 setLoadingData(true)
                 const cartRes = await cartService.getCart();
-                console.log(cartRes, 'res2525')
                 const items = cartRes?.data?.items || []
                 setCartItems(items);
                 const couponData = cartRes?.data?.appliedCoupon || null;
@@ -87,7 +86,6 @@ export default function Checkout() {
 
                 try {
                     const pickupRes = await pickupPointService.getPickupPoints();
-                    console.log(pickupRes, 'pickupRes')
                     setPickupPoints(pickupRes?.data || [])
                     if (pickupRes?.data?.[0]) setSelectedPickupPointId(pickupRes.data[0]._id)
                 } catch (pErr) {

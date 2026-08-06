@@ -70,7 +70,6 @@ export function VendorDashboard() {
   const [currentReturnList, setCurrentReturnList] = useState([])
 
   // ── useEffects and handlers ────────────────────────────────────────────────
-  console.log(filteredOrders,'filteredOrders')
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
@@ -96,7 +95,6 @@ export function VendorDashboard() {
         setCategories(categoriesRes.data || []);
         // Fetch seller orders for overview (recent orders)
         const ordersRes = await orderService.getSellerOrders();
-        console.log(ordersRes, 'ordersRes159')
         setOrders(ordersRes?.data.data || []);
         setFilteredOrders(ordersRes?.data?.data || []);
 
@@ -124,7 +122,6 @@ export function VendorDashboard() {
   const fetchOrders = async () => {
     try {
       const response = await orderService.getSellerOrders();
-      console.log(response, 'seller order ')
       setOrders(response?.data?.data);
       setFilteredOrders(response?.data?.data);
     } catch (error: any) {
@@ -489,13 +486,11 @@ export function VendorDashboard() {
 
   const handleContactBuyer = (order: any) => {
     // TODO: Open chat or contact form with buyer
-    console.log('Contact buyer for order:', order);
     toast.info(language === 'ar' ? 'التواصل مع العميل' : 'Contact buyer');
   };
 
   const handleViewShipping = (order: any) => {
     // TODO: Show shipping info modal
-    console.log('View shipping for order:', order);
     toast.info(language === 'ar' ? 'معلومات الشحن' : 'Shipping information');
   };
 

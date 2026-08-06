@@ -21,7 +21,6 @@ export function OverviewTab({ language, t, dashboardCounters, balance, orders, p
         { key: 'completedOrders', title: language === 'ar' ? 'طلبات مكتملة' : 'Completed Orders', value: dashboardCounters.completedOrders ?? 0, icon: <Star className="h-5 w-5 text-emerald-500" />, bg: 'bg-emerald-50' },
         { key: 'activeProducts', title: language === 'ar' ? 'منتجات نشطة' : 'Active Products', value: dashboardCounters.activeProducts ?? 0, icon: <Package className="h-5 w-5 text-purple-500" />, bg: 'bg-purple-50' },
     ]
-console.log(orders,'ovdo')
     // Calculate total balance from available + pending
     const availableBalance = balance?.availableBalance ?? 0;
     const pendingBalance = balance?.pendingBalance ?? 0;

@@ -28,7 +28,6 @@ export default function PasswordResetRequest() {
       setLoading(true);
 
       const response = await authService.forgotPassword(data.email);
-      console.log(response, 'emails')
       if (response.data?.success) {
         toast.success('تم إرسال كود التحقق إلى بريدك الإلكتروني');
         router.push(`/auth/password-reset-verify?email=${encodeURIComponent(data.email)}`);

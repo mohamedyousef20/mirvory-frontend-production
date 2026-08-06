@@ -8,12 +8,9 @@ export const metadata: Metadata = {
 
 export default function UnauthorizedPage() {
   return (
-    <div
-      className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4"
-      dir="rtl"
-    >
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4" dir="rtl">
       <div className="max-w-md w-full text-center">
-        {/* Icon */}
+        {/* Shield icon */}
         <div className="mb-6 flex justify-center">
           <svg
             className="h-24 w-24 text-red-400"
@@ -31,17 +28,14 @@ export default function UnauthorizedPage() {
           </svg>
         </div>
 
-        {/* Heading */}
         <h1 className="text-3xl font-bold text-gray-800 mb-3">غير مصرح بالوصول</h1>
 
-        {/* Description */}
         <p className="text-gray-600 mb-8 leading-relaxed">
           ليس لديك الصلاحيات الكافية للوصول إلى هذه الصفحة.
           <br />
           يرجى التواصل مع مسؤول النظام إذا كنت تعتقد أن هذا خطأ.
         </p>
 
-        {/* Actions */}
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
             href="/"

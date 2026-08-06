@@ -235,7 +235,6 @@ function AuthContextWrapper({
             try {
                 const res = await authService.getMe();
                 const fetchedUser = normalizeUserPayload(res?.data);
-                console.log(fetchedUser, 'getCurrentUser1')
 
                 hasFetchedRef.current = true;
 

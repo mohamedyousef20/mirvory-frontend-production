@@ -118,7 +118,6 @@ export function MainNav() {
     wishlist: 0,
     notifications: 0
   })
-  console.log(user,'auth')
   const [loading, setLoading] = useState({
     cart: false,
     wishlist: false,
@@ -145,7 +144,6 @@ export function MainNav() {
     }
     // Wait until auth cookies are ready (important for Google OAuth users)
     if (!cookiesReady) return
-    console.log(user, 'user***')
     try {
 
       setLoading(prev => ({ ...prev, cart: true, wishlist: true, notifications: true }))

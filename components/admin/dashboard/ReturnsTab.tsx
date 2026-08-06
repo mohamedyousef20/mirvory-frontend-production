@@ -332,7 +332,6 @@ export function ReturnsTab({
                             </TableRow>
                         ) : (
                             filteredRequests.map((request: any) => {
-                                console.log(request, 'rsd')
                                 const statusBadge = getStatusBadge(request.status);
 
                                 return (

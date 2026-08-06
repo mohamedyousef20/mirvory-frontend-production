@@ -46,8 +46,6 @@ export function FeaturedProducts({ title }: FeaturedProductsProps) {
         setLoading(true);
         const response = await productService.getFeaturedProducts();
 
-        console.log('FeaturedProducts response:', response);
-
         // Handle the new response format: { success: true, data: products }
         let productsData = [];
         if (response.data) {
@@ -60,7 +58,6 @@ export function FeaturedProducts({ title }: FeaturedProductsProps) {
           }
         }
 
-        console.log('Featured products data:', productsData);
         setProducts(productsData);
       } catch (err) {
         console.error('Error fetching featured products:', err);

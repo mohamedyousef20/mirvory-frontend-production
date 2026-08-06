@@ -49,8 +49,6 @@ export function NewestProducts({ title }: NewestProductsProps) {
                 setLoading(true);
                 const response = await productService.getNewArrivals();
 
-                console.log('NewestProducts response:', response);
-
                 // Handle the new response format: { success: true, data: products }
                 let productsData = [];
                 if (response.data) {
@@ -63,7 +61,6 @@ export function NewestProducts({ title }: NewestProductsProps) {
                     }
                 }
 
-                console.log('Products data:', productsData);
                 setProducts(productsData);
             } catch (err) {
                 console.error('Error fetching newest products:', err);
