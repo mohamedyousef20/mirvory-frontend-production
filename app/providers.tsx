@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react'
 import { StoreProvider } from '@/src/app/providers/StoreProvider'
 import { LayoutWrapper } from './layout-wrapper'
 import { LanguageProvider } from '@/components/language-provider'
@@ -11,7 +12,12 @@ import { MainNav } from '@/components/main-nav'
 import { SiteFooter } from '@/components/site-footer'
 import { Toaster } from 'sonner'
 
-export function Providers({ children, user }) {
+interface ProvidersProps {
+    children: React.ReactNode;
+    user?: any;
+}
+
+export function Providers({ children, user }: ProvidersProps) {
     return (
         <StoreProvider>
             <LayoutWrapper>
