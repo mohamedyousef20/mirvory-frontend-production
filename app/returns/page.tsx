@@ -25,7 +25,10 @@ interface ReturnRequest {
     username: string;
     email: string;
     phone: string;
-    order: string;
+    order: string | {
+        _id: string;
+        orderNumber?: string;
+    };
     product: {
         _id: string;
         name: string;
@@ -60,11 +63,9 @@ export default function ReturnsPage() {
         const fetchReturns = async () => {
             try {
                 const response = await returnService.getReturnRequests();
-                //console.log(response.data, 'response of returns data');
 
                 if (response?.data) {
                     setReturns(response.data);
-                    //console.log('Returns set to state:', response.data);
                 } else {
                     console.error('No data found in response:', response);
                     toast.error('حدث خطأ أثناء جلب طلبات الإرجاع');
@@ -220,7 +221,7 @@ export default function ReturnsPage() {
                                     <div>
                                         <p className="text-sm text-gray-500">طلب إرجاع #{returnRequest._id.slice(-6).toUpperCase()}</p>
                                         <p className="text-sm text-gray-500">
-                                            الطلب الأصلي: #{returnRequest.order?.orderNumber}
+                                            الطلب الأصلي: #{typeof returnRequest.order === 'object' && returnRequest.order !== null ? returnRequest.order.orderNumber : String(returnRequest.order || '').slice(-6).toUpperCase()}
                                         </p>
                                     </div>
                                     <div className="flex items-center gap-2">
