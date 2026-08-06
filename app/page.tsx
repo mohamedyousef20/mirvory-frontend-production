@@ -10,7 +10,6 @@ import { NewestProducts } from "@/components/newest-product"
 import { getUserServer } from "@/src/lib/getUserServer"
 import { User } from "lucide-react"
 
-
 import { redirect } from "next/navigation"
 
 export default async function Home() {
@@ -23,7 +22,8 @@ export default async function Home() {
   return (
     <div className="flex min-h-screen flex-col">
       <main className="flex-1">
-        <HeroCarousel />
+        {/* إضافة initialAnnouncements لمنع خطأ النوع */}
+        <HeroCarousel initialAnnouncements={[]} />
         <div className="container px-4 py-6 md:py-10">
           <CategorySection />
           <FeaturedProducts title="منتجات مميزة" />
