@@ -34,8 +34,8 @@ export async function POST(request: NextRequest) {
       secure: isProd,
       sameSite: 'lax',
       path: '/',
-      // 15 minutes – matches typical access-token TTL
-      maxAge: 15 * 60,
+      // 10 day – matches typical access-token TTL
+      maxAge: 10 * 24 * 60 * 60,
     });
 
     // Set refreshToken cookie
@@ -44,8 +44,8 @@ export async function POST(request: NextRequest) {
       secure: isProd,
       sameSite: 'lax',
       path: '/',
-      // 7 days – matches typical refresh-token TTL
-      maxAge: 7 * 24 * 60 * 60,
+      // 20 days – matches typical refresh-token TTL
+      maxAge: 20 * 24 * 60 * 60,
     });
 
     if (role) {
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
         secure: isProd,
         sameSite: 'lax',
         path: '/',
-        maxAge: 7 * 24 * 60 * 60,
+        maxAge: 20 * 24 * 60 * 60,
       });
     }
 
