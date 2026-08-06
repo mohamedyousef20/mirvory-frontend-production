@@ -126,13 +126,14 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
   });
 
   // Helper function to get platform fee based on price
+  // Helper function to get platform fee based on price
   function getPlatformFeeByPrice(price: number): number {
-    if (!price || price <= 0) return 0.6;
+    if (!price || price <= 0) return 0.06;
 
     if (price < 300) return 0.12;
     if (price >= 300 && price <= 799) return 0.10;
-    if (price >= 800 && price <= 1999) return 0.8;
-    return 0.6;
+    if (price >= 800 && price <= 1999) return 0.08; // تم التصحيح من 0.8 إلى 0.08 (8%)
+    return 0.06; // تم التصحيح من 0.6 إلى 0.06 (6%)
   }
 
   // Helper function to explain the price range
@@ -142,23 +143,22 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
     if (price < 300) {
       return language === 'ar'
         ? 'أقل من 300: رسوم المنصة 12%، نسبة البائع 88%'
-        : 'Below 300: Platform fee 18%, Seller gets 82%';
+        : 'Below 300: Platform fee 12%, Seller gets 88%';
     }
     if (price >= 300 && price <= 799) {
       return language === 'ar'
         ? '300-799: رسوم المنصة 10%، نسبة البائع 90%'
-        : '300-799: Platform fee 15%, Seller gets 85%';
+        : '300-799: Platform fee 10%, Seller gets 90%';
     }
     if (price >= 800 && price <= 1999) {
       return language === 'ar'
         ? '800-1999: رسوم المنصة 8%، نسبة البائع 92%'
-        : '800-1999: Platform fee 12%, Seller gets 88%';
+        : '800-1999: Platform fee 8%, Seller gets 92%';
     }
     return language === 'ar'
       ? 'أكثر من 2000: رسوم المنصة 6%، نسبة البائع 94%'
-      : 'Above 2000: Platform fee 10%, Seller gets 90%';
+      : 'Above 2000: Platform fee 6%, Seller gets 94%';
   }
-
   // Calculate dynamic values based on discounted price
   const discountedPrice = parseFloat(newProduct.discountedPrice) || 0;
   const platformFee = getPlatformFeeByPrice(discountedPrice);
