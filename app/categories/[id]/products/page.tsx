@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/sheet"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { announcementService, categoryService } from "@/lib/api"
+import { announcementService, categoryService, productService } from "@/lib/api"
 import ImageSlider from "@/components/ui/ImageSlider"
 
 // Define Product type
@@ -166,7 +166,7 @@ export default function CategoryProductsGrid() {
               sortOption === "topRated" ? "-ratings.average" : "-createdAt",
       };
 
-      const response = await categoryService.getProductsByCategory(categoryId, params);
+      const response = await productService.getProductsByCategory(categoryId, params);
       if (response.data) {
         const fetchedProducts: Product[] = response.data.data || [];
         setProducts(fetchedProducts);
