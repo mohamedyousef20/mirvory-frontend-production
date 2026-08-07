@@ -62,7 +62,6 @@ interface Product {
   updatedAt: string;
 }
 
-
 interface Announcement {
   _id: string;
   title: string;
@@ -72,7 +71,6 @@ interface Announcement {
   status: string;
   link?: string;
 }
-
 
 export default function CategoryProductsGrid() {
   const { language, t } = useLanguage();
@@ -96,7 +94,8 @@ export default function CategoryProductsGrid() {
   const [currentAnnouncement, setCurrentAnnouncement] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
-  // Fetch category details and products
+
+  // Fetch category details
   useEffect(() => {
     const fetchCategoryData = async () => {
       if (!categoryId) return;
@@ -104,13 +103,8 @@ export default function CategoryProductsGrid() {
       setIsLoading(true);
       setError(null);
       try {
-        // Fetch category details
         const categoryResponse = await categoryService.getCategoryById(categoryId);
-        //console.log(categoryResponse, 'categoryResponse')
         setCategory(categoryResponse.data);
-
-        // Fetch products for this category
-        await fetchCategoryProducts();
       } catch (error: any) {
         console.error("Error fetching category data:", error);
         setError(language === "ar" ? "خطأ في جلب بيانات الفئة" : "Error fetching category data");
@@ -121,41 +115,40 @@ export default function CategoryProductsGrid() {
 
     fetchCategoryData();
   }, [categoryId, language]);
+
+  // Fetch announcements
   useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
-        setIsLoading(true);
-
         const response = await announcementService.getAnnouncements();
         setAnnouncements(response?.data || []);
       } catch (error) {
         console.error("Failed to fetch announcements:", error);
         setAnnouncements([]);
-      } finally {
-        setIsLoading(false);
       }
     };
 
     fetchAnnouncements();
   }, []);
+
+  // Rotate announcements safely
   useEffect(() => {
     if (!announcements.length) return;
 
     const interval = setInterval(() => {
-      setCurrentAnnouncement((prev) =>
-        (prev + 1) % announcements.length
-      );
+      setCurrentAnnouncement((prev) => (prev + 1) % announcements.length);
     }, 5000);
 
     return () => clearInterval(interval);
   }, [announcements]);
+
   // Fetch products when filters change
   const fetchCategoryProducts = async () => {
     if (!categoryId) return;
 
     setIsLoading(true);
     try {
-      const params = {
+      const queryParams = {
         page,
         limit: pageSize,
         minPrice: priceRange[0],
@@ -166,32 +159,30 @@ export default function CategoryProductsGrid() {
               sortOption === "topRated" ? "-ratings.average" : "-createdAt",
       };
 
-      const response = await categoryService.getProductsByCategory(categoryId, params);
-      // Support both response shapes: response.data.data[] or response.data directly
-      const rawData = response.data;
-      const fetchedProducts: Product[] =
-        Array.isArray(rawData?.data) ? rawData.data :
-        Array.isArray(rawData?.products) ? rawData.products :
-        Array.isArray(rawData) ? rawData : [];
+      const response = await productService.getProductsByCategory(categoryId, queryParams);
+      if (response.data) {
+        const rawData = response.data;
+        const fetchedProducts: Product[] = rawData.data || [];
+        setProducts(fetchedProducts);
 
-      setProducts(fetchedProducts);
-
-      // Derive brands list with counts
-      const brandMap: Record<string, { id: string; name: string; count: number }> = {};
-      fetchedProducts.forEach((p) => {
-        const brandName = typeof p.brand === "string" ? p.brand : p.brand?.name;
-        if (brandName) {
-          if (!brandMap[brandName]) {
-            brandMap[brandName] = { id: brandName, name: brandName, count: 0 };
+        // Derive brands list with counts
+        const brandMap: Record<string, { id: string; name: string; count: number }> = {};
+        fetchedProducts.forEach((p) => {
+          const brandName = typeof p.brand === "string" ? p.brand : p.brand?.name;
+          if (brandName) {
+            if (!brandMap[brandName]) {
+              brandMap[brandName] = { id: brandName, name: brandName, count: 0 };
+            }
+            brandMap[brandName].count += 1;
           }
-          brandMap[brandName].count += 1;
-        }
-      });
-      setBrands(Object.values(brandMap));
+        });
 
-      const pagination = rawData?.pagination;
-      setTotalProducts(pagination?.total ?? fetchedProducts.length);
-      setTotalPages(pagination?.pages ?? pagination?.totalPages ?? 1);
+        setBrands(Object.values(brandMap));
+
+        const pagination = rawData?.pagination;
+        setTotalProducts(pagination?.total ?? fetchedProducts.length);
+        setTotalPages(pagination?.pages ?? pagination?.totalPages ?? 1);
+      }
     } catch (error: any) {
       console.error("Error fetching category products:", error);
       setError(language === "ar" ? "خطأ في جلب المنتجات" : "Error fetching products");
@@ -207,14 +198,6 @@ export default function CategoryProductsGrid() {
       fetchCategoryProducts();
     }
   }, [selectedBrands, priceRange, sortOption, page, categoryId]);
-
-  // Rotate announcements
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentAnnouncement((prev) => (prev + 1) % announcements.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
 
   const handleBrandChange = (brandId: string) => {
     setSelectedBrands((prev) =>
@@ -258,19 +241,6 @@ export default function CategoryProductsGrid() {
     toast.success(language === "ar" ? "تمت الإضافة إلى السلة" : "Added to cart");
   };
 
-  const getAnnouncementStyle = (type: string) => {
-    switch (type) {
-      case "info":
-        return "bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-950 dark:border-blue-900 dark:text-blue-300";
-      case "promotion":
-        return "bg-green-50 border-green-200 text-green-800 dark:bg-green-950 dark:border-green-900 dark:text-green-300";
-      case "warning":
-        return "bg-amber-50 border-amber-200 text-amber-800 dark:bg-amber-950 dark:border-amber-900 dark:text-amber-300";
-      default:
-        return "bg-muted";
-    }
-  };
-
   return (
     <div className="py-6">
       <div className="flex flex-col gap-6">
@@ -303,23 +273,7 @@ export default function CategoryProductsGrid() {
                   <div className="py-4">
                     <Accordion type="multiple" className="w-full" defaultValue={["brands", "price"]}>
                       <AccordionItem value="brands">
-                        {/* <AccordionTrigger>{language === "ar" ? "الماركات" : "Brands"}</AccordionTrigger> */}
-                        {/* <AccordionContent>
-                          <div className="space-y-2">
-                            {brands.map((brand) => (
-                              <div key={brand.id} className="flex items-center space-x-2 rtl:space-x-reverse">
-                                <Checkbox
-                                  id={`brand-${brand.id}-mobile`}
-                                  checked={selectedBrands.includes(brand.name)}
-                                  onCheckedChange={() => handleBrandChange(brand.name)}
-                                />
-                                <Label htmlFor={`brand-${brand.id}-mobile`} className="flex-1 text-sm font-normal">
-                                  {brand.name} ({brand.count})
-                                </Label>
-                              </div>
-                            ))}
-                          </div>
-                        </AccordionContent> */}
+                        {/* Brands filter content can go here if desired */}
                       </AccordionItem>
                       <AccordionItem value="price">
                         <AccordionTrigger>{language === "ar" ? "السعر" : "Price"}</AccordionTrigger>
@@ -375,15 +329,6 @@ export default function CategoryProductsGrid() {
           {/* Filters Sidebar */}
           <div className="hidden md:block space-y-6">
             <div className="space-y-4">
-              {/* <div className="flex items-center justify-between">
-                <h3 className="font-medium">{language === "ar" ? "الماركات" : "Brands"}</h3>
-                {selectedBrands.length > 0 && (
-                  <Button variant="ghost" size="sm" onClick={() => setSelectedBrands([])}>
-                    <X className="h-4 w-4 mr-1" />
-                    {language === "ar" ? "مسح" : "Clear"}
-                  </Button>
-                )}
-              </div> */}
               <div className="space-y-2">
                 {brands.map((brand) => (
                   <div key={brand.id} className="flex items-center space-x-2 rtl:space-x-reverse">
@@ -431,22 +376,19 @@ export default function CategoryProductsGrid() {
             {announcements.length > 0 && (
               <Alert className="transition-all duration-500 border-primary/20">
                 <Megaphone className="h-4 w-4" />
-
                 <AlertDescription>
                   <div className="flex items-center justify-between gap-4">
                     <div>
                       <h3 className="font-semibold">
                         {announcements[currentAnnouncement]?.title}
                       </h3>
-
                       <p className="text-sm text-muted-foreground">
                         {announcements[currentAnnouncement]?.content}
                       </p>
                     </div>
-
                     {announcements[currentAnnouncement]?.link && (
                       <Link
-                        href={announcements[currentAnnouncement].link}
+                        href={announcements[currentAnnouncement].link!}
                         className="text-primary text-sm font-medium"
                       >
                         {language === "ar" ? "عرض" : "View"}
@@ -509,8 +451,7 @@ export default function CategoryProductsGrid() {
                       className="overflow-hidden group shadow-md hover:shadow-lg transition-all duration-300"
                     >
                       <Link href={`/products/${product._id}`} className="relative block">
-                        <ImageSlider images={product.images} alt={product.title}
-                          variant="card" />
+                        <ImageSlider images={product.images} alt={product.title} variant="card" />
                         {(product.ratings?.average ?? 0) > 4.5 && (
                           <Badge className="absolute top-2 right-2 bg-red-500 hover:bg-red-600">
                             {language === "ar" ? "مميز" : "Top Rated"}
@@ -529,7 +470,7 @@ export default function CategoryProductsGrid() {
                       </Link>
                       <CardContent className="p-3 sm:p-4">
                         <div className="text-xs sm:text-sm text-muted-foreground mb-1">
-                          {language === "ar" ? product.category.name : product.category.nameEn}
+                          {language === "ar" ? product.category?.name : product.category?.nameEn}
                         </div>
                         <Link href={`/products/${product._id}`} className="block">
                           <h3 className="font-medium text-sm sm:text-base leading-tight mb-1 line-clamp-2">
