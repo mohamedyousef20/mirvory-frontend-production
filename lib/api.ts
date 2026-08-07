@@ -362,13 +362,13 @@ export const categoryService = {
     includeProducts?: boolean;
   }) => api.get('/api/categories', { params }),
 
-  getProductsByCategory: (categoryId: string, params?: {
-    limit?: number;
-    page?: number;
-    sort?: string;
-    minPrice?: number;
-    maxPrice?: number;
-  }) => api.get(`/api/categories/${categoryId}/products`, { params }),
+  // getProductsByCategory: (categoryId: string, params?: {
+  //   limit?: number;
+  //   page?: number;
+  //   sort?: string;
+  //   minPrice?: number;
+  //   maxPrice?: number;
+  // }) => api.get(`/api/categories/${categoryId}/products`, { params }),
 
   createCategory: (categoryData: FormData | any) =>
     api.post('/api/categories', categoryData, {
