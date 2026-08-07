@@ -166,27 +166,32 @@ export default function CategoryProductsGrid() {
               sortOption === "topRated" ? "-ratings.average" : "-createdAt",
       };
 
-      const response = await productService.getProductsByCategory(categoryId, params);
-      if (response.data) {
-        const fetchedProducts: Product[] = response.data.data || [];
-        setProducts(fetchedProducts);
+      const response = await categoryService.getProductsByCategory(categoryId, params);
+      // Support both response shapes: response.data.data[] or response.data directly
+      const rawData = response.data;
+      const fetchedProducts: Product[] =
+        Array.isArray(rawData?.data) ? rawData.data :
+        Array.isArray(rawData?.products) ? rawData.products :
+        Array.isArray(rawData) ? rawData : [];
 
-        // Derive brands list with counts
-        const brandMap: Record<string, { id: string; name: string; count: number }> = {};
-        fetchedProducts.forEach((p) => {
-          const brandName = typeof p.brand === "string" ? p.brand : p.brand?.name;
-          if (brandName) {
-            if (!brandMap[brandName]) {
-              brandMap[brandName] = { id: brandName, name: brandName, count: 0 };
-            }
-            brandMap[brandName].count += 1;
+      setProducts(fetchedProducts);
+
+      // Derive brands list with counts
+      const brandMap: Record<string, { id: string; name: string; count: number }> = {};
+      fetchedProducts.forEach((p) => {
+        const brandName = typeof p.brand === "string" ? p.brand : p.brand?.name;
+        if (brandName) {
+          if (!brandMap[brandName]) {
+            brandMap[brandName] = { id: brandName, name: brandName, count: 0 };
           }
-        });
-        setBrands(Object.values(brandMap));
+          brandMap[brandName].count += 1;
+        }
+      });
+      setBrands(Object.values(brandMap));
 
-        setTotalProducts(response.data.pagination?.total || fetchedProducts.length);
-        setTotalPages(response.data.pagination?.pages || 1);
-      }
+      const pagination = rawData?.pagination;
+      setTotalProducts(pagination?.total ?? fetchedProducts.length);
+      setTotalPages(pagination?.pages ?? pagination?.totalPages ?? 1);
     } catch (error: any) {
       console.error("Error fetching category products:", error);
       setError(language === "ar" ? "خطأ في جلب المنتجات" : "Error fetching products");

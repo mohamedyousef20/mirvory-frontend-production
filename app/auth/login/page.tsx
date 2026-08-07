@@ -81,6 +81,8 @@ export default function Login() {
       } else {
         router.push("/");
       }
+      // Force page reload to refresh user data and cart after login
+      setTimeout(() => window.location.reload(), 300);
 
     } catch (err: any) {
       const errorMessage =

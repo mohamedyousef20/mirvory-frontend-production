@@ -171,6 +171,7 @@ const ProductCardComponent = function ProductCard({ product, language, onAddToCa
         })
       }
       toast.success(language === "ar" ? "تمت الإضافة إلى السلة" : "Added to cart")
+      window.dispatchEvent(new Event("cart-count-updated"))
     } catch (error) {
       console.error('Add to cart error:', error)
       toast.error(language === "ar" ? "فشل إضافة المنتج إلى السلة" : "Failed to add product to cart")

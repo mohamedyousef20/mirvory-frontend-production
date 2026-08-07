@@ -701,7 +701,7 @@ const ProductDetail = ({ productId }: { productId: string }) => {
             </div>
             <div className="flex items-center gap-2">
               <ShieldCheck className="h-5 w-5 text-muted-foreground" />
-              <span className="text-sm">{language === "ar" ? "ضمان 2 سنة" : "2-Year Warranty"}</span>
+              <span className="text-sm">{language === "ar" ? "ضمان الجودة" : "Quality Guarantee"}</span>
             </div>
           </div>
         </div>
