@@ -12,8 +12,7 @@ import { toast } from "sonner"
 import { useAuth } from "@/contexts/AuthProvider"
 import { addToGuestCart } from "@/lib/guestCart"
 import { ProductCard } from "./ProductCard"
-// import { addToCart as addToCartAction } from "@/src/redux/slices/cartSlice"
-
+import { useRouter } from "next/navigation";
 interface Product {
     id: number;
     title: string;
@@ -42,7 +41,8 @@ export function NewestProducts({ title }: NewestProductsProps) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [favorites, setFavorites] = useState<Set<number>>(new Set());
-
+    
+const router = useRouter();
     useEffect(() => {
         const fetchNewestProducts = async () => {
             try {
@@ -104,6 +104,7 @@ export function NewestProducts({ title }: NewestProductsProps) {
             try {
                 await cartService.addToCart({ productId, quantity: 1 });
                 toast.success(language === "ar" ? "تمت الإضافة إلى السلة" : "Added to cart");
+                router.refresh();
             } catch (error) {
                 toast.error(language === "ar" ? "فشل في إضافة المنتج إلى السلة" : "Failed to add product to cart");
             }
