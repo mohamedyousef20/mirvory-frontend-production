@@ -260,7 +260,7 @@ export const productService = {
   }) => api.get("/api/products", { params }),
   // get products by category with filters / pagination
   getProductsByCategory: (category: string, params?: any) =>
-    api.get(`/api/products/category/${category}`, { params }),
+    api.get(`/api/products/category/${category}/products`, { params }),
   
   // Create new product (supports FormData)
   createProduct: (productData: FormData | any) =>
