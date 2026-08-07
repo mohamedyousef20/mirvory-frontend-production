@@ -258,7 +258,10 @@ export const productService = {
     maxPrice?: number;
     status?: string;
   }) => api.get("/api/products", { params }),
-
+  // get products by category with filters / pagination
+  getProductsByCategory: (category: string, params?: any) =>
+    api.get(`/api/products/category/${category}`, { params }),
+  
   // Create new product (supports FormData)
   createProduct: (productData: FormData | any) =>
     api.post("/api/products", productData, {
@@ -289,9 +292,6 @@ export const productService = {
   getSellerProducts: (params?: any) =>
     api.get("/api/products/seller/products", { params }),
 
-  // Category products
-  getProductsByCategory: (category: string) =>
-    api.get(`/api/products/category/${category}`),
 
   // Approve product (Admin)
   approveProduct: (id: string | number) =>
