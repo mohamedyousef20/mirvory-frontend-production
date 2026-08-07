@@ -104,7 +104,7 @@ const router = useRouter();
             try {
                 await cartService.addToCart({ productId, quantity: 1 });
                 toast.success(language === "ar" ? "تمت الإضافة إلى السلة" : "Added to cart");
-                router.refresh();
+window.location.reload();
             } catch (error) {
                 toast.error(language === "ar" ? "فشل في إضافة المنتج إلى السلة" : "Failed to add product to cart");
             }
