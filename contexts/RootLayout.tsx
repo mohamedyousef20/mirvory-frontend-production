@@ -4,17 +4,17 @@ import Script from "next/script"
 import { Cairo, Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
-import { LanguageProvider, useLanguage } from "@/components/language-provider";
-import { ColorThemeProvider } from "@/components/color-theme-provider";
-import { StoreProvider } from "@/src/app/providers/StoreProvider";
-import { LayoutWrapper } from "@/app/layout-wrapper";
-import { MainNav } from "@/components/main-nav";
-import { SiteFooter } from "@/components/site-footer";
+import { LanguageProvider } from "@/components/language-provider"
+import { ColorThemeProvider } from "@/components/color-theme-provider"
+import { StoreProvider } from "@/src/app/providers/StoreProvider"
+import { LayoutWrapper } from "@/app/layout-wrapper"
+import { MainNav } from "@/components/main-nav"
+import { SiteFooter } from "@/components/site-footer"
 import { Toaster } from "sonner"
 import { SocketProvider } from "@/contexts/SocketProvider"
 import { getUserServer } from "@/src/lib/getUserServer"
 import { AuthProvider } from "./AuthProvider"
-// Font configurations
+
 const cairo = Cairo({
   subsets: ["latin", "arabic"],
   display: "swap",
@@ -32,7 +32,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: {
     default: "Mirvory - متجر الكوتشيات والملابس",
-    template: "%s | Mirvory"
+    template: "%s | Mirvory",
   },
   description: "منصة تجارة إلكترونية متعددة التجار متخصصة في بيع الكوتشيات الميرور والملابس",
   keywords: ["كوتشيات", "ملابس", "موضة", "تسوق", "أونلاين"],
@@ -57,7 +57,7 @@ interface RootLayoutProps {
 }
 
 export default async function RootLayout({ children }: RootLayoutProps) {
-  const userData = await getUserServer();
+  const userData = await getUserServer()
 
   return (
     <html
@@ -67,10 +67,10 @@ export default async function RootLayout({ children }: RootLayoutProps) {
       className={`${cairo.variable} ${inter.variable}`}
     >
       <body className="font-sans antialiased">
-        {/* Meta Pixel */}
+        {/* Meta Pixel Code with beforeInteractive */}
         <Script
           id="meta-pixel"
-          strategy="afterInteractive"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               !function(f,b,e,v,n,t,s)
@@ -97,7 +97,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
         </noscript>
 
         <StoreProvider>
-          <AuthProvider initialUser={userData}> {/* Pass initial data */}
+          <AuthProvider initialUser={userData}>
             <LanguageProvider>
               <ColorThemeProvider>
                 <ThemeProvider
@@ -115,7 +115,6 @@ export default async function RootLayout({ children }: RootLayoutProps) {
                       <SiteFooter />
                     </LayoutWrapper>
 
-                    {/* Global Toaster */}
                     <Toaster
                       position="top-center"
                       richColors
