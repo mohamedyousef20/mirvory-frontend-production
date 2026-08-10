@@ -14,6 +14,7 @@ import { SiteFooter } from "@/components/site-footer"
 import { Toaster } from "sonner"
 import { getUserServer } from "@/src/lib/getUserServer"
 import { AuthProvider } from "@/contexts/AuthProvider"
+import Script from "next/script"
 // import { SocketProvider } from "@/contexts/SocketProvider"
 const cairo = Cairo({
   subsets: ["latin", "arabic"],
@@ -42,6 +43,27 @@ export default async function RootLayout({
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
       <body className={`${cairo.variable} ${notoNaskh.variable} font-sans antialiased`}>
+        {/* Meta Pixel Code */}
+        <Script id="meta-pixel" strategy="afterInteractive">
+          {`
+            !function(f,b,e,v,n,t,s)
+            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)}(window, document,'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init', '2200341703888804');
+            fbq('track', 'PageView');
+          `}
+        </Script>
+        <noscript>
+          <img height="1" width="1" style={{ display: "none" }}
+            src="https://www.facebook.com/tr?id=2200341703888804&ev=PageView&noscript=1"
+          />
+        </noscript>
+        {/* End Meta Pixel Code */}
         <StoreProvider>
           <LayoutWrapper>
             <LanguageProvider>
@@ -50,18 +72,18 @@ export default async function RootLayout({
                   <ErrorBoundaryProvider>
                     <AuthProvider initialUser={userData}>
                       {/* <SocketProvider> */}
-                        <MainNav />
-                        <div className="pt-16">
-                          <Toaster
-                            position="top-center"
-                            richColors
-                            expand
-                            duration={4000}
-                            closeButton
-                          />
-                          {children}
-                        </div>
-                        <SiteFooter />
+                      <MainNav />
+                      <div className="pt-16">
+                        <Toaster
+                          position="top-center"
+                          richColors
+                          expand
+                          duration={4000}
+                          closeButton
+                        />
+                        {children}
+                      </div>
+                      <SiteFooter />
                       {/* </SocketProvider> */}
                     </AuthProvider>
                   </ErrorBoundaryProvider>
