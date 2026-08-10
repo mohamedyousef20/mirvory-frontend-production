@@ -87,7 +87,7 @@ export function VendorDashboard() {
         setBalance(balanceRes.data?.data || balanceRes.data || {});
 
         // Fetch seller products for overview
-        const productsRes = await productService.getSellerProducts({ limit: 4 });
+        const productsRes = await productService.getSellerProducts({ limit: 100 });
         setProducts(productsRes.data?.data || productsRes.data?.products || productsRes.data || []);
 
         const categoriesRes = await categoryService.getCategories();

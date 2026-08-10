@@ -140,9 +140,6 @@ export function VendorsTab({
                                         {seller.vendorProfile?.storeName || "-"}
                                     </TableCell>
 
-                                    <TableCell>
-                                        {seller.vendorProfile?.nationalId || "-"}
-                                    </TableCell>
 
                                     <TableCell>
                                         {seller.vendorProfile?.phone || "-"}

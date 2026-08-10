@@ -34,7 +34,6 @@ export default function SellerSignup() {
       storeName: "",
       ownerName: "",
       phone: "",
-      nationalId: "",
       payoutMethod: "instapay",
       payoutAccount: ""
     }
@@ -111,7 +110,6 @@ export default function SellerSignup() {
     const v = formData.vendorProfile;
     if (!v.storeName) errors.push("اسم المتجر مطلوب");
     if (!/^01[0125][0-9]{8}$/.test(v.phone)) errors.push("رقم تواصل المتجر غير صالح");
-    if (!/^[0-9]{14}$/.test(v.nationalId)) errors.push("الرقم القومي يجب أن يكون 14 رقم");
     if (!v.payoutAccount) errors.push("بيانات استلام الأرباح مطلوبة");
     if (!formData.acceptTerms) errors.push("يجب الموافقة على الشروط والأحكام");
 
@@ -366,26 +364,6 @@ export default function SellerSignup() {
                     />
                     <Phone className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
                   </div>
-                </div>
-
-                <div className="mb-6">
-                  <label htmlFor="vendorProfile.nationalId" className="block text-gray-700 mb-2">الرقم القومي</label>
-                  <div className="relative">
-                    <input
-                      id="vendorProfile.nationalId"
-                      name="vendorProfile.nationalId"
-                      type="text"
-                      value={formData.vendorProfile.nationalId}
-                      onChange={handleChange}
-                      className="w-full pr-4 pl-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                      placeholder="14 رقم"
-                      required
-                      minLength={14}
-                      maxLength={14}
-                    />
-                    <IdCard className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
-                  </div>
-                  <p className="mt-1 text-xs text-gray-500">يجب أن يتكون من 14 رقم</p>
                 </div>
 
                 {/* Governorate Dropdown */}
