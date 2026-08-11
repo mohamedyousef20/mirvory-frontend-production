@@ -75,7 +75,7 @@ export default function GuestCheckoutPage() {
   };
 
   const subtotal = cartItems.reduce((sum, i) => sum + (i.price || 0) * i.quantity, 0);
-  const shippingFee = (subtotal > 4000 || form.deliveryMethod === 'pickup') ? 0 : 70;
+  const shippingFee = (subtotal >= 1500 || form.deliveryMethod === 'pickup') ? 0 : 70;
   const totalAmount = subtotal + shippingFee;
 
   const selectedPickupPoint = pickupPoints.find(

@@ -51,7 +51,7 @@ export default function Checkout() {
     const [appliedCoupon, setAppliedCoupon] = useState<any>(null)
     const [subtotal, setSubtotal] = useState(0)
 
-    const shippingFee = useMemo(() => (subtotal > 500 || deliveryMethod === 'pickup' ? 0 : 70), [subtotal, deliveryMethod])
+    const shippingFee = useMemo(() => (subtotal >= 1500 || deliveryMethod === 'pickup' ? 0 : 70), [subtotal, deliveryMethod])
     const total = useMemo(() => {
         let finalTotal = subtotal + shippingFee;
         if (appliedCoupon?.discountAmount) {
