@@ -275,8 +275,8 @@ export default function GuestCheckoutPage() {
                   required={form.deliveryMethod === 'home'}
                   className="mt-1"
                 />
-                {subtotal > 4000 ? (
-                  <p className="text-sm text-green-600">الشحن مجاني لطلبك الحالي لتجاوزه 4000 ج.م</p>
+                {subtotal > 1500 ? (
+                  <p className="text-sm text-green-600">الشحن مجاني لطلبك الحالي لتجاوزه 1500 ج.م</p>
                 ) : (
                   <p className="text-sm text-blue-600">
                     أضف منتجات بقيمة {(1500 - subtotal).toLocaleString()} ج.م للحصول على شحن مجاني
