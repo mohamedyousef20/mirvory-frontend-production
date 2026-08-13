@@ -279,7 +279,7 @@ export default function GuestCheckoutPage() {
                   <p className="text-sm text-green-600">الشحن مجاني لطلبك الحالي لتجاوزه 4000 ج.م</p>
                 ) : (
                   <p className="text-sm text-blue-600">
-                    أضف منتجات بقيمة {(4000 - subtotal).toLocaleString()} ج.م للحصول على شحن مجاني
+                    أضف منتجات بقيمة {(1500 - subtotal).toLocaleString()} ج.م للحصول على شحن مجاني
                   </p>
                 )}
               </div>
