@@ -112,7 +112,7 @@ interface FilterState {
 }
 
 // Constants
-const MAX_PRICE = 10000;
+const MAX_PRICE = 3000;
 
 const INITIAL_FILTERS: FilterState = {
   categories: [],
@@ -260,104 +260,119 @@ export function ProductGrid() {
     }
   }, [language]);
 
-  const fetchProducts = useCallback(async () => {
-    try {
-      setUiState(prev => ({
-        ...prev,
-        isLoading: true,
-        error: null
-      }));
-
-      let response;
-
-      if (filters.searchQuery.trim()) {
-        // Search products
-        const searchParamsData: any = {
-          q: filters.searchQuery.trim(),
-          page: pagination.page,
-          limit: pagination.pageSize,
-        };
-
-        if (filters.categories.length > 0) {
-          searchParamsData.category = filters.categories[0];
-        }
-
-        if (filters.priceRange[0] > 0) {
-          searchParamsData.minPrice = filters.priceRange[0];
-        }
-
-        if (filters.priceRange[1] < MAX_PRICE) {
-          searchParamsData.maxPrice = filters.priceRange[1];
-        }
-
-        const sortMap: Record<string, string> = {
-          newest: "latest",
-          priceHighToLow: "price_desc",
-          priceLowToHigh: "price_asc",
-          topRated: "top_rated",
-        };
-
-        searchParamsData.sort = sortMap[filters.sort] || "relevance";
-
-        response = await productService.advancedSearch(searchParamsData);
-
-        setProducts(response.data.products || []);
-
-        setPagination(prev => ({
+  const fetchProducts = useCallback(
+    async (page: number, pageSize: number) => {
+      try {
+        setUiState((prev) => ({
           ...prev,
-          totalPages: response.data.pagination?.totalPages || 1,
-          totalProducts: response.data.pagination?.total || 0
+          isLoading: true,
+          error: null,
         }));
 
-      } else {
-        // Get all products
-        const params: any = {
-          page: pagination.page,
-          limit: pagination.pageSize,
-        };
+        let response;
 
-        if (filters.categories.length > 0) {
-          params.category = filters.categories[0];
-        }
+        if (filters.searchQuery.trim()) {
+          const searchParamsData: any = {
+            q: filters.searchQuery.trim(),
+            page,
+            limit: pageSize,
+          };
 
-        if (filters.priceRange[0] > 0) {
-          params.minPrice = filters.priceRange[0];
-        }
+          if (filters.categories.length > 0) {
+            searchParamsData.category = filters.categories[0];
+          }
 
-        if (filters.priceRange[1] < MAX_PRICE) {
-          params.maxPrice = filters.priceRange[1];
-        }
+          if (filters.priceRange[0] > 0) {
+            searchParamsData.minPrice = filters.priceRange[0];
+          }
 
-        params.sort =
-          filters.sort === "newest"
-            ? "-createdAt"
-            : filters.sort === "priceHighToLow"
-              ? "price"
-              : filters.sort === "priceLowToHigh"
+          if (filters.priceRange[1] < MAX_PRICE) {
+            searchParamsData.maxPrice = filters.priceRange[1];
+          }
+
+          const sortMap: Record<string, string> = {
+            newest: "latest",
+            priceHighToLow: "price_desc",
+            priceLowToHigh: "price_asc",
+            topRated: "top_rated",
+          };
+
+          searchParamsData.sort =
+            sortMap[filters.sort] || "relevance";
+
+          response =
+            await productService.advancedSearch(searchParamsData);
+
+          setProducts(response.data.products || []);
+
+          setPagination((prev) => ({
+            ...prev,
+            totalPages:
+              response.data.pagination?.totalPages || 1,
+            totalProducts:
+              response.data.pagination?.total || 0,
+          }));
+        } else {
+          const params: any = {
+            page,
+            limit: pageSize,
+          };
+
+          if (filters.categories.length > 0) {
+            params.category = filters.categories[0];
+          }
+
+          if (filters.priceRange[0] > 0) {
+            params.minPrice = filters.priceRange[0];
+          }
+
+          if (filters.priceRange[1] < MAX_PRICE) {
+            params.maxPrice = filters.priceRange[1];
+          }
+
+          params.sort =
+            filters.sort === "newest"
+              ? "-createdAt"
+              : filters.sort === "priceHighToLow"
                 ? "-price"
-                : "-ratings.average";
+                : filters.sort === "priceLowToHigh"
+                  ? "price"
+                  : "-ratings.average";
 
-        response = await productService.getProducts(params);
+          response =
+            await productService.getProducts(params);
 
-        setProducts(response.data.data || []);
+          setProducts(response.data.data || []);
 
-        setPagination(prev => ({
+          setPagination((prev) => ({
+            ...prev,
+            totalPages:
+              response.data.pagination?.totalPages || 1,
+            totalProducts:
+              response.data.pagination?.total || 0,
+          }));
+        }
+      } catch (error) {
+        console.error("Error fetching products:", error);
+
+        const message =
+          language === "ar"
+            ? "فشل تحميل المنتجات"
+            : "Failed to load products";
+
+        setUiState((prev) => ({
           ...prev,
-          totalPages: response.data.pagination?.pages || 1,
-          totalProducts: response.data.pagination?.total || 0
+          error: message,
+        }));
+      } finally {
+        setUiState((prev) => ({
+          ...prev,
+          isLoading: false,
         }));
       }
-
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setUiState(prev => ({
-        ...prev,
-        isLoading: false
-      }));
-    }
-  }, [filters, pagination.page, pagination.pageSize]);
-
+    },
+    [filters, language]
+  );
   useEffect(() => {
     fetchWishlistFavorites();
   }, [fetchWishlistFavorites]);
@@ -368,18 +383,34 @@ export function ProductGrid() {
 
   // Read search query from URL params and sync with state
   useEffect(() => {
-    const searchQuery = searchParams.get('q') || "";
+    const searchQuery = searchParams.get("q") || "";
 
-    setFilters(prev => {
-      if (prev.searchQuery === searchQuery) return prev;
-      return { ...prev, searchQuery };
+    setFilters((prev) => {
+      if (prev.searchQuery === searchQuery) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        searchQuery,
+      };
     });
+
+    setPagination((prev) => ({
+      ...prev,
+      page: 1,
+    }));
   }, [searchParams]);
-
   useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
-
+    fetchProducts(
+      pagination.page,
+      pagination.pageSize
+    );
+  }, [
+    fetchProducts,
+    pagination.page,
+    pagination.pageSize,
+  ]);
   // Announcements rotation
   useEffect(() => {
     if (activeAnnouncements.length === 0) return;
