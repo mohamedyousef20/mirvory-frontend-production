@@ -496,8 +496,12 @@ export default function OrdersPage() {
                             const isExpanded = expandedOrder === order._id;
 
                             return (
-                                <div key={order._id} className={`overflow-hidden border transition-all duration-300 hover:shadow-lg rounded-2xl ${statusConfig.borderColor} bg-white`}>
-                                    <div className="p-4 md:p-6 pb-2 md:pb-4 border-b border-slate-50 bg-slate-50/30">
+
+                                <div
+                                    key={order._id}
+                                    onClick={() => router.push(`/orders/${order._id}`)}
+                                    className={`overflow-hidden border transition-all duration-300 hover:shadow-lg rounded-2xl ${statusConfig.borderColor} bg-white cursor-pointer`}
+                                >                                    <div className="p-4 md:p-6 pb-2 md:pb-4 border-b border-slate-50 bg-slate-50/30">
                                         <div className="flex flex-row items-start justify-between gap-2 md:gap-4">
                                             <div className="flex items-start gap-3 md:gap-4">
                                                 <div className={`p-2.5 md:p-3 rounded-2xl shrink-0 ${statusConfig.bgColor}`}>
@@ -559,7 +563,10 @@ export default function OrdersPage() {
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"
-                                                    onClick={() => setExpandedOrder(isExpanded ? null : order._id)}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setExpandedOrder(isExpanded ? null : order._id);
+                                                    }}
                                                     className="text-primary text-xs h-8 px-2"
                                                 >
                                                     {isExpanded ? 'إظهار أقل' : 'عرض الكل'}
@@ -573,11 +580,17 @@ export default function OrdersPage() {
                                                         key={item._id}
                                                         className={`group relative bg-white border border-slate-100 rounded-2xl p-2.5 hover:shadow-md transition-all ${!isExpanded && order.items.length > 2 ? 'min-w-[140px] snap-start shrink-0' : ''}`}
                                                     >
-                                                        <div className="cursor-pointer" onClick={() => router.push(`/products/${item.product._id}`)}>
+                                                        <div
+                                                            className="cursor-pointer"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation()
+                                                                router.push(`/products/${item._id}`)
+                                                            }}
+                                                        >
                                                             <div className="aspect-square rounded-xl overflow-hidden bg-slate-50 mb-2.5 relative">
                                                                 <img
-                                                                    src={item.product?.images?.[0] || '/placeholder-product.jpg'}
-                                                                    alt={item.product?.title || 'product'}
+                                                                    src={item?.images?.[0] || '/placeholder-product.jpg'}
+                                                                    alt={item?.title || 'product'}
                                                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                                                 />
                                                             </div>
