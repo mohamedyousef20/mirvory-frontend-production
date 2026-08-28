@@ -495,7 +495,7 @@ export default function SellerSignup() {
                     required
                   />
                   <label htmlFor="acceptTerms" className="mr-2 block text-sm text-gray-700">
-                    أوافق على <Link href="/seller/terms" className="text-blue-600 hover:text-blue-800">الشروط والأحكام</Link> و <Link href="/seller/privacy" className="text-blue-600 hover:text-blue-800">سياسة الخصوصية</Link>
+                    أوافق على <Link href="/seller-terms" className="text-blue-600 hover:text-blue-800">الشروط والأحكام</Link> و <Link href="/seller/privacy" className="text-blue-600 hover:text-blue-800">سياسة الخصوصية</Link>
                   </label>
                 </div>
               </div>
