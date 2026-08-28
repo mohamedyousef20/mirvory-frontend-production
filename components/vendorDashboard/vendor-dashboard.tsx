@@ -47,6 +47,8 @@ export function VendorDashboard() {
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
   const [totalProducts, setTotalProducts] = useState(0)
+  const [totalPages, setTotalPages] = useState(1)
+  const PRODUCTS_LIMIT = 12
   const [filters, setFilters] = useState({})
   const [sortBy, setSortBy] = useState('recent')
   const [filteredOrders, setFilteredOrders] = useState([])
@@ -534,6 +536,24 @@ export function VendorDashboard() {
     } catch (error: any) {
       console.error('Failed to fetch return requests:', error);
       toast.error(language === 'ar' ? 'فشل جلب طلبات الإرجاع' : 'Failed to fetch return requests');
+    }
+  };
+  const fetchSellerProducts = async (pageNum: number = page) => {
+    try {
+      const productsRes = await productService.getSellerProducts({
+        page: pageNum,
+        limit: PRODUCTS_LIMIT,
+        search: searchTerm || undefined,
+        status: statusFilter !== 'all' ? statusFilter : undefined,
+        sort: sortOption !== 'newest' ? sortOption : undefined,
+        category: selectedCategories.length > 0 ? selectedCategories[0] : undefined,
+      });
+      const data = productsRes.data;
+      setProducts(data?.data || data?.products || data || []);
+      setTotalProducts(data?.pagination?.total || data?.total || (data?.data || []).length);
+      setTotalPages(data?.pagination?.totalPages || data?.pages || 1);
+    } catch (error: any) {
+      console.error('Failed to fetch seller products:', error);
     }
   };
 

@@ -4,15 +4,20 @@ import { CategoryCard } from '@/components/CategoryCard';
 import Link from 'next/link';
 import { categoryService } from '@/lib/api';
 import { MirvoryPageLoader } from '@/components/MirvoryLoader';
+import { useLanguage } from '@/components/language-provider';
 
 interface Category {
   _id: string;
-  name: string;
-  nameEn: string;
-  [key: string]: any; // allow additional fields
+  name: string | { ar?: string; en?: string };
+  nameEn?: string;
+  description?: string | { ar?: string; en?: string };
+  descriptionEn?: string;
+  image?: string;
+  [key: string]: any;
 }
 
 const CategoriesPage = () => {
+  const { language } = useLanguage();
   const [categories, setCategories] = useState<Category[]>([]);
   const [productsCount, setProductsCount] = useState<{ [key: string]: number }>({});
   const [loading, setLoading] = useState(true);
@@ -27,7 +32,6 @@ const CategoriesPage = () => {
         if (response.data) {
           setCategories(response.data);
 
-          // جلب عدد المنتجات لكل فئة
           const counts: { [key: string]: number } = {};
           for (const category of response.data) {
             try {
@@ -35,11 +39,7 @@ const CategoriesPage = () => {
                 limit: 1,
                 page: 1
               });
-
-              // Use the correct response structure
               counts[category._id] = productsResponse.data.pagination.total || 0;
-
-              //console.log(`Category ${category.name}: ${counts[category._id]} products`);
             } catch (err) {
               console.error(`Error fetching products count for category ${category._id}:`, err);
               counts[category._id] = 0;
@@ -98,6 +98,7 @@ const CategoriesPage = () => {
             >
               <CategoryCard
                 category={category}
+                language={language}
                 className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow cursor-pointer h-full"
               />
             </Link>
