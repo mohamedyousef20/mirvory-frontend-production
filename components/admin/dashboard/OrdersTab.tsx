@@ -9,7 +9,7 @@ import {
     ShoppingBag, User, Phone, MapPin, CreditCard,
     Truck, Package, Calendar, Hash, CheckCircle2,
     Clock, XCircle, ExternalLink,
-    Gift
+    Gift, Trash2
 } from "lucide-react";
 
 interface OrdersTabProps {
@@ -22,6 +22,7 @@ interface OrdersTabProps {
     updateDeliveryStatus: (orderId: string, deliveryStatus: string) => void;
     updatePaymentStatus: (orderId: string, status: string) => void;
     orderComplete: (orderId: string, code: string) => void;
+    onDeleteOrder?: (orderId: string) => void;
     markItemAsPrepared?: (orderId: string, itemId: string) => void;
 }
 
@@ -60,6 +61,7 @@ export function OrdersTab({
     orders, loadingOrders, errorOrders, isArabic,
     pagination, onPageChange,
     updateDeliveryStatus, updatePaymentStatus, orderComplete,
+    onDeleteOrder,
     markItemAsPrepared
 }: OrdersTabProps) {
     const router = useRouter();
@@ -490,6 +492,19 @@ export function OrdersTab({
                                                 : <><Clock className="h-4 w-4 mr-1.5" />{ar ? "إكمال الطلب" : "Complete Order"}</>
                                             }
                                         </Button>
+
+                                        {/* Delete button — only for completed (delivered) orders */}
+                                        {order.deliveryStatus === "delivered" && onDeleteOrder && (
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => onDeleteOrder(order._id)}
+                                                className="w-full h-9 rounded-xl text-sm font-semibold border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 hover:text-red-700 transition-all active:scale-[0.98]"
+                                            >
+                                                <Trash2 className="h-4 w-4 mr-1.5" />
+                                                {ar ? "حذف الطلب" : "Delete Order"}
+                                            </Button>
+                                        )}
                                     </div>
                                 </div>
                             </div>

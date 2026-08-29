@@ -105,5 +105,14 @@ export const orderService = {
     } catch (error) {
       throw error;
     }
-  }
+  },
+
+  // Delete a completed order (admin only)
+  deleteOrder: async (orderId: string): Promise<void> => {
+    try {
+      await api.delete(`/api/orders/${orderId}`);
+    } catch (error) {
+      throw error;
+    }
+  },
 };

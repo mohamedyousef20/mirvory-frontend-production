@@ -473,6 +473,10 @@ export const orderService = {
   orderComplete: (orderId: string, code: string) =>
     api.post(`/api/orders/complete`, { id: orderId, code }),
 
+  // Delete a completed order (admin only)
+  deleteOrder: (orderId: string) =>
+    api.delete(`/api/orders/${orderId}`),
+
 };
 
 // Addresses Service 

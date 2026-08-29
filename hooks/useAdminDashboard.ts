@@ -917,6 +917,24 @@ export function useAdminDashboard() {
             );
         }
     };
+
+    const handleDeleteOrder = async (orderId: string) => {
+        if (!confirm(isArabic
+            ? 'هل أنت متأكد من حذف هذا الطلب نهائياً؟ لا يمكن التراجع عن هذا الإجراء.'
+            : 'Are you sure you want to permanently delete this order? This action cannot be undone.'
+        )) return;
+        try {
+            await orderService.deleteOrder(orderId);
+            setOrders(prev => prev.filter(order => order._id !== orderId));
+            toast.success(isArabic ? 'تم حذف الطلب بنجاح' : 'Order deleted successfully');
+        } catch (error: any) {
+            toast.error(
+                error.response?.data?.message ||
+                (isArabic ? 'حدث خطأ أثناء حذف الطلب' : 'Failed to delete order')
+            );
+        }
+    };
+
     const fetchPickupPoints = async () => {
         try {
             setLoadingPickupPoints(true);
@@ -1359,6 +1377,7 @@ export function useAdminDashboard() {
         updateDeliveryStatus,
         updatePaymentStatus,
         orderComplete,
+        handleDeleteOrder,
         handleToggleCouponStatus,
         handleDeleteCoupon,
         fetchPickupPoints,

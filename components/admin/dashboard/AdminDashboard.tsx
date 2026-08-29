@@ -137,6 +137,7 @@ export function AdminDashboard() {
     updateDeliveryStatus,
     updatePaymentStatus,
     orderComplete,
+    handleDeleteOrder,
 
     // Coupon functions
     handleCreateCoupon,
@@ -272,6 +273,7 @@ export function AdminDashboard() {
             updateDeliveryStatus={updateDeliveryStatus}
             updatePaymentStatus={updatePaymentStatus}
             orderComplete={orderComplete}
+            onDeleteOrder={handleDeleteOrder}
           />
         </TabsContent>
 
