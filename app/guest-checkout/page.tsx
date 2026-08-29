@@ -9,7 +9,15 @@ import { toast } from 'sonner';
 import { Loader2, ShoppingBag, User, Phone, Mail, MapPin, Package, Store } from 'lucide-react';
 import { guestCartService, pickupPointService } from '@/lib/api';
 import { getGuestCart, clearGuestCart } from '@/lib/guestCart';
-
+declare global {
+  interface Window {
+    fbq?: (
+      command: string,
+      eventName: string,
+      parameters?: Record<string, any>
+    ) => void;
+  }
+}
 interface GuestItem {
   productId: string;
   quantity: number;
@@ -123,6 +131,14 @@ export default function GuestCheckoutPage() {
       });
 
       const data = response.data;
+      // Meta Pixel - Purchase
+      if (typeof window !== 'undefined' && window.fbq) {
+        window.fbq('track', 'Purchase', {
+          value: totalAmount,
+          currency: 'EGP',
+        });
+      }
+
       clearGuestCart();
       setTrackingToken(data.trackingToken);
       setOrderNumber(data.orderNumber);
