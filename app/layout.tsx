@@ -1,6 +1,5 @@
 // app/layout.tsx
-// Updated RootLayout with global user/token loader
-// Meta Pixel: 2 Pixels
+// Updated RootLayout with new Meta Pixel
 
 import type React from "react"
 import type { Metadata } from "next"
@@ -41,10 +40,8 @@ const notoNaskh = Noto_Naskh_Arabic({
 
 export const metadata: Metadata = {
   title: "Mirvory - متجر الكوتشيات والملابس",
-
   description:
     "منصة تجارة إلكترونية متعددة التجار متخصصة في بيع الكوتشيات الميرور والملابس",
-
   generator: "v0.dev",
 }
 
@@ -71,36 +68,26 @@ export default async function RootLayout({
       >
 
         {/* ================================================= */}
-        {/* Meta Pixel - Two Pixels                         */}
+        {/* Meta Pixel - New Single Pixel (2989899261351129)  */}
         {/* ================================================= */}
 
         <Script
-          id="meta-pixels"
+          id="meta-pixel"
           strategy="afterInteractive"
         >
           {`
-                        !function(f,b,e,v,n,t,s)
-                        {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-                        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-                        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-                        n.queue=[];t=b.createElement(e);t.async=!0;
-                        t.src=v;s=b.getElementsByTagName(e)[0];
-                        s.parentNode.insertBefore(t,s)}(
-                            window,
-                            document,
-                            'script',
-                            'https://connect.facebook.net/en_US/fbevents.js'
-                        );
-
-                        /* Pixel 1 */
-                        fbq('init', '1063770146377303');
-
-                        /* Pixel 2 */
-                        fbq('init', '2200341703888804');
-
-                        /* Page View */
-                        fbq('track', 'PageView');
-                    `}
+            !function(f,b,e,v,n,t,s)
+            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)}(window, document,'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+            
+            fbq('init', '2989899261351129');
+            fbq('track', 'PageView');
+          `}
         </Script>
 
         {/* ================================================= */}
@@ -114,17 +101,7 @@ export default async function RootLayout({
             style={{
               display: "none",
             }}
-            src="https://www.facebook.com/tr?id=1063770146377303&ev=PageView&noscript=1"
-            alt=""
-          />
-
-          <img
-            height="1"
-            width="1"
-            style={{
-              display: "none",
-            }}
-            src="https://www.facebook.com/tr?id=2200341703888804&ev=PageView&noscript=1"
+            src="https://www.facebook.com/tr?id=2989899261351129&ev=PageView&noscript=1"
             alt=""
           />
         </noscript>
@@ -155,10 +132,6 @@ export default async function RootLayout({
                       initialUser={userData}
                     >
 
-                      {/* 
-                                            <SocketProvider>
-                                            */}
-
                       <MainNav />
 
                       <div className="pt-16">
@@ -176,10 +149,6 @@ export default async function RootLayout({
                       </div>
 
                       <SiteFooter />
-
-                      {/*
-                                            </SocketProvider>
-                                            */}
 
                     </AuthProvider>
 
