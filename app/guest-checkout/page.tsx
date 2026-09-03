@@ -131,17 +131,18 @@ export default function GuestCheckoutPage() {
       });
 
       const data = response.data;
-      // Meta Pixel - Purchase
-      if (typeof window !== 'undefined' && window.fbq) {
-        window.fbq('track', 'Purchase', {
-          value: totalAmount,
-          currency: 'EGP',
-        });
-      }
 
       clearGuestCart();
+
       setTrackingToken(data.trackingToken);
       setOrderNumber(data.orderNumber);
+
+      window.history.replaceState(
+        null,
+        '',
+        `/guest-checkout/success`
+      );
+
       toast.success('تم إنشاء طلبك بنجاح!');
     } catch (err: any) {
       const message = err?.response?.data?.message || 'حدث خطأ في الاتصال. تحقق من اتصالك بالإنترنت وحاول مرة أخرى.';
