@@ -62,7 +62,7 @@ export const authOptions: NextAuthConfig = {
         token.accessToken = tokens.accessToken;
         token.refreshToken = tokens.refreshToken;
 
-        // Cookies will be set client-side via /api/auth/social-set-cookies after login
+        // Cookies will be set client-side via /api/users/auth/social-set-cookies after login
       }
 
       return token;

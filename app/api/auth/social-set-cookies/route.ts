@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 /**
- * POST /api/auth/social-set-cookies
+ * POST /api/users/auth/social-set-cookies
  *
  * Called by AuthProvider after a successful Google OAuth sign-in.
  * The backend normally handles this, but we also expose it here as a
@@ -9,7 +9,7 @@ import { NextRequest, NextResponse } from 'next/server';
  *  a) it works even if the backend endpoint is temporarily unavailable, and
  *  b) cookies are set from the same origin as the frontend (avoids SameSite issues).
  *
- * The backend endpoint at NEXT_PUBLIC_API_URL/api/auth/social-set-cookies is tried
+ * The backend endpoint at NEXT_PUBLIC_API_URL/api/users/auth/social-set-cookies is tried
  * first by AuthProvider; this route is the fallback.
  */
 export async function POST(request: NextRequest) {

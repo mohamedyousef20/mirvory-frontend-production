@@ -302,7 +302,7 @@ function AuthContextWrapper({
                 // Step 1: Try the Next.js same-origin route first (no CORS / SameSite issues)
                 let cookiesSynced = false;
                 try {
-                    const nextRes = await fetch("/api/auth/social-set-cookies", {
+                    const nextRes = await fetch("/api/users/auth/social-set-cookies", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         credentials: "include",
@@ -319,7 +319,7 @@ function AuthContextWrapper({
                 if (!cookiesSynced || process.env.NEXT_PUBLIC_API_URL) {
                     try {
                         await fetch(
-                            `${process.env.NEXT_PUBLIC_API_URL}/api/auth/social-set-cookies`,
+                            `${process.env.NEXT_PUBLIC_API_URL}/api/users/auth/social-set-cookies`,
                             {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
