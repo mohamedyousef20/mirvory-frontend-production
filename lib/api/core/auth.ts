@@ -45,7 +45,11 @@ export const getTokenExpiration = (token: string): number | null => {
 };
 
 export const refreshToken = async (): Promise<string | null> => {
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://http://localhost:5000';
+  // In the browser, use a same-origin path so the Next.js proxy forwards
+  // the request to Railway with the www.mirvory.net cookies attached.
+  const apiBase = typeof window !== 'undefined'
+    ? ''
+    : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000');
   try {
     const response = await fetch(`${apiBase}/api/users/refresh-token`, {
       method: 'POST',

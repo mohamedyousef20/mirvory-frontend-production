@@ -4,7 +4,7 @@
 // Switched to axios.create with withCredentials: true so cookies are included.
 import axios from 'axios';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://http://localhost:5000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 // Shared axios instance with credentials enabled — cookies will be sent cross-origin
 const api = axios.create({

@@ -12,7 +12,7 @@ interface AppJwtPayload extends JWTPayload {
 const PROTECTED_ROUTES = ["/account", "/vendor", "/admin", "/driver"];
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ||
-  "https://http://localhost:5000";
+  "http://localhost:5000";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;

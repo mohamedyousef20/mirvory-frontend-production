@@ -1,6 +1,10 @@
 import axios from 'axios';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://http://localhost:5000';
+// Browser: empty baseURL → Next.js /api/* proxy forwards to Railway with cookies
+// SSR: full Railway URL (server-to-server, no cookie domain restriction)
+const API_URL = typeof window !== 'undefined'
+  ? ''
+  : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000');
 
 // Create axios instance
 const apiService = axios.create({
