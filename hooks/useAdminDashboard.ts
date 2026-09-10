@@ -416,6 +416,8 @@ export function useAdminDashboard() {
         }
     };
 
+    
+
 
 
     const handleRestoreUser = async (id: string) => {
@@ -432,6 +434,19 @@ export function useAdminDashboard() {
         }
     };
 
+    // const handleToggleTrustSeller = async (id: string) => {
+    //     try {
+    //         setUpdatingUser(id);
+    //         await userService.toggleUserActive(id);
+    //         setUsers((prev) => prev.map((u) => (u._id === id ? { ...u, isActive: !u.isActive } : u)));
+    //         setSellers((prev) => prev.map((u) => (u._id === id ? { ...u, isActive: !u.isActive } : u)));
+    //         toast.success(isArabic ? 'تم التحديث' : 'Updated');
+    //     } catch (err: any) {
+    //         toast.error(err?.response?.data?.message || 'Error');
+    //     } finally {
+    //         setUpdatingUser(null);
+    //     }
+    // };
     // Return requests operations
     const fetchReturnRequests = async () => {
         try {
@@ -1320,7 +1335,6 @@ export function useAdminDashboard() {
         setReturnsPage,
 
         // Earnings state
-        platformEarnings,
         loadingEarnings,
         errorEarnings,
 
@@ -1446,10 +1460,7 @@ export function useAdminDashboard() {
         // Users pagination
         usersPage,
         usersPages,
-        setUsersPage,
-        sellersPage,
-        sellersPages,
-        setSellersPage,
+     
         handleUpdateVendorBalance,
         handleUpdateVendorStatus,
         handleToggleUserActive,

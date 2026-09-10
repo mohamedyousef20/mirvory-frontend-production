@@ -50,7 +50,7 @@ export function PickupPointForm({ initialData, onSuccess, onClose }: PickupPoint
   });
 
   const { mutate: updatePickupPoint, isPending: isUpdating } = useMutation({
-    mutationFn: (data: Partial<PickupPoint>) => epickupPointService.update(initialData!._id, data),
+    mutationFn: (data: Partial<PickupPoint>) => pickupPointService.updatePickupPoint(initialData!._id, data),
     onSuccess: () => {
       toast({
         title: isArabic ? "تم تحديث نقطة الاستلام بنجاح" : "Pickup point updated successfully",

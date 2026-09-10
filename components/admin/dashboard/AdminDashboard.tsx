@@ -26,7 +26,7 @@ export function AdminDashboard() {
     setActiveTab,
     updatingUser,
     handleDeleteUser,
-    handleSoftDeleteUser,
+    // handleSoftDeleteUser,
     handleRestoreUser,
     handleToggleTrustSeller,
     products,
@@ -165,7 +165,7 @@ export function AdminDashboard() {
     fetchAdminAnalytics,
     handleUpdateVendorBalance,
     handleUpdateVendorStatus,
-    handleToggleUserActive,
+    // handleToggleUserActive,
     // Language
     language,
     t,
@@ -334,13 +334,13 @@ export function AdminDashboard() {
 
             // ربط دوال الحذف والتعطيل الحالية
             onDelete={handleDeleteUser}
-            onSoftDelete={handleSoftDeleteUser}
+            // onSoftDelete={handleSoftDeleteUser}
             onRestore={handleRestoreUser}
 
             // ➕ ربط الدوال الجديدة المضافة للسوبر أدمن:
             onUpdateBalance={handleUpdateVendorBalance}
             onUpdateStatus={handleUpdateVendorStatus}
-            onToggleActive={handleToggleUserActive}
+            // onToggleActive={handleToggleUserActive}
           />
         </TabsContent>
         <TabsContent value="users">
@@ -351,7 +351,7 @@ export function AdminDashboard() {
             pagination={{ currentPage: usersPage, totalPages: usersPages }}
             onPageChange={setUsersPage}
             onDelete={handleDeleteUser}
-            toggleUserActive={handleToggleUserActive}
+            // toggleUserActive={handleToggleUserActive}
             onRestore={handleRestoreUser}
           />
         </TabsContent>
