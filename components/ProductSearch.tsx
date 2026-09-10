@@ -467,8 +467,7 @@ export function ProductSearch({
               ) : (
                 recentSearches.slice(0, 5).map((search, index) => (
                   <button
-                    key={`recent-${search._id}`}
-                    type="button"
+                    key={`recent-${search.query}-${index}`}                    type="button"
                     onClick={() => handleRecentSearchClick(search.query)}
                     className={cn(
                       "w-full text-left px-3 py-2 text-sm rounded-md hover:bg-accent transition-colors flex items-center gap-2",
