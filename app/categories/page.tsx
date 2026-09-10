@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { CategoryCard } from '@/components/CategoryCard';
 import Link from 'next/link';
-import { categoryService } from '@/lib/api';
+import { categoryService, productService } from '@/lib/api';
 import { MirvoryPageLoader } from '@/components/MirvoryLoader';
 import { useLanguage } from '@/components/language-provider';
 
@@ -35,7 +35,7 @@ const CategoriesPage = () => {
           const counts: { [key: string]: number } = {};
           for (const category of response.data) {
             try {
-              const productsResponse = await categoryService.getProductsByCategory(category._id, {
+              const productsResponse = await productService.getProductsByCategory(category._id, {
                 limit: 1,
                 page: 1
               });
