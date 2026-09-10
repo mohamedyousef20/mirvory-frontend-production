@@ -299,10 +299,18 @@ function AuthContextWrapper({
                     role: (session.user as any).role,
                 };
 
-                // Step 1: Try the Next.js same-origin route first (no CORS / SameSite issues)
+                // Set cookies via the Next.js same-origin route.
+                // This is the ONLY step needed: cookies set on www.mirvory.net
+                // (same origin as the frontend) will be sent on every subsequent
+                // Axios request, including those going to the Railway backend via
+                // the /api proxy rewrites in next.config.mjs.
+                //
+                // DO NOT call the Railway backend social-set-cookies directly:
+                // browsers block Set-Cookie headers from cross-site responses
+                // unless SameSite=None; Secure, which we don't use.
                 let cookiesSynced = false;
                 try {
-                    const nextRes = await fetch("/api/users/auth/social-set-cookies", {
+                    const nextRes = await fetch("/api/auth/social-set-cookies", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         credentials: "include",
@@ -310,26 +318,20 @@ function AuthContextWrapper({
                     });
                     if (nextRes.ok) {
                         cookiesSynced = true;
+                    } else {
+                        console.warn("[AuthProvider] social-set-cookies returned", nextRes.status);
                     }
                 } catch (err) {
-                    console.warn("[AuthProvider] Next.js cookie route failed, trying backend:", err);
+                    console.warn("[AuthProvider] Next.js cookie route failed:", err);
                 }
 
-                // Step 2: Also call the backend so its own session/cookie store is updated
-                if (!cookiesSynced || process.env.NEXT_PUBLIC_API_URL) {
+                // After cookies are stored, fetch the canonical user object from
+                // the backend to populate the auth context state.
+                if (cookiesSynced) {
                     try {
-                        await fetch(
-                            `${process.env.NEXT_PUBLIC_API_URL}/api/users/auth/social-set-cookies`,
-                            {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                credentials: "include",
-                                body: JSON.stringify(cookiePayload),
-                            }
-                        );
-                        cookiesSynced = true;
-                    } catch (error) {
-                        console.error("[AuthProvider] Backend cookie sync failed:", error);
+                        await refreshUser({ force: true });
+                    } catch (_) {
+                        // Non-fatal — user is still considered logged-in via session
                     }
                 }
 

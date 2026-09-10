@@ -2,7 +2,20 @@ import axios, { AxiosError, AxiosRequestConfig, InternalAxiosRequestConfig } fro
 import { toast } from 'sonner';
 import { clearAuth, refreshToken as fallbackRefresh } from './api/core/auth';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://http://localhost:5000';
+// ── Base URL Strategy ────────────────────────────────────────────────────────
+//
+// Browser environment: use an EMPTY baseURL (same-origin requests).
+//   All /api/* paths are rewritten by Next.js to the Railway backend.
+//   This ensures HTTP-only cookies scoped to www.mirvory.net are included
+//   automatically — fixing the Google Login → 401 cross-domain cookie bug.
+//
+// Server/SSR environment: use the full Railway URL directly (no browser
+//   cookie policy applies; Next.js reads req.cookies server-side).
+//
+const isBrowser = typeof window !== 'undefined';
+const API_URL = isBrowser
+  ? '' // same-origin → /api/* rewrites to Railway via next.config.mjs
+  : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000');
 
 // Flag to prevent multiple refresh attempts
 let isRefreshing = false;
@@ -25,7 +38,7 @@ const processQueue = (error: any, token: string | null = null) => {
 // Create axios instance with default config
 const api = axios.create({
   baseURL: API_URL,
-  withCredentials: true, // This is crucial for sending/receiving cookies
+  withCredentials: true, // Send cookies on every request
   headers: {
     'Content-Type': 'application/json',
   },
@@ -50,7 +63,14 @@ api.interceptors.response.use(
     const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
 
     // Handle 401 errors (Unauthorized)
-    if (error.response?.status === 401 && !originalRequest?._retry) {
+    // Never retry if the request that failed IS the refresh-token endpoint —
+    // that would cause an infinite loop where refresh → 401 → refresh → ...
+    const isRefreshEndpoint =
+      originalRequest?.url?.includes('/api/users/refresh-token') ||
+      originalRequest?.url?.includes('/api/users/login') ||
+      originalRequest?.url?.includes('/api/users/logout');
+
+    if (error.response?.status === 401 && !originalRequest?._retry && !isRefreshEndpoint) {
       if (isRefreshing) {
         // If refresh is in progress, queue the request
         return new Promise((resolve, reject) => {

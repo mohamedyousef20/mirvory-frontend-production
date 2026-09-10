@@ -79,14 +79,22 @@ interface ProductDetails {
 }
 
 interface CartItem {
+  /** MongoDB ObjectId – some backend responses use _id, others use id */
   _id: string;
+  /** Alternative id field from some backend responses */
+  id?: string;
   price: number;
   product: ProductDetails; // This is now an object, not string
   quantity: number;
   sizes: string[];
   colors: string[];
   itemTotal?: number;
-  id?: string;
+  /** Resolved cart item id: _id takes precedence over id */
+  productId?: string;
+  size?: string | null;
+  color?: string | null;
+  title?: string;
+  image?: string;
 }
 
 interface CartData {
@@ -137,7 +145,7 @@ export function MainNav() {
 
     window.location.href = "/auth/login";
   };
-  console.log(enhancedCartItems, 'enhancedCartItems in main-nav.tsx')
+
   // Fetch counts from API
   const fetchCounts = useCallback(async () => {
     if (!isLoggedIn) {
@@ -336,13 +344,20 @@ export function MainNav() {
     }
 
     // 2. Authenticated Cart
+    // Guard: never send DELETE /api/carts/undefined
+    if (!cartItemId || cartItemId === 'undefined') {
+      console.error('[Cart] Cannot remove item: id is missing or undefined');
+      toast.error(language === 'ar' ? 'تعذر تحديد المنتج' : 'Could not identify the cart item');
+      return;
+    }
+
     try {
       setLoading(prev => ({ ...prev, cart: true }));
 
       await cartService.removeFromCart(cartItemId);
 
       setEnhancedCartItems(prev =>
-        prev.filter(item => item._id !== cartItemId)
+        prev.filter(item => (item._id ?? item.id) !== cartItemId)
       );
 
       setCounts(prev => ({
@@ -912,7 +927,7 @@ export function MainNav() {
                             size="icon"
                             className="h-7 w-7 flex-shrink-0"
                             onClick={() =>
-                              handleRemoveFromCart(item._id, {
+                              handleRemoveFromCart(item._id ?? item.id ?? '', {
                                 productId: item.productId,
                                 size: item.size,
                                 color: item.color,

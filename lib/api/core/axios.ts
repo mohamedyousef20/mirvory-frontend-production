@@ -8,7 +8,12 @@ import axios, {
 import { clearAuth, refreshToken as fallbackRefresh } from './auth';
 import { ApiResponse } from './types';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://http://localhost:5000';
+// Browser: empty baseURL so requests go through the Next.js /api/* proxy
+// (cookies scoped to www.mirvory.net are then sent automatically).
+// SSR: full Railway URL — no browser cookie policy applies.
+const API_URL = typeof window !== 'undefined'
+  ? ''
+  : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000');
 
 type QueueEntry = {
   resolve: (value: unknown) => void;
@@ -56,7 +61,13 @@ class ApiClient {
       async (error: AxiosError) => {
         const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
 
-        if (error.response?.status === 401 && !originalRequest?._retry) {
+        // Guard: never retry refresh/login/logout endpoints on 401 → infinite loop
+        const isRefreshEndpoint =
+          originalRequest?.url?.includes('/api/users/refresh-token') ||
+          originalRequest?.url?.includes('/api/users/login') ||
+          originalRequest?.url?.includes('/api/users/logout');
+
+        if (error.response?.status === 401 && !originalRequest?._retry && !isRefreshEndpoint) {
           if (this.isRefreshing) {
             return new Promise((resolve, reject) => {
               this.failedQueue.push({ resolve, reject });

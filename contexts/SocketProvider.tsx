@@ -32,7 +32,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
       return
     }
 
-    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'https://http://localhost:5000'
+    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:5000'
 
     const newSocket = io(socketUrl, {
       withCredentials: true,

@@ -1,12 +1,12 @@
 import axios from "axios";
 
-// Request auth is handled via HTTP-only cookies (withCredentials: true).
-// NEXT_PUBLIC_API_URL must be set in the Vercel dashboard; the fallback
-// ensures requests always reach Railway even if the env var is missing.
+// Browser: empty baseURL → Next.js /api/* proxy forwards to Railway with cookies.
+// SSR: full Railway URL (server-to-server, no browser cookie domain restriction).
+// NEXT_PUBLIC_API_URL must be set in the Vercel dashboard.
 const apiClient = axios.create({
-  baseURL:
-    process.env.NEXT_PUBLIC_API_URL ||
-    "https://http://localhost:5000",
+  baseURL: typeof window !== "undefined"
+    ? ""
+    : (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"),
   headers: {
     "Content-Type": "application/json",
   },
@@ -25,8 +25,12 @@ apiClient.interceptors.response.use(
     if (error.response) {
       // Handle specific status codes
       if (error.response.status === 401) {
-        // Redirect to login on unauthorized
-        if (typeof window !== "undefined") {
+        // Only redirect to login if we're not already on the auth page
+        // and not calling an auth endpoint (avoids redirect loops)
+        if (
+          typeof window !== "undefined" &&
+          !window.location.pathname.startsWith("/auth/")
+        ) {
           window.location.href = "/auth/login";
         }
       }
