@@ -8,7 +8,7 @@ import { OrdersTab } from "./OrdersTab";
 import { ProductsTab } from "./ProductsTab";
 import { CategoriesTab } from "./CategoriesTab";
 import { VendorsTab } from "./VendorsTab";
-import { BrandsTab } from "./BrandsTab";
+// import { BrandsTab } from "./BrandsTab";
 import { UsersTab } from "./UsersTab";
 import { AnnouncementsTab } from "./AnnouncementsTab";
 import { PickupPointsTab } from "./PickupPointsTab";
@@ -28,7 +28,7 @@ export function AdminDashboard() {
     handleDeleteUser,
     // handleSoftDeleteUser,
     handleRestoreUser,
-    handleToggleTrustSeller,
+    // handleToggleTrustSeller,
     products,
     productsPage,
     productsPages,
@@ -37,9 +37,9 @@ export function AdminDashboard() {
     loadingProducts,
     errorProducts,
     categories,
-    brands,
-    loadingBrands,
-    errorBrands,
+    // brands,
+    // loadingBrands,
+    // errorBrands,
     loading,
     error,
     announcementImage,
@@ -127,7 +127,7 @@ export function AdminDashboard() {
     handleDeletePickupPoint,
     handleImageUpload,
     handleRemoveImage,
-    handleDeleteBrand,
+    // handleDeleteBrand,
     handleApproveReturn,
     handleDeleteReturn,
     handleRejectReturn,
@@ -153,13 +153,13 @@ export function AdminDashboard() {
     // Data fetching functions
     fetchProducts,
     fetchCategories,
-    fetchBrands,
+    // fetchBrands,
     fetchCoupons,
     fetchOrders,
     fetchPickupPoints,
     fetchAnnouncements,
     fetchReturnRequests,
-    fetchPlatformEarnings,
+    // fetchPlatformEarnings,
     fetchDashboardCounters,
     fetchAdminTransactions,
     fetchAdminAnalytics,
@@ -257,7 +257,7 @@ export function AdminDashboard() {
             errorEarnings={errorEarnings}
             isArabic={isArabic}
             dashboardCounters={dashboardCounters || undefined}
-            fetchPlatformEarnings={fetchPlatformEarnings}
+            // fetchPlatformEarnings={fetchPlatformEarnings}
             fetchDashboardCounters={fetchDashboardCounters}
           />
         </TabsContent>
@@ -291,7 +291,7 @@ export function AdminDashboard() {
           />
         </TabsContent>
 
-        <TabsContent value="brands">
+        {/* <TabsContent value="brands">
           <BrandsTab
             brands={brands}
             loading={loadingBrands}
@@ -300,7 +300,7 @@ export function AdminDashboard() {
             handleDeleteBrand={handleDeleteBrand}
             refreshBrands={fetchBrands}
           />
-        </TabsContent>
+        </TabsContent> */}
 
         <TabsContent value="categories">
           <CategoriesTab

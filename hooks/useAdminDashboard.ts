@@ -1397,6 +1397,9 @@ export function useAdminDashboard() {
         fetchPickupPoints,
         fetchAnnouncements,
 
+        setUsersPage,
+        setSellersPage,
+        fetchSellers,
         // Coupon functions
         handleCreateCoupon,
         handleUpdateCoupon,
