@@ -31,7 +31,7 @@ export const createPickupPoint = createAsyncThunk<PickupPoint, Omit<PickupPoint,
   'pickupPoints/createPickupPoint',
   async (pickupPointData, { rejectWithValue }) => {
     try {
-      const response = await pickupPointService.create(pickupPointData);
+      const response = await pickupPointService.createPickupPoint(pickupPointData);
       return response;
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to create pickup point');

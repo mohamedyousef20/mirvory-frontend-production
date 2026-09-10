@@ -227,7 +227,7 @@ export function useAdminDashboard() {
     const fetchDashboardCounters = async () => {
         try {
             const res = await adminDashboardService.getCounters();
-            setDashboardCounters(res.data?.data );
+            setDashboardCounters(res.data?.data);
         } catch (err) {
             console.error('Failed to fetch dashboard counters', err);
         }
@@ -378,7 +378,7 @@ export function useAdminDashboard() {
         fetchUsers();
     }, [usersPage]);
 
- 
+
     // refetch transactions when page changes
     // useEffect(() => {
     //     fetchAdminTransactions();
@@ -844,7 +844,7 @@ export function useAdminDashboard() {
             const response = await orderService.getAdminOrders({ page: ordersPage, limit: ORDERS_LIMIT });
             if (response.data?.data) {
                 setOrders(response.data.data);
-            } 
+            }
             if (response.data?.pagination) {
                 setOrdersPage(response.data.pagination.currentPage);
                 setOrdersPages(response.data.pagination.totalPages);

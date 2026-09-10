@@ -52,7 +52,7 @@ export function PickupPointsManager({ isArabic }: { isArabic: boolean }) {
         await pickupPointService.update(selectedPickupPoint._id, selectedPickupPoint);
         toast.success(isArabic ? 'تم تحديث نقطة الاستلام بنجاح' : 'Pickup point updated successfully');
       } else {
-        await pickupPointService.create(selectedPickupPoint);
+        await pickupPointService.createPickupPoint(selectedPickupPoint);
         toast.success(isArabic ? 'تم إنشاء نقطة الاستلام بنجاح' : 'Pickup point created successfully');
       }
       setShowForm(false);
@@ -97,7 +97,7 @@ export function PickupPointsManager({ isArabic }: { isArabic: boolean }) {
             {isArabic ? 'إدارة نقاط الاستلام المتاحة للعملاء' : 'Manage available pickup points for customers'}
           </p>
         </div>
-        <Button 
+        <Button
           onClick={() => {
             setSelectedPickupPoint({
               stationName: '',
