@@ -25,7 +25,7 @@ export interface Notification {
   message: string;
   data?: Record<string, any>;
   link?: string;
-  isRead: boolean;
+  seen: boolean;
   createdAt: string;
   updatedAt: string;
   status?: 'sent' | 'failed';

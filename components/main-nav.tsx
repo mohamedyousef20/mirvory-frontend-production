@@ -776,12 +776,12 @@ export function MainNav() {
                       {notificationItem.map((notification) => (
                         <div
                           key={notification._id}
-                          className={`flex items-start gap-3 p-3 rounded-lg transition-colors cursor-pointer hover:bg-accent/50 ${!notification.isRead
+                          className={`flex items-start gap-3 p-3 rounded-lg transition-colors cursor-pointer hover:bg-accent/50 ${!notification.seen
                             ? 'bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800'
                             : ''
                             }`}
                           onClick={async () => {
-                            if (!notification.isRead) {
+                            if (!notification.seen) {
                               try {
                                 await notificationService.markAsRead(notification._id);
                                 fetchCounts();
@@ -794,7 +794,7 @@ export function MainNav() {
                             }
                           }}
                         >
-                          <div className={`h-9 w-9 rounded-full flex items-center justify-center ${!notification.isRead
+                          <div className={`h-9 w-9 rounded-full flex items-center justify-center ${!notification.seen
                             ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
                             : 'bg-accent text-muted-foreground'
                             }`}>
@@ -825,7 +825,7 @@ export function MainNav() {
                             )}
                           </div>
 
-                          {!notification.isRead && (
+                          {!notification.seen && (
                             <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-2" />
                           )}
                         </div>
