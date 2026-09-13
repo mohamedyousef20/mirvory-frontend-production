@@ -99,7 +99,7 @@ export default function EditCouponPage() {
               {/* Code */}
               <div className="space-y-2">
                 <Label htmlFor="code">{isArabic ? 'كود الكوبون' : 'Coupon Code'} *</Label>
-                <Input id="code" value={formData.code} onChange={(e) => handleChange('code', e.target.value.toUpperCase())} required />
+                <Input id="code" value={formData.code} onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('code', e.target.value.toUpperCase())} required />
               </div>
               {/* Discount Type */}
               <div className="space-y-2">

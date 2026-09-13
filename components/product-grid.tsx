@@ -269,7 +269,7 @@ export function ProductGrid() {
           error: null,
         }));
 
-        let response;
+        let response: any;
 
         if (filters.searchQuery.trim()) {
           const searchParamsData: any = {
@@ -639,7 +639,7 @@ export function ProductGrid() {
 
             <div className="flex items-center gap-2 w-full sm:w-auto">
               {/* Mobile Filter Trigger */}
-              <Sheet open={uiState.isFilterOpen} onOpenChange={(open) => setUiState(prev => ({ ...prev, isFilterOpen: open }))}>
+              <Sheet open={uiState.isFilterOpen} onOpenChange={(open: boolean) => setUiState(prev => ({ ...prev, isFilterOpen: open }))}>
                 <SheetTrigger asChild>
                   <Button variant="outline" size="sm" className="h-8 gap-1 md:hidden">
                     <Filter className="h-4 w-4" />

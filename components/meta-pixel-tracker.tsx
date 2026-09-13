@@ -5,7 +5,8 @@ import { useEffect } from "react"
 
 declare global {
     interface Window {
-        fbq?: (...args: any[]) => void
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  fbq?: (command: string, event: string, params?: Record<string, any>) => void
     }
 }
 

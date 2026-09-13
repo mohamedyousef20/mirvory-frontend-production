@@ -126,7 +126,7 @@ export function NotificationsPage() {
       system: ['RETURN_REQUESTED']
     };
 
-    return typeMap[activeTab]?.includes(notification.type) || notification.type === activeTab;
+    return typeMap[activeTab as keyof typeof typeMap]?.includes(notification.type) || notification.type === activeTab;
   });
 
   const unreadCount = notifications.filter(n => !n.seen).length;

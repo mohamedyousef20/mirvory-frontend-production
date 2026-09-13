@@ -105,7 +105,7 @@ interface CartItem {
 interface CartDisplayItem {
   _id?: string;
   id?: string;
-  price: number;
+  price?: number;
   quantity: number;
   product?: {
     _id?: string;
@@ -1005,8 +1005,8 @@ export function MainNav() {
                         <span className="font-medium">{language === "ar" ? "المجموع" : "Total"}</span>
                         <span className="font-bold">
                           {language === "ar"
-                            ? `${enhancedCartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)} ج.م`
-                            : `${enhancedCartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)} EGP`
+                            ? `${enhancedCartItems.reduce((sum, item) => sum + ((item.price ?? 0) * item.quantity), 0)} ج.م`
+                            : `${enhancedCartItems.reduce((sum, item) => sum + ((item.price ?? 0) * item.quantity), 0)} EGP`
                           }
                         </span>
                       </div>

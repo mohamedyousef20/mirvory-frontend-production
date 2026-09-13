@@ -131,7 +131,7 @@ export function OrdersTable() {
               className="pl-10 w-full sm:w-64"
               placeholder={isArabic ? 'ابحث عن الطلبات...' : 'Search orders...'}
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
             />
           </div>
 

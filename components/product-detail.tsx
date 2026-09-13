@@ -794,7 +794,7 @@ const ProductDetail = ({ productId }: { productId: string }) => {
                             type="button"
                             variant="ghost"
                             size="sm"
-                            onClick={handleDeleteReview}
+                            onClick={() => handleDeleteReview()}
                             disabled={!!deletingReviewId}
                             className="text-red-500 hover:text-red-700 hover:bg-red-50"
                           >

@@ -288,7 +288,7 @@ export default function NotificationsPage() {
                             <Input
                                 id="title"
                                 value={title}
-                                onChange={(e) => setTitle(e.target.value)}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)}
                                 required
                                 disabled={isSending}
                                 placeholder={isArabic ? "أدخل عنوان الإشعار" : "Enter notification title"}
@@ -302,7 +302,7 @@ export default function NotificationsPage() {
                             <Textarea
                                 id="message"
                                 value={message}
-                                onChange={(e) => setMessage(e.target.value)}
+                                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setMessage(e.target.value)}
                                 required
                                 className="min-h-[120px]"
                                 disabled={isSending}
@@ -392,7 +392,7 @@ export default function NotificationsPage() {
                                         <Input
                                             id="search"
                                             value={searchQuery}
-                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
                                             onKeyPress={handleKeyPress}
                                             placeholder={
                                                 isArabic

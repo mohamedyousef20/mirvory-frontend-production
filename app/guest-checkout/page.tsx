@@ -211,7 +211,7 @@ export default function GuestCheckoutPage() {
                 <Input
                   id="guestName"
                   value={form.guestName}
-                  onChange={(e) => handleChange('guestName', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('guestName', e.target.value)}
                   placeholder="مثال: محمد أحمد"
                   required
                   className="mt-1"
@@ -225,7 +225,7 @@ export default function GuestCheckoutPage() {
                   id="guestEmail"
                   type="email"
                   value={form.guestEmail}
-                  onChange={(e) => handleChange('guestEmail', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('guestEmail', e.target.value)}
                   placeholder="example@email.com"
                   required
                   className="mt-1"
@@ -240,7 +240,7 @@ export default function GuestCheckoutPage() {
                   id="guestPhone"
                   type="tel"
                   value={form.guestPhone}
-                  onChange={(e) => handleChange('guestPhone', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('guestPhone', e.target.value)}
                   placeholder="01xxxxxxxxx"
                   required
                   className="mt-1"
@@ -287,7 +287,7 @@ export default function GuestCheckoutPage() {
                 <Input
                   id="address"
                   value={form.address}
-                  onChange={(e) => handleChange('address', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('address', e.target.value)}
                   placeholder="المحافظة، المدينة، الشارع، رقم المبنى"
                   required={form.deliveryMethod === 'home'}
                   className="mt-1"
@@ -308,7 +308,7 @@ export default function GuestCheckoutPage() {
                 <select
                   id="pickupPoint"
                   value={form.pickupPoint}
-                  onChange={(e) => handleChange('pickupPoint', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleChange('pickupPoint', e.target.value)}
                   required={form.deliveryMethod === 'pickup'}
                   className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >

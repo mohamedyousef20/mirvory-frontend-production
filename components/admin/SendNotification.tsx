@@ -78,7 +78,7 @@ export function SendNotification({ onNotificationSent }: SendNotificationProps) 
             <Input
               id="title"
               value={formData.title}
-              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData(prev => ({ ...prev, title: e.target.value }))}
               placeholder={isArabic ? "أدخل عنوان الإشعار" : "Enter notification title"}
               required
               dir={isArabic ? "rtl" : "ltr"}
@@ -92,7 +92,7 @@ export function SendNotification({ onNotificationSent }: SendNotificationProps) 
             <Textarea
               id="message"
               value={formData.message}
-              onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setFormData(prev => ({ ...prev, message: e.target.value }))}
               placeholder={isArabic ? "أدخل محتوى الإشعار" : "Enter notification message"}
               required
               dir={isArabic ? "rtl" : "ltr"}
@@ -105,7 +105,7 @@ export function SendNotification({ onNotificationSent }: SendNotificationProps) 
             </Label>
             <Select
               value={formData.type}
-              onValueChange={(value) => setFormData(prev => ({ ...prev, type: value }))}
+              onValueChange={(value: string) => setFormData(prev => ({ ...prev, type: value }))}
               required
             >
               <SelectTrigger>
@@ -129,7 +129,7 @@ export function SendNotification({ onNotificationSent }: SendNotificationProps) 
               </Label>
               <Input
                 placeholder={isArabic ? "أدخل معرفات المستخدمين (مفصولة بفواصل)" : "Enter user IDs (comma separated)"}
-                onChange={(e) => {
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   const userId = e.target.value.split(",").map(id => id.trim());
                   setFormData(prev => ({ ...prev, userId }));
                 }}

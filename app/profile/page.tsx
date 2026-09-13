@@ -543,7 +543,7 @@ const Profile = () => {
                                                     id="firstName"
                                                     name="firstName"
                                                     value={formData.firstName}
-                                                    onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
+                                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
                                                     placeholder="أدخل اسمك الأول"
                                                     disabled={!isEditing}
                                                 />
@@ -558,7 +558,7 @@ const Profile = () => {
                                                     id="lastName"
                                                     name="lastName"
                                                     value={formData.lastName}
-                                                    onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
+                                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
                                                     placeholder="أدخل اسمك الأخير"
                                                     disabled={!isEditing}
                                                 />
@@ -598,7 +598,7 @@ const Profile = () => {
                                                     name="phone"
                                                     type="tel"
                                                     value={formData.phone}
-                                                    onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
                                                     placeholder="01XXXXXXXXX"
                                                     disabled={!isEditing}
                                                 />
@@ -865,7 +865,7 @@ const Profile = () => {
                                                         id="currentPassword"
                                                         type={showPassword.current ? "text" : "password"}
                                                         value={passwordForm.currentPassword}
-                                                        onChange={(e) => setPasswordForm(prev => ({ ...prev, currentPassword: e.target.value }))}
+                                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPasswordForm(prev => ({ ...prev, currentPassword: e.target.value }))}
                                                         placeholder="أدخل كلمة المرور الحالية"
                                                     />
                                                     <Button
@@ -891,7 +891,7 @@ const Profile = () => {
                                                         id="newPassword"
                                                         type={showPassword.new ? "text" : "password"}
                                                         value={passwordForm.newPassword}
-                                                        onChange={(e) => setPasswordForm(prev => ({ ...prev, newPassword: e.target.value }))}
+                                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPasswordForm(prev => ({ ...prev, newPassword: e.target.value }))}
                                                         placeholder="كلمة المرور الجديدة (8 أحرف على الأقل)"
                                                     />
                                                     <Button
@@ -928,7 +928,7 @@ const Profile = () => {
                                                         id="confirmPassword"
                                                         type={showPassword.confirm ? "text" : "password"}
                                                         value={passwordForm.confirmPassword}
-                                                        onChange={(e) => setPasswordForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPasswordForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
                                                         placeholder="أعد إدخال كلمة المرور الجديدة"
                                                     />
                                                     <Button

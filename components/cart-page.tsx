@@ -717,7 +717,7 @@ function AuthenticatedCartPage() {
                         type="text"
                         placeholder={language === "ar" ? "أدخل رمز الكوبون..." : "Enter coupon code..."}
                         value={couponCode}
-                        onChange={(e) => setCouponCode(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCouponCode(e.target.value)}
                         disabled={couponApplied || couponLoading}
                         className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#1a4fba]/30 focus:border-[#1a4fba] transition"
                       />

@@ -143,7 +143,7 @@ export default function NewCouponPage() {
                   <Input
                     id="code"
                     value={formData.code}
-                    onChange={(e) => handleChange('code', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('code', e.target.value)}
                     placeholder="مثال: SUMMER20"
                     className="font-mono"
                     required
@@ -197,7 +197,7 @@ export default function NewCouponPage() {
                     min="0"
                     step={formData.discountType === 'percentage' ? '0.1' : '1'}
                     value={formData.discountValue}
-                    onChange={(e) => handleChange('discountValue', parseFloat(e.target.value) || 0)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('discountValue', parseFloat(e.target.value) || 0)}
                     required
                   />
 
@@ -215,7 +215,7 @@ export default function NewCouponPage() {
                     type="number"
                     min="0"
                     value={formData.maxDiscountAmount || ''}
-                    onChange={(e) => handleChange('maxDiscountAmount', parseFloat(e.target.value) || 0)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('maxDiscountAmount', parseFloat(e.target.value) || 0)}
                   />
                   <p className="text-xs text-muted-foreground">
                     {isArabic
@@ -235,7 +235,7 @@ export default function NewCouponPage() {
                   type="number"
                   min="0"
                   value={formData.minPurchaseAmount || ''}
-                  onChange={(e) => handleChange('minPurchaseAmount', parseFloat(e.target.value) || 0)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('minPurchaseAmount', parseFloat(e.target.value) || 0)}
                 />
               </div>
 
@@ -260,7 +260,7 @@ export default function NewCouponPage() {
                     <Calendar
                       mode="single"
                       selected={new Date(formData.validFrom)}
-                      onSelect={(date) => date && handleChange('validFrom', date)}
+                      onSelect={(date: Date | undefined) => date && handleChange('validFrom', date)}
                       initialFocus
                     />
                   </PopoverContent>
@@ -288,7 +288,7 @@ export default function NewCouponPage() {
                     <Calendar
                       mode="single"
                       selected={new Date(formData.validUntil)}
-                      onSelect={(date) => date && handleChange('validUntil', date)}
+                      onSelect={(date: Date | undefined) => date && handleChange('validUntil', date)}
                       initialFocus
                     />
                   </PopoverContent>
@@ -305,7 +305,7 @@ export default function NewCouponPage() {
                   type="number"
                   min="1"
                   value={formData.maxUses}
-                  onChange={(e) => handleChange('maxUses', parseInt(e.target.value) || 1)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('maxUses', parseInt(e.target.value) || 1)}
                 />
                 <p className="text-xs text-muted-foreground">
                   {isArabic
@@ -327,7 +327,7 @@ export default function NewCouponPage() {
                 <Switch
                   id="isActive"
                   checked={formData.isActive}
-                  onCheckedChange={(checked) => handleChange('isActive', checked)}
+                  onCheckedChange={(checked: boolean) => handleChange('isActive', checked)}
                 />
               </div>
             </div>

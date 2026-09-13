@@ -458,7 +458,7 @@ export default function Signup() {
                       className="w-full pr-4 pl-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-white"
                     >
                       <option value="">اختر المحافظة</option>
-                      {GREATER_CAIRO_AREA.map((gov) => (
+                      {GREATER_CAIRO_AREA.map((gov: any) => (
                         <option key={gov.id} value={gov.id}>
                           {gov.nameAr}
                         </option>
@@ -490,7 +490,7 @@ export default function Signup() {
                       <option value="">
                         {formData.address.governorate ? 'اختر المنطقة' : 'اختر المحافظة أولاً'}
                       </option>
-                      {availableCities.map((city) => (
+                      {availableCities.map((city: any) => (
                         <option key={city.id} value={city.id}>
                           {city.nameAr}
                         </option>

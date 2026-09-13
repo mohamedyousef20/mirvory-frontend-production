@@ -275,7 +275,7 @@ export function AnnouncementsTab({
                                     <Input
                                         id="title"
                                         value={selectedAnnouncement?.title || newAnnouncement.title || ""}
-                                        onChange={(e) =>
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                             selectedAnnouncement
                                                 ? setSelectedAnnouncement({ ...selectedAnnouncement, title: e.target.value })
                                                 : setNewAnnouncement({ ...newAnnouncement, title: e.target.value })
@@ -288,7 +288,7 @@ export function AnnouncementsTab({
                                     <Input
                                         id="titleEn"
                                         value={selectedAnnouncement?.titleEn || newAnnouncement.titleEn || ""}
-                                        onChange={(e) =>
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                             selectedAnnouncement
                                                 ? setSelectedAnnouncement({ ...selectedAnnouncement, titleEn: e.target.value })
                                                 : setNewAnnouncement({ ...newAnnouncement, titleEn: e.target.value })
@@ -304,7 +304,7 @@ export function AnnouncementsTab({
                                 <Textarea
                                     id="content"
                                     value={selectedAnnouncement?.content || newAnnouncement.content || ""}
-                                    onChange={(e) =>
+                                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                                         selectedAnnouncement
                                             ? setSelectedAnnouncement({ ...selectedAnnouncement, content: e.target.value })
                                             : setNewAnnouncement({ ...newAnnouncement, content: e.target.value })
@@ -318,7 +318,7 @@ export function AnnouncementsTab({
                                 <Textarea
                                     id="contentEn"
                                     value={selectedAnnouncement?.contentEn || newAnnouncement.contentEn || ""}
-                                    onChange={(e) =>
+                                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                                         selectedAnnouncement
                                             ? setSelectedAnnouncement({ ...selectedAnnouncement, contentEn: e.target.value })
                                             : setNewAnnouncement({ ...newAnnouncement, contentEn: e.target.value })
@@ -338,7 +338,7 @@ export function AnnouncementsTab({
                                     id="link"
                                     type="url"
                                     value={selectedAnnouncement?.link || newAnnouncement.link || ""}
-                                    onChange={(e) =>
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                         selectedAnnouncement
                                             ? setSelectedAnnouncement({ ...selectedAnnouncement, link: e.target.value })
                                             : setNewAnnouncement({ ...newAnnouncement, link: e.target.value })
@@ -367,7 +367,7 @@ export function AnnouncementsTab({
                                             ? new Date(selectedAnnouncement.startDate).toISOString().slice(0, 16)
                                             : newAnnouncement.startDate || ""
                                         }
-                                        onChange={(e) =>
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                             selectedAnnouncement
                                                 ? setSelectedAnnouncement({ ...selectedAnnouncement, startDate: e.target.value })
                                                 : setNewAnnouncement({ ...newAnnouncement, startDate: e.target.value })
@@ -387,7 +387,7 @@ export function AnnouncementsTab({
                                             ? new Date(selectedAnnouncement.endDate).toISOString().slice(0, 16)
                                             : newAnnouncement.endDate || ""
                                         }
-                                        onChange={(e) =>
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                             selectedAnnouncement
                                                 ? setSelectedAnnouncement({ ...selectedAnnouncement, endDate: e.target.value })
                                                 : setNewAnnouncement({ ...newAnnouncement, endDate: e.target.value })
@@ -403,7 +403,7 @@ export function AnnouncementsTab({
                                     <Label htmlFor="status">{isArabic ? "الحالة" : "Status"} *</Label>
                                     <Select
                                         value={selectedAnnouncement?.status || newAnnouncement.status || "active"}
-                                        onValueChange={(value) =>
+                                        onValueChange={(value: string) =>
                                             selectedAnnouncement
                                                 ? setSelectedAnnouncement({ ...selectedAnnouncement, status: value })
                                                 : setNewAnnouncement({ ...newAnnouncement, status: value })
@@ -438,7 +438,7 @@ export function AnnouncementsTab({
                                     <Switch
                                         id="isMain-toggle"
                                         checked={selectedAnnouncement?.isMain ?? newAnnouncement.isMain ?? false}
-                                        onCheckedChange={(checked) => {
+                                        onCheckedChange={(checked: boolean) => {
                                             if (selectedAnnouncement) {
                                                 setSelectedAnnouncement({
                                                     ...selectedAnnouncement,

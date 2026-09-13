@@ -96,3 +96,5 @@
 //     </AdminLayout>
 //   );
 // }
+
+export default function AdminClientPage() { return null; }

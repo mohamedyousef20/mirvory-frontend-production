@@ -275,7 +275,7 @@ export default function Checkout() {
                                             <Label className="text-xs text-slate-500 mb-1 block">{isAr ? "الاسم الكامل" : "Full Name"}</Label>
                                             <Input
                                                 value={fullName}
-                                                onChange={(e) => setFullName(e.target.value)}
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFullName(e.target.value)}
                                                 placeholder={isAr ? "الاسم الأول واللقب" : "John Doe"}
                                                 className="h-12 bg-slate-50 rounded-xl border-slate-200"
                                             />
@@ -284,7 +284,7 @@ export default function Checkout() {
                                             <Label className="text-xs text-slate-500 mb-1 block">{isAr ? "رقم الهاتف" : "Phone"}</Label>
                                             <Input
                                                 value={phone}
-                                                onChange={(e) => setPhone(e.target.value)}
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPhone(e.target.value)}
                                                 placeholder="01XXXXXXXXX"
                                                 className="h-12 bg-slate-50 rounded-xl border-slate-200 text-left"
                                                 dir="ltr"
@@ -302,7 +302,7 @@ export default function Checkout() {
 
                                     <RadioGroup
                                         value={deliveryMethod}
-                                        onValueChange={(v) => setDeliveryMethod(v as 'home' | 'pickup')}
+                                        onValueChange={(v: string) => setDeliveryMethod(v as 'home' | 'pickup')}
                                         className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5"
                                     >
                                         <Label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-all ${deliveryMethod === 'home' ? 'border-[#1a4fba] bg-blue-50/50 ring-1 ring-[#1a4fba]' : 'border-slate-200 hover:border-[#1a4fba]'}`}>
@@ -334,7 +334,7 @@ export default function Checkout() {
                                                 </Label>
                                                 <select
                                                     value={address.governorate}
-                                                    onChange={(e) =>
+                                                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                                                         setAddress({
                                                             governorate: e.target.value,
                                                             city: '',
@@ -347,7 +347,7 @@ export default function Checkout() {
                                                         {isAr ? "اختر المحافظة" : "Select governorate"}
                                                     </option>
 
-                                                    {GREATER_CAIRO_AREA.map((gov) => (
+                                                    {GREATER_CAIRO_AREA.map((gov: any) => (
                                                         <option key={gov.id} value={gov.id}>
                                                             {isAr ? gov.nameAr : gov.nameEn}
                                                         </option>
@@ -362,7 +362,7 @@ export default function Checkout() {
                                                 </Label>
                                                 <select
                                                     value={address.city}
-                                                    onChange={(e) =>
+                                                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                                                         setAddress(prev => ({
                                                             ...prev,
                                                             city: e.target.value
@@ -375,7 +375,7 @@ export default function Checkout() {
                                                         {isAr ? "اختر المدينة" : "Select city"}
                                                     </option>
 
-                                                    {availableCities.map((city) => (
+                                                    {availableCities.map((city: any) => (
                                                         <option key={city.id} value={city.id}>
                                                             {isAr ? city.nameAr : city.nameEn}
                                                         </option>
@@ -390,7 +390,7 @@ export default function Checkout() {
                                                 </Label>
                                                 <Input
                                                     value={address.addressLine}
-                                                    onChange={(e) =>
+                                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                                         setAddress(prev => ({
                                                             ...prev,
                                                             addressLine: e.target.value
@@ -441,7 +441,7 @@ export default function Checkout() {
                                     </h3>
                                     <RadioGroup
                                         value={paymentMethod}
-                                        onValueChange={(v) => setPaymentMethod(v as 'cash' | 'card')}
+                                        onValueChange={(v: string) => setPaymentMethod(v as 'cash' | 'card')}
                                         className="grid grid-cols-1 sm:grid-cols-2 gap-3"
                                     >
                                         {/* <Label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-all ${paymentMethod === 'card' ? 'border-blue-600 bg-blue-50/50 ring-1 ring-blue-600' : 'border-gray-200 hover:border-blue-300'}`}>

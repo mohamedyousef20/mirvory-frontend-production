@@ -111,7 +111,7 @@ export function CategoriesTab({
                 
                             <div>
                                 <Label htmlFor="image">{isArabic ? "صورة التصنيف" : "Category Image"}</Label>
-                                <ImageUploader onUpload={(url) => setNewCategory({ ...newCategory, image: url })} />
+                                <ImageUploader onUpload={(url: string) => setNewCategory({ ...newCategory, image: url })} />
                             </div>
                             <div>
                                 <Label htmlFor="status">{isArabic ? "الحالة" : "Status"}</Label>
@@ -150,7 +150,7 @@ export function CategoriesTab({
                                 <Input
                                     id="edit-name"
                                     value={editingCategory.name}
-                                    onChange={(e) => setEditingCategory({ ...editingCategory, name: e.target.value })}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditingCategory({ ...editingCategory, name: e.target.value })}
                                     required
                                 />
                             </div>
@@ -159,7 +159,7 @@ export function CategoriesTab({
                                 <Input
                                     id="edit-nameEn"
                                     value={editingCategory.nameEn}
-                                    onChange={(e) => setEditingCategory({ ...editingCategory, nameEn: e.target.value })}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditingCategory({ ...editingCategory, nameEn: e.target.value })}
                                     required
                                 />
                             </div>
@@ -168,7 +168,7 @@ export function CategoriesTab({
                                 <Input
                                     id="edit-description"
                                     value={editingCategory.description}
-                                    onChange={(e) => setEditingCategory({ ...editingCategory, description: e.target.value })}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditingCategory({ ...editingCategory, description: e.target.value })}
                                 />
                             </div>
                             <div>
@@ -176,18 +176,18 @@ export function CategoriesTab({
                                 <Input
                                     id="edit-descriptionEn"
                                     value={editingCategory.descriptionEn}
-                                    onChange={(e) => setEditingCategory({ ...editingCategory, descriptionEn: e.target.value })}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditingCategory({ ...editingCategory, descriptionEn: e.target.value })}
                                 />
                             </div>
                             <div>
                                 <Label htmlFor="image">{isArabic ? "صورة التصنيف" : "Category Image"}</Label>
-                                <ImageUploader onUpload={(url) => setEditingCategory({ ...editingCategory, image: url })} />
+                                <ImageUploader onUpload={(url: string) => setEditingCategory({ ...editingCategory, image: url })} />
                             </div>
                             <div>
                                 <Label htmlFor="edit-status">{isArabic ? "الحالة" : "Status"}</Label>
                                 <Select
                                     value={editingCategory.status}
-                                    onValueChange={(value) => setEditingCategory({ ...editingCategory, status: value })}
+                                    onValueChange={(value: string) => setEditingCategory({ ...editingCategory, status: value })}
                                 >
                                     <SelectTrigger>
                                         <SelectValue />

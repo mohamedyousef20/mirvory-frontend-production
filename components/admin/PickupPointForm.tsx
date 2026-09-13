@@ -100,7 +100,7 @@ export function PickupPointForm({ initialData, onSuccess, onClose }: PickupPoint
               <Input
                 id="stationName"
                 value={formData.stationName}
-                onChange={(e) =>
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setFormData({ ...formData, stationName: e.target.value })
                 }
                 placeholder={isArabic ? "أدخل اسم نقطة الاستلام" : "Enter station name"}
@@ -111,7 +111,7 @@ export function PickupPointForm({ initialData, onSuccess, onClose }: PickupPoint
               <Input
                 id="address"
                 value={formData.address}
-                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, address: e.target.value })}
                 placeholder={isArabic ? "أدخل العنوان" : "Enter address"}
               />
             </div>
@@ -123,7 +123,7 @@ export function PickupPointForm({ initialData, onSuccess, onClose }: PickupPoint
               <Input
                 id="phone"
                 value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, phone: e.target.value })}
                 placeholder={isArabic ? "أدخل رقم الهاتف" : "Enter phone number"}
               />
             </div>
@@ -134,7 +134,7 @@ export function PickupPointForm({ initialData, onSuccess, onClose }: PickupPoint
               <Input
                 id="workingHours"
                 value={formData.workingHours}
-                onChange={(e) =>
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setFormData({ ...formData, workingHours: e.target.value })
                 }
                 placeholder={isArabic ? "أدخل أوقات العمل" : "Enter working hours"}
@@ -149,7 +149,7 @@ export function PickupPointForm({ initialData, onSuccess, onClose }: PickupPoint
                 id="latitude"
                 type="number"
                 value={formData.location?.coordinates?.[0] ?? 0}
-                onChange={(e) =>
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setFormData({
                     ...formData,
                     location: {
@@ -167,7 +167,7 @@ export function PickupPointForm({ initialData, onSuccess, onClose }: PickupPoint
                 id="longitude"
                 type="number"
                 value={formData.location?.coordinates?.[1] ?? 0}
-                onChange={(e) =>
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setFormData({
                     ...formData,
                     location: {

@@ -32,15 +32,23 @@ interface Coupon {
 interface DiscountProduct {
   _id: string
   title: string
-  description: string
+  description?: string
   price: number
+  quantity: number
   discountPercentage: number
   discountedPrice: number
-  images?: string[]
+  images: string[]
   ratingsAverage?: number
   ratingsQuantity?: number
+  ratings?: number | { rounded?: number | null }
+  sizes?: string[]
+  colors?: Array<{ name: string; value: string; available?: boolean }>
+  sold?: number
+  isFeatured?: boolean
+  isTrusted?: boolean
+  isFavorite?: boolean
   category?: {
-    _id: string
+    _id?: string
     name?: string
     nameEn?: string
   }

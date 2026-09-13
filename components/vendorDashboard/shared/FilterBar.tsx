@@ -35,7 +35,7 @@ export function FilterBar({
                         placeholder={searchPlaceholder}
                         className="h-10 pl-9 rounded-xl border-slate-200 text-sm"
                         value={searchValue}
-                        onChange={(e) => onSearchChange(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => onSearchChange(e.target.value)}
                         onKeyPress={(e) => e.key === 'Enter' && onSearchSubmit?.()}
                     />
                 </div>

@@ -89,7 +89,7 @@ export default function TrackOrderPage() {
               <Input
                 id="trackToken"
                 value={token}
-                onChange={(e) => setToken(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setToken(e.target.value)}
                 placeholder="أدخل رمز التتبع هنا..."
                 className="h-12"
                 onKeyDown={(e) => e.key === 'Enter' && handleTrack()}

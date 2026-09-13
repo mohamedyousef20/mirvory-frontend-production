@@ -386,7 +386,7 @@ export default function ReturnPageRequest() {
                       </Label>
                       <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 overflow-hidden">
                         <ImageUploader
-                          onUpload={(url) =>
+                          onUpload={(url: string) =>
                             setFormData(prev => ({ ...prev, images: [...prev.images, url] }))
                           }
                         />

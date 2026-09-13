@@ -15,16 +15,29 @@ import { ProductCard } from "./ProductCard"
 // import { addToCart as addToCartAction } from "@/src/redux/slices/cartSlice"
 
 interface Product {
-    id: number;
+    _id: string;
+    id?: string | number;
     title: string;
-    nameEn: string;
-    image: string;
+    titleEn?: string;
+    nameEn?: string;
+    images: string[];
+    image?: string;
     price: number;
     oldPrice?: number;
-    ratings: number;
-    count: number;
+    quantity: number;
+    discountPercentage?: number;
+    discountedPrice?: number;
+    ratings?: number | { rounded?: number | null };
+    count?: number;
     isNew?: boolean;
     brand?: string;
+    sizes?: string[];
+    colors?: Array<{ name: string; value: string; available: boolean }>;
+    category?: { name?: string; nameEn?: string };
+    sold?: number;
+    isFeatured?: boolean;
+    isTrusted?: boolean;
+    isFavorite?: boolean;
 }
 
 interface NewestProductsProps {
@@ -41,7 +54,7 @@ export function NewestProducts({ title }: NewestProductsProps) {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [favorites, setFavorites] = useState<Set<number>>(new Set());
+    const [favorites, setFavorites] = useState<Set<string>>(new Set());
 
     useEffect(() => {
         const fetchNewestProducts = async () => {

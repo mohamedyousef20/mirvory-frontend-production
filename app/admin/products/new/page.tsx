@@ -566,7 +566,7 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
               <Input
                 id="sizes"
                 value={sizeInput}
-                onChange={(e) => setSizeInput(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSizeInput(e.target.value)}
                 placeholder={language === 'ar' ? 'أدخل مقاساً' : 'Enter a size'}
               />
               <Button
@@ -608,7 +608,7 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
                   <Input
                     id="colorName"
                     value={colorInput.name}
-                    onChange={(e) => setColorInput(prev => ({ ...prev, name: e.target.value }))}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setColorInput(prev => ({ ...prev, name: e.target.value }))}
                     placeholder={language === 'ar' ? 'أدخل اسم اللون' : 'Enter color name'}
                   />
                 </div>
@@ -711,7 +711,7 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
             </div>
             <Select
               value={newProduct.category}
-              onValueChange={(value) => handleSelectChange('category', value)}
+              onValueChange={(value: string) => handleSelectChange('category', value)}
             >
               <SelectTrigger>
                 <SelectValue placeholder={language === 'ar' ? 'اختر الفئة' : 'Select category'} />

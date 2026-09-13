@@ -33,7 +33,7 @@ export const { setError, clearError } = errorSlice.actions;
 export default errorSlice.reducer;
 
 // Error middleware
-export const errorMiddleware = (store) => (next) => (action) => {
+export const errorMiddleware = (store: any) => (next: any) => (action: any) => {
   if (action.error) {
     // Handle API errors
     if (action.error.response) {

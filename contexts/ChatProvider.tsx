@@ -88,8 +88,8 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
       setMessages(chat.messages || []);
       // Mark messages as read
       const unreadMessages = chat.messages
-        .filter(m => !m.read && m.sender !== user?.id)
-        .map(m => m.id);
+        .filter((m: any) => !m.read && m.sender !== user?.id)
+        .map((m: any) => m.id);
       if (unreadMessages.length > 0) {
         await chatService.markAsRead(chatId, unreadMessages);
       }

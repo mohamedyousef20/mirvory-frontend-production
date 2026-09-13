@@ -442,7 +442,7 @@ export function OrdersTab({
                                             </span>
                                             <Select
                                                 value={order.paymentStatus || "pending"}
-                                                onValueChange={(value) => updatePaymentStatus(order._id, value)}
+                                                onValueChange={(value: string) => updatePaymentStatus(order._id, value)}
                                             >
                                                 <SelectTrigger className="h-9 flex-1 rounded-xl border-slate-200 bg-white text-xs">
                                                     <SelectValue />
@@ -462,7 +462,7 @@ export function OrdersTab({
                                             </span>
                                             <Select
                                                 value={order.deliveryStatus || "pending"}
-                                                onValueChange={(value) => updateDeliveryStatus(order._id, value)}
+                                                onValueChange={(value: string) => updateDeliveryStatus(order._id, value)}
                                             >
                                                 <SelectTrigger className="h-9 flex-1 rounded-xl border-slate-200 bg-white text-xs">
                                                     <SelectValue />

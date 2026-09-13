@@ -287,7 +287,7 @@ const VerifyEmail = () => {
                     id="email"
                     type="email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
                     className="w-full pr-4 pl-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                     placeholder="أدخل بريدك الإلكتروني"
                     required
@@ -304,7 +304,7 @@ const VerifyEmail = () => {
                     id="verificationCode"
                     type={showCode ? "text" : "password"}
                     value={verificationCode}
-                    onChange={(e) => {
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       const value = e.target.value.replace(/\D/g, '');
                       setVerificationCode(value);
                       setErrorText("");

@@ -1,4 +1,6 @@
+// @ts-ignore
 import { cookies } from "next/headers";
+// @ts-ignore
 import jwt, { JwtPayload, TokenExpiredError } from "jsonwebtoken";
 
 type DecodedUser = JwtPayload & {

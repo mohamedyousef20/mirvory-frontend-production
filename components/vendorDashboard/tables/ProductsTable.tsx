@@ -79,7 +79,7 @@ export function ProductsTable({
                                 {editingProductId === product._id ? (
                                     <Input
                                         value={editingProductData.title || ""}
-                                        onChange={(e) => onEditDataChange({ ...editingProductData, title: e.target.value })}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => onEditDataChange({ ...editingProductData, title: e.target.value })}
                                         className="h-9 rounded-lg border-slate-200 text-sm w-full"
                                     />
                                 ) : (
@@ -95,7 +95,7 @@ export function ProductsTable({
                             {/* Price */}
                             <TableCell>
                                 {editingProductId === product._id ? (
-                                    <Input type="number" value={editingProductData.price || ""} onChange={(e) => onEditDataChange({ ...editingProductData, price: e.target.value })} className="h-9 rounded-lg border-slate-200 text-sm w-24" />
+                                    <Input type="number" value={editingProductData.price || ""} onChange={(e: React.ChangeEvent<HTMLInputElement>) => onEditDataChange({ ...editingProductData, price: e.target.value })} className="h-9 rounded-lg border-slate-200 text-sm w-24" />
                                 ) : (
                                     <span className="font-medium text-slate-800 text-sm whitespace-nowrap">
                                         {product.price} <span className="text-slate-400 font-normal">{language === "ar" ? "ج.م" : "EGP"}</span>
@@ -106,7 +106,7 @@ export function ProductsTable({
                             {/* Discount */}
                             <TableCell>
                                 {editingProductId === product._id ? (
-                                    <Input type="number" value={editingProductData.discountPercentage || ""} onChange={(e) => onEditDataChange({ ...editingProductData, discountPercentage: e.target.value })} min="0" max="100" className="h-9 rounded-lg border-slate-200 text-sm w-20" />
+                                    <Input type="number" value={editingProductData.discountPercentage || ""} onChange={(e: React.ChangeEvent<HTMLInputElement>) => onEditDataChange({ ...editingProductData, discountPercentage: e.target.value })} min="0" max="100" className="h-9 rounded-lg border-slate-200 text-sm w-20" />
                                 ) : product.discountPercentage > 0 ? (
                                     <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 rounded-full text-xs">{product.discountPercentage}%</Badge>
                                 ) : (
@@ -127,7 +127,7 @@ export function ProductsTable({
                             {/* Stock */}
                             <TableCell>
                                 {editingProductId === product._id ? (
-                                    <Input type="number" value={editingProductData.quantity || ""} onChange={(e) => onEditDataChange({ ...editingProductData, quantity: e.target.value })} min="0" className="h-9 rounded-lg border-slate-200 text-sm w-20" />
+                                    <Input type="number" value={editingProductData.quantity || ""} onChange={(e: React.ChangeEvent<HTMLInputElement>) => onEditDataChange({ ...editingProductData, quantity: e.target.value })} min="0" className="h-9 rounded-lg border-slate-200 text-sm w-20" />
                                 ) : (
                                     <div className="flex items-center gap-1.5">
                                         <span className="text-sm text-slate-700">{product.quantity}</span>
@@ -161,7 +161,7 @@ export function ProductsTable({
                                 {editingProductId === product._id ? (
                                     <Select
                                         value={editingProductData.category || (typeof product.category === "object" ? product.category._id : product.category)}
-                                        onValueChange={(v) => onEditDataChange({ ...editingProductData, category: v })}
+                                        onValueChange={(v: string) => onEditDataChange({ ...editingProductData, category: v })}
                                     >
                                         <SelectTrigger className="h-9 rounded-lg border-slate-200 text-sm w-36"><SelectValue /></SelectTrigger>
                                         <SelectContent className="rounded-xl">

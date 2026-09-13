@@ -96,4 +96,3 @@ export function useToast() {
 }
 
 // Export the hook and provider
-export { ToastProvider, useToast };

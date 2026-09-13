@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { userSchemas } from '@/lib/validation/schema';
 import { z } from 'zod';
+import { toast } from 'sonner';
 
 export const useValidation = (type: 'register' | 'login' | 'profile' | 'updateProfile') => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});

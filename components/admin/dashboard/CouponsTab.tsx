@@ -365,7 +365,7 @@ export function CouponsTab({
                                     className="w-full rounded-md border p-2 bg-transparent uppercase font-bold"
                                     required
                                     value={editingCoupon ? editingCoupon.code : newCoupon.code}
-                                    onChange={(e) => handleCouponInputChange('code', e.target.value.toUpperCase())}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleCouponInputChange('code', e.target.value.toUpperCase())}
                                     placeholder="SUMMER2026"
                                 />
                             </div>
@@ -379,7 +379,7 @@ export function CouponsTab({
                                     <select
                                         className="w-full rounded-md border p-2 bg-transparent dark:bg-slate-900"
                                         value={editingCoupon ? editingCoupon.discountType : newCoupon.discountType}
-                                        onChange={(e) => handleCouponInputChange('discountType', e.target.value)}
+                                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleCouponInputChange('discountType', e.target.value)}
                                     >
                                         <option value="percentage">{isArabic ? "نسبة مئوية (%)" : "Percentage (%)"}</option>
                                         <option value="fixed">{isArabic ? "قيمة ثابتة ($)" : "Fixed Amount ($)"}</option>
@@ -397,7 +397,7 @@ export function CouponsTab({
                                         className="w-full rounded-md border p-2 bg-transparent"
                                         required
                                         value={editingCoupon ? editingCoupon.discountValue : newCoupon.discountValue}
-                                        onChange={(e) => handleCouponInputChange('discountValue', Number(e.target.value))}
+                                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleCouponInputChange('discountValue', Number(e.target.value))}
                                     />
                                 </div>
                             </div>
@@ -414,7 +414,7 @@ export function CouponsTab({
                                         className="w-full rounded-md border p-2 bg-transparent"
                                         required
                                         value={editingCoupon ? editingCoupon.minPurchaseAmount : newCoupon.minPurchaseAmount}
-                                        onChange={(e) => handleCouponInputChange('minPurchaseAmount', Number(e.target.value))}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleCouponInputChange('minPurchaseAmount', Number(e.target.value))}
                                     />
                                 </div>
 
@@ -429,7 +429,7 @@ export function CouponsTab({
                                         className="w-full rounded-md border p-2 bg-transparent"
                                         required
                                         value={editingCoupon ? editingCoupon.maxUses : newCoupon.maxUses}
-                                        onChange={(e) => handleCouponInputChange('maxUses', Number(e.target.value))}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleCouponInputChange('maxUses', Number(e.target.value))}
                                     />
                                 </div>
                             </div>
@@ -445,7 +445,7 @@ export function CouponsTab({
                                         min="0"
                                         className="w-full rounded-md border p-2 bg-transparent"
                                         value={editingCoupon ? (editingCoupon.maxDiscountAmount || '') : (newCoupon.maxDiscountAmount || '')}
-                                        onChange={(e) => handleCouponInputChange('maxDiscountAmount', e.target.value ? Number(e.target.value) : undefined)}
+                                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleCouponInputChange('maxDiscountAmount', e.target.value ? Number(e.target.value) : undefined)}
                                     />
                                 </div>
                             )}
@@ -461,7 +461,7 @@ export function CouponsTab({
                                         className="w-full rounded-md border p-2 bg-transparent"
                                         required
                                         value={getInputValueDate(editingCoupon ? editingCoupon.validFrom : newCoupon.validFrom)}
-                                        onChange={(e) => handleCouponInputChange('validFrom', e.target.value)}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleCouponInputChange('validFrom', e.target.value)}
                                     />
                                 </div>
 
@@ -475,7 +475,7 @@ export function CouponsTab({
                                         className="w-full rounded-md border p-2 bg-transparent"
                                         required
                                         value={getInputValueDate(editingCoupon ? editingCoupon.validUntil : newCoupon.validUntil)}
-                                        onChange={(e) => handleCouponInputChange('validUntil', e.target.value)}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleCouponInputChange('validUntil', e.target.value)}
                                     />
                                 </div>
                             </div>

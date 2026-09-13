@@ -96,7 +96,7 @@ export function BulkNotification() {
                 <Input
                   id="title"
                   value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)}
                   required
                 />
               </div>
@@ -108,7 +108,7 @@ export function BulkNotification() {
                 <Textarea
                   id="message"
                   value={message}
-                  onChange={(e) => setMessage(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setMessage(e.target.value)}
                   required
                   className="min-h-[120px]"
                 />
@@ -188,7 +188,7 @@ export function BulkNotification() {
                   <Input
                     id="userId"
                     value={userId}
-                    onChange={(e) => setuserId(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setuserId(e.target.value)}
                     placeholder={
                       isArabic
                         ? target === "specific_users"

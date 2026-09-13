@@ -1,6 +1,6 @@
 'use client';
 
-import { AdminClient } from './AdminClient';
+import AdminClient from './AdminClient';
 
 export const dynamic = 'force-dynamic';
 

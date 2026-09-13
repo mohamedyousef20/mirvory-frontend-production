@@ -95,7 +95,7 @@ export function PickupPointsTab({
                                     <Input
                                         id="stationName"
                                         value={selectedPickupPoint?.stationName || ''}
-                                        onChange={(e) => setSelectedPickupPoint({
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectedPickupPoint({
                                             ...selectedPickupPoint,
                                             stationName: e.target.value
                                         })}
@@ -110,7 +110,7 @@ export function PickupPointsTab({
                                     <Input
                                         id="address"
                                         value={selectedPickupPoint?.address || ''}
-                                        onChange={(e) => setSelectedPickupPoint({
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectedPickupPoint({
                                             ...selectedPickupPoint,
                                             address: e.target.value
                                         })}
@@ -126,7 +126,7 @@ export function PickupPointsTab({
                                     <Input
                                         id="workingHours"
                                         value={selectedPickupPoint?.workingHours || ''}
-                                        onChange={(e) => setSelectedPickupPoint({
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectedPickupPoint({
                                             ...selectedPickupPoint,
                                             workingHours: e.target.value
                                         })}
@@ -142,7 +142,7 @@ export function PickupPointsTab({
                                         id="phone"
                                         type="tel"
                                         value={selectedPickupPoint?.phone || ''}
-                                        onChange={(e) => setSelectedPickupPoint({
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectedPickupPoint({
                                             ...selectedPickupPoint,
                                             phone: e.target.value
                                         })}
@@ -159,7 +159,7 @@ export function PickupPointsTab({
                                         type="number"
                                         step="any"
                                         value={selectedPickupPoint?.location?.coordinates?.[1] ?? ''}
-                                        onChange={(e) => {
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                             const lat = parseFloat(e.target.value);
                                             setSelectedPickupPoint({
                                                 ...selectedPickupPoint,
@@ -186,7 +186,7 @@ export function PickupPointsTab({
                                         type="number"
                                         step="any"
                                         value={selectedPickupPoint?.location?.coordinates?.[0] ?? ''}
-                                        onChange={(e) => {
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                             const lng = parseFloat(e.target.value);
                                             setSelectedPickupPoint({
                                                 ...selectedPickupPoint,
@@ -209,7 +209,7 @@ export function PickupPointsTab({
                                     </Label>
                                     <Select
                                         value={selectedPickupPoint?.status || 'active'}
-                                        onValueChange={(value) => setSelectedPickupPoint({
+                                        onValueChange={(value: string) => setSelectedPickupPoint({
                                             ...selectedPickupPoint,
                                             status: value
                                         })}

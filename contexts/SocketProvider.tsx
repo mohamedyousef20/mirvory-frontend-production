@@ -11,7 +11,7 @@ interface NotificationPayload {
 }
 
 interface ISocketContext {
-  socket: Socket | null
+  socket: ReturnType<typeof io> | null
 }
 
 const SocketContext = createContext<ISocketContext>({

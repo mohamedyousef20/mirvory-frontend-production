@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
-import { PickupPointForm } from './PickupPointForm';
+import { PickupPointForm } from '@/components/admin/PickupPointForm';
 
 interface AdminLayoutProps {
   children: React.ReactNode;

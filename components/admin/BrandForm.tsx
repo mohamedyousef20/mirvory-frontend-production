@@ -81,12 +81,12 @@
 //         {form.image && (
 //           <img src={form.image} alt="preview" className="h-24 w-24 object-cover rounded mb-2" />
 //         )}
-//         <ImageUploader onUpload={(url) => setForm((prev) => ({ ...prev, image: url }))} />
+//         <ImageUploader onUpload={(url: string) => setForm((prev) => ({ ...prev, image: url }))} />
 //       </div>
 
 //       <div>
 //         <Label>{isArabic ? "الحالة" : "Status"}</Label>
-//         <Select value={form.status} onValueChange={(v) => setForm((p) => ({ ...p, status: v as any }))}>
+//         <Select value={form.status} onValueChange={(v: string) => setForm((p) => ({ ...p, status: v as any }))}>
 //           <SelectTrigger>
 //             <SelectValue />
 //           </SelectTrigger>

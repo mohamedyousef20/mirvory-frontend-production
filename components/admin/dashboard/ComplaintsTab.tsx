@@ -193,7 +193,7 @@ export function ComplaintsTab() {
                         <select
                           className="bg-transparent border rounded p-1 text-sm w-full max-w-[160px]"
                           value={c.status}
-                          onChange={(e) =>
+                          onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                             handleStatusChange(
                               c._id,
                               e.target.value as "open" | "in_progress" | "resolved"

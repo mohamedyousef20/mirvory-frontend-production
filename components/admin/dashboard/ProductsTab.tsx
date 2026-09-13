@@ -98,7 +98,7 @@ export function ProductsTab({
                     <input
                         type="text"
                         value={sellerSearch}
-                        onChange={(e) => setSellerSearch(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSellerSearch(e.target.value)}
                         placeholder={
                             isArabic
                                 ? "ابحث باسم البائع..."

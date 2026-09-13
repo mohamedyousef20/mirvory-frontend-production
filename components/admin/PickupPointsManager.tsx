@@ -134,7 +134,7 @@ export function PickupPointsManager({ isArabic }: { isArabic: boolean }) {
                   <Input
                     id="stationName"
                     value={selectedPickupPoint?.stationName || ''}
-                    onChange={(e) => setSelectedPickupPoint(prev => prev ? ({ ...prev, stationName: e.target.value }) : null)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectedPickupPoint(prev => prev ? ({ ...prev, stationName: e.target.value }) : null)}
                     required
                   />
                 </div>
@@ -145,7 +145,7 @@ export function PickupPointsManager({ isArabic }: { isArabic: boolean }) {
                   <Input
                     id="address"
                     value={selectedPickupPoint?.address || ''}
-                    onChange={(e) => setSelectedPickupPoint(prev => prev ? ({ ...prev, address: e.target.value }) : null)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectedPickupPoint(prev => prev ? ({ ...prev, address: e.target.value }) : null)}
                     required
                   />
                 </div>
@@ -156,7 +156,7 @@ export function PickupPointsManager({ isArabic }: { isArabic: boolean }) {
                   <Input
                     id="workingHours"
                     value={selectedPickupPoint?.workingHours || ''}
-                    onChange={(e) => setSelectedPickupPoint(prev => prev ? ({ ...prev, workingHours: e.target.value }) : null)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectedPickupPoint(prev => prev ? ({ ...prev, workingHours: e.target.value }) : null)}
                     required
                   />
                 </div>
@@ -168,7 +168,7 @@ export function PickupPointsManager({ isArabic }: { isArabic: boolean }) {
                     id="phone"
                     type="tel"
                     value={selectedPickupPoint?.phone || ''}
-                    onChange={(e) => setSelectedPickupPoint(prev => prev ? ({ ...prev, phone: e.target.value }) : null)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectedPickupPoint(prev => prev ? ({ ...prev, phone: e.target.value }) : null)}
                     required
                   />
                 </div>
@@ -178,7 +178,7 @@ export function PickupPointsManager({ isArabic }: { isArabic: boolean }) {
                   </Label>
                   <Select
                     value={selectedPickupPoint?.status || 'active'}
-                    onValueChange={(value) => setSelectedPickupPoint(prev => prev ? ({ ...prev, status: value as 'active' | 'inactive' }) : null)}
+                    onValueChange={(value: string) => setSelectedPickupPoint(prev => prev ? ({ ...prev, status: value as 'active' | 'inactive' }) : null)}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder={isArabic ? 'اختر الحالة' : 'Select status'} />
