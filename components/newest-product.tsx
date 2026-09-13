@@ -101,11 +101,11 @@ export function NewestProducts({ title }: NewestProductsProps) {
     const toggleWishlist = (productId: number) => {
         setFavorites(prev => {
             const newFavorites = new Set(prev);
-            if (newFavorites.has(productId)) {
-                newFavorites.delete(productId);
+            if (newFavorites.has(String(productId))) {
+                newFavorites.delete(String(productId));
                 toast.success(language === "ar" ? "تمت الإزالة من المفضلة" : "Removed from wishlist");
             } else {
-                newFavorites.add(productId);
+                newFavorites.add(String(productId));
                 toast.success(language === "ar" ? "تمت الإضافة إلى المفضلة" : "Added to wishlist");
             }
             return newFavorites;

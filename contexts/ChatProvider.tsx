@@ -66,7 +66,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
       // Update last message in chats list
       setChats(prev =>
         prev.map(chat =>
-          chat.id === message.chatId
+          chat.id === (message as any).chatId
             ? { ...chat, lastMessage: message }
             : chat
         )
@@ -85,9 +85,9 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
       const chat = await chatService.getChat(chatId);
       setCurrentChatState(chat);
-      setMessages(chat.messages || []);
+      setMessages((chat as any).messages || []);
       // Mark messages as read
-      const unreadMessages = chat.messages
+      const unreadMessages = (chat as any).messages
         .filter((m: any) => !m.read && m.sender !== user?.id)
         .map((m: any) => m.id);
       if (unreadMessages.length > 0) {
