@@ -96,7 +96,7 @@ export function ComplaintsTab() {
       } else {
         setTotalPages(1);
       }
-    } catch (err: any) {int
+    } catch (err: any) {
       const msg =
         err?.response?.data?.message ||
         (isArabic ? "فشل جلب الشكاوى" : "Failed to fetch complaints");

@@ -33,7 +33,7 @@ interface TransactionsTabProps {
   transactionsPage: number;
   setTransactionsPage: (page: number) => void;
   transactionsPages: number;
-  fetchAdminTransactions: () => Promise<void>;
+  // fetchAdminTransactions: () => Promise<void>;
 }
 
 export function TransactionsTab({
@@ -46,7 +46,7 @@ export function TransactionsTab({
   transactionsPage,
   setTransactionsPage,
   transactionsPages,
-  fetchAdminTransactions,
+  // fetchAdminTransactions,
 }: TransactionsTabProps) {
   const handleTypeChange = (value: "all" | "credit" | "debit") => {
     setTransactionsPage(1);
@@ -101,10 +101,10 @@ export function TransactionsTab({
             </SelectContent>
           </Select>
 
-          <Button variant="outline" onClick={fetchAdminTransactions} disabled={transactionsLoading}>
+          {/* <Button variant="outline" onClick={fetchAdminTransactions} disabled={transactionsLoading}>
             {transactionsLoading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
             {isArabic ? "تحديث" : "Refresh"}
-          </Button>
+          </Button> */}
         </div>
       </CardHeader>
 

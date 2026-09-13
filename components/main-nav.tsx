@@ -136,8 +136,8 @@ export function MainNav() {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const [enhancedCartItems, setEnhancedCartItems] = useState<CartItem[]>([])
-  const [notificationItem, setNotificationItem] = useState<NotificationItem[]>([])
+  const [enhancedCartItems, setEnhancedCartItems] = useState<[]>([])
+  const [notificationItem, setNotificationItem] = useState<CartItem[]>([])
   const [counts, setCounts] = useState<Counts>({
     cart: 0,
     wishlist: 0,

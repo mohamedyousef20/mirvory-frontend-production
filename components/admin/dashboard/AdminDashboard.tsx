@@ -161,11 +161,11 @@ export function AdminDashboard() {
     fetchReturnRequests,
     // fetchPlatformEarnings,
     fetchDashboardCounters,
-    fetchAdminTransactions,
+    // fetchAdminTransactions,
     fetchAdminAnalytics,
     handleUpdateVendorBalance,
     handleUpdateVendorStatus,
-    // handleToggleUserActive,
+    handleToggleUserActive,
     // Language
     language,
     t,
@@ -325,24 +325,22 @@ export function AdminDashboard() {
         <TabsContent value="vendors">
           <VendorsTab
             sellers={sellers}
-            loadingSellers={loading} // أو حسب متغير التحميل لديك
-            errorSellers={error}
-            pagination={{ currentPage: sellersPage, totalPages: sellersPages }}
-            onPageChange={setSellersPage}
             isArabic={isArabic}
             updatingUserId={updatingUser}
-
-            // ربط دوال الحذف والتعطيل الحالية
+            pagination={{
+              currentPage: sellersPage,
+              totalPages: sellersPages,
+            }}
+            onPageChange={setSellersPage}
             onDelete={handleDeleteUser}
-            // onSoftDelete={handleSoftDeleteUser}
-            onRestore={handleRestoreUser}
-
-            // ➕ ربط الدوال الجديدة المضافة للسوبر أدمن:
             onUpdateBalance={handleUpdateVendorBalance}
             onUpdateStatus={handleUpdateVendorStatus}
-            // onToggleActive={handleToggleUserActive}
+            onToggleActive={handleToggleUserActive}
+            loadingSellers={loading}
+            errorSellers={error}
           />
         </TabsContent>
+
         <TabsContent value="users">
           <UsersTab
             users={users}
@@ -351,7 +349,7 @@ export function AdminDashboard() {
             pagination={{ currentPage: usersPage, totalPages: usersPages }}
             onPageChange={setUsersPage}
             onDelete={handleDeleteUser}
-            // toggleUserActive={handleToggleUserActive}
+            toggleUserActive={handleToggleUserActive}
             onRestore={handleRestoreUser}
           />
         </TabsContent>
@@ -459,7 +457,7 @@ export function AdminDashboard() {
             transactionsPage={transactionsPage}
             setTransactionsPage={setTransactionsPage}
             transactionsPages={transactionsPages}
-            fetchAdminTransactions={fetchAdminTransactions}
+            // fetchAdminTransactions={fetchAdminTransactions}
           />
         </TabsContent>
       </Tabs>

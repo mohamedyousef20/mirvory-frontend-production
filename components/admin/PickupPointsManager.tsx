@@ -7,9 +7,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { pickupPointService } from '@/lib/api/services/pickupPointService';
 import { MapPin, Loader2, Plus, Edit, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { pickupPointService } from '@/lib/api';
 
 interface PickupPoint {
   _id?: string;
@@ -29,7 +29,7 @@ export function PickupPointsManager({ isArabic }: { isArabic: boolean }) {
   const fetchPickupPoints = async () => {
     try {
       setIsLoading(true);
-      const data = await pickupPointService.getAll();
+      const data = await pickupPointService.getPickupPoints();
       setPickupPoints(data as unknown as PickupPoint[]);
     } catch (error) {
       console.error('Error fetching pickup points:', error);
@@ -49,7 +49,7 @@ export function PickupPointsManager({ isArabic }: { isArabic: boolean }) {
 
     try {
       if (selectedPickupPoint._id) {
-        await pickupPointService.update(selectedPickupPoint._id, selectedPickupPoint);
+        await pickupPointService.updatePickupPoint(selectedPickupPoint._id, selectedPickupPoint);
         toast.success(isArabic ? 'تم تحديث نقطة الاستلام بنجاح' : 'Pickup point updated successfully');
       } else {
         await pickupPointService.createPickupPoint(selectedPickupPoint);
@@ -69,7 +69,7 @@ export function PickupPointsManager({ isArabic }: { isArabic: boolean }) {
       return;
     }
     try {
-      await pickupPointService.delete(id);
+      await pickupPointService.deletePickupPoint(id);
       toast.success(isArabic ? 'تم حذف نقطة الاستلام بنجاح' : 'Pickup point deleted successfully');
       fetchPickupPoints();
     } catch (error) {

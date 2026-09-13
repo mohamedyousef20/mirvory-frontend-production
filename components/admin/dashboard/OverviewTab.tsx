@@ -4,23 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { DollarSign, Package, ShoppingBag, Users, TrendingUp, TrendingDown } from "lucide-react";
 import Image from "next/image";
 
-interface DashboardCounters {
-    newOrders: number;
-    ongoingOrders: number;
-    returns: number;
-    reviews: number;
-    totalUsers: number;
-    totalSellers: number;
-    totalOrders: number;
-    pendingOrders: number;
-    totalProducts: number;
-    pendingProducts: number;
-    totalRevenue: number;
-    totalDiscounts: number;
-    totalCommissions: number;
-    totalProfits: number;
-}
-
+import { DashboardCounters } from "@/hooks/useAdminDashboard";
 interface OverviewTabProps {
     orders: any[];
     products: any[];

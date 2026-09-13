@@ -23,7 +23,12 @@ type TransactionFilters = {
     sellerId: string;
 };
 
-type DashboardCounters = {
+export type DashboardCounters = {
+    newOrders: number;
+    ongoingOrders: number;
+    returns: number;
+    reviews: number;
+
     totalUsers: number;
     totalSellers: number;
     totalOrders: number;
@@ -35,7 +40,6 @@ type DashboardCounters = {
     totalCommissions: number;
     totalProfits: number;
 };
-
 type AdminAnalyticsData = {
     ordersPerDay: Array<{ _id: string; count: number }>;
     topSellingProducts: Array<{ _id: string; title: string; sold: number; ratingsAverage?: number; seller?: { firstName?: string; lastName?: string } }>;

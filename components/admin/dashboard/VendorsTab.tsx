@@ -7,22 +7,47 @@ interface VendorsTabProps {
     sellers: any[];
     isArabic: boolean;
     updatingUserId: string | null;
-    pagination: { currentPage: number; totalPages: number };
+
+    pagination: {
+        currentPage: number;
+        totalPages: number;
+    };
+
     onPageChange: (page: number) => void;
-    onDelete(id: string): void;
-    onSoftDelete(id: string): void;
-    onRestore(id: string): void;
-    // الدوال الجديدة المضافة والمعدلة
-    onToggleTrust(id: string, trusted: boolean): void;
-    onUpdateBalance(id: string, balance: number, pendingBalance?: number): void;
-    onUpdateStatus(id: string, trustedSeller?: boolean, approvalStatus?: 'pending' | 'approved' | 'rejected'): void;
-    onToggleActive(id: string, currentStatus: boolean): void;
+
+    onDelete: (id: string) => void;
+
+    onUpdateBalance: (
+        id: string,
+        balance: number,
+        pendingBalance?: number
+    ) => void;
+
+    onUpdateStatus: (
+        id: string,
+        trustedSeller?: boolean,
+        approvalStatus?: 'pending' | 'approved' | 'rejected'
+    ) => void;
+
+    onToggleActive: (
+        id: string,
+        currentStatus: boolean
+    ) => void;
+
+    loadingSellers: boolean;
+    errorSellers: string | null;
 }
 
 export function VendorsTab({
-    sellers, isArabic, updatingUserId, pagination, onPageChange,
-    onDelete, onSoftDelete, onRestore, onToggleTrust,
-    onUpdateBalance, onUpdateStatus, onToggleActive
+    sellers,
+    isArabic,
+    updatingUserId,
+    pagination,
+    onPageChange,
+    onDelete,
+    onUpdateBalance,
+    onUpdateStatus,
+    onToggleActive,
 }: VendorsTabProps) {
 
     // دالة مساعدة لطلب إدخال الرصيد الجديد عبر prompt بسيط (يمكن استبدالها بـ Modal لاحقاً)

@@ -21,7 +21,7 @@ interface Announcement {
 export function HeroCarousel() {
   const { language } = useLanguage()
   const [currentSlide, setCurrentSlide] = useState(0)
-  const [announcements, setAnnouncements] = useState<Announcement[]>([])
+  const [announcements, setAnnouncements] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
   // Fetch announcements

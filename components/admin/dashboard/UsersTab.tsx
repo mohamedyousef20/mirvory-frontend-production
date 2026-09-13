@@ -3,17 +3,62 @@ import { Badge } from "@/components/ui/badge";
 import PaginationControls from "@/components/pagination-controls";
 import { Users, Mail, Calendar, Trash2 } from "lucide-react";
 
+interface UserAddress {
+    governorate?: string;
+    city?: string;
+    addressLine?: string;
+}
+
+interface User {
+    _id: string;
+    firstName?: string;
+    lastName?: string;
+    fullName?: string;
+    email?: string;
+    phone?: string;
+    role?: "admin" | "seller" | "user" | string;
+    isActive: boolean;
+    isDeleted?: boolean;
+    createdAt?: string;
+    address?: UserAddress;
+}
+
 interface UsersTabProps {
-    users: any[];
+    users: User[];
     isArabic: boolean;
     updatingUserId: string | null;
     pagination: { currentPage: number; totalPages: number };
     onPageChange: (page: number) => void;
-    onDelete(id: string): void;
-    toggleUserActive: (userId: string, isActive: boolean) => void;    onRestore(id: string): void;
+    onDelete: (id: string) => void;
+    toggleUserActive: (userId: string, isActive: boolean) => void;
+    onRestore: (id: string) => void;
 }
 
-export function UsersTab({ users, isArabic, updatingUserId, pagination, onPageChange, onDelete, toggleUserActive, onRestore }: UsersTabProps) {
+function formatAddress(address?: UserAddress): string {
+    if (!address) return "N/A";
+    const parts = [address.governorate, address.city, address.addressLine].filter(
+        (part): part is string => Boolean(part && part.trim())
+    );
+    return parts.length > 0 ? parts.join(", ") : "N/A";
+}
+
+function formatRole(role: User["role"], isArabic: boolean): string {
+    if (!isArabic) return role || "user";
+    if (role === "admin") return "مدير";
+    if (role === "seller") return "بائع";
+    return "مستخدم";
+}
+
+export function UsersTab({
+    users,
+    isArabic,
+    updatingUserId,
+    pagination,
+    onPageChange,
+    onDelete,
+    toggleUserActive,
+    onRestore,
+}: UsersTabProps) {
     return (
         <div className="space-y-6">
             <div className="rounded-md border">
@@ -33,55 +78,62 @@ export function UsersTab({ users, isArabic, updatingUserId, pagination, onPageCh
                         </TableHeader>
                         <TableBody>
                             {users && users.length > 0 ? (
-                                users.map((user: any) => (
+                                users.map((user) => (
                                     <TableRow key={user._id}>
-                                        <TableCell className="font-medium">#{user._id?.substring(0, 6)}</TableCell>
+                                        <TableCell className="font-medium">
+                                            #{user._id ? user._id.substring(0, 6) : "N/A"}
+                                        </TableCell>
                                         <TableCell>
                                             <div className="flex flex-col">
                                                 <span className="font-medium">
-                                                    {user.fullName || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'N/A'}
+                                                    {user.fullName ||
+                                                        `${user.firstName || ""} ${user.lastName || ""}`.trim() ||
+                                                        "N/A"}
                                                 </span>
                                                 <span className="text-sm text-muted-foreground">
-                                                    {user.address? `${user.address.governorate || ''}, ${user.address.city || ''}, ${user.address.addressLine || ''}`: 'N/A'}
+                                                    {formatAddress(user.address)}
                                                 </span>
                                             </div>
                                         </TableCell>
                                         <TableCell>
                                             <div className="flex items-center">
                                                 <Mail className="h-4 w-4 mr-2 text-muted-foreground" />
-                                                {user.email}
+                                                {user.email || "N/A"}
                                             </div>
                                         </TableCell>
-                                        <TableCell>{user.phone || 'N/A'}</TableCell>
+                                        <TableCell>{user.phone || "N/A"}</TableCell>
                                         <TableCell>
                                             <Badge variant={user.role === "admin" ? "destructive" : "secondary"}>
-                                                {isArabic
-                                                    ? user.role === "admin" ? "مدير"
-                                                        : user.role === "seller" ? "بائع"
-                                                            : "مستخدم"
-                                                    : user.role
-                                                }
+                                                {formatRole(user.role, isArabic)}
                                             </Badge>
                                         </TableCell>
                                         <TableCell>
                                             <Badge
                                                 variant={user.isActive ? "default" : "destructive"}
-                                                className={user.isActive
-                                                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-                                                    : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+                                                className={
+                                                    user.isActive
+                                                        ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
+                                                        : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
                                                 }
                                             >
-                                                {user.isActive ? (isArabic ? "نشط" : "Active") : (isArabic ? "غير نشط" : "Inactive")}
+                                                {user.isActive
+                                                    ? isArabic
+                                                        ? "نشط"
+                                                        : "Active"
+                                                    : isArabic
+                                                        ? "غير نشط"
+                                                        : "Inactive"}
                                             </Badge>
                                         </TableCell>
                                         <TableCell>
                                             <div className="flex items-center">
                                                 <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
-                                                {user.createdAt ? new Date(user.createdAt).toLocaleDateString(isArabic ? 'ar-EG' : 'en-US', {
-                                                    year: 'numeric',
-                                                    month: 'short',
-                                                    day: 'numeric'
-                                                }) : 'N/A'}
+                                                {user.createdAt
+                                                    ? new Date(user.createdAt).toLocaleDateString(
+                                                        isArabic ? "ar-EG" : "en-US",
+                                                        { year: "numeric", month: "short", day: "numeric" }
+                                                    )
+                                                    : "N/A"}
                                             </div>
                                         </TableCell>
                                         <TableCell>
@@ -91,7 +143,7 @@ export function UsersTab({ users, isArabic, updatingUserId, pagination, onPageCh
                                                     <button
                                                         onClick={() => onRestore(user._id)}
                                                         disabled={updatingUserId === user._id}
-                                                        className="px-2 py-1 text-xs rounded font-medium bg-green-50 text-green-700 hover:bg-green-100 transition"
+                                                        className="px-2 py-1 text-xs rounded font-medium bg-green-50 text-green-700 hover:bg-green-100 transition disabled:opacity-50"
                                                     >
                                                         {isArabic ? "استعادة" : "Restore"}
                                                     </button>
@@ -99,54 +151,58 @@ export function UsersTab({ users, isArabic, updatingUserId, pagination, onPageCh
                                                     <button
                                                         onClick={() => toggleUserActive(user._id, user.isActive)}
                                                         disabled={updatingUserId === user._id}
-                                                        className={`px-2 py-1 text-xs rounded font-medium transition ${user.isActive
-                                                                ? 'bg-yellow-50 text-yellow-700 hover:bg-yellow-100'
-                                                                : 'bg-green-50 text-green-700 hover:bg-green-100'
+                                                        className={`px-2 py-1 text-xs rounded font-medium transition disabled:opacity-50 ${user.isActive
+                                                                ? "bg-yellow-50 text-yellow-700 hover:bg-yellow-100"
+                                                                : "bg-green-50 text-green-700 hover:bg-green-100"
                                                             }`}
                                                     >
                                                         {user.isActive
-                                                            ? (isArabic ? "تعطيل" : "Disable")
-                                                            : (isArabic ? "تفعيل" : "Activate")}
+                                                            ? isArabic
+                                                                ? "تعطيل"
+                                                                : "Disable"
+                                                            : isArabic
+                                                                ? "تفعيل"
+                                                                : "Activate"}
                                                     </button>
-                                            )}
+                                                )}
 
-                                            {/* Permanent Delete */}
-                                            <button
-                                                onClick={() => {
-                                                    if (
-                                                        confirm(
-                                                            isArabic
-                                                                ? "هل أنت متأكد من حذف هذا المستخدم نهائياً؟"
-                                                                : "Are you sure you want to permanently delete this user?"
-                                                        )
-                                                    ) {
-                                                        onDelete(user._id);
-                                                    }
-                                                }}
-                                                disabled={updatingUserId === user._id}
-                                                className="p-1 text-slate-400 hover:text-red-600 rounded transition"
-                                                title={isArabic ? "حذف المستخدم" : "Delete User"}
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </button>
+                                                {/* Permanent Delete */}
+                                                <button
+                                                    onClick={() => {
+                                                        if (
+                                                            confirm(
+                                                                isArabic
+                                                                    ? "هل أنت متأكد من حذف هذا المستخدم نهائياً؟"
+                                                                    : "Are you sure you want to permanently delete this user?"
+                                                            )
+                                                        ) {
+                                                            onDelete(user._id);
+                                                        }
+                                                    }}
+                                                    disabled={updatingUserId === user._id}
+                                                    className="p-1 text-slate-400 hover:text-red-600 rounded transition disabled:opacity-50"
+                                                    title={isArabic ? "حذف المستخدم" : "Delete User"}
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </button>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan={8} className="text-center py-8">
+                                        <div className="flex flex-col items-center">
+                                            <Users className="h-12 w-12 text-muted-foreground mb-4" />
+                                            <p className="text-muted-foreground">
+                                                {isArabic ? "لا توجد بيانات للمستخدمين بعد" : "No user data available yet"}
+                                            </p>
                                         </div>
                                     </TableCell>
                                 </TableRow>
-                            ))
-                        ) : (
-                            <TableRow>
-                                <TableCell colSpan={8} className="text-center py-8">
-                                    <div className="flex flex-col items-center">
-                                        <Users className="h-12 w-12 text-muted-foreground mb-4" />
-                                        <p className="text-muted-foreground">
-                                            {isArabic ? "لا توجد بيانات للمستخدمين بعد" : "No user data available yet"}
-                                        </p>
-                                    </div>
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
+                            )}
+                        </TableBody>
+                    </Table>
                 </div>
             </div>
             {/* Pagination */}
