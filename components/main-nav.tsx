@@ -97,6 +97,37 @@ interface CartItem {
   image?: string;
 }
 
+/**
+ * Unified display type for cart items — works for both
+ * authenticated CartItem (from API) and guest GuestCartItem (from localStorage).
+ * All fields are optional except price and quantity so both shapes fit.
+ */
+interface CartDisplayItem {
+  _id?: string;
+  id?: string;
+  price: number;
+  quantity: number;
+  product?: {
+    _id?: string;
+    id?: string;
+    title?: string;
+    titleEn?: string;
+    images?: string[];
+    price?: number;
+  };
+  sizes?: string[];
+  colors?: string[];
+  itemTotal?: number;
+  productId?: string;
+  size?: string | null;
+  color?: string | null;
+  title?: string;
+  titleEn?: string;
+  image?: string | null;
+  maxQuantity?: number;
+  available?: boolean;
+}
+
 interface CartData {
   items: CartItem[];
   total?: number;
@@ -136,8 +167,8 @@ export function MainNav() {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const [enhancedCartItems, setEnhancedCartItems] = useState<[]>([])
-  const [notificationItem, setNotificationItem] = useState<CartItem[]>([])
+  const [enhancedCartItems, setEnhancedCartItems] = useState<CartDisplayItem[]>([])
+  const [notificationItem, setNotificationItem] = useState<NotificationItem[]>([])
   const [counts, setCounts] = useState<Counts>({
     cart: 0,
     wishlist: 0,
@@ -924,16 +955,16 @@ export function MainNav() {
                                 : `Qty: ${item.quantity}`
                               }
                             </p>
-                            {item.sizes?.length > 0 && (
+                            {(item.sizes?.length ?? 0) > 0 && (
                               <p className="text-xs text-muted-foreground">
                                 {language === "ar" ? "المقاسات: " : "Sizes: "}
-                                {item.sizes.join(", ")}
+                                {item.sizes!.join(", ")}
                               </p>
                             )}
-                            {item.colors?.length > 0 && (
+                            {(item.colors?.length ?? 0) > 0 && (
                               <p className="text-xs text-muted-foreground">
                                 {language === "ar" ? "الألوان: " : "Colors: "}
-                                {item.colors.join(", ")}
+                                {item.colors!.join(", ")}
                               </p>
                             )}
                           </div>

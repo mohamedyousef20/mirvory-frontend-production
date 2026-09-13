@@ -72,12 +72,12 @@ export function useAdminDashboard() {
     const [productsPage, setProductsPage] = useState(1);
     const [productsPages, setProductsPages] = useState(1);
     const PRODUCTS_LIMIT = 25;
-    const [coupons, setCoupons] = useState([]);
+    const [coupons, setCoupons] = useState<any[]>([]);
     const [loadingProducts, setLoadingProducts] = useState(true);
     const [loadingCoupon, setLoadingCoupon] = useState(true);
     const [errorProducts, setErrorProducts] = useState<string | null>(null);
     const [errorCoupons, setErrorCoupons] = useState<string | null>(null);
-    const [categories, setCategories] = useState([]);
+    const [categories, setCategories] = useState<any[]>([]);
     // Brands state
     // const [brands, setBrands] = useState<any[]>([]);
     // const [loadingBrands, setLoadingBrands] = useState(false);
@@ -810,7 +810,7 @@ export function useAdminDashboard() {
     // Handle coupon form input change
     const handleCouponInputChange = (field: keyof CouponFormData, value: any) => {
         if (editingCoupon) {
-            setEditingCoupon(prev => ({ ...prev, [field]: value }));
+            setEditingCoupon((prev: any) => ({ ...prev, [field]: value }));
         } else {
             setNewCoupon(prev => ({ ...prev, [field]: value }));
         }
@@ -1429,7 +1429,6 @@ export function useAdminDashboard() {
         setComplaintsPage,
         handleDeleteReturn,
         platformEarnings,
-        loadingEarnings,
         // Brands
         // brands,
         // loadingBrands,
@@ -1462,7 +1461,6 @@ export function useAdminDashboard() {
         // Sellers pagination
         sellersPage,
         sellersPages,
-        setSellersPage,
 
         // Users pagination
         usersPage,
