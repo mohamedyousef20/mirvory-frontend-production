@@ -207,7 +207,7 @@ const ProductDetail = ({ productId }: { productId: string }) => {
   }, [productId, product])
 
   const handleQuantityChange = useCallback((value: number) => {
-    const maxQuantity = product?.quantity 
+    const maxQuantity = product?.quantity ?? Infinity
     const next = Math.max(1, Math.min(value, maxQuantity))
     setQuantity(next)
     setSelectedSizes(prev => {
@@ -594,7 +594,7 @@ const ProductDetail = ({ productId }: { productId: string }) => {
                 {Array.from({ length: quantity }).map((_, idx) => (
                   <div key={`size-slot-${idx}`} className="flex items-center gap-2">
                     <Label className="w-16 text-sm">{language === "ar" ? `قطعة ${idx + 1}` : `Item ${idx + 1}`}</Label>
-                    <Select value={selectedSizes[idx] || ''} onValueChange={(v) => setSizeAt(idx, v)}>
+                    <Select value={selectedSizes[idx] || ''} onValueChange={(v: string) => setSizeAt(idx, v)}>
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder={language === "ar" ? "اختر المقاس" : "Choose size"} />
                       </SelectTrigger>
@@ -617,7 +617,7 @@ const ProductDetail = ({ productId }: { productId: string }) => {
                 {Array.from({ length: quantity }).map((_, idx) => (
                   <div key={`color-slot-${idx}`} className="flex items-center gap-2">
                     <Label className="w-16 text-sm">{language === "ar" ? `قطعة ${idx + 1}` : `Item ${idx + 1}`}</Label>
-                    <Select value={selectedColors[idx] || ''} onValueChange={(v) => setColorAt(idx, v)}>
+                    <Select value={selectedColors[idx] || ''} onValueChange={(v: string) => setColorAt(idx, v)}>
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder={language === "ar" ? "اختر اللون" : "Choose color"} />
                       </SelectTrigger>
@@ -651,7 +651,7 @@ const ProductDetail = ({ productId }: { productId: string }) => {
               <Input
                 className="w-16 text-center"
                 value={quantity}
-                onChange={(e) => handleQuantityChange(Number(e.target.value))}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleQuantityChange(Number(e.target.value))}
                 type="number"
                 min="1"
                 max={product.quantity}
@@ -810,7 +810,7 @@ const ProductDetail = ({ productId }: { productId: string }) => {
                         <RatingStars
                           rating={ratingInput}
                           interactive
-                          onChange={(value) => setRatingInput(value)}
+                          onChange={(value: number) => setRatingInput(value)}
                           size={32}
                         />
                       </div>
@@ -822,7 +822,7 @@ const ProductDetail = ({ productId }: { productId: string }) => {
                           id="review-comment"
                           placeholder={language === "ar" ? "شارك تجربتك" : "Share your experience"}
                           value={commentInput}
-                          onChange={(event) => setCommentInput(event.target.value)}
+                          onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) => setCommentInput(event.target.value)}
                           rows={4}
                         />
                       </div>

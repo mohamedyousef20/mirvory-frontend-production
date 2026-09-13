@@ -111,6 +111,21 @@ interface Counts {
   notifications: number;
 }
 
+interface NotificationItem {
+  _id: string;
+  seen: boolean;
+  link?: string;
+  type: string;
+  title?: string;
+  message?: string;
+  createdAt: string;
+  data?: {
+    orderId?: string;
+    productId?: string;
+    [key: string]: unknown;
+  };
+}
+
 export function MainNav() {
   const { language, setLanguage, t } = useLanguage()
   const { theme, setTheme } = useTheme()
@@ -122,7 +137,7 @@ export function MainNav() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [enhancedCartItems, setEnhancedCartItems] = useState<CartItem[]>([])
-  const [notificationItem, setNotificationItem] = useState<CartItem[]>([])
+  const [notificationItem, setNotificationItem] = useState<NotificationItem[]>([])
   const [counts, setCounts] = useState<Counts>({
     cart: 0,
     wishlist: 0,
@@ -547,7 +562,7 @@ export function MainNav() {
                     type="search"
                     placeholder={t("search")}
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
                     className="w-full pl-10 rtl:pr-10 rtl:pl-3"
                   />
                 </form>
@@ -562,7 +577,7 @@ export function MainNav() {
                     >
                       {item.icon}
                       <span className="font-medium">{item.label}</span>
-                      {item.badge > 0 && (
+                      {(item.badge ?? 0) > 0 && (
                         <Badge className="absolute right-3 h-5 w-5 flex items-center justify-center rounded-full text-[10px] p-0">
                           {item.badge}
                         </Badge>
@@ -632,7 +647,7 @@ export function MainNav() {
                 >
                   {item.icon}
                   {item.label}
-                  {item.badge > 0 && (
+                  {(item.badge ?? 0) > 0 && (
                     <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center rounded-full text-[10px] p-0">
                       {item.badge}
                     </Badge>
@@ -928,7 +943,7 @@ export function MainNav() {
                             className="h-7 w-7 flex-shrink-0"
                             onClick={() =>
                               handleRemoveFromCart(item._id ?? item.id ?? '', {
-                                productId: item.productId,
+                                productId: item.productId ?? '',
                                 size: item.size,
                                 color: item.color,
                               })

@@ -8,10 +8,20 @@ import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { announcementService } from "@/lib/api"
 
+interface Announcement {
+  _id: string;
+  image?: string;
+  title: string;
+  titleEn?: string;
+  content?: string;
+  contentEn?: string;
+  link?: string;
+}
+
 export function HeroCarousel() {
   const { language } = useLanguage()
   const [currentSlide, setCurrentSlide] = useState(0)
-  const [announcements, setAnnouncements] = useState([])
+  const [announcements, setAnnouncements] = useState<Announcement[]>([])
   const [loading, setLoading] = useState(true)
 
   // Fetch announcements
