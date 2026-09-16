@@ -83,7 +83,7 @@ export default function GuestCheckoutPage() {
   };
 
   const subtotal = cartItems.reduce((sum, i) => sum + (i.price || 0) * i.quantity, 0);
-  const shippingFee = (subtotal >= 1500 || form.deliveryMethod === 'pickup') ? 0 : 70;
+  const shippingFee = (subtotal >= 2000 || form.deliveryMethod === 'pickup') ? 0 : 70;
   const totalAmount = subtotal + shippingFee;
 
   const selectedPickupPoint = pickupPoints.find(
@@ -292,11 +292,11 @@ export default function GuestCheckoutPage() {
                   required={form.deliveryMethod === 'home'}
                   className="mt-1"
                 />
-                {subtotal > 1500 ? (
-                  <p className="text-sm text-green-600">الشحن مجاني لطلبك الحالي لتجاوزه 1500 ج.م</p>
+                {subtotal > 2000 ? (
+                  <p className="text-sm text-green-600">الشحن مجاني لطلبك الحالي لتجاوزه 2000 ج.م</p>
                 ) : (
                   <p className="text-sm text-blue-600">
-                    أضف منتجات بقيمة {(1500 - subtotal).toLocaleString()} ج.م للحصول على شحن مجاني
+                    أضف منتجات بقيمة {(2000 - subtotal).toLocaleString()} ج.م للحصول على شحن مجاني
                   </p>
                 )}
               </div>
