@@ -3,10 +3,11 @@ import { DollarSign, ShoppingBag, Package, BarChart, Clock, XCircle, Star } from
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { StatCard } from "../cards/StatCard"
+import type { TranslationKey } from "@/components/language-provider"
 
 interface OverviewTabProps {
     language: string
-    t: (key: string) => string
+    t: (key: TranslationKey) => string
     dashboardCounters: any
     balance: any
     orders: any[]
@@ -33,7 +34,7 @@ export function OverviewTab({ language, t, dashboardCounters, balance, orders, p
         { key: 'availableBalance', title: language === "ar" ? "الرصيد المتاح" : "Available Balance", value: availableBalance.toFixed(2), icon: <BarChart className="h-5 w-5 text-teal-500" />, suffix: language === "ar" ? "ج.م" : "EGP", subtext: language === "ar" ? "متاح للسحب" : "Available" },
         { key: 'pendingBalance', title: language === "ar" ? "الرصيد المعلق" : "Pending Balance", value: pendingBalance.toFixed(2), icon: <BarChart className="h-5 w-5 text-orange-500" />, suffix: language === "ar" ? "ج.م" : "EGP", subtext: language === "ar" ? "قيد المراجعة" : "Pending" },
     ]
-  
+
 
     return (
         <div className="space-y-6">

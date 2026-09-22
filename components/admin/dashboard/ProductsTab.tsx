@@ -11,7 +11,8 @@ import {
     CheckCircle,
     XCircle,
     Search,
-    ShieldCheck
+    ShieldCheck,
+    Edit
 
 } from "lucide-react";
 
@@ -491,6 +492,20 @@ export function ProductsTab({
                                                         {isArabic
                                                             ? "عرض التفاصيل"
                                                             : "View Details"}
+                                                    </Link>
+                                                </Button>
+
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="w-full justify-start"
+                                                    asChild
+                                                >
+                                                    <Link href={`/admin/products/${product._id}/edit`}>
+                                                        <Edit className="h-4 w-4 mr-2" />
+                                                        {isArabic
+                                                            ? "تعديل المنتج"
+                                                            : "Edit Product"}
                                                     </Link>
                                                 </Button>
                                             </div>

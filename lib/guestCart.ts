@@ -12,10 +12,12 @@ export interface GuestCartItem {
   quantity: number;
   size?: string | null;
   color?: string | null;
-  // Enriched fields (filled by validateGuestCart API call)
+
+  // Image belonging to the selected color
+  image?: string | null;
+
   title?: string;
   titleEn?: string;
-  image?: string | null;
   price?: number;
   maxQuantity?: number;
   available?: boolean;

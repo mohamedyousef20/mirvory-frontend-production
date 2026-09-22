@@ -16,6 +16,9 @@ import {
     platformEarningsService,
     adminDashboardService,
     complaintService,
+    offerService,
+    loyaltyService,
+    unavailableProductRequestService,
 } from "@/lib/api";
 
 type TransactionFilters = {
@@ -126,6 +129,39 @@ export function useAdminDashboard() {
     const RETURNS_LIMIT = 10;
     const [loadingReturns, setLoadingReturns] = useState(false);
     const [errorReturns, setErrorReturns] = useState<string | null>(null);
+
+    // Offers state
+    const [offers, setOffers] = useState<any[]>([]);
+    const [offersPage, setOffersPage] = useState(1);
+    const [offersPages, setOffersPages] = useState(1);
+    const OFFERS_LIMIT = 10;
+    const [loadingOffers, setLoadingOffers] = useState(false);
+    const [errorOffers, setErrorOffers] = useState<string | null>(null);
+
+    // Loyalty state
+    const [loyaltyUsers, setLoyaltyUsers] = useState<any[]>([]);
+    const [loyaltyPage, setLoyaltyPage] = useState(1);
+    const [loyaltyPages, setLoyaltyPages] = useState(1);
+    const LOYALTY_LIMIT = 20;
+    const [loadingLoyalty, setLoadingLoyalty] = useState(false);
+    const [errorLoyalty, setErrorLoyalty] = useState<string | null>(null);
+    const [loyaltyTierFilter, setLoyaltyTierFilter] = useState<string>("all");
+    const [loyaltySearchQuery, setLoyaltySearchQuery] = useState("");
+    const [selectedLoyaltyUser, setSelectedLoyaltyUser] = useState<any | null>(null);
+    const [adjustDialogOpen, setAdjustDialogOpen] = useState(false);
+    const [adjustPoints, setAdjustPoints] = useState("");
+    const [adjustNotes, setAdjustNotes] = useState("");
+    const [adjusting, setAdjusting] = useState(false);
+
+    // Unavailable product requests state
+    const [productRequests, setProductRequests] = useState<any[]>([]);
+    const [productRequestsPage, setProductRequestsPage] = useState(1);
+    const [productRequestsPages, setProductRequestsPages] = useState(1);
+    const PRODUCT_REQUESTS_LIMIT = 10;
+    const [loadingProductRequests, setLoadingProductRequests] = useState(false);
+    const [errorProductRequests, setErrorProductRequests] = useState<string | null>(null);
+    const [requestStatusFilter, setRequestStatusFilter] = useState<string>("");
+    const [requestSearchQuery, setRequestSearchQuery] = useState("");
 
     // Form states
     const [newCategory, setNewCategory] = useState({
@@ -305,6 +341,7 @@ export function useAdminDashboard() {
     const fetchInitialData = async () => {
         await Promise.all([
             fetchOrders(),
+            fetchOffers(),
             fetchCategories(),
             // fetchBrands(),
             fetchProducts(),
@@ -314,7 +351,8 @@ export function useAdminDashboard() {
             fetchUsers(),
             fetchCoupons(),
             // fetchPlatformEarnings(),
-            fetchDashboardCounters()
+            fetchDashboardCounters(),
+            fetchProductRequests()
         ]);
     };
 
@@ -331,6 +369,7 @@ export function useAdminDashboard() {
     useEffect(() => {
         fetchSellers();
     }, [sellersPage]);
+
 
     // Data fetching based on active tab
     useEffect(() => {
@@ -358,6 +397,15 @@ export function useAdminDashboard() {
                 case 'pickup':
                     fetchPickupPoints();
                     break;
+                case 'offers':
+                    fetchOffers();
+                    break;
+                case 'loyalty':
+                    fetchLoyaltyUsers();
+                    break;
+                case 'product-requests':
+                    fetchProductRequests();
+                    break;
                 case 'coupons':
                     fetchCoupons();
                     break;
@@ -381,6 +429,16 @@ export function useAdminDashboard() {
     useEffect(() => {
         fetchUsers();
     }, [usersPage]);
+
+    // refetch loyalty users on page change
+    useEffect(() => {
+        fetchLoyaltyUsers();
+    }, [loyaltyPage]);
+
+    // refetch product requests on page change
+    useEffect(() => {
+        fetchProductRequests();
+    }, [productRequestsPage]);
 
 
     // refetch transactions when page changes
@@ -420,7 +478,7 @@ export function useAdminDashboard() {
         }
     };
 
-    
+
 
 
 
@@ -471,6 +529,220 @@ export function useAdminDashboard() {
             toast.error(isArabic ? "فشل جلب طلبات الإرجاع" : "Failed to fetch return requests");
         } finally {
             setLoadingReturns(false);
+        }
+    };
+
+    // Offers operations
+    const fetchOffers = async () => {
+        try {
+            setLoadingOffers(true);
+            setErrorOffers(null);
+            const response = await offerService.getOffers({ page: offersPage, limit: OFFERS_LIMIT });
+            console.log(response, 'responseofoffer')
+            if (response.data?.data) {
+                setOffers(response.data.data);
+            } else {
+                setOffers(response.data);
+            }
+            if (response.data?.pagination) {
+                setOffersPage(response.data.pagination.currentPage);
+                setOffersPages(response.data.pagination.totalPages);
+            }
+        } catch (error: any) {
+            setErrorOffers(error.response?.data?.message || (isArabic ? "فشل جلب العروض" : "Failed to fetch offers"));
+            toast.error(isArabic ? "فشل جلب العروض" : "Failed to fetch offers");
+        } finally {
+            setLoadingOffers(false);
+        }
+    };
+
+    const handleToggleOffer = async (offerId: string) => {
+        try {
+            await offerService.toggleOfferStatus(offerId);
+            toast.success(isArabic ? "تم تحديث حالة العرض" : "Offer status updated");
+            fetchOffers();
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || (isArabic ? "فشل تحديث حالة العرض" : "Failed to update offer status"));
+        }
+    };
+
+    const handleDeleteOffer = async (offerId: string) => {
+        if (!confirm(isArabic ? "هل تريد حذف هذا العرض؟" : "Are you sure you want to delete this offer?")) {
+            return;
+        }
+        try {
+            await offerService.deleteOffer(offerId);
+            toast.success(isArabic ? "تم حذف العرض" : "Offer deleted");
+            fetchOffers();
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || (isArabic ? "فشل حذف العرض" : "Failed to delete offer"));
+        }
+    };
+
+    // Loyalty operations
+    const fetchLoyaltyUsers = async () => {
+        try {
+            setLoadingLoyalty(true);
+            setErrorLoyalty(null);
+
+            console.log('Fetching loyalty users with params:', {
+                page: loyaltyPage,
+                limit: LOYALTY_LIMIT,
+                tier: loyaltyTierFilter === "all" ? undefined : loyaltyTierFilter,
+                search: loyaltySearchQuery || undefined,
+            });
+
+            const res = await loyaltyService.getAllUsersLoyalty({
+                page: loyaltyPage,
+                limit: LOYALTY_LIMIT,
+                tier: loyaltyTierFilter === "all" ? undefined : loyaltyTierFilter,
+                search: loyaltySearchQuery || undefined,
+            });
+
+            console.log('Loyalty API response:', res);
+
+            const payload = res?.data;
+
+            const list: any[] = Array.isArray(payload?.users)
+                ? payload.users
+                : Array.isArray(payload)
+                  ? payload
+                  : [];
+
+            console.log('Processed loyalty users list:', list);
+
+            setLoyaltyUsers(list);
+
+            const pagination = payload?.pagination;
+            if (pagination) {
+                setLoyaltyPages(pagination.totalPages || 1);
+                if (pagination.currentPage && pagination.currentPage !== loyaltyPage) {
+                    setLoyaltyPage(pagination.currentPage);
+                }
+            } else {
+                setLoyaltyPages(1);
+            }
+        } catch (err: any) {
+            console.error('Error fetching loyalty users:', err);
+            const msg =
+                err?.response?.data?.message ||
+                (isArabic ? "فشل جلب بيانات الولاء" : "Failed to fetch loyalty data");
+            setErrorLoyalty(msg);
+            toast.error(msg);
+        } finally {
+            setLoadingLoyalty(false);
+        }
+    };
+
+    const handleLoyaltySearch = () => {
+        setLoyaltyPage(1);
+        fetchLoyaltyUsers();
+    };
+
+    const handleAdjustPoints = async () => {
+        if (!selectedLoyaltyUser) return;
+
+        const points = parseInt(adjustPoints);
+        if (!points || points === 0) {
+            toast.error(isArabic ? "يرجى إدخال عدد نقاط صحيح" : "Please enter a valid number of points");
+            return;
+        }
+
+        setAdjusting(true);
+        try {
+            await loyaltyService.adjustPoints({
+                userId: selectedLoyaltyUser._id,
+                points,
+                notes: adjustNotes
+            });
+            toast.success(isArabic ? "تم تعديل النقاط بنجاح" : "Points adjusted successfully");
+            setAdjustDialogOpen(false);
+            setAdjustPoints("");
+            setAdjustNotes("");
+            setSelectedLoyaltyUser(null);
+            fetchLoyaltyUsers();
+        } catch (err: any) {
+            const msg =
+                err?.response?.data?.message || (isArabic ? "فشل تعديل النقاط" : "Failed to adjust points");
+            toast.error(msg);
+        } finally {
+            setAdjusting(false);
+        }
+    };
+
+    // Unavailable product requests operations
+    const fetchProductRequests = async () => {
+        try {
+            setLoadingProductRequests(true);
+            setErrorProductRequests(null);
+
+            const res = await unavailableProductRequestService.getAllRequests({
+                page: productRequestsPage,
+                limit: PRODUCT_REQUESTS_LIMIT,
+                status: requestStatusFilter || undefined,
+                search: requestSearchQuery || undefined,
+            });
+
+            const payload = res?.data;
+
+            const list: any[] = Array.isArray(payload?.requests)
+                ? payload.requests
+                : Array.isArray(payload)
+                  ? payload
+                  : [];
+
+            setProductRequests(list);
+
+            const pagination = payload?.pagination;
+            if (pagination) {
+                setProductRequestsPages(pagination.totalPages || 1);
+                if (pagination.currentPage && pagination.currentPage !== productRequestsPage) {
+                    setProductRequestsPage(pagination.currentPage);
+                }
+            } else {
+                setProductRequestsPages(1);
+            }
+        } catch (err: any) {
+            const msg =
+                err?.response?.data?.message ||
+                (isArabic ? "فشل جلب طلبات المنتجات" : "Failed to fetch product requests");
+            setErrorProductRequests(msg);
+            toast.error(msg);
+        } finally {
+            setLoadingProductRequests(false);
+        }
+    };
+
+    const handleProductRequestSearch = () => {
+        setProductRequestsPage(1);
+        fetchProductRequests();
+    };
+
+    const handleDeleteProductRequest = async (id: string) => {
+        if (!confirm(isArabic ? "هل تريد حذف هذا الطلب؟" : "Delete this request?")) return;
+
+        try {
+            await unavailableProductRequestService.deleteRequest(id);
+            setProductRequests((prev) => prev.filter((r) => r._id !== id));
+            toast.success(isArabic ? "تم الحذف" : "Deleted");
+        } catch (err: any) {
+            const msg =
+                err?.response?.data?.message || (isArabic ? "فشل الحذف" : "Delete failed");
+            toast.error(msg);
+        }
+    };
+
+    const handleUpdateRequestStatus = async (id: string, newStatus: string) => {
+        try {
+            await unavailableProductRequestService.updateStatus(id, { status: newStatus });
+            setProductRequests((prev) =>
+                prev.map((r) => (r._id === id ? { ...r, status: newStatus } : r))
+            );
+            toast.success(isArabic ? "تم تحديث الحالة" : "Status updated");
+        } catch (err: any) {
+            const msg =
+                err?.response?.data?.message || (isArabic ? "فشل التحديث" : "Update failed");
+            toast.error(msg);
         }
     };
 
@@ -624,6 +896,10 @@ export function useAdminDashboard() {
         fetchProducts();
     }, [productsPage]);
 
+    // refetch offers when page changes
+    useEffect(() => {
+        fetchOffers();
+    }, [offersPage]);
     // fetch coupons
     const fetchCoupons = async () => {
         try {
@@ -1420,6 +1696,16 @@ export function useAdminDashboard() {
         handleRejectReturn,
         handleProcessReturn,
         handleFinishedReturn,
+        // Offers functions
+        offers,
+        loadingOffers,
+        errorOffers,
+        offersPage,
+        offersPages,
+        setOffersPage,
+        fetchOffers,
+        handleToggleOffer,
+        handleDeleteOffer,
         // Complaints
         complaints,
         loadingComplaints,
@@ -1465,7 +1751,47 @@ export function useAdminDashboard() {
         // Users pagination
         usersPage,
         usersPages,
-     
+
+        // Loyalty state
+        loyaltyUsers,
+        loadingLoyalty,
+        errorLoyalty,
+        loyaltyPage,
+        loyaltyPages,
+        setLoyaltyPage,
+        loyaltyTierFilter,
+        setLoyaltyTierFilter,
+        loyaltySearchQuery,
+        setLoyaltySearchQuery,
+        selectedLoyaltyUser,
+        setSelectedLoyaltyUser,
+        adjustDialogOpen,
+        setAdjustDialogOpen,
+        adjustPoints,
+        setAdjustPoints,
+        adjustNotes,
+        setAdjustNotes,
+        adjusting,
+        fetchLoyaltyUsers,
+        handleLoyaltySearch,
+        handleAdjustPoints,
+
+        // Product requests state
+        productRequests,
+        loadingProductRequests,
+        errorProductRequests,
+        productRequestsPage,
+        productRequestsPages,
+        setProductRequestsPage,
+        requestStatusFilter,
+        setRequestStatusFilter,
+        requestSearchQuery,
+        setRequestSearchQuery,
+        fetchProductRequests,
+        handleProductRequestSearch,
+        handleDeleteProductRequest,
+        handleUpdateRequestStatus,
+
         handleUpdateVendorBalance,
         handleUpdateVendorStatus,
         handleToggleUserActive,

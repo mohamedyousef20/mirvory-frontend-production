@@ -3,7 +3,7 @@
 import axios from "axios";
 
 interface ErrorInfo {
-  componentStack?: string;
+  componentStack?: string | null;
 }
 
 /**

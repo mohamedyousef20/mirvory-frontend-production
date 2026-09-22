@@ -226,8 +226,10 @@ export function ProductsTable({
                                                     <Eye className="h-4 w-4 mr-2" />{language === "ar" ? "عرض" : "View"}
                                                 </Link>
                                             </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => onEdit(product)} className="text-sm">
-                                                <Edit className="h-4 w-4 mr-2" />{language === "ar" ? "تعديل" : "Edit"}
+                                            <DropdownMenuItem asChild>
+                                                <Link href={`/vendor/dashboard/products/${product._id}/edit`} className="flex items-center cursor-pointer text-sm">
+                                                    <Edit className="h-4 w-4 mr-2" />{language === "ar" ? "تعديل" : "Edit"}
+                                                </Link>
                                             </DropdownMenuItem>
                                             <DropdownMenuSeparator />
                                             <DropdownMenuItem className="text-red-600 focus:text-red-700 text-sm" onClick={() => onDelete(product._id)}>

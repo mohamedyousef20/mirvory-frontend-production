@@ -15,9 +15,34 @@ import { PickupPointsTab } from "./PickupPointsTab";
 import { ReturnsTab } from "./ReturnsTab";
 import { ComplaintsTab } from "./ComplaintsTab";
 import { CouponsTab } from "./CouponsTab";
+import { OffersTab } from "./OffersTab";
+import { ProductRequestsTab } from "./ProductRequestsTab";
+import { LoyaltyTab } from "./LoyaltyTab";
+import { ShippingSettingsTab } from "./ShippingSettingsTab";
 import { TransactionsTab } from "./TransactionsTab";
 import { AnalyticsTab } from "./AnalyticsTab";
 import Link from "next/link";
+
+type Offer = {
+  _id: string;
+  title: string;
+  description: string;
+  type: string;
+  value: number;
+  minPurchaseAmount: number;
+  maxDiscountAmount: number | null;
+  startDate: string;
+  endDate: string;
+  isActive: boolean;
+  usageLimit: number | null;
+  usageCount: number;
+  image: string;
+  createdAt: string;
+  createdBy?: {
+    firstName: string;
+    lastName: string;
+  };
+};
 
 export function AdminDashboard() {
   const {
@@ -86,6 +111,14 @@ export function AdminDashboard() {
     analytics,
     analyticsLoading,
     analyticsError,
+
+    // Offers state
+    offers,
+    loadingOffers,
+    errorOffers,
+    offersPage,
+    offersPages,
+    setOffersPage,
 
     // Coupon states
     showAddCoupon,
@@ -166,6 +199,10 @@ export function AdminDashboard() {
     handleUpdateVendorBalance,
     handleUpdateVendorStatus,
     handleToggleUserActive,
+    // Offer functions
+    fetchOffers,
+    handleToggleOffer,
+    handleDeleteOffer,
     // Language
     language,
     t,
@@ -237,10 +274,14 @@ export function AdminDashboard() {
           {/* <TabsTrigger value="brands">{isArabic ? "الماركات" : "Brands"}</TabsTrigger> */}
           <TabsTrigger value="categories">{isArabic ? "التصنيفات" : "Categories"}</TabsTrigger>
           <TabsTrigger value="coupons">{isArabic ? "الكوبونات" : "Coupons"}</TabsTrigger>
+          <TabsTrigger value="offers">{isArabic ? "العروض" : "Offers"}</TabsTrigger>
+          <TabsTrigger value="shipping-settings">{isArabic ? "إعدادات الشحن" : "Shipping"}</TabsTrigger>
           <TabsTrigger value="announcements">{isArabic ? "الإعلانات" : "Announcements"}</TabsTrigger>
           <TabsTrigger value="pickup">{isArabic ? "نقاط الاستلام" : "Pickup"}</TabsTrigger>
           <TabsTrigger value="complaints">{isArabic ? "الشكاوى" : "Complaints"}</TabsTrigger>
           <TabsTrigger value="returns">{isArabic ? "طلبات الإرجاع" : "Returns"}</TabsTrigger>
+          <TabsTrigger value="product-requests">{isArabic ? "طلبات المنتجات" : "Product Requests"}</TabsTrigger>
+          <TabsTrigger value="loyalty">{isArabic ? "برنامج الولاء" : "Loyalty"}</TabsTrigger>
           {/* <TabsTrigger value="analytics">{isArabic ? "التحليلات" : "Analytics"}</TabsTrigger> */}
           {/* <TabsTrigger value="transactions">{isArabic ? "المعاملات" : "Transactions"}</TabsTrigger> */}
         </TabsList>
@@ -376,6 +417,24 @@ export function AdminDashboard() {
           />
         </TabsContent>
 
+        <TabsContent value="offers">
+          <OffersTab
+            offers={offers}
+            loadingOffers={loadingOffers}
+            errorOffers={errorOffers}
+            isArabic={isArabic}
+            pagination={{ currentPage: offersPage, totalPages: offersPages }}
+            onPageChange={setOffersPage}
+            handleToggleOffer={handleToggleOffer}
+            handleDeleteOffer={handleDeleteOffer}
+            fetchOffers={fetchOffers}
+          />
+        </TabsContent>
+
+        <TabsContent value="shipping-settings">
+          <ShippingSettingsTab isArabic={isArabic} />
+        </TabsContent>
+
         <TabsContent value="announcements">
           <AnnouncementsTab
             announcements={announcements}
@@ -434,6 +493,14 @@ export function AdminDashboard() {
             handleFinishedReturn={handleFinishedReturn}
             fetchReturnRequests={fetchReturnRequests}
           />
+        </TabsContent>
+
+        <TabsContent value="product-requests">
+          <ProductRequestsTab />
+        </TabsContent>
+
+        <TabsContent value="loyalty">
+          <LoyaltyTab />
         </TabsContent>
 
         <TabsContent value="analytics">

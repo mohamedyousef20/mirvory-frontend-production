@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { orderService, cartService, pickupPointService } from '@/lib/api'
+import { orderService, cartService, pickupPointService, shippingSettingsService } from '@/lib/api'
 import { useAuth } from "@/contexts/AuthProvider"
 import { useLanguage } from "@/components/language-provider"
 import { toast } from 'sonner'
@@ -60,8 +60,36 @@ export default function Checkout() {
     const [cartItems, setCartItems] = useState<any[]>([])
     const [appliedCoupon, setAppliedCoupon] = useState<any>(null)
     const [subtotal, setSubtotal] = useState(0)
+    const [shippingSettings, setShippingSettings] = useState<any>(null)
 
-    const shippingFee = useMemo(() => (subtotal >= 2000 || deliveryMethod === 'pickup' ? 0 : 70), [subtotal, deliveryMethod])
+    const shippingFee = useMemo(() => {
+        if (!shippingSettings) return 70;
+        
+        let fee = shippingSettings.shippingFee;
+        
+        // Free shipping based on minimum order
+        if (shippingSettings.freeShippingEnabled && subtotal >= shippingSettings.freeShippingMinimum) {
+            fee = 0;
+        }
+        
+        // Free pickup shipping
+        if (shippingSettings.freePickupShipping && deliveryMethod === 'pickup') {
+            fee = 0;
+        }
+        
+        if (shippingSettings.freeMetroShipping && address.addressLine) {
+            const isMetro = shippingSettings.metroAreas?.some((area: string) =>
+                address.addressLine.toLowerCase().includes(area.toLowerCase())
+            );
+
+            if (isMetro) {
+                fee = 0;
+            }
+        }
+        
+        return fee;
+    }, [subtotal, deliveryMethod, address.addressLine, shippingSettings])
+        
     const total = useMemo(() => {
         let finalTotal = subtotal + shippingFee;
         if (appliedCoupon?.discountAmount) {
@@ -93,6 +121,13 @@ export default function Checkout() {
                 );
                 setSubtotal(sub)
 
+                // Load shipping settings
+                try {
+                    const shippingRes = await shippingSettingsService.getShippingSettings();
+                    setShippingSettings(shippingRes.data || shippingRes);
+                } catch (sErr) {
+                    console.error("Shipping settings fetch error", sErr)
+                }
 
                 try {
                     const pickupRes = await pickupPointService.getPickupPoints();

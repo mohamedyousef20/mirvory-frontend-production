@@ -5,8 +5,7 @@ import axios, {
   AxiosResponse,
   AxiosError,
 } from 'axios';
-import { clearAuth, refreshToken as fallbackRefresh } from './auth';
-import { ApiResponse } from './types';
+import { clearAuth } from './auth'; import { ApiResponse } from './types';
 
 // Browser: empty baseURL so requests go through the Next.js /api/* proxy
 // (cookies scoped to www.mirvory.net are then sent automatically).
@@ -83,19 +82,17 @@ class ApiClient {
             await this.axiosInstance.post('/api/users/refresh-token');
             this.processQueue(null);
             return this.axiosInstance(originalRequest);
+          
           } catch (refreshErr) {
-            this.processQueue(refreshErr);
+          this.processQueue(refreshErr);
+          clearAuth();
 
-            try {
-              await fallbackRefresh();
-            } catch (_) {
-              clearAuth();
-              if (typeof window !== 'undefined') {
-                window.location.href = '/auth/login';
-              }
-            }
+          if (typeof window !== 'undefined') {
+            window.location.href = '/auth/login';
+          }
 
-            return Promise.reject(refreshErr);
+          return Promise.reject(refreshErr);
+        
           } finally {
             this.isRefreshing = false;
           }

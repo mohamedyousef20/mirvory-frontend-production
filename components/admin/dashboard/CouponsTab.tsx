@@ -298,46 +298,46 @@ export function CouponsTab({
                                                             <Edit className="h-4 w-4 mr-2" />
                                                             {isArabic ? "تعديل" : "Edit"}
                                                         </DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        onClick={() => handleToggleStatus(coupon._id, coupon.isActive)}
-                                                        className={coupon.isActive ? "text-orange-600" : "text-green-600"}
-                                                    >
-                                                        {coupon.isActive ? (
-                                                            <>
-                                                                <span>🚫</span>
-                                                                <span className="mr-2">{isArabic ? "إلغاء التفعيل" : "Deactivate"}</span>
-                                                            </>
-                                                        ) : (
-                                                            <>
-                                                                <span>✅</span>
-                                                                <span className="mr-2">{isArabic ? "تفعيل" : "Activate"}</span>
-                                                            </>
-                                                        )}
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem onClick={() => handleDeleteCoupon(coupon._id)} className="text-red-600">
-                                                        <Trash2 className="h-4 w-4 mr-2" />
-                                                        {isArabic ? "حذف" : "Delete"}
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-                                        </TableCell>
-                                    </TableRow>
-                                );
-                            })
-                        ) : (
-                            <TableRow>
-                                <TableCell colSpan={8} className="text-center py-8">
-                                    <div className="flex flex-col items-center">
-                                        <Gift className="h-12 w-12 text-muted-foreground mb-4" />
-                                        <p className="text-muted-foreground">
-                                            {isArabic ? "لا توجد كوبونات حتى الآن" : "No coupons available yet"}
-                                        </p>
-                                    </div>
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
+                                                        <DropdownMenuItem
+                                                            onClick={() => handleToggleStatus(coupon._id, coupon.isActive)}
+                                                            className={coupon.isActive ? "text-orange-600" : "text-green-600"}
+                                                        >
+                                                            {coupon.isActive ? (
+                                                                <>
+                                                                    <span>🚫</span>
+                                                                    <span className="mr-2">{isArabic ? "إلغاء التفعيل" : "Deactivate"}</span>
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <span>✅</span>
+                                                                    <span className="mr-2">{isArabic ? "تفعيل" : "Activate"}</span>
+                                                                </>
+                                                            )}
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => handleDeleteCoupon(coupon._id)} className="text-red-600">
+                                                            <Trash2 className="h-4 w-4 mr-2" />
+                                                            {isArabic ? "حذف" : "Delete"}
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </TableCell>
+                                        </TableRow>
+                                    );
+                                })
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan={8} className="text-center py-8">
+                                        <div className="flex flex-col items-center">
+                                            <Gift className="h-12 w-12 text-muted-foreground mb-4" />
+                                            <p className="text-muted-foreground">
+                                                {isArabic ? "لا توجد كوبونات حتى الآن" : "No coupons available yet"}
+                                            </p>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
                 </div>
             </div>
 
@@ -397,7 +397,7 @@ export function CouponsTab({
                                         className="w-full rounded-md border p-2 bg-transparent"
                                         required
                                         value={editingCoupon ? editingCoupon.discountValue : newCoupon.discountValue}
-                                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleCouponInputChange('discountValue', Number(e.target.value))}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleCouponInputChange('discountValue', Number(e.target.value))}
                                     />
                                 </div>
                             </div>
@@ -445,7 +445,7 @@ export function CouponsTab({
                                         min="0"
                                         className="w-full rounded-md border p-2 bg-transparent"
                                         value={editingCoupon ? (editingCoupon.maxDiscountAmount || '') : (newCoupon.maxDiscountAmount || '')}
-                                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleCouponInputChange('maxDiscountAmount', e.target.value ? Number(e.target.value) : undefined)}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleCouponInputChange('maxDiscountAmount', e.target.value ? Number(e.target.value) : undefined)}
                                     />
                                 </div>
                             )}

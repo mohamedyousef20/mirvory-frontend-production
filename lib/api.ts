@@ -1,7 +1,6 @@
 import axios, { AxiosError, AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios';
 import { toast } from 'sonner';
-import { clearAuth, refreshToken as fallbackRefresh } from './api/core/auth';
-
+import { clearAuth } from './api/core/auth';
 // ── Base URL Strategy ────────────────────────────────────────────────────────
 //
 // Browser environment: use an EMPTY baseURL (same-origin requests).
@@ -65,12 +64,21 @@ api.interceptors.response.use(
     // Handle 401 errors (Unauthorized)
     // Never retry if the request that failed IS the refresh-token endpoint —
     // that would cause an infinite loop where refresh → 401 → refresh → ...
+    // Also skip for /api/users/me: a 401 there just means "not logged in",
+    // which is a completely normal state for a guest visitor — it should
+    // resolve quietly, not trigger a token-refresh attempt + forced
+    // redirect to /auth/login on every page a guest visits.
     const isRefreshEndpoint =
       originalRequest?.url?.includes('/api/users/refresh-token') ||
       originalRequest?.url?.includes('/api/users/login') ||
       originalRequest?.url?.includes('/api/users/logout');
-
-    if (error.response?.status === 401 && !originalRequest?._retry && !isRefreshEndpoint) {
+    const isMeEndpoint = originalRequest?.url?.includes('/api/users/me');
+    if (
+      error.response?.status === 401 &&
+      !originalRequest?._retry &&
+      !isRefreshEndpoint &&
+      !isMeEndpoint
+    ) {
       if (isRefreshing) {
         // If refresh is in progress, queue the request
         return new Promise((resolve, reject) => {
@@ -84,12 +92,11 @@ api.interceptors.response.use(
 
       originalRequest._retry = true;
       isRefreshing = true;
-
       try {
-        // Try to refresh the token
+        // Refresh the authentication cookies through the same-origin API
         await api.post('/api/users/refresh-token');
 
-        // Process queued requests
+        // Release queued requests
         processQueue(null, null);
 
         // Retry the original request
@@ -97,13 +104,10 @@ api.interceptors.response.use(
       } catch (refreshError) {
         processQueue(refreshError, null);
 
-        try {
-          await fallbackRefresh();
-        } catch (_) {
-          clearAuth();
-          if (typeof window !== 'undefined') {
-            window.location.href = '/auth/login';
-          }
+        clearAuth();
+
+        if (typeof window !== 'undefined') {
+          window.location.href = '/auth/login';
         }
 
         return Promise.reject(refreshError);
@@ -111,7 +115,6 @@ api.interceptors.response.use(
         isRefreshing = false;
       }
     }
-
     // Handle validation errors
     if (error.response?.status === 422) {
       const backendErrors = (error.response.data as any)?.errors;
@@ -135,8 +138,10 @@ api.interceptors.response.use(
           errorMessage.includes('announcement') ||
           (error.config?.url ?? '').includes('/announcements')
         );
+      const skipLogging401Me =
+        status === 401 && (error.config?.url ?? '').includes('/api/users/me');
 
-      if (!skipLogging404) {
+      if (!skipLogging404 && !skipLogging401Me) {
         switch (status) {
           case 403:
             console.error('Forbidden: You do not have permission to access this resource');
@@ -180,7 +185,7 @@ export const authService = {
 
   logout: () => api.post('/api/users/logout'),
 
-  refreshToken: () => api.post('/api/users/refresh-token'),
+  // refreshToken: () => api.post('/api/users/refresh-token'),
 
   getMe: () => api.get('/api/users/me'),
 
@@ -212,7 +217,7 @@ export const authService = {
 // Notification Service 
 export const notificationService = {
   getNotifications: () => api.get('/api/notifications'),
-  markAsRead: (id: number) => api.patch(`/api/notifications/read`, { id }),
+  markAsRead: (id: string) => api.patch(`/api/notifications/read`, { id }),
   markAllAsRead: () => api.patch('/api/notifications/read-all'),
   getNotificationCount: () => api.get('/api/notifications/unread-count'),
   sendNotification: (notificationData: any) => api.post('/api/notifications', notificationData),
@@ -294,8 +299,10 @@ export const productService = {
   getProductById: (id: string) => api.get(`/api/products/${id}`),
 
   // Update product (expects ID in payload body)
-  updateProduct: (id: string, updates: Record<string, any>) =>
-    api.patch(`/api/products`, { id, ...updates }),
+  updateProduct: (
+    id: string,
+    updates: Record<string, any>
+  ) => api.patch(`/api/products/${id}`, updates),
   // Delete product
   deleteProduct: (id: string | number) => api.delete("/api/products", { data: { id } }),
   // Featured products
@@ -352,43 +359,12 @@ export const productService = {
 
 };
 
-// Brand Services
-// export const brandService = {
-//   getBrands: (params?: { status?: 'active' | 'inactive'; }) =>
-//     api.get('/api/brands', { params }),
-
-//   getProductsByBrand: (brandId: string, params?: { limit?: number; page?: number; sort?: string; }) =>
-//     api.get(`/api/brands/${brandId}/products`, { params }),
-
-//   createBrand: (data: FormData | any) =>
-//     api.post('/api/brands', data, {
-//       headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : undefined,
-//     }),
-
-//   getBrandById: (id: string) => api.get(`/api/brands/${id}`),
-
-//   updateBrand: (id: string, data: FormData | any) =>
-//     api.put(`/api/brands/${id}`, data, {
-//       headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : undefined,
-//     }),
-
-//   deleteBrand: (id: string) => api.delete(`/api/brands/${id}`),
-// };
-
 // Category Services
 export const categoryService = {
   getCategories: (params?: {
     status?: 'active' | 'inactive';
     includeProducts?: boolean;
   }) => api.get('/api/categories', { params }),
-
-  // getProductsByCategory: (categoryId: string, params?: {
-  //   limit?: number;
-  //   page?: number;
-  //   sort?: string;
-  //   minPrice?: number;
-  //   maxPrice?: number;
-  // }) => api.get(`/api/categories/${categoryId}/products`, { params }),
 
   createCategory: (categoryData: FormData | any) =>
     api.post('/api/categories', categoryData, {
@@ -607,7 +583,71 @@ export const announcementService = {
   toggleAnnouncementStatus: (id: string) => api.patch(`/api/announcements/${id}/toggle-status`)
 
 };
+// Offer Services
+export const offerService = {
+  // Get all offers (admin only)
+  getOffers: (params?: {
+    page?: number;
+    limit?: number;
+    status?: 'active' | 'expired' | 'inactive';
+    type?: 'percentage' | 'fixed';
+  }) => api.get('/api/offers', { params }),
 
+  // Get active offers for users
+  getActiveOffers: () =>
+    api.get('/api/offers/active'),
+
+  // Get offer by ID
+  getOfferById: (id: string) =>
+    api.get(`/api/offers/${id}`),
+
+  // Create new offer (admin only)
+  createOffer: (offerData: FormData) =>
+    api.post('/api/offers', offerData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    }),
+
+  // Update offer (admin only)
+  updateOffer: (
+    id: string,
+    offerData: FormData
+  ) => api.patch(`/api/offers/${id}`, offerData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  }),
+
+  // Delete offer (admin only)
+  deleteOffer: (id: string) =>
+    api.delete(`/api/offers/${id}`),
+
+  // Toggle offer active status (admin only)
+  toggleOfferStatus: (id: string) =>
+    api.patch(`/api/offers/${id}/toggle-status`),
+};
+// Shipping Settings Service
+export const shippingSettingsService = {
+  // Get current shipping settings
+  getShippingSettings: () =>
+    api.get('/api/shipping-settings'),
+
+  // Update shipping settings (admin only)
+  updateShippingSettings: (data: {
+    freeShippingEnabled?: boolean;
+    freeShippingMinimum?: number;
+    shippingFee?: number;
+    freePickupShipping?: boolean;
+    freeMetroShipping?: boolean;
+  }) =>
+    api.put('/api/shipping-settings', data),
+
+  // Calculate shipping fee based on current backend rules
+  calculateShippingFee: (data: {
+    subtotal: number;
+    deliveryMethod: 'home' | 'pickup';
+    address?: string;
+    isMetro?: boolean;
+  }) =>
+    api.post('/api/shipping-settings/calculate', data),
+};
 // pickup point service
 export const pickupPointService = {
   getPickupPoints: () => api.get("/api/pickup"),
@@ -622,10 +662,12 @@ export const returnService = {
   getReturnRequests: (params?: any) => api.get('/api/returns', { params }),
   getReturnRequestById: (id: string) => api.get(`/api/returns/${id}`),
   getReturnRequestsForAdmin: (params?: any) => api.get('/api/returns/admin', { params }),
-
-  updateReturnRequest: (returnData: { returnId: string; status: string }) =>
-    api.patch(`/api/returns`, returnData),
-
+  updateReturnRequest: (returnData: {
+    returnId: string;
+    status: string;
+    rejectionReason?: string;
+  }) => api.patch(`/api/returns`, returnData),
+  
   deleteReturnRequest: (returnId: string) => api.delete('/api/returns', {
     data: { id: returnId }
   }),
@@ -757,6 +799,97 @@ export const guestCartService = {
     api.get(`/api/guest-orders/track/${encodeURIComponent(token)}`),
 };
 
+// ─── Unavailable Product Request Service ─────────────────────────────────────
+export const unavailableProductRequestService = {
+  /**
+   * Create a request for unavailable product (public - auth optional)
+   * POST /api/unavailable-product-requests
+   */
+  createRequest: (data: FormData) =>
+    api.post('/api/unavailable-product-requests', data, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    }),
+
+  /**
+   * Get user's own requests (authenticated only)
+   * GET /api/unavailable-product-requests/my-requests
+   */
+  getMyRequests: (params?: { page?: number; limit?: number; status?: string }) =>
+    api.get('/api/unavailable-product-requests/my-requests', { params }),
+
+  /**
+   * Get all requests (admin only)
+   * GET /api/unavailable-product-requests/admin
+   */
+  getAllRequests: (params?: { page?: number; limit?: number; status?: string; search?: string }) =>
+    api.get('/api/unavailable-product-requests/admin', { params }),
+
+  /**
+   * Get single request by ID (admin only)
+   * GET /api/unavailable-product-requests/admin/:id
+   */
+  getRequestById: (id: string) =>
+    api.get(`/api/unavailable-product-requests/admin/${id}`),
+
+  /**
+   * Update request status (admin only)
+   * PATCH /api/unavailable-product-requests/admin/:id/status
+   */
+  updateStatus: (id: string, data: { status: string; adminNotes?: string }) =>
+    api.patch(`/api/unavailable-product-requests/admin/${id}/status`, data),
+
+  /**
+   * Delete request (admin only)
+   * DELETE /api/unavailable-product-requests/admin/:id
+   */
+  deleteRequest: (id: string) =>
+    api.delete(`/api/unavailable-product-requests/admin/${id}`),
+};
+
+// ─── Loyalty Service ─────────────────────────────────────────────────────────
+export const loyaltyService = {
+  /**
+   * Get user loyalty information
+   * GET /api/loyalty/my-loyalty
+   */
+  getMyLoyalty: () => api.get('/api/loyalty/my-loyalty'),
+
+  /**
+   * Get user loyalty transaction history
+   * GET /api/loyalty/my-loyalty/transactions
+   */
+  getMyTransactions: (params?: { page?: number; limit?: number; type?: string }) =>
+    api.get('/api/loyalty/my-loyalty/transactions', { params }),
+
+  /**
+   * Redeem points for discount
+   * POST /api/loyalty/redeem
+   */
+  redeemPoints: (data: { points: number; orderId?: string }) =>
+    api.post('/api/loyalty/redeem', data),
+
+  /**
+   * Get all users loyalty info (admin only)
+   * GET /api/loyalty/admin/users
+   */
+  getAllUsersLoyalty: (params?: { page?: number; limit?: number; tier?: string; search?: string }) =>
+    api.get('/api/loyalty/admin/users', { params }),
+
+  /**
+   * Get user loyalty transactions (admin only)
+   * GET /api/loyalty/admin/users/:userId/transactions
+   */
+  getUserTransactionsAdmin: (userId: string, params?: { page?: number; limit?: number; type?: string }) =>
+    api.get(`/api/loyalty/admin/users/${userId}/transactions`, { params }),
+
+  /**
+   * Manual points adjustment (admin only)
+   * POST /api/loyalty/admin/adjust
+   */
+  adjustPoints: (data: { userId: string; points: number; notes?: string }) =>
+    api.post('/api/loyalty/admin/adjust', data),
+};
+
 // Export all services
 export const apiServices = {
   api,
@@ -770,12 +903,16 @@ export const apiServices = {
   wishlistService,
   ratingService,
   announcementService,
+  offerService,
+  shippingSettingsService,
   pickupPointService,
   returnService,
   platformEarningsService,
   sellerDashboardService,
   adminDashboardService,
-  complaintService
+  complaintService,
+  unavailableProductRequestService,
+  loyaltyService
 };
 
 export default apiServices;

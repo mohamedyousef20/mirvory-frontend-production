@@ -15,7 +15,7 @@ interface OrdersTabProps {
     onFilterChange: (type: string, val: string) => void
     onSortChange: (val: string) => void
     onClearFilters: () => void
-    onConfirmPreparation: (id: string) => void
+    onConfirmPreparation: (orderId: string, itemId: string) => void
     onViewDetails?: (order: any) => void
     onPrintInvoice?: (order: any) => void
     onContactBuyer?: (order: any) => void

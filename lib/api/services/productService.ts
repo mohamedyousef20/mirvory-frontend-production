@@ -103,5 +103,51 @@ export const productService = {
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Failed to approve product');
     }
+  },
+
+  // Update product with FormData support for images
+  async updateProduct(productId: string, productData: any, files?: File[]) {
+    try {
+      const formData = new FormData();
+      
+      // Add all text fields
+      Object.keys(productData).forEach(key => {
+        if (productData[key] !== undefined && productData[key] !== null) {
+          if (Array.isArray(productData[key])) {
+            formData.append(key, JSON.stringify(productData[key]));
+          } else if (typeof productData[key] === 'object') {
+            formData.append(key, JSON.stringify(productData[key]));
+          } else {
+            formData.append(key, String(productData[key]));
+          }
+        }
+      });
+
+      // Add files if any
+      if (files && files.length > 0) {
+        files.forEach((file) => {
+          formData.append('images', file);
+        });
+      }
+
+      const response = await api.patch(`/api/products/${productId}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response;
+    } catch (error: any) {
+      throw error;
+    }
+  },
+
+  // Delete product
+  async deleteProduct(productId: string) {
+    try {
+      const response = await api.delete('/api/products', { data: { id: productId } });
+      return response;
+    } catch (error: any) {
+      throw error;
+    }
   }
 }

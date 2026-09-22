@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback, useRef } from "react"
+import { useState, useEffect, useCallback, useRef, useMemo } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { useLanguage } from "@/components/language-provider"
@@ -39,7 +39,7 @@ import {
   ChevronLeft,
   Sparkles
 } from "lucide-react"
-import { cartService, couponService } from "@/lib/api"
+import { cartService, couponService, shippingSettingsService } from "@/lib/api"
 import { MirvoryPageLoader } from "./MirvoryLoader"
 import { useAuth } from "@/contexts/AuthProvider"
 import { GuestCartPage } from "@/components/guest-cart-page"
@@ -123,7 +123,7 @@ function AuthenticatedCartPage() {
   const [couponError, setCouponError] = useState<string | null>(null)
   const [couponData, setCouponData] = useState<CouponResponse | null>(null)
   const [updatingItemId, setUpdatingItemId] = useState<string | null>(null)
-  const [freeShippingProgress, setFreeShippingProgress] = useState(0)
+  const [shippingSettings, setShippingSettings] = useState<any>(null)
 
   // Ref for debouncing
   const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -176,6 +176,14 @@ function AuthenticatedCartPage() {
         const items = mapCartItemsFromResponse(response.data)
         setCartItems(items)
         setCartData(response.data);
+
+        // Load shipping settings
+        try {
+          const shippingRes = await shippingSettingsService.getShippingSettings();
+          setShippingSettings(shippingRes.data || shippingRes);
+        } catch (sErr) {
+          console.error('Failed to fetch shipping settings:', sErr);
+        }
 
         if (response.data.appliedCoupon && response.data.appliedCoupon.code) {
           setCouponApplied(true);
@@ -237,12 +245,6 @@ function AuthenticatedCartPage() {
       }
     }
   }, [])
-
-  useEffect(() => {
-    const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
-    const progress = Math.min(100, (subtotal / 500) * 100)
-    setFreeShippingProgress(progress)
-  }, [cartItems])
 
   const handleApplyCoupon = async () => {
     if (!couponCode.trim()) {
@@ -424,7 +426,25 @@ function AuthenticatedCartPage() {
     return sum + (item.price * item.quantity);
   }, 0)
 
-  const shipping = subtotal > 500 ? 0 : 70
+  const shipping = useMemo(() => {
+    if (!shippingSettings) return 70;
+    
+    let fee = shippingSettings.shippingFee;
+    
+    // Free shipping based on minimum order
+    if (shippingSettings.freeShippingEnabled && subtotal >= shippingSettings.freeShippingMinimum) {
+      fee = 0;
+    }
+    
+    return fee;
+  }, [subtotal, shippingSettings]);
+
+  // Calculate free shipping progress based on settings
+  const freeShippingProgress = useMemo(() => {
+    if (!shippingSettings || !shippingSettings.freeShippingEnabled) return 0;
+    return Math.min(100, (subtotal / shippingSettings.freeShippingMinimum) * 100);
+  }, [subtotal, shippingSettings]);
+  
   const total = cartData?.total !== undefined
     ? cartData.total + shipping
     : subtotal + shipping;
@@ -463,17 +483,19 @@ function AuthenticatedCartPage() {
         <div className="max-w-7xl mx-auto px-6 py-8 space-y-6">
 
           {/* 7. Free Shipping Banner / Progress Block */}
-          {cartItems.length > 0 && shipping > 0 && (
+          {cartItems.length > 0 && shipping > 0 && shippingSettings?.freeShippingEnabled && (
             <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex flex-col gap-2 shadow-sm">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Truck className="h-4 w-4 text-amber-600" />
                   <span className="text-xs font-bold text-amber-800">
-                    {language === "ar" ? "احصل على شحن مجاني للمشتريات فوق 500 ج.م!" : "Get Free Shipping on orders over 500 EGP!"}
+                    {language === "ar"
+                      ? `احصل على شحن مجاني للمشتريات فوق ${shippingSettings.freeShippingMinimum} ج.م!`
+                      : `Get Free Shipping on orders over ${shippingSettings.freeShippingMinimum} EGP!`}
                   </span>
                 </div>
                 <span className="text-xs font-bold text-amber-700">
-                  {Math.max(0, 500 - subtotal).toFixed(2)} {language === "ar" ? "ج.م متبقية للشحن المجاني" : "EGP to go"}
+                  {Math.max(0, shippingSettings.freeShippingMinimum - subtotal).toFixed(2)} {language === "ar" ? "ج.م متبقية للشحن المجاني" : "EGP to go"}
                 </span>
               </div>
               <Progress

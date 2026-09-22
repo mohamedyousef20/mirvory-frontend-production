@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { PickupPoint } from '../../types/pickup-point';
+import { PickupPoint } from '@/types/pickup-point';
 import { pickupPointService } from '@/lib/api/services/pickupPointService';
 
 interface PickupPointsState {

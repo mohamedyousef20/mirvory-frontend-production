@@ -27,6 +27,7 @@ import {
     EyeOff,
     Copy,
     QrCode,
+    MessageCircle,
 } from "lucide-react"
 import { format } from "date-fns"
 import { useLanguage } from "@/components/language-provider"
@@ -35,6 +36,12 @@ import { toast } from "sonner"
 import { orderService } from "@/lib/api"
 import { QRCodeSVG } from "qrcode.react"
 import Image from "next/image"
+import { useAuth } from '@/contexts/AuthProvider';
+import {
+    buildOrderConfirmationMessage,
+    openWhatsAppConfirmation,
+    getOrderPhone,
+} from "@/lib/whatsapp"
 
 type DeliveryStatus =
     | "pending"
@@ -57,7 +64,6 @@ type DeliveryMethod =
 
 interface OrderItem {
     _id: string
-
     product: {
         _id: string
         title: string
@@ -65,23 +71,24 @@ interface OrderItem {
         price: number
         images: string[]
     }
-
     seller: {
         _id: string
         name: string
         email: string
         phone?: string
     }
-
     quantity: number
     price: number
-    color?: string
+    color?: string | { name?: string; value?: string }
     size?: string
+    image?: string | null
     isPrepared: boolean
 }
 
 interface OrderDetails {
     _id: string
+
+    orderNumber?: string
 
     buyer: {
         _id: string
@@ -94,7 +101,7 @@ interface OrderDetails {
 
     deliveryInfo: {
         fullName: string
-        phoneNumber: string
+        phone: string
         address: string
 
         pickupPoint?: {
@@ -130,6 +137,7 @@ interface OrderDetails {
 }
 
 export default function OrderDetailsPage() {
+    const { user } = useAuth()
     const { id } = useParams()
     const router = useRouter()
     const { t } = useLanguage()
@@ -319,6 +327,36 @@ export default function OrderDetailsPage() {
     }
 
     /**
+     * نسخ رسالة تأكيد الطلب للحافظة.
+     * منطق بناء الرسالة اتنقل لـ lib/whatsapp.ts عشان يتشارك
+     * بين صفحة التفاصيل ولوحة الأدمن.
+     */
+    const copyConfirmationMessage = async () => {
+        try {
+            const message = buildOrderConfirmationMessage(order)
+
+            await navigator.clipboard.writeText(message)
+
+            toast.success("تم نسخ رسالة تأكيد الطلب")
+        } catch (error) {
+            console.error("Error copying confirmation message:", error)
+            toast.error("تعذر نسخ رسالة التأكيد")
+        }
+    }
+
+    /**
+     * فتح واتساب برسالة التأكيد جاهزة.
+     * على الموبايل بيفتح التطبيق، وعلى الديسكتوب بيفتح WhatsApp Web.
+     */
+    const sendConfirmationViaWhatsApp = () => {
+        const opened = openWhatsAppConfirmation(order)
+
+        if (!opened) {
+            toast.error("رقم هاتف العميل غير صالح أو غير موجود")
+        }
+    }
+
+    /**
      * Open return request page for a specific order item.
      *
      * IMPORTANT:
@@ -391,6 +429,9 @@ export default function OrderDetailsPage() {
         getDeliveryMethodInfo(
             order.deliveryMethod
         )
+
+    // هل رقم العميل صالح للإرسال عبر واتساب؟
+    const hasValidPhone = Boolean(getOrderPhone(order))
 
     const qrPayload = JSON.stringify({
         orderId: order._id,
@@ -499,16 +540,11 @@ export default function OrderDetailsPage() {
                                                 <div className="relative w-16 h-16 sm:w-20 sm:h-20 bg-gray-50 rounded-lg overflow-hidden shrink-0 border border-gray-100">
 
                                                     <Image
-                                                        src={
-                                                            item
-                                                                .product
-                                                                .images?.[0] ||
+                                                        src={item.image || item.product.images?.[0] ||
                                                             "/placeholder-product.jpg"
                                                         }
                                                         alt={
-                                                            item
-                                                                .product
-                                                                .title
+                                                            item.product.title
                                                         }
                                                         fill
                                                         className="object-cover"
@@ -590,13 +626,11 @@ export default function OrderDetailsPage() {
                                                                     variant="outline"
                                                                     className="text-[11px] px-1.5 py-0 font-normal"
                                                                 >
-                                                                    اللون:{" "}
-                                                                    {
-                                                                        item.color
-                                                                    }
+                                                                    {typeof item.color === "object"
+                                                                        ? item.color.name || item.color.value
+                                                                        : item.color}
                                                                 </Badge>
                                                             )}
-
                                                             {item.size && (
                                                                 <Badge
                                                                     variant="outline"
@@ -786,9 +820,7 @@ export default function OrderDetailsPage() {
 
                                             <span className="font-mono text-gray-900">
                                                 {
-                                                    order
-                                                        .deliveryInfo
-                                                        ?.phoneNumber
+                                                    order.deliveryInfo?.phone
                                                 }
                                             </span>
 
@@ -811,7 +843,7 @@ export default function OrderDetailsPage() {
                                             {
                                                 order
                                                     .deliveryInfo
-                                                    .pickupPoint
+                                                    ?.pickupPoint
                                                     ?.address
                                             }
                                         </p>
@@ -1054,21 +1086,51 @@ export default function OrderDetailsPage() {
                     {/* Actions */}
                     <div className="space-y-2">
 
-                        {order.deliveryStatus ===
-                            "pending" && (
+                        {user?.role === "admin" && (
+                            <>
+                                {/* إرسال رسالة التأكيد مباشرة عبر واتساب */}
                                 <Button
-                                    className="w-full"
-                                    variant="destructive"
-                                    onClick={() => {
-                                        toast.info(
-                                            "ميزة إلغاء الطلب غير متوفرة حالياً"
-                                        )
-                                    }}
+                                    type="button"
+                                    variant="default"
+                                    className="w-full gap-2 bg-green-600 hover:bg-green-700 text-white disabled:bg-gray-200 disabled:text-gray-400"
+                                    onClick={sendConfirmationViaWhatsApp}
+                                    disabled={!hasValidPhone}
+                                    title={
+                                        hasValidPhone
+                                            ? "فتح واتساب برسالة تأكيد الطلب"
+                                            : "رقم هاتف العميل غير صالح"
+                                    }
                                 >
-                                    إلغاء الطلب
+                                    <MessageCircle className="h-4 w-4" />
+                                    إرسال تأكيد الطلب عبر واتساب
                                 </Button>
-                            )}
 
+                                {/* نسخ الرسالة يدويًا كبديل */}
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    className="w-full gap-2"
+                                    onClick={copyConfirmationMessage}
+                                >
+                                    <Copy className="h-4 w-4" />
+                                    نسخ رسالة تأكيد الطلب
+                                </Button>
+                            </>
+                        )}
+
+                        {order.deliveryStatus === "pending" && (
+                            <Button
+                                className="w-full"
+                                variant="destructive"
+                                onClick={() => {
+                                    toast.info(
+                                        "ميزة إلغاء الطلب غير متوفرة حالياً"
+                                    )
+                                }}
+                            >
+                                إلغاء الطلب
+                            </Button>
+                        )}
                     </div>
 
                 </div>

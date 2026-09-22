@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback, useRef } from "react"
+import { useState, useEffect, useCallback, useRef, useMemo } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
@@ -23,7 +23,7 @@ import {
 } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
 import { toast } from "sonner"
-import { guestCartService } from "@/lib/api"
+import { guestCartService, shippingSettingsService } from "@/lib/api"
 import {
   getGuestCart,
   updateGuestCartItem,
@@ -45,6 +45,7 @@ export function GuestCartPage() {
   })
   const [loading, setLoading] = useState(false)   // not needed for initial render anymore
   const [validating, setValidating] = useState(false)
+  const [shippingSettings, setShippingSettings] = useState<any>(null)
 
   // Ref to guard against running multiple validations simultaneously
   const validatingRef = useRef(false)
@@ -118,6 +119,17 @@ export function GuestCartPage() {
       validateItems(localItems)
     }
 
+    // Load shipping settings
+    const fetchShippingSettings = async () => {
+      try {
+        const res = await shippingSettingsService.getShippingSettings();
+        setShippingSettings(res.data || res);
+      } catch (err) {
+        console.error('Failed to fetch shipping settings:', err);
+      }
+    };
+    fetchShippingSettings();
+
     // Listen for external changes (other components adding/removing items)
     // This does NOT fire from mergeValidatedItems (silent save), so no loop.
     const handleExternalUpdate = () => {
@@ -166,9 +178,25 @@ export function GuestCartPage() {
   }
 
   const subtotal = items.reduce((sum, item) => sum + (item.price ?? 0) * item.quantity, 0)
-  const shipping = subtotal > 500 ? 0 : 30
+  
+  const shipping = useMemo(() => {
+    if (!shippingSettings) return 30;
+    
+    let fee = shippingSettings.shippingFee;
+    
+    // Free shipping based on minimum order
+    if (shippingSettings.freeShippingEnabled && subtotal >= shippingSettings.freeShippingMinimum) {
+      fee = 0;
+    }
+    
+    return fee;
+  }, [subtotal, shippingSettings]);
+  
   const total = subtotal + shipping
-  const freeShippingProgress = Math.min(100, (subtotal / 500) * 100)
+  const freeShippingProgress = useMemo(() => {
+    if (!shippingSettings || !shippingSettings.freeShippingEnabled) return 0;
+    return Math.min(100, (subtotal / shippingSettings.freeShippingMinimum) * 100);
+  }, [subtotal, shippingSettings]);
 
   // Empty cart state
   if (items.length === 0) {
@@ -263,17 +291,19 @@ export function GuestCartPage() {
           </div>
 
           {/* Free shipping progress */}
-          {shipping > 0 && (
+          {shipping > 0 && shippingSettings?.freeShippingEnabled && (
             <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex flex-col gap-2 shadow-sm">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Truck className="h-4 w-4 text-amber-600" />
                   <span className="text-xs font-bold text-amber-800">
-                    {isAr ? "احصل على شحن مجاني للمشتريات فوق 500 ج.م!" : "Free shipping on orders over 500 EGP!"}
+                    {isAr
+                      ? `احصل على شحن مجاني للمشتريات فوق ${shippingSettings.freeShippingMinimum} ج.م!`
+                      : `Free shipping on orders over ${shippingSettings.freeShippingMinimum} EGP!`}
                   </span>
                 </div>
                 <span className="text-xs font-bold text-amber-700">
-                  {Math.max(0, 500 - subtotal).toFixed(2)} {isAr ? "ج.م متبقية" : "EGP to go"}
+                  {Math.max(0, shippingSettings.freeShippingMinimum - subtotal).toFixed(2)} {isAr ? "ج.م متبقية" : "EGP to go"}
                 </span>
               </div>
               <Progress value={freeShippingProgress} className="h-2 bg-amber-100/60 [&_*]:bg-[#1a4fba] transition-all" />

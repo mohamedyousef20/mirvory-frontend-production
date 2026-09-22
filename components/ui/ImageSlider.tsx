@@ -72,7 +72,7 @@ export default function ImageSlider({
             dragFree: false,
             containScroll: "trimSnaps",
         },
-        autoplay && !isSingle ? [autoplayPlugin.current] : []
+        (autoplay && !isSingle ? [autoplayPlugin.current] : []) as any
     );
 
     const [selectedIndex, setSelectedIndex] = useState(0);

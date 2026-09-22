@@ -40,10 +40,10 @@ export const createBaseSlice = <T>(config: BaseSliceConfig<T>) => {
     slice,
     actions: slice.actions,
     selectors: {
-      selectItems: (state: RootState) => state[config.name].items,
-      selectItem: (state: RootState) => state[config.name].item,
-      selectStatus: (state: RootState) => state[config.name].status,
-      selectError: (state: RootState) => state[config.name].error,
+      selectItems: (state: RootState) => (state as any)[config.name].items,
+      selectItem: (state: RootState) => (state as any)[config.name].item,
+      selectStatus: (state: RootState) => (state as any)[config.name].status,
+      selectError: (state: RootState) => (state as any)[config.name].error,
     },
   };
 };

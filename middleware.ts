@@ -72,43 +72,43 @@ export async function middleware(request: NextRequest) {
     // Log code/message only — never log the token value itself
     console.error("❌ Token verification failed:", { code: err.code, message: err.message });
 
-    // ── Auto-refresh on expiry ───────────────────────────────────────────────
-    if (err.code === "ERR_JWT_EXPIRED" && refreshToken) {
-      try {
-        const refreshRes = await fetch(`${API_URL}/api/users/refresh-token`, {
-          method: "POST",
-          credentials: "include",
-          headers: { Cookie: request.headers.get("cookie") || "" },
-        });
+    // // ── Auto-refresh on expiry ───────────────────────────────────────────────
+    // if (err.code === "ERR_JWT_EXPIRED" && refreshToken) {
+    //   try {
+    //     const refreshRes = await fetch(`${API_URL}/api/users/refresh-token`, {
+    //       method: "POST",
+    //       credentials: "include",
+    //       headers: { Cookie: request.headers.get("cookie") || "" },
+    //     });
 
-        if (refreshRes.ok) {
-          const data = await refreshRes.json();
-          const newToken: string | undefined = data.accessToken;
+    //     if (refreshRes.ok) {
+    //       const data = await refreshRes.json();
+    //       const newToken: string | undefined = data.accessToken;
 
-          if (newToken) {
-            const { payload } = await jwtVerify(newToken, SECRET_KEY);
-            const d = payload as AppJwtPayload;
+    //       if (newToken) {
+    //         const { payload } = await jwtVerify(newToken, SECRET_KEY);
+    //         const d = payload as AppJwtPayload;
 
-            const requestHeaders = new Headers(request.headers);
-            const uid = d.id ?? "";
-            const urole = (d.role ?? "").toLowerCase();
-            const umail = d.email ?? "";
-            if (uid) requestHeaders.set("x-user-id", uid);
-            if (urole) requestHeaders.set("x-user-role", urole);
-            if (umail) requestHeaders.set("x-user-email", umail);
+    //         const requestHeaders = new Headers(request.headers);
+    //         const uid = d.id ?? "";
+    //         const urole = (d.role ?? "").toLowerCase();
+    //         const umail = d.email ?? "";
+    //         if (uid) requestHeaders.set("x-user-id", uid);
+    //         if (urole) requestHeaders.set("x-user-role", urole);
+    //         if (umail) requestHeaders.set("x-user-email", umail);
 
-            const response = NextResponse.next({ request: { headers: requestHeaders } });
-            const isProd = process.env.NODE_ENV === "production";
-            response.cookies.set("accessToken", newToken, {
-              httpOnly: true, secure: isProd, sameSite: "lax", path: "/", maxAge: 15 * 60,
-            });
-            return response;
-          }
-        }
-      } catch (refreshError) {
-        console.error("❌ Token refresh failed:", refreshError);
-      }
-    }
+    //         const response = NextResponse.next({ request: { headers: requestHeaders } });
+    //         const isProd = process.env.NODE_ENV === "production";
+    //         response.cookies.set("accessToken", newToken, {
+    //           httpOnly: true, secure: isProd, sameSite: "lax", path: "/", maxAge: 15 * 60,
+    //         });
+    //         return response;
+    //       }
+    //     }
+    //   } catch (refreshError) {
+    //     console.error("❌ Token refresh failed:", refreshError);
+    //   }
+    // }
 
     const response = NextResponse.redirect(new URL("/auth/login", request.url));
     response.cookies.delete("accessToken");

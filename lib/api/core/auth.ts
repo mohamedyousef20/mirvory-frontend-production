@@ -44,29 +44,29 @@ export const getTokenExpiration = (token: string): number | null => {
   }
 };
 
-export const refreshToken = async (): Promise<string | null> => {
-  // In the browser, use a same-origin path so the Next.js proxy forwards
-  // the request to Railway with the www.mirvory.net cookies attached.
-  const apiBase = typeof window !== 'undefined'
-    ? ''
-    : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000');
-  try {
-    const response = await fetch(`${apiBase}/api/users/refresh-token`, {
-      method: 'POST',
-      credentials: 'include',
-    });
+// export const refreshToken = async (): Promise<string | null> => {
+//   // In the browser, use a same-origin path so the Next.js proxy forwards
+//   // the request to Railway with the www.mirvory.net cookies attached.
+//   const apiBase = typeof window !== 'undefined'
+//     ? ''
+//     : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000');
+//   try {
+//     const response = await fetch(`${apiBase}/api/users/refresh-token`, {
+//       method: 'POST',
+//       credentials: 'include',
+//     });
 
-    if (!response.ok) {
-      throw new Error('Failed to refresh token');
-    }
+//     if (!response.ok) {
+//       throw new Error('Failed to refresh token');
+//     }
 
-    const data = await response.json();
-    return data?.accessToken ?? null;
-  } catch (error) {
-    clearAuth();
-    throw error;
-  }
-};
+//     const data = await response.json();
+//     return data?.accessToken ?? null;
+//   } catch (error) {
+//     clearAuth();
+//     throw error;
+//   }
+// };
 
 export const getCurrentUser = (): any => {
   if (typeof window === 'undefined') return null;

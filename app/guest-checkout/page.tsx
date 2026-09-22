@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { Loader2, ShoppingBag, User, Phone, Mail, MapPin, Package, Store } from 'lucide-react';
-import { guestCartService, pickupPointService } from '@/lib/api';
+import { guestCartService, pickupPointService, shippingSettingsService } from '@/lib/api';
 import { getGuestCart, clearGuestCart } from '@/lib/guestCart';
 declare global {
   interface Window {
@@ -61,6 +61,7 @@ export default function GuestCheckoutPage() {
   });
   const [trackingToken, setTrackingToken] = useState<string | null>(null);
   const [orderNumber, setOrderNumber] = useState<string | null>(null);
+  const [shippingSettings, setShippingSettings] = useState<any>(null);
 
   const [cartItems] = useState<GuestItem[]>(() => getGuestCart() as GuestItem[]);
 
@@ -75,7 +76,17 @@ export default function GuestCheckoutPage() {
       }
     };
 
+    const fetchShippingSettings = async () => {
+      try {
+        const response = await shippingSettingsService.getShippingSettings();
+        setShippingSettings(response.data || response);
+      } catch (error) {
+        console.error('Failed to fetch shipping settings:', error);
+      }
+    };
+
     fetchPickupPoints();
+    fetchShippingSettings();
   }, []);
 
   const handleChange = (field: keyof GuestCheckoutForm, value: string) => {
@@ -83,7 +94,36 @@ export default function GuestCheckoutPage() {
   };
 
   const subtotal = cartItems.reduce((sum, i) => sum + (i.price || 0) * i.quantity, 0);
-  const shippingFee = (subtotal >= 2000 || form.deliveryMethod === 'pickup') ? 0 : 70;
+  
+  const shippingFee = useMemo(() => {
+    if (!shippingSettings) return 70;
+    
+    let fee = shippingSettings.shippingFee;
+    
+    // Free shipping based on minimum order
+    if (shippingSettings.freeShippingEnabled && subtotal >= shippingSettings.freeShippingMinimum) {
+      fee = 0;
+    }
+    
+    // Free pickup shipping
+    if (shippingSettings.freePickupShipping && form.deliveryMethod === 'pickup') {
+      fee = 0;
+    }
+    
+    // Free metro shipping
+    if (shippingSettings.freeMetroShipping && form.address) {
+      const isMetro = shippingSettings.metroAreas?.some((area: string) =>
+        form.address.toLowerCase().includes(area.toLowerCase())
+      );
+
+      if (isMetro) {
+        fee = 0;
+      }
+    }
+    
+    return fee;
+  }, [subtotal, form.deliveryMethod, form.address, shippingSettings]);
+  
   const totalAmount = subtotal + shippingFee;
 
   const selectedPickupPoint = pickupPoints.find(
@@ -292,12 +332,14 @@ export default function GuestCheckoutPage() {
                   required={form.deliveryMethod === 'home'}
                   className="mt-1"
                 />
-                {subtotal > 2000 ? (
-                  <p className="text-sm text-green-600">الشحن مجاني لطلبك الحالي لتجاوزه 2000 ج.م</p>
-                ) : (
-                  <p className="text-sm text-blue-600">
-                    أضف منتجات بقيمة {(2000 - subtotal).toLocaleString()} ج.م للحصول على شحن مجاني
-                  </p>
+                {shippingSettings?.freeShippingEnabled && shippingFee > 0 && (
+                  subtotal >= shippingSettings.freeShippingMinimum ? (
+                    <p className="text-sm text-green-600">الشحن مجاني لطلبك الحالي لتجاوزه {shippingSettings.freeShippingMinimum} ج.م</p>
+                  ) : (
+                    <p className="text-sm text-blue-600">
+                      أضف منتجات بقيمة {(shippingSettings.freeShippingMinimum - subtotal).toLocaleString()} ج.م للحصول على شحن مجاني
+                    </p>
+                  )
                 )}
               </div>
             )}

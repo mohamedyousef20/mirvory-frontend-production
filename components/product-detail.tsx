@@ -48,6 +48,7 @@ interface Product {
   colors: Array<{
     name: string
     value: string
+    image?: string | null
     available: boolean
   }>
   ratings: {
@@ -242,21 +243,50 @@ const ProductDetail = ({ productId }: { productId: string }) => {
       next[index] = value
       return next
     })
-  }, [])
 
+    // Change the main product image to the selected color image
+    if (product) {
+      const selectedColor = product.colors?.find(
+        color => color.value === value
+      )
+
+      if (selectedColor?.image) {
+        setMainImage(selectedColor.image)
+      } else {
+        // Fallback to the first product image
+        setMainImage(product.images?.[0] || '')
+      }
+    }
+  }, [product])
   const addToCartHandler = useCallback(async () => {
     if (!product) return
-    if (product?.sizes?.length > 0) {
-      const validSizes = selectedSizes.length === quantity && selectedSizes.every(Boolean)
+
+    if (product.sizes?.length > 0) {
+      const validSizes =
+        selectedSizes.length === quantity &&
+        selectedSizes.every(Boolean)
+
       if (!validSizes) {
-        toast.error(language === 'ar' ? 'يرجى اختيار المقاسات لكل قطعة' : 'Please select sizes for all items')
+        toast.error(
+          language === 'ar'
+            ? 'يرجى اختيار المقاسات لكل قطعة'
+            : 'Please select sizes for all items'
+        )
         return
       }
     }
-    if (product?.colors?.length > 0) {
-      const validColors = selectedColors.length === quantity && selectedColors.every(Boolean)
+
+    if (product.colors?.length > 0) {
+      const validColors =
+        selectedColors.length === quantity &&
+        selectedColors.every(Boolean)
+
       if (!validColors) {
-        toast.error(language === 'ar' ? 'يرجى اختيار الألوان لكل قطعة' : 'Please select colors for all items')
+        toast.error(
+          language === 'ar'
+            ? 'يرجى اختيار الألوان لكل قطعة'
+            : 'Please select colors for all items'
+        )
         return
       }
     }
@@ -265,36 +295,73 @@ const ProductDetail = ({ productId }: { productId: string }) => {
       if (isLoggedIn) {
         // If cookies aren't ready yet (Google OAuth race condition), wait briefly
         if (!cookiesReady) {
-          await new Promise(resolve => setTimeout(resolve, 1500));
+          await new Promise(resolve => setTimeout(resolve, 1500))
         }
+
         await cartService.addToCart({
           productId,
           quantity,
           sizes: selectedSizes,
           colors: selectedColors
         })
+
+        toast.success(
+          language === 'ar'
+            ? 'تم إضافة المنتج إلى السلة بنجاح'
+            : 'Product added to cart successfully'
+        )
       } else {
-        // Guest: save to localStorage (one entry per size+color combination)
+        // Guest: save to localStorage
         const size = selectedSizes[0] ?? null
         const color = selectedColors[0] ?? null
+
+        // Find the selected color object
+        const selectedColor = product.colors?.find(
+          c => c.value === color
+        )
+
+        // Use the selected color image
+        const selectedColorImage =
+          selectedColor?.image ||
+          product.images?.[0] ||
+          null
+
         addToGuestCart({
           productId,
           quantity,
           size,
           color,
-          title: product?.title,
-          image: product?.images?.[0] ?? null,
-          price: product?.discountedPrice || product?.price,
-          maxQuantity: product?.quantity,
+          title: product.title,
+          image: selectedColorImage,
+          price: product.discountedPrice || product.price,
+          maxQuantity: product.quantity,
         })
+
+        toast.success(
+          language === 'ar'
+            ? 'تم إضافة المنتج إلى السلة بنجاح'
+            : 'Product added to cart successfully'
+        )
       }
-      toast.success(language === 'ar' ? 'تم إضافة المنتج إلى السلة بنجاح' : 'Product added to cart successfully')
     } catch (err: any) {
-      const msg = err?.response?.data?.message || (language === 'ar' ? 'فشل إضافة المنتج إلى السلة' : 'Failed to add product to cart')
+      const msg =
+        err?.response?.data?.message ||
+        (language === 'ar'
+          ? 'فشل إضافة المنتج إلى السلة'
+          : 'Failed to add product to cart')
+
       toast.error(msg)
     }
-  }, [productId, quantity, selectedSizes, selectedColors, product, language])
-
+  }, [
+    productId,
+    quantity,
+    selectedSizes,
+    selectedColors,
+    product,
+    language,
+    isLoggedIn,
+    cookiesReady
+  ])
   const toggleWishlist = useCallback(async () => {
     try {
       const response = await wishlistService.toggleWishlist(productId)

@@ -3,8 +3,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import PaginationControls from "@/components/pagination-controls";
-import { Loader2, Package, Check, X, Clock, RefreshCw, PackageCheck, ArrowRight, Trash2 } from "lucide-react";
+import { Loader2, Package, Check, X, Clock, RefreshCw, PackageCheck, ArrowRight, Trash2, Eye } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import DashboardImageSlider from "@/components/ui/DashboardImageSlider";
 import { normalizeImageUrl } from "@/src/lib/normalizeImageUrl";
 
@@ -41,6 +42,7 @@ export function ReturnsTab({
     handleUpdateReturnStatus,
     fetchReturnRequests
 }: ReturnsTabProps) {
+    const router = useRouter();
     const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
     const [statusLoading, setStatusLoading] = useState<string | null>(null);
     const [activeFilter, setActiveFilter] = useState('all');
@@ -329,12 +331,13 @@ export function ReturnsTab({
                                 <TableHead className="w-[130px]">{isArabic ? "الحالة" : "Status"}</TableHead>
                                 <TableHead className="w-[220px]">{isArabic ? "الإجراءات" : "Actions"}</TableHead>
                                 <TableHead className="w-[120px]">{isArabic ? "تاريخ الطلب" : "Request Date"}</TableHead>
+                                <TableHead className="w-[60px]">{isArabic ? "عرض" : "View"}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {loadingReturns ? (
                                 <TableRow>
-                                    <TableCell colSpan={10} className="text-center">
+                                    <TableCell colSpan={11} className="text-center">
                                         <div className="flex justify-center items-center py-8">
                                             <Loader2 className="h-8 w-8 animate-spin" />
                                         </div>
@@ -342,13 +345,13 @@ export function ReturnsTab({
                                 </TableRow>
                             ) : errorReturns ? (
                                 <TableRow>
-                                    <TableCell colSpan={10} className="text-center text-destructive py-8">
+                                    <TableCell colSpan={11} className="text-center text-destructive py-8">
                                         {errorReturns}
                                     </TableCell>
                                 </TableRow>
                             ) : filteredRequests.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={10} className="text-center py-8">
+                                    <TableCell colSpan={11} className="text-center py-8">
                                         <div className="flex flex-col items-center">
                                             <Package className="h-12 w-12 text-muted-foreground mb-4" />
                                             <p className="text-muted-foreground">
@@ -441,6 +444,16 @@ export function ReturnsTab({
                                                         </div>
                                                     )}
                                                 </div>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={() => router.push(`/admin/returns/${request._id}`)}
+                                                    className="h-8 w-8 p-0"
+                                                >
+                                                    <Eye className="h-4 w-4" />
+                                                </Button>
                                             </TableCell>
                                         </TableRow>
                                     );

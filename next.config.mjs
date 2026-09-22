@@ -163,6 +163,18 @@ const nextConfig = {
         source: "/api/guest-orders/:path*",
         destination: `${backendUrl}/api/guest-orders/:path*`,
       },
+      {
+        source: "/api/offers/:path*",
+        destination: `${backendUrl}/api/offers/:path*`,
+      },
+      {
+        source: "/api/offers/:path*",
+        destination: `${backendUrl}/api/offers`,
+      },
+      {
+        source: "/api/shipping-settings/:path*",
+        destination: `${backendUrl}/api/shipping-settings/:path*`,
+      },
     ]
   },
 

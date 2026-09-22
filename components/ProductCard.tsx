@@ -14,13 +14,17 @@ import { addToGuestCart } from "@/lib/guestCart"
 type ProductColorOption = {
   name: string
   value: string
-  available: boolean
+  available?: boolean
 }
 
-type ProductRatings = {
-  average: number
-  count: number
-}
+type ProductRatings =
+  | number
+  | {
+    average?: number
+    count?: number
+    rounded?: number | null
+    distribution?: Record<number, number>
+  }
 
 type ProductCardProduct = {
   _id: string
@@ -216,8 +220,8 @@ const ProductCardComponent = function ProductCard({ product, language, onAddToCa
                 <span
                   key={idx}
                   className={`h-1.5 w-1.5 rounded-full transition-colors ${(isImageHovered ? idx === 1 : idx === 0)
-                      ? "bg-white"
-                      : "bg-white/50"
+                    ? "bg-white"
+                    : "bg-white/50"
                     }`}
                 />
               ))}
@@ -287,11 +291,16 @@ const ProductCardComponent = function ProductCard({ product, language, onAddToCa
             <div className="flex items-center">
               <Star className="h-3.5 w-3.5 text-yellow-400 fill-yellow-400" />
               <span className="ml-1 text-xs text-gray-600">
-                {product?.ratings?.average?.toFixed(2) ?? "0.0"}
+                {(typeof product?.ratings === "number"
+                  ? product.ratings
+                  : product?.ratings?.average ?? product?.ratings?.rounded ?? 0
+                ).toFixed(2)}
               </span>
-              <span className="ml-0.5 text-xs text-gray-400">
-                ({product?.ratings?.count})
-              </span>
+              {typeof product?.ratings === "object" && !!product?.ratings?.count && (
+                <span className="ml-0.5 text-xs text-gray-400">
+                  ({product.ratings.count})
+                </span>
+              )}
             </div>
             {(product.sold ?? 0) > 0 && (
               <div className="flex items-center text-xs text-gray-500">

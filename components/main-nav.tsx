@@ -452,7 +452,7 @@ export function MainNav() {
   const navItems = [
     { href: "/", icon: <Home className="h-4 w-4" />, label: t("home") },
     { href: "/products", icon: <ShoppingBag className="h-4 w-4" />, label: t("products") },
-    // { href: "/offers", icon: <Gift className="h-4 w-4" />, label: t("offers") },
+    { href: "/offers", icon: <Gift className="h-4 w-4" />, label: t("offers") },
 
     {
       href: "/returns",

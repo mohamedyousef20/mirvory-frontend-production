@@ -68,7 +68,7 @@ export function VendorDashboard() {
   const [selectedOrderForActivity, setSelectedOrderForActivity] = useState<string | null>(null)
   const [activityLoading, setActivityLoading] = useState(false)
   const [returnTab, setReturnTab] = useState("adminPending")
-  const [returnTabMeta, setCurrentReturnTabMeta] = useState<Record<string, any>>({})
+  const [returnTabMeta, setCurrentReturnTabMeta] = useState<any[]>([])
   const [currentReturnList, setCurrentReturnList] = useState<any[]>([])
 
   // ── useEffects and handlers ────────────────────────────────────────────────
@@ -563,85 +563,85 @@ export function VendorDashboard() {
       <div dir="rtl" className="min-h-screen bg-[#f4f6fb]">
         <div className="max-w-7xl mx-auto px-6 py-8 space-y-6">
 
-        <VendorHeader
-          title={t("vendorDashboard")}
-          description={language === "ar" ? "مرحبًا بك في لوحة تحكم البائع، يمكنك إدارة منتجاتك وطلباتك من هنا." : "Welcome to your vendor dashboard, manage your products and orders from here."}
-          addLabel={language === "ar" ? "إضافة منتج جديد" : "Add New Product"}
-        />
+          <VendorHeader
+            title={t("vendorDashboard")}
+            description={language === "ar" ? "مرحبًا بك في لوحة تحكم البائع، يمكنك إدارة منتجاتك وطلباتك من هنا." : "Welcome to your vendor dashboard, manage your products and orders from here."}
+            addLabel={language === "ar" ? "إضافة منتج جديد" : "Add New Product"}
+          />
 
-        <Tabs defaultValue="overview" value={activeTab} onValueChange={setActiveTab}>
-          <VendorTabBar tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+          <Tabs defaultValue="overview" value={activeTab} onValueChange={setActiveTab}>
+            <VendorTabBar tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 
-          <TabsContent value="overview">
-            <OverviewTab language={language} t={t} dashboardCounters={dashboardCounters} balance={balance} orders={orders} products={products} />
-          </TabsContent>
+            <TabsContent value="overview">
+              <OverviewTab language={language} t={t} dashboardCounters={dashboardCounters} balance={balance} orders={orders} products={products} />
+            </TabsContent>
 
-          <TabsContent value="analytics">
-            <AnalyticsTab language={language} analytics={analytics} analyticsLoading={analyticsLoading} analyticsError={analyticsError} onRefresh={fetchAnalyticsData} />
-          </TabsContent>
+            <TabsContent value="analytics">
+              <AnalyticsTab language={language} analytics={analytics} analyticsLoading={analyticsLoading} analyticsError={analyticsError} onRefresh={fetchAnalyticsData} />
+            </TabsContent>
 
-          <TabsContent value="transactions">
-            <TransactionsTab
-              language={language} transactions={transactions} transactionsLoading={transactionsLoading}
-              transactionPage={transactionPage} transactionTotalPages={transactionTotalPages}
-              transactionTypeFilter={transactionTypeFilter}
-              onTypeFilterChange={(val) => { setTransactionPage(1); setTransactionTypeFilter(val) }}
-              onPageChange={setTransactionPage}
-            />
-          </TabsContent>
+            <TabsContent value="transactions">
+              <TransactionsTab
+                language={language} transactions={transactions} transactionsLoading={transactionsLoading}
+                transactionPage={transactionPage} transactionTotalPages={transactionTotalPages}
+                transactionTypeFilter={transactionTypeFilter}
+                onTypeFilterChange={(val) => { setTransactionPage(1); setTransactionTypeFilter(val) }}
+                onPageChange={setTransactionPage}
+              />
+            </TabsContent>
 
-          <TabsContent value="products">
-            <ProductsTab
-              language={language} products={products} categories={categories}
-              searchTerm={searchTerm} statusFilter={statusFilter} sortOption={sortOption}
-              selectedCategories={selectedCategories} priceRange={priceRange}
-              page={page} pageSize={pageSize} totalProducts={totalProducts}
-              editingProductId={editingProductId} editingProductData={editingProductData}
-              updatingProductId={updatingProductId}
-              onSearchChange={setSearchTerm}
-              onStatusFilterChange={setStatusFilter}
-              onSortChange={setSortOption}
-              onCategoryChange={(v) => v === "all" ? setSelectedCategories([]) : setSelectedCategories([v])}
-              onClearFilters={clearProductFilters}
-              onEdit={handleEditProduct}
-              onUpdate={handleUpdateProduct}
-              onDelete={handleDeleteProduct} onCancelEdit={() => { setEditingProductId(null); setEditingProductData({}) }}
-              onEditDataChange={setEditingProductData}
-              onPageChange={setPage}
-              setPriceRange={setPriceRange} setStatusFilter={setStatusFilter}
-              setSelectedCategories={setSelectedCategories} setSearchTerm={setSearchTerm}
-            />
-          </TabsContent>
+            <TabsContent value="products">
+              <ProductsTab
+                language={language} products={products} categories={categories}
+                searchTerm={searchTerm} statusFilter={statusFilter} sortOption={sortOption}
+                selectedCategories={selectedCategories} priceRange={priceRange}
+                page={page} pageSize={pageSize} totalProducts={totalProducts}
+                editingProductId={editingProductId} editingProductData={editingProductData}
+                updatingProductId={updatingProductId}
+                onSearchChange={setSearchTerm}
+                onStatusFilterChange={setStatusFilter}
+                onSortChange={setSortOption}
+                onCategoryChange={(v) => v === "all" ? setSelectedCategories([]) : setSelectedCategories([v])}
+                onClearFilters={clearProductFilters}
+                onEdit={handleEditProduct}
+                onUpdate={handleUpdateProduct}
+                onDelete={handleDeleteProduct} onCancelEdit={() => { setEditingProductId(null); setEditingProductData({}) }}
+                onEditDataChange={setEditingProductData}
+                onPageChange={setPage}
+                setPriceRange={setPriceRange} setStatusFilter={setStatusFilter}
+                setSelectedCategories={setSelectedCategories} setSearchTerm={setSearchTerm}
+              />
+            </TabsContent>
 
-          <TabsContent value="orders">
-            <OrdersTab
-              language={language}
-              filteredOrders={filteredOrders}
-              searchTerm={searchTerm} filters={filters} sortBy={sortBy}
-              preparingOrderId={preparingOrderId}
-              cancellingOrderId={cancellingOrderId}
-              onSearchChange={setSearchTerm} onSearchSubmit={handleSearch}
-              onFilterChange={handleFilterChange} onSortChange={setSortBy}
-              onClearFilters={clearOrderFilters}
-              onConfirmPreparation={handleConfirmPreparation}
-              onViewDetails={handleViewDetails}
-              onPrintInvoice={handlePrintInvoice}
-              onContactBuyer={handleContactBuyer}
-              onCancelOrder={handleCancelOrder}
-              onViewShipping={handleViewShipping}
-            />
-          </TabsContent>
+            <TabsContent value="orders">
+              <OrdersTab
+                language={language}
+                filteredOrders={filteredOrders}
+                searchTerm={searchTerm} filters={filters} sortBy={sortBy}
+                preparingOrderId={preparingOrderId}
+                cancellingOrderId={cancellingOrderId}
+                onSearchChange={setSearchTerm} onSearchSubmit={handleSearch}
+                onFilterChange={handleFilterChange} onSortChange={setSortBy}
+                onClearFilters={clearOrderFilters}
+                onConfirmPreparation={handleConfirmPreparation}
+                onViewDetails={handleViewDetails}
+                onPrintInvoice={handlePrintInvoice}
+                onContactBuyer={handleContactBuyer}
+                onCancelOrder={handleCancelOrder}
+                onViewShipping={handleViewShipping}
+              />
+            </TabsContent>
 
-          <TabsContent value="returns">
-            <ReturnsTab
-              language={language} returnTab={returnTab} onReturnTabChange={setReturnTab}
-              returnTabMeta={returnTabMeta} currentReturnList={currentReturnList}
-              getReturnStatusLabel={getReturnStatusLabel}
-            />
-          </TabsContent>
-        </Tabs>
+            <TabsContent value="returns">
+              <ReturnsTab
+                language={language} returnTab={returnTab} onReturnTabChange={setReturnTab}
+                returnTabMeta={returnTabMeta} currentReturnList={currentReturnList}
+                getReturnStatusLabel={getReturnStatusLabel}
+              />
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
-    </div>
     </>
   )
 }

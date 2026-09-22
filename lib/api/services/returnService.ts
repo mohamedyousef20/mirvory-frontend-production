@@ -11,11 +11,15 @@ export const returnService = {
     return axios.get(`${API_URL}/api/returns/admin`);
   },
 
+  getReturnRequestById(id: string) {
+    return axios.get(`${API_URL}/api/returns/${id}`);
+  },
+
   createReturnRequest(data: any) {
     return axios.post(`${API_URL}/api/returns`, data);
   },
 
-  updateReturnRequest(payload: { returnId: string; status: string }) {
+  updateReturnRequest(payload: { returnId: string; status: string; rejectionReason?: string }) {
     return axios.patch(`${API_URL}/api/returns`, payload);
   },
 

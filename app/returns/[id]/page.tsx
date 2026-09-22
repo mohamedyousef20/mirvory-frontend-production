@@ -2,15 +2,18 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import { format } from 'date-fns';
 import { returnService } from '@/lib/api';
-import { MirvoryPageLoader } from '@/components/MirvoryLoader';
+import {
+    ArrowRight, Package, User, Calendar, DollarSign, AlertCircle,
+    CheckCircle, Clock, XCircle, Phone, MessageSquare, RefreshCw
+} from "lucide-react";
 
 interface ReturnRequest {
     _id: string;
     user?: { _id: string; firstName: string; lastName: string; email: string; };
-    order?: { _id: string; orderNumber: string; totalPrice: number; };
+    order?: { _id: string; orderNumber: string; totalPrice: number; createdAt: string; };
     product?: { _id: string; title?: string; name?: string; image?: string; images?: string[]; price: number; };
     seller?: { _id: string; firstName: string; lastName: string; email: string; };
     item: string;
@@ -104,211 +107,329 @@ export default function ReturnDetailsPage() {
         setStatusHistory(history);
     };
 
-    const getStatusColor = (status: string) => {
+    const getStatusConfig = (status: string) => {
         switch (status.toLowerCase()) {
-            case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-            case 'approved': return 'bg-blue-100 text-blue-800 border-blue-200';
-            case 'processing': return 'bg-indigo-100 text-indigo-800 border-indigo-200';
-            case 'processed': return 'bg-green-100 text-green-800 border-green-200';
-            case 'rejected': return 'bg-red-100 text-red-800 border-red-200';
-            default: return 'bg-gray-100 text-gray-800 border-gray-200';
+            case 'pending': 
+                return { 
+                    color: 'bg-amber-50 text-amber-700 border-amber-200', 
+                    icon: Clock,
+                    label: 'قيد المراجعة'
+                };
+            case 'approved': 
+                return { 
+                    color: 'bg-blue-50 text-blue-700 border-blue-200', 
+                    icon: CheckCircle,
+                    label: 'تم الموافقة'
+                };
+            case 'processing': 
+                return { 
+                    color: 'bg-indigo-50 text-indigo-700 border-indigo-200', 
+                    icon: RefreshCw,
+                    label: 'جاري التنفيذ'
+                };
+            case 'processed': 
+                return { 
+                    color: 'bg-emerald-50 text-emerald-700 border-emerald-200', 
+                    icon: CheckCircle,
+                    label: 'تمت المعالجة (مكتمل)'
+                };
+            case 'rejected': 
+                return { 
+                    color: 'bg-rose-50 text-rose-700 border-rose-200', 
+                    icon: XCircle,
+                    label: 'مرفوض'
+                };
+            default: 
+                return { 
+                    color: 'bg-slate-50 text-slate-700 border-slate-200', 
+                    icon: AlertCircle,
+                    label: status
+                };
         }
     };
 
-    const getStatusText = (status: string) => {
-        switch (status.toLowerCase()) {
-            case 'pending': return 'قيد المراجعة';
-            case 'approved': return 'تم الموافقة';
-            case 'processing': return 'جاري التنفيذ';
-            case 'processed': return 'تمت المعالجة (مكتمل)';
-            case 'rejected': return 'مرفوض';
-            default: return status;
-        }
-    };
-
-    const getStatusIcon = (status: string) => {
-        switch (status.toLowerCase()) {
-            case 'pending': return '⏳';
-            case 'approved': return '✅';
-            case 'processing': return '🔄';
-            case 'processed': return '💸';
-            case 'rejected': return '❌';
-            default: return '📋';
-        }
+    const formatDate = (dateString: string) => {
+        return new Date(dateString).toLocaleDateString('ar-SA', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
     };
 
     const handleContactSupport = () => {
         router.push('/contact');
     };
 
-    const handleDeleteReturn = async () => {
-        if (!returnRequest) return;
-        if (confirm('هل أنت متأكد من حذف طلب الإرجاع هذا؟')) {
-            try {
-                await returnService.deleteReturnRequest(returnRequest._id);
-                toast.success('تم حذف طلب الإرجاع بنجاح');
-                router.push('/returns');
-            } catch (error) {
-                console.error('Error deleting return request:', error);
-                toast.error('فشل في حذف طلب الإرجاع');
-            }
-        }
-    };
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-[#f4f6fb] flex items-center justify-center">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="w-12 h-12 border-4 border-[#1a4fba] border-t-transparent rounded-full animate-spin" />
+                    <p className="text-slate-500 text-sm">جاري تحميل تفاصيل طلب الإرجاع...</p>
+                </div>
+            </div>
+        );
+    }
 
-    if (loading) return <MirvoryPageLoader text={"جاري تحميل تفاصيل طلب الإرجاع..."} />;
     if (!returnRequest) return null;
 
+    const statusConfig = getStatusConfig(returnRequest.status);
+    const StatusIcon = statusConfig.icon;
     const productImage = returnRequest.product?.image || (returnRequest.product?.images && returnRequest.product.images[0]) || '/placeholder-product.jpg';
     const productName = returnRequest.product?.title || returnRequest.product?.name || 'منتج غير متوفر';
 
     return (
-        <div className="container mx-auto px-4 py-8" dir="rtl">
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8">
-                <div>
-                    <button onClick={() => router.push('/returns')} className="flex items-center gap-2 text-gray-600 hover:text-gray-800 mb-4 transition-colors">
-                        <svg className="w-5 h-5 transform rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                        </svg>
-                        العودة إلى طلبات الإرجاع
-                    </button>
-                    <h1 className="text-3xl font-bold text-gray-900">تفاصيل طلب الإرجاع</h1>
-                    <p className="text-gray-600 mt-2">
-                        رقم الطلب الأصلي: {returnRequest.order?.orderNumber ? `#${returnRequest.order.orderNumber}` : 'غير متوفر'}
-                    </p>
-                </div>
-                <div className="flex gap-3 mt-4 lg:mt-0">
-                    <button onClick={handleContactSupport} className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors flex items-center gap-2">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                        </svg>
-                        الاتصال بالدعم
-                    </button>
-                </div>
-            </div>
+        <>
+            {/* ── Google Fonts (Cairo) ─────────────────────────────────────── */}
+            <style>{`
+                @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap');
+                * { font-family: 'Cairo', sans-serif !important; }
+            `}</style>
 
-            <div className="grid lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-white border border-gray-200 rounded-lg p-6">
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-xl font-semibold text-gray-900">حالة طلب الإرجاع</h2>
-                            <span className={`px-4 py-2 rounded-full text-sm font-medium border ${getStatusColor(returnRequest.status)}`}>
-                                {getStatusText(returnRequest.status)}
-                            </span>
-                        </div>
+            <div className="min-h-screen bg-[#f4f6fb]" dir="rtl">
 
-                        <div className="space-y-4 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
-                            {statusHistory.map((historyItem, index) => (
-                                <div key={index} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                                    <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 bg-white shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow ${getStatusColor(historyItem.status)}`}>
-                                        {getStatusIcon(historyItem.status)}
-                                    </div>
-                                    <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-200 shadow-sm bg-white">
-                                        <div className="flex items-center justify-between mb-1">
-                                            <h3 className="font-bold text-slate-900">{getStatusText(historyItem.status)}</h3>
-                                            <time className="text-xs font-medium text-slate-500" dir="ltr">
-                                                {format(new Date(historyItem.date), 'yyyy/MM/dd - hh:mm a')}
-                                            </time>
-                                        </div>
-                                        <div className="text-sm text-slate-600">{historyItem.note}</div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="bg-white border border-gray-200 rounded-lg p-6">
-                        <h2 className="text-xl font-semibold text-gray-900 mb-6">معلومات المنتج المرتجع</h2>
-                        <div className="flex flex-col sm:flex-row gap-6">
-                            <div className="w-32 h-32 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 border">
-                                <img
-                                    src={productImage}
-                                    alt={productName}
-                                    className="w-full h-full object-cover"
-                                    onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder-product.jpg'; }}
-                                />
+                {/* ── Top bar ────────────────────────────────────────────── */}
+                <div className="bg-white border-b border-slate-100 sticky top-0 z-30">
+                    <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-xl bg-[#1a4fba] flex items-center justify-center shadow-md shadow-blue-200">
+                                <Package className="w-5 h-5 text-white" />
                             </div>
-                            <div className="flex-1">
-                                <h3 className="text-lg font-medium text-gray-900 mb-4">{productName}</h3>
-                                <div className="grid sm:grid-cols-2 gap-4 text-sm bg-gray-50 p-4 rounded-lg">
-                                    <div>
-                                        <span className="text-gray-500 block mb-1">سعر المنتج</span>
-                                        <p className="font-semibold text-gray-900">{returnRequest.product?.price || 0} ج.م</p>
-                                    </div>
-                                    <div>
-                                        <span className="text-gray-500 block mb-1">الكمية المسترجعة</span>
-                                        <p className="font-semibold text-gray-900">{returnRequest.quantity || 1}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="bg-white border border-gray-200 rounded-lg p-6">
-                        <h2 className="text-xl font-semibold text-gray-900 mb-6">تفاصيل الإرجاع</h2>
-                        <div className="space-y-4">
                             <div>
-                                <h3 className="font-medium text-gray-700 mb-2">سبب الإرجاع المذكور:</h3>
-                                <div className="bg-gray-50 border border-gray-100 p-4 rounded-lg text-gray-800 leading-relaxed">
-                                    {returnRequest.reason}
-                                </div>
+                                <p className="text-xs text-slate-400 leading-none">إدارة المرتجعات</p>
+                                <h1 className="text-base font-bold text-slate-800 leading-tight">تفاصيل طلب الإرجاع</h1>
                             </div>
-                            
-                            {returnRequest.images && returnRequest.images.length > 0 && (
-                                <div className="mt-6">
-                                    <h3 className="font-medium text-gray-700 mb-3">الصور المرفقة:</h3>
-                                    <div className="flex flex-wrap gap-4">
-                                        {returnRequest.images.map((img, idx) => (
-                                            <a href={img} target="_blank" rel="noreferrer" key={idx} className="block w-24 h-24 border rounded-md overflow-hidden hover:opacity-80 transition-opacity">
-                                                <img src={img} alt={`مرفق ${idx + 1}`} className="w-full h-full object-cover" />
-                                            </a>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            {returnRequest.rejectionReason && returnRequest.status === 'rejected' && (
-                                <div className="mt-6">
-                                    <h3 className="font-medium text-red-700 mb-2">سبب الرفض (من الإدارة):</h3>
-                                    <div className="bg-red-50 border border-red-100 p-4 rounded-lg text-red-800 leading-relaxed">
-                                        {returnRequest.rejectionReason}
-                                    </div>
-                                </div>
-                            )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => router.push('/returns')}
+                                className="flex items-center gap-2 px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-50 rounded-lg transition"
+                            >
+                                <ArrowRight className="w-4 h-4" />
+                                <span className="text-sm">العودة</span>
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <div className="space-y-6">
-                    <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-                        <h2 className="text-xl font-semibold text-gray-900 mb-4 pb-4 border-b">معلومات الطلب</h2>
-                        <div className="space-y-4">
-                            <div className="flex justify-between items-center">
-                                <span className="text-gray-500">رقم الطلب:</span>
-                                <span className="font-medium text-gray-900">{returnRequest.order?.orderNumber ? `#${returnRequest.order.orderNumber}` : 'غير متوفر'}</span>
+                <div className="max-w-7xl mx-auto px-6 py-8 space-y-6">
+
+                    {/* ── Status Card ─────────────────────────────────────── */}
+                    <div className={`bg-white rounded-2xl border border-slate-100 p-6 shadow-sm ${statusConfig.color}`}>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <div className="p-3 bg-white/50 rounded-xl">
+                                    <StatusIcon className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-medium opacity-80">حالة الطلب</p>
+                                    <p className="text-2xl font-bold mt-1">{statusConfig.label}</p>
+                                </div>
                             </div>
-                            <div className="flex justify-between items-center">
-                                <span className="text-gray-500">تاريخ الطلب:</span>
-                                <span className="font-medium text-gray-900 text-sm" dir="ltr">{format(new Date(returnRequest.createdAt), 'yyyy/MM/dd')}</span>
+                            <div className="text-left">
+                                <p className="text-sm opacity-70">رقم الطلب</p>
+                                <p className="text-lg font-semibold">
+                                    #{returnRequest.order?.orderNumber || returnRequest._id.slice(-8)}
+                                </p>
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-                        <h2 className="text-xl font-semibold text-gray-900 mb-4 pb-4 border-b">إجراءات</h2>
-                        <div className="space-y-3">
-                            <button onClick={handleContactSupport} className="w-full py-2.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors font-medium">
-                                تواصل مع خدمة العملاء
-                            </button>
+                    <div className="grid lg:grid-cols-3 gap-6">
+                        {/* ── Main Content ────────────────────────────────── */}
+                        <div className="lg:col-span-2 space-y-6">
                             
-                            {(returnRequest.status === 'pending' || returnRequest.status === 'approved') && (
-                                <button onClick={handleDeleteReturn} className="w-full py-2.5 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors font-medium border border-transparent hover:border-red-200">
-                                    إلغاء طلب الإرجاع
-                                </button>
+                            {/* ── Product Information ───────────────────────── */}
+                            <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm">
+                                <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                    <Package className="w-5 h-5 text-[#1a4fba]" />
+                                    معلومات المنتج
+                                </h2>
+                                <div className="flex gap-4">
+                                    <div className="w-32 h-32 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0">
+                                        <img 
+                                            src={productImage} 
+                                            alt={productName}
+                                            className="w-full h-full object-cover"
+                                            onError={(e) => {
+                                                e.currentTarget.src = '/placeholder-product.jpg';
+                                            }}
+                                        />
+                                    </div>
+                                    <div className="flex-1">
+                                        <h3 className="font-semibold text-slate-800 mb-2">{productName}</h3>
+                                        <div className="space-y-1 text-sm text-slate-600">
+                                            <p>السعر: {returnRequest.product?.price || 0} ج.م</p>
+                                            {returnRequest.quantity && (
+                                                <p>الكمية: {returnRequest.quantity}</p>
+                                            )}
+                                            <p>سبب الإرجاع: {returnRequest.reason}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {returnRequest.images && returnRequest.images.length > 0 && (
+                                    <div className="mt-4">
+                                        <p className="text-sm font-medium text-slate-700 mb-2">صور الإرجاع:</p>
+                                        <div className="flex gap-2 flex-wrap">
+                                            {returnRequest.images.map((img, idx) => (
+                                                <img 
+                                                    key={idx}
+                                                    src={img} 
+                                                    alt={`Return image ${idx + 1}`}
+                                                    className="w-20 h-20 rounded-lg object-cover border border-slate-200 cursor-pointer hover:opacity-80 transition"
+                                                    onClick={() => window.open(img, '_blank')}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* ── Order Information ─────────────────────────── */}
+                            <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm">
+                                <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                    <Package className="w-5 h-5 text-[#1a4fba]" />
+                                    معلومات الطلب
+                                </h2>
+                                <div className="grid grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                        <p className="text-slate-500 mb-1">رقم الطلب</p>
+                                        <p className="font-semibold text-slate-800">
+                                            #{returnRequest.order?.orderNumber || 'غير متوفر'}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p className="text-slate-500 mb-1">تاريخ الطلب</p>
+                                        <p className="font-semibold text-slate-800">
+                                            {returnRequest.order?.createdAt ? formatDate(returnRequest.order.createdAt) : 'غير متوفر'}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p className="text-slate-500 mb-1">إجمالي الطلب</p>
+                                        <p className="font-semibold text-slate-800">
+                                            {returnRequest.order?.totalPrice || 0} ج.م
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p className="text-slate-500 mb-1">تاريخ طلب الإرجاع</p>
+                                        <p className="font-semibold text-slate-800">
+                                            {formatDate(returnRequest.createdAt)}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* ── Status History ─────────────────────────────── */}
+                            <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm">
+                                <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                    <Clock className="w-5 h-5 text-[#1a4fba]" />
+                                    سجل الحالة
+                                </h2>
+                                <div className="space-y-4">
+                                    {statusHistory.map((history, idx) => {
+                                        const config = getStatusConfig(history.status);
+                                        const HistoryIcon = config.icon;
+                                        return (
+                                            <div key={idx} className="flex gap-4">
+                                                <div className={`p-2 rounded-lg ${config.color} flex-shrink-0`}>
+                                                    <HistoryIcon className="w-4 h-4" />
+                                                </div>
+                                                <div className="flex-1">
+                                                    <p className="font-medium text-slate-800">{config.label}</p>
+                                                    <p className="text-sm text-slate-600">{history.note}</p>
+                                                    <p className="text-xs text-slate-400 mt-1">{formatDate(history.date)}</p>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            {/* ── Rejection Reason ───────────────────────────── */}
+                            {returnRequest.status === 'rejected' && returnRequest.rejectionReason && (
+                                <div className="bg-rose-50 border border-rose-200 rounded-2xl p-6">
+                                    <h2 className="text-lg font-bold text-rose-800 mb-2 flex items-center gap-2">
+                                        <XCircle className="w-5 h-5" />
+                                        سبب الرفض
+                                    </h2>
+                                    <p className="text-rose-700">{returnRequest.rejectionReason}</p>
+                                </div>
                             )}
+                        </div>
+
+                        {/* ── Sidebar ─────────────────────────────────────── */}
+                        <div className="space-y-6">
+                            
+                            {/* ── Refund Information ───────────────────────── */}
+                            <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm">
+                                <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                    <DollarSign className="w-5 h-5 text-[#1a4fba]" />
+                                    معلومات الاسترداد
+                                </h2>
+                                <div className="space-y-3">
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-slate-600">مبلغ الاسترداد</span>
+                                        <span className="font-bold text-slate-800">
+                                            {returnRequest.refundAmount || returnRequest.product?.price || 0} ج.م
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-slate-600">حالة الاسترداد</span>
+                                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                            returnRequest.refundStatus === 'refunded' 
+                                                ? 'bg-green-100 text-green-700' 
+                                                : 'bg-amber-100 text-amber-700'
+                                        }`}>
+                                            {returnRequest.refundStatus === 'refunded' ? 'تم الاسترداد' : 'قيد المعالجة'}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* ── Contact Information ───────────────────────── */}
+                            <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm">
+                                <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                    <User className="w-5 h-5 text-[#1a4fba]" />
+                                    معلومات التواصل
+                                </h2>
+                                <div className="space-y-3 text-sm">
+                                    <div>
+                                        <p className="text-slate-500 mb-1">البائع</p>
+                                        <p className="font-medium text-slate-800">
+                                            {returnRequest.seller?.firstName} {returnRequest.seller?.lastName}
+                                        </p>
+                                        <p className="text-slate-600">{returnRequest.seller?.email}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* ── Actions ───────────────────────────────────── */}
+                            <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm">
+                                <h2 className="text-lg font-bold text-slate-800 mb-4">إجراءات</h2>
+                                <div className="space-y-3">
+                                    <button
+                                        onClick={handleContactSupport}
+                                        className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#1a4fba] text-white rounded-xl hover:bg-[#1640a0] transition"
+                                    >
+                                        <Phone className="w-4 h-4" />
+                                        <span>الاتصال بالدعم</span>
+                                    </button>
+                                    <button
+                                        onClick={() => router.push('/contact')}
+                                        className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-slate-100 text-slate-700 rounded-xl hover:bg-slate-200 transition"
+                                    >
+                                        <MessageSquare className="w-4 h-4" />
+                                        <span>مراسلة الدعم</span>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }

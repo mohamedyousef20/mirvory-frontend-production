@@ -3,13 +3,17 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MirvoryPageLoader } from "@/components/MirvoryLoader";
 import PaginationControls from "@/components/pagination-controls";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
+import { toast } from "sonner";
+import { openWhatsAppConfirmation, getOrderPhone } from "@/lib/whatsapp";
 import {
     ShoppingBag, User, Phone, MapPin, CreditCard,
     Truck, Package, Calendar, Hash, CheckCircle2,
     Clock, XCircle, ExternalLink,
-    Gift, Trash2
+    Gift, Trash2, MessageCircle, Filter, X, Search
 } from "lucide-react";
 
 interface OrdersTabProps {
@@ -67,6 +71,85 @@ export function OrdersTab({
     const router = useRouter();
     const ar = isArabic;
 
+    // Filter states
+    const [searchQuery, setSearchQuery] = useState("");
+    const [deliveryStatusFilter, setDeliveryStatusFilter] = useState("all");
+    const [paymentStatusFilter, setPaymentStatusFilter] = useState("all");
+    const [deliveryMethodFilter, setDeliveryMethodFilter] = useState("all");
+    const [paymentMethodFilter, setPaymentMethodFilter] = useState("all");
+    const [dateFilter, setDateFilter] = useState("all");
+
+    // Filter orders
+    const filteredOrders = orders.filter((order: any) => {
+        // Search filter
+        if (searchQuery) {
+            const query = searchQuery.toLowerCase();
+            const match = 
+                order.orderNumber?.toLowerCase().includes(query) ||
+                order.deliveryInfo?.fullName?.toLowerCase().includes(query) ||
+                order.deliveryInfo?.phone?.includes(query) ||
+                order.deliveryInfo?.address?.toLowerCase().includes(query);
+            if (!match) return false;
+        }
+
+        // Delivery status filter
+        if (deliveryStatusFilter !== "all" && order.deliveryStatus !== deliveryStatusFilter) {
+            return false;
+        }
+
+        // Payment status filter
+        if (paymentStatusFilter !== "all" && order.paymentStatus !== paymentStatusFilter) {
+            return false;
+        }
+
+        // Delivery method filter
+        if (deliveryMethodFilter !== "all" && order.deliveryMethod !== deliveryMethodFilter) {
+            return false;
+        }
+
+        // Payment method filter
+        if (paymentMethodFilter !== "all" && order.paymentMethod !== paymentMethodFilter) {
+            return false;
+        }
+
+        // Date filter
+        if (dateFilter !== "all") {
+            const orderDate = new Date(order.createdAt);
+            const now = new Date();
+            const daysAgo = (now.getTime() - orderDate.getTime()) / (1000 * 60 * 60 * 24);
+
+            switch (dateFilter) {
+                case "today":
+                    if (daysAgo > 1) return false;
+                    break;
+                case "week":
+                    if (daysAgo > 7) return false;
+                    break;
+                case "month":
+                    if (daysAgo > 30) return false;
+                    break;
+            }
+        }
+
+        return true;
+    });
+
+    const clearFilters = () => {
+        setSearchQuery("");
+        setDeliveryStatusFilter("all");
+        setPaymentStatusFilter("all");
+        setDeliveryMethodFilter("all");
+        setPaymentMethodFilter("all");
+        setDateFilter("all");
+    };
+
+    const hasActiveFilters = searchQuery || 
+        deliveryStatusFilter !== "all" || 
+        paymentStatusFilter !== "all" || 
+        deliveryMethodFilter !== "all" || 
+        paymentMethodFilter !== "all" || 
+        dateFilter !== "all";
+
     const handleOrderClick = useCallback((orderId: string, event: React.MouseEvent) => {
         const target = event.target as HTMLElement;
         const isInteractiveElement =
@@ -75,6 +158,20 @@ export function OrdersTab({
             target.closest('[data-interactive="true"]');
         if (!isInteractiveElement) router.push(`/orders/${orderId}`);
     }, [router]);
+
+    // ── إرسال رسالة تأكيد الطلب عبر واتساب ────────────────────────────────────
+    const handleSendWhatsApp = useCallback((order: any) => {
+        const opened = openWhatsAppConfirmation(order);
+
+        if (!opened) {
+            toast.error(
+                ar
+                    ? "رقم هاتف العميل غير صالح أو غير موجود"
+                    : "Customer phone number is missing or invalid"
+            );
+        }
+    }, [ar]);
+
 
     const getPaymentMethodLabel = (method: string) => {
         const labels: { [key: string]: { en: string; ar: string } } = {
@@ -133,27 +230,179 @@ export function OrdersTab({
                             {ar ? "إدارة الطلبات" : "Order Management"}
                         </h2>
                         <p className="text-xs text-slate-400 mt-0.5">
-                            {ar ? `${orders.length} طلب` : `${orders.length} orders`}
+                            {ar ? `${filteredOrders.length} من ${orders.length} طلب` : `${filteredOrders.length} of ${orders.length} orders`}
                         </p>
                     </div>
                 </div>
             </div>
 
+            {/* ── Filters Section ─────────────────────────────────── */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 space-y-4">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <Filter className="h-4 w-4 text-slate-500" />
+                        <span className="text-sm font-semibold text-slate-700">
+                            {ar ? "الفلاتر" : "Filters"}
+                        </span>
+                    </div>
+                    {hasActiveFilters && (
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={clearFilters}
+                            className="text-slate-500 hover:text-slate-700"
+                        >
+                            <X className="h-3.5 w-3.5 mr-1" />
+                            {ar ? "مسح الفلاتر" : "Clear Filters"}
+                        </Button>
+                    )}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
+                    {/* Search */}
+                    <div className="col-span-1 md:col-span-2 xl:col-span-2">
+                        <Label className="text-xs text-slate-500 mb-1 block">
+                            {ar ? "بحث" : "Search"}
+                        </Label>
+                        <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                            <Input
+                                placeholder={ar ? "رقم الطلب، الاسم، الهاتف، العنوان..." : "Order #, name, phone, address..."}
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="pl-9 h-9 text-sm"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Delivery Status */}
+                    <div>
+                        <Label className="text-xs text-slate-500 mb-1 block">
+                            {ar ? "حالة التوصيل" : "Delivery Status"}
+                        </Label>
+                        <Select value={deliveryStatusFilter} onValueChange={setDeliveryStatusFilter}>
+                            <SelectTrigger className="h-9 text-sm">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">{ar ? "الكل" : "All"}</SelectItem>
+                                <SelectItem value="pending">{ar ? "قيد الانتظار" : "Pending"}</SelectItem>
+                                <SelectItem value="shipped">{ar ? "تم الشحن" : "Shipped"}</SelectItem>
+                                <SelectItem value="delivered">{ar ? "تم التوصيل" : "Delivered"}</SelectItem>
+                                <SelectItem value="cancelled">{ar ? "ملغي" : "Cancelled"}</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    {/* Payment Status */}
+                    <div>
+                        <Label className="text-xs text-slate-500 mb-1 block">
+                            {ar ? "حالة الدفع" : "Payment Status"}
+                        </Label>
+                        <Select value={paymentStatusFilter} onValueChange={setPaymentStatusFilter}>
+                            <SelectTrigger className="h-9 text-sm">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">{ar ? "الكل" : "All"}</SelectItem>
+                                <SelectItem value="pending">{ar ? "قيد الانتظار" : "Pending"}</SelectItem>
+                                <SelectItem value="paid">{ar ? "مدفوع" : "Paid"}</SelectItem>
+                                <SelectItem value="failed">{ar ? "فشل" : "Failed"}</SelectItem>
+                                <SelectItem value="completed">{ar ? "مكتمل" : "Completed"}</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    {/* Delivery Method */}
+                    <div>
+                        <Label className="text-xs text-slate-500 mb-1 block">
+                            {ar ? "طريقة التوصيل" : "Delivery Method"}
+                        </Label>
+                        <Select value={deliveryMethodFilter} onValueChange={setDeliveryMethodFilter}>
+                            <SelectTrigger className="h-9 text-sm">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">{ar ? "الكل" : "All"}</SelectItem>
+                                <SelectItem value="home">{ar ? "توصيل منزل" : "Home Delivery"}</SelectItem>
+                                <SelectItem value="pickup">{ar ? "استلام من المتجر" : "Store Pickup"}</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    {/* Payment Method */}
+                    <div>
+                        <Label className="text-xs text-slate-500 mb-1 block">
+                            {ar ? "طريقة الدفع" : "Payment Method"}
+                        </Label>
+                        <Select value={paymentMethodFilter} onValueChange={setPaymentMethodFilter}>
+                            <SelectTrigger className="h-9 text-sm">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">{ar ? "الكل" : "All"}</SelectItem>
+                                <SelectItem value="cash">{ar ? "كاش" : "Cash"}</SelectItem>
+                                <SelectItem value="card">{ar ? "بطاقة" : "Card"}</SelectItem>
+                                <SelectItem value="wallet">{ar ? "محفظة" : "Wallet"}</SelectItem>
+                                <SelectItem value="vodafone_cash">{ar ? "فودافون كاش" : "Vodafone Cash"}</SelectItem>
+                                <SelectItem value="paymob">{ar ? "باي موب" : "Paymob"}</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    {/* Date Filter */}
+                    <div>
+                        <Label className="text-xs text-slate-500 mb-1 block">
+                            {ar ? "التاريخ" : "Date"}
+                        </Label>
+                        <Select value={dateFilter} onValueChange={setDateFilter}>
+                            <SelectTrigger className="h-9 text-sm">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">{ar ? "الكل" : "All"}</SelectItem>
+                                <SelectItem value="today">{ar ? "اليوم" : "Today"}</SelectItem>
+                                <SelectItem value="week">{ar ? "آخر 7 أيام" : "Last 7 Days"}</SelectItem>
+                                <SelectItem value="month">{ar ? "آخر 30 يوم" : "Last 30 Days"}</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
+            </div>
+
             {/* ── Orders grid ──────────────────────────────────────── */}
-            {orders.length === 0 ? (
+            {filteredOrders.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-16 border border-dashed border-slate-200 rounded-2xl bg-white text-center">
                     <div className="p-4 bg-slate-100 rounded-2xl mb-3">
                         <ShoppingBag className="h-7 w-7 text-slate-400" />
                     </div>
-                    <p className="text-sm font-medium text-slate-600">{ar ? "لا توجد طلبات" : "No orders found"}</p>
+                    <p className="text-sm font-medium text-slate-600">
+                        {hasActiveFilters 
+                            ? (ar ? "لا توجد طلبات تطابق الفلاتر" : "No orders match your filters")
+                            : (ar ? "لا توجد طلبات" : "No orders found")
+                        }
+                    </p>
+                    {hasActiveFilters && (
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={clearFilters}
+                            className="mt-3"
+                        >
+                            {ar ? "مسح الفلاتر" : "Clear Filters"}
+                        </Button>
+                    )}
                 </div>
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-                    {orders.map((order: any) => {
+                    {filteredOrders.map((order: any) => {
                         const paymentMethodLabel = getPaymentMethodLabel(order.paymentMethod || 'cash');
                         const deliveryMethodLabel = getDeliveryMethodLabel(order.deliveryMethod === "home"
                             ? order.deliveryInfo?.address
                             : order.deliveryInfo?.pickupPoint?.stationName);
+
+                        // هل عند الطلب رقم واتساب صالح؟
+                        const hasValidPhone = Boolean(getOrderPhone(order));
 
                         return (
                             <div
@@ -185,12 +434,12 @@ export function OrdersTab({
                                         <div className="flex-1 min-w-0">
                                             <p className="text-sm font-semibold text-slate-800 truncate">
                                                 {order.buyer?.fullName ||
-                                                    `${order.buyer?.firstName || ''} ${order.buyer?.lastName || ''}`.trim() || order.deliveryInfo.fullName || "N/A"}
+                                                    `${order.buyer?.firstName || ''} ${order.buyer?.lastName || ''}`.trim() || order.deliveryInfo?.fullName || "N/A"}
                                             </p>
                                             <p className="text-xs text-slate-400 truncate">{order.buyer?.email || ""}</p>
                                         </div>
                                         <div className="shrink-0 text-xs text-slate-400">
-                                            {order.buyer?.phone || order.deliveryInfo.phone || ""}
+                                            {order.buyer?.phone || order.deliveryInfo?.phone || ""}
                                         </div>
                                     </div>
 
@@ -200,7 +449,7 @@ export function OrdersTab({
                                             <div key={index} className="flex items-center gap-2.5 p-2 bg-slate-50 rounded-xl border border-slate-100">
                                                 <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-slate-200 shrink-0 border border-slate-200">
                                                     <img
-                                                        src={item.product?.images?.[0] || "/placeholder-product.jpg"}
+                                                        src={item.image || item.product?.images?.[0] || "/placeholder-product.jpg"}
                                                         alt={item.product?.title || "Product"}
                                                         className="object-cover w-full h-full"
                                                     />
@@ -213,12 +462,31 @@ export function OrdersTab({
 
                                                         {/* Selected Color */}
                                                         {item.color && (
-                                                            <>
+                                                            <span className="inline-flex items-center gap-1.5">
                                                                 {ar ? "لون مختار: " : "Selected Color: "}
-                                                                {item.color}
-                                                            </>
-                                                        )}
 
+                                                                <span
+                                                                    className="inline-block w-3.5 h-3.5 rounded-full border border-slate-300 shadow-sm shrink-0"
+                                                                    style={{
+                                                                        backgroundColor:
+                                                                            typeof item.color === "string"
+                                                                                ? item.color
+                                                                                : item.color.value || "#000000",
+                                                                    }}
+                                                                    title={
+                                                                        typeof item.color === "string"
+                                                                            ? item.color
+                                                                            : item.color.value || ""
+                                                                    }
+                                                                />
+
+                                                                <span>
+                                                                    {typeof item.color === "string"
+                                                                        ? item.color
+                                                                        : item.color.name || item.color.value}
+                                                                </span>
+                                                            </span>
+                                                        )}
                                                         {/* Show all available colors */}
                                                         {item.product?.colors?.length > 0 && (
                                                             <div className="mt-1">
@@ -370,7 +638,8 @@ export function OrdersTab({
                                             <div className="min-w-0">
                                                 <p className="text-[10px] text-slate-400">{ar ? "التوصيل" : "Delivery"}</p>
                                                 <p className="text-xs font-medium text-slate-700 truncate">
-                                                    {order.deliveryMethod || "N/A"}                                                </p>
+                                                    {order.deliveryMethod || "N/A"}
+                                                </p>
                                             </div>
                                         </div>
 
@@ -380,7 +649,7 @@ export function OrdersTab({
                                             <div className="min-w-0">
                                                 <p className="text-[10px] text-slate-400">{ar ? "العنوان" : "Address"}</p>
                                                 <p className="text-xs font-medium text-slate-700 truncate">
-                                                    {order.deliveryInfo?.address || order.deliveryInfo?.pickupPoint.stationName}
+                                                    {order.deliveryInfo?.address || order.deliveryInfo?.pickupPoint?.stationName}
                                                 </p>
                                             </div>
                                         </div>
@@ -475,6 +744,26 @@ export function OrdersTab({
                                                 </SelectContent>
                                             </Select>
                                         </div>
+
+                                        {/* ── WhatsApp confirmation button ──────────── */}
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => handleSendWhatsApp(order)}
+                                            disabled={!hasValidPhone}
+                                            title={
+                                                hasValidPhone
+                                                    ? (ar ? "فتح واتساب برسالة تأكيد الطلب" : "Open WhatsApp with the confirmation message")
+                                                    : (ar ? "رقم هاتف العميل غير صالح" : "Customer phone number is invalid")
+                                            }
+                                            className={`w-full h-10 rounded-xl text-sm font-semibold transition-all active:scale-[0.98] ${hasValidPhone
+                                                ? "border-green-200 text-green-700 hover:bg-green-50 hover:border-green-300 hover:text-green-800"
+                                                : "border-slate-200 text-slate-400 cursor-not-allowed"
+                                                }`}
+                                        >
+                                            <MessageCircle className="h-4 w-4 mr-1.5" />
+                                            {ar ? "إرسال تأكيد واتساب" : "Send WhatsApp Confirmation"}
+                                        </Button>
 
                                         {/* Complete button */}
                                         <Button

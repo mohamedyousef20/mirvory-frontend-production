@@ -6,7 +6,7 @@ import { createContext, useContext, useState, useEffect } from "react"
 
 type Language = "ar" | "en"
 
-type TranslationKey = keyof typeof translations.ar
+export type TranslationKey = keyof typeof translations.ar
 
 type LanguageContextType = {
   language: Language
@@ -18,7 +18,7 @@ const translations = {
   ar: {
     home: "الرئيسية",
     products: "المنتجات",
-    // offers: "العروض",
+    offers: "العروض",
     cart: "سلة التسوق",
     account: "حسابي",
     search: "ابحث عن منتجات...",

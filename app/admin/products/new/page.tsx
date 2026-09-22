@@ -1,22 +1,32 @@
 'use client'
+
 import { useState, useEffect } from 'react';
+
 import { useLanguage } from '@/hooks/useLanguage';
 import { Button } from '@/components/ui/button';
 import { Plus, X, Palette, Calculator } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
 import { toast } from 'sonner';
 import ImageUploader from '@/components/ImageUploader';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { categoryService, productService } from '@/lib/api';
-import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { ChromePicker } from 'react-color';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from '@/components/ui/popover';
 import { useAuth } from '@/contexts/AuthProvider';
-import Joi from "joi"; // استيراد مكتبة Joi
+import Joi from 'joi';
 
 interface AddProductFormProps {
   onClose: () => void;
@@ -25,22 +35,29 @@ interface AddProductFormProps {
 interface Color {
   name: string;
   value: string;
+  image: string;
   available: boolean;
 }
 
 export default function AddProductForm({ onClose }: AddProductFormProps) {
   const { language } = useLanguage();
   const { user } = useAuth();
+
   const [loading, setLoading] = useState(false);
-  const [categories, setCategories] = useState([]);
-  const [brands, setBrands] = useState([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [brands, setBrands] = useState<any[]>([]);
+
   const [sizeInput, setSizeInput] = useState('');
+
   const [colorInput, setColorInput] = useState({
     name: '',
     value: '#000000',
     available: true
   });
+
+  const [colorImage, setColorImage] = useState('');
   const [showColorPicker, setShowColorPicker] = useState(false);
+
   const [newProduct, setNewProduct] = useState({
     title: '',
     description: '',
@@ -49,95 +66,241 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
     discountedPrice: '',
     category: '',
     images: [] as string[],
-    brand: "",
+    brand: '',
     sizes: [] as string[],
     colors: [] as Color[],
     quantity: '0',
     isFeatured: false,
     status: 'available' as 'available' | 'pending',
   });
-  const [showCategoryDialog, setShowCategoryDialog] = useState(false);
-  const [newCategory, setNewCategory] = useState({
-    name: '',
-    nameEn: '',
-    description: '',
-    descriptionEn: '',
-    image: '',
-    status: 'active' as 'active' | 'inactive'
-  });
 
-  // بناء مخطط التحقق Joi داخل المكون لتخصيص رسائل الخطأ ديناميكياً بناءً على اللغة المتوفرة
+  /*
+   * ============================================================
+   * PRODUCT VALIDATION
+   * ============================================================
+   */
+
   const productValidationSchema = Joi.object({
-    title: Joi.string().trim().min(3).max(200).required().messages({
-      "string.empty": language === 'ar' ? "عنوان المنتج مطلوب" : "Product title is required",
-      "string.min": language === 'ar' ? "اسم المنتج يجب ألا يقل عن 3 أحرف" : "Title must be at least 3 characters",
-      "any.required": language === 'ar' ? "عنوان المنتج مطلوب" : "Product title is required"
-    }),
+    title: Joi.string()
+      .trim()
+      .min(3)
+      .max(200)
+      .required()
+      .messages({
+        'string.empty':
+          language === 'ar'
+            ? 'عنوان المنتج مطلوب'
+            : 'Product title is required',
 
-    description: Joi.string().trim().min(20).max(5000).required().messages({
-      "string.empty": language === 'ar' ? "وصف المنتج مطلوب" : "Product description is required",
-      "string.min": language === 'ar' ? "الوصف يجب ألا يقل عن 20 حرفًا" : "Description must be at least 20 characters"
-    }),
+        'string.min':
+          language === 'ar'
+            ? 'اسم المنتج يجب ألا يقل عن 3 أحرف'
+            : 'Title must be at least 3 characters',
 
-    price: Joi.number().positive().required().messages({
-      "number.base": language === 'ar' ? "السعر يجب أن يكون رقمًا" : "Price must be a number",
-      "number.positive": language === 'ar' ? "السعر يجب أن يكون أكبر من صفر" : "Price must be greater than zero",
-      "any.required": language === 'ar' ? "السعر مطلوب" : "Price is required"
-    }),
+        'any.required':
+          language === 'ar'
+            ? 'عنوان المنتج مطلوب'
+            : 'Product title is required'
+      }),
 
-    discountPercentage: Joi.number().min(0).max(100).default(0).messages({
-      "number.min": language === 'ar' ? "نسبة الخصم لا يمكن أن تقل عن 0%" : "Discount cannot be less than 0%",
-      "number.max": language === 'ar' ? "نسبة الخصم لا يمكن أن تتجاوز 100%" : "Discount cannot exceed 100%"
-    }),
+    description: Joi.string()
+      .trim()
+      .min(20)
+      .max(5000)
+      .required()
+      .messages({
+        'string.empty':
+          language === 'ar'
+            ? 'وصف المنتج مطلوب'
+            : 'Product description is required',
 
-    category: Joi.string().required().messages({
-      "any.required": language === 'ar' ? "القسم / الفئة مطلوبة" : "Category is required",
-      "string.empty": language === 'ar' ? "الرجاء اختيار الفئة" : "Please select a category"
-    }),
+        'string.min':
+          language === 'ar'
+            ? 'الوصف يجب ألا يقل عن 20 حرفًا'
+            : 'Description must be at least 20 characters'
+      }),
 
-    brand: Joi.string().trim().max(100).allow("").default(""),
+    price: Joi.number()
+      .positive()
+      .required()
+      .messages({
+        'number.base':
+          language === 'ar'
+            ? 'السعر يجب أن يكون رقمًا'
+            : 'Price must be a number',
 
-    quantity: Joi.number().integer().min(1).required().messages({
-      "number.base": language === 'ar' ? "الكمية يجب أن تكون رقمًا" : "Quantity must be a number",
-      "number.min": language === 'ar' ? "الكمية لا يمكن أن تكون أقل من صفر" : "Quantity cannot be less than zero"
-    }),
+        'number.positive':
+          language === 'ar'
+            ? 'السعر يجب أن يكون أكبر من صفر'
+            : 'Price must be greater than zero',
 
-    images: Joi.array().items(Joi.string().trim()).min(1).required().messages({
-      "array.min": language === 'ar' ? "يجب إضافة صورة واحدة على الأقل" : "Please add at least one image"
-    }),
+        'any.required':
+          language === 'ar'
+            ? 'السعر مطلوب'
+            : 'Price is required'
+      }),
 
-    sizes: Joi.array().items(Joi.string().trim().required().max(50)).default([]),
+    discountPercentage: Joi.number()
+      .min(0)
+      .max(100)
+      .default(0)
+      .messages({
+        'number.min':
+          language === 'ar'
+            ? 'نسبة الخصم لا يمكن أن تقل عن 0%'
+            : 'Discount cannot be less than 0%',
 
-    colors: Joi.array().items(
-      Joi.object({
-        name: Joi.string().trim().required().messages({
-          "string.empty": language === 'ar' ? "اسم اللون مطلوب" : "Color name is required"
-        }),
-        value: Joi.string().pattern(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/).required().messages({
-          "string.pattern.base": language === 'ar' ? "قيمة اللون يجب أن تكون HEX صحيحة" : "Color value must be a valid HEX code"
-        }),
-        available: Joi.boolean().default(true)
-      })
-    ).required().default([]),
+        'number.max':
+          language === 'ar'
+            ? 'نسبة الخصم لا يمكن أن تتجاوز 100%'
+            : 'Discount cannot exceed 100%'
+      }),
+
+    category: Joi.string()
+      .required()
+      .messages({
+        'any.required':
+          language === 'ar'
+            ? 'القسم / الفئة مطلوبة'
+            : 'Category is required',
+
+        'string.empty':
+          language === 'ar'
+            ? 'الرجاء اختيار الفئة'
+            : 'Please select a category'
+      }),
+
+    brand: Joi.string()
+      .trim()
+      .max(100)
+      .allow('')
+      .default(''),
+
+    quantity: Joi.number()
+      .integer()
+      .min(1)
+      .required()
+      .messages({
+        'number.base':
+          language === 'ar'
+            ? 'الكمية يجب أن تكون رقمًا'
+            : 'Quantity must be a number',
+
+        'number.min':
+          language === 'ar'
+            ? 'الكمية يجب أن تكون أكبر من صفر'
+            : 'Quantity must be greater than zero'
+      }),
+
+    images: Joi.array()
+      .items(Joi.string().trim())
+      .min(1)
+      .required()
+      .messages({
+        'array.min':
+          language === 'ar'
+            ? 'يجب إضافة صورة واحدة على الأقل'
+            : 'Please add at least one image'
+      }),
+
+    sizes: Joi.array()
+      .items(
+        Joi.string()
+          .trim()
+          .required()
+          .max(50)
+      )
+      .default([]),
+
+    /*
+     * ============================================================
+     * COLORS
+     *
+     * Every color MUST have:
+     * name
+     * value
+     * image
+     * available
+     * ============================================================
+     */
+
+    colors: Joi.array()
+      .items(
+        Joi.object({
+          name: Joi.string()
+            .trim()
+            .required()
+            .messages({
+              'string.empty':
+                language === 'ar'
+                  ? 'اسم اللون مطلوب'
+                  : 'Color name is required'
+            }),
+
+          value: Joi.string()
+            .pattern(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/)
+            .required()
+            .messages({
+              'string.pattern.base':
+                language === 'ar'
+                  ? 'قيمة اللون يجب أن تكون HEX صحيحة'
+                  : 'Color value must be a valid HEX code'
+            }),
+
+          image: Joi.string()
+            .trim()
+            .required()
+            .messages({
+              'string.empty':
+                language === 'ar'
+                  ? 'صورة اللون مطلوبة'
+                  : 'Color image is required'
+            }),
+
+          available: Joi.boolean()
+            .default(true)
+        })
+      )
+      .required()
+      .default([]),
 
     isFeatured: Joi.boolean().default(false),
-    status: Joi.string().valid('available', 'pending').default('available'),
-    discountedPrice: Joi.any() 
+
+    status: Joi.string()
+      .valid('available', 'pending')
+      .default('available'),
+
+    discountedPrice: Joi.any()
   });
 
-  // Helper function to get platform fee based on price
-  // Helper function to get platform fee based on price
+  /*
+   * ============================================================
+   * PLATFORM FEE
+   * ============================================================
+   */
+
   function getPlatformFeeByPrice(price: number): number {
     if (!price || price <= 0) return 0.06;
 
     if (price < 300) return 0.12;
+
     if (price >= 300 && price <= 799) return 0.10;
-    if (price >= 800 && price <= 1999) return 0.08; // تم التصحيح من 0.8 إلى 0.08 (8%)
-    return 0.06; // تم التصحيح من 0.6 إلى 0.06 (6%)
+
+    if (price >= 800 && price <= 1999) return 0.08;
+
+    return 0.06;
   }
 
-  // Helper function to explain the price range
-  function getPriceRangeExplanation(price: number, language = 'ar'): string {
+  /*
+   * ============================================================
+   * PRICE RANGE EXPLANATION
+   * ============================================================
+   */
+
+  function getPriceRangeExplanation(
+    price: number,
+    language = 'ar'
+  ): string {
     if (!price) return '';
 
     if (price < 300) {
@@ -145,52 +308,99 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
         ? 'أقل من 300: رسوم المنصة 12%، نسبة البائع 88%'
         : 'Below 300: Platform fee 12%, Seller gets 88%';
     }
+
     if (price >= 300 && price <= 799) {
       return language === 'ar'
         ? '300-799: رسوم المنصة 10%، نسبة البائع 90%'
         : '300-799: Platform fee 10%, Seller gets 90%';
     }
+
     if (price >= 800 && price <= 1999) {
       return language === 'ar'
         ? '800-1999: رسوم المنصة 8%، نسبة البائع 92%'
         : '800-1999: Platform fee 8%, Seller gets 92%';
     }
+
     return language === 'ar'
       ? 'أكثر من 2000: رسوم المنصة 6%، نسبة البائع 94%'
       : 'Above 2000: Platform fee 6%, Seller gets 94%';
   }
-  // Calculate dynamic values based on discounted price
-  const discountedPrice = parseFloat(newProduct.discountedPrice) || 0;
-  const platformFee = getPlatformFeeByPrice(discountedPrice);
-  const sellerPercentage = 1 - platformFee;
-  const sellerAmount = discountedPrice > 0
-    ? (discountedPrice * sellerPercentage).toFixed(2)
-    : '0.00';
 
-  // Fetch categories & brands on component mount
+  /*
+   * ============================================================
+   * PRICE CALCULATIONS
+   * ============================================================
+   */
+
+  const discountedPrice =
+    parseFloat(newProduct.discountedPrice) || 0;
+
+  const platformFee =
+    getPlatformFeeByPrice(discountedPrice);
+
+  const sellerPercentage =
+    1 - platformFee;
+
+  const sellerAmount =
+    discountedPrice > 0
+      ? (
+          discountedPrice * sellerPercentage
+        ).toFixed(2)
+      : '0.00';
+
+  /*
+   * ============================================================
+   * FETCH CATEGORIES
+   * ============================================================
+   */
+
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await categoryService.getCategories();
+        const response =
+          await categoryService.getCategories();
+
         setCategories(response.data);
       } catch (error) {
-        toast.error(language === 'ar' ? 'فشل جلب الفئات' : 'Failed to fetch categories');
+        toast.error(
+          language === 'ar'
+            ? 'فشل جلب الفئات'
+            : 'Failed to fetch categories'
+        );
       }
     };
+
     fetchCategories();
   }, [language]);
 
-  // Calculate discounted price when price or discount percentage changes
-  useEffect(() => {
-    const price = parseFloat(newProduct.price) || 0;
-    const discountPercentage = parseFloat(newProduct.discountPercentage) || 0;
+  /*
+   * ============================================================
+   * CALCULATE DISCOUNTED PRICE
+   * ============================================================
+   */
 
-    if (price > 0 && discountPercentage >= 0 && discountPercentage <= 100) {
-      const discountAmount = price * (discountPercentage / 100);
-      const discountedPrice = price - discountAmount;
+  useEffect(() => {
+    const price =
+      parseFloat(newProduct.price) || 0;
+
+    const discountPercentage =
+      parseFloat(newProduct.discountPercentage) || 0;
+
+    if (
+      price > 0 &&
+      discountPercentage >= 0 &&
+      discountPercentage <= 100
+    ) {
+      const discountAmount =
+        price * (discountPercentage / 100);
+
+      const calculatedDiscountedPrice =
+        price - discountAmount;
+
       setNewProduct(prev => ({
         ...prev,
-        discountedPrice: discountedPrice.toFixed(2)
+        discountedPrice:
+          calculatedDiscountedPrice.toFixed(2)
       }));
     } else if (price > 0) {
       setNewProduct(prev => ({
@@ -198,50 +408,114 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
         discountedPrice: price.toFixed(2)
       }));
     }
-  }, [newProduct.price, newProduct.discountPercentage]);
+  }, [
+    newProduct.price,
+    newProduct.discountPercentage
+  ]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  /*
+   * ============================================================
+   * GENERAL INPUT HANDLERS
+   * ============================================================
+   */
+
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement
+    >
+  ) => {
     const { name, value } = e.target;
-    setNewProduct(prev => ({ ...prev, [name]: value }));
+
+    setNewProduct(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
-  const handleNumberInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleNumberInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const { name, value } = e.target;
-    if (value === '' || /^\d*\.?\d*$/.test(value)) {
-      setNewProduct(prev => ({ ...prev, [name]: value }));
+
+    if (
+      value === '' ||
+      /^\d*\.?\d*$/.test(value)
+    ) {
+      setNewProduct(prev => ({
+        ...prev,
+        [name]: value
+      }));
     }
   };
 
-  const handleSwitchChange = (name: string, checked: boolean) => {
-    setNewProduct(prev => ({ ...prev, [name]: checked }));
+  const handleSelectChange = (
+    name: string,
+    value: string
+  ) => {
+    setNewProduct(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
-  const handleSelectChange = (name: string, value: string) => {
-    setNewProduct(prev => ({ ...prev, [name]: value }));
-  };
+  /*
+   * ============================================================
+   * PRODUCT IMAGE UPLOAD
+   * ============================================================
+   */
 
   const handleImageUpload = (url: string) => {
     setNewProduct(prev => ({
       ...prev,
-      images: [...prev.images, url],
+      images: [
+        ...prev.images,
+        url
+      ]
     }));
-    toast.success(language === 'ar' ? 'تم رفع الصورة بنجاح' : 'Image uploaded successfully');
+
+    toast.success(
+      language === 'ar'
+        ? 'تم رفع الصورة بنجاح'
+        : 'Image uploaded successfully'
+    );
   };
 
   const removeImage = (index: number) => {
     setNewProduct(prev => {
-      const newImages = [...prev.images];
+      const newImages = [
+        ...prev.images
+      ];
+
       newImages.splice(index, 1);
-      return { ...prev, images: newImages };
+
+      return {
+        ...prev,
+        images: newImages
+      };
     });
   };
 
+  /*
+   * ============================================================
+   * SIZES
+   * ============================================================
+   */
+
   const addSize = () => {
-    if (sizeInput.trim() && !newProduct.sizes.includes(sizeInput.trim())) {
+    const size = sizeInput.trim();
+
+    if (
+      size &&
+      !newProduct.sizes.includes(size)
+    ) {
       setNewProduct(prev => ({
         ...prev,
-        sizes: [...prev.sizes, sizeInput.trim()],
+        sizes: [
+          ...prev.sizes,
+          size
+        ]
       }));
+
       setSizeInput('');
     }
   };
@@ -249,9 +523,17 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
   const removeSize = (size: string) => {
     setNewProduct(prev => ({
       ...prev,
-      sizes: prev.sizes.filter(s => s !== size),
+      sizes: prev.sizes.filter(
+        s => s !== size
+      )
     }));
   };
+
+  /*
+   * ============================================================
+   * COLORS
+   * ============================================================
+   */
 
   const handleColorChange = (color: any) => {
     setColorInput(prev => ({
@@ -260,229 +542,509 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
     }));
   };
 
+  /*
+   * Add a color only if:
+   * - name exists
+   * - HEX value exists
+   * - image exists
+   * - color doesn't already exist
+   */
+
   const addColor = () => {
-    if (colorInput.name.trim() && colorInput.value) {
-      const colorExists = newProduct.colors.some(color =>
-        color.value.toLowerCase() === colorInput.value.toLowerCase()
+    if (!colorInput.name.trim()) {
+      toast.error(
+        language === 'ar'
+          ? 'الرجاء إدخال اسم اللون'
+          : 'Please enter color name'
+      );
+      return;
+    }
+
+    if (!colorInput.value) {
+      toast.error(
+        language === 'ar'
+          ? 'الرجاء اختيار لون'
+          : 'Please select a color'
+      );
+      return;
+    }
+
+    if (!colorImage) {
+      toast.error(
+        language === 'ar'
+          ? 'الرجاء إضافة صورة لهذا اللون'
+          : 'Please add an image for this color'
+      );
+      return;
+    }
+
+    const colorExists =
+      newProduct.colors.some(
+        color =>
+          color.value.toLowerCase() ===
+          colorInput.value.toLowerCase()
       );
 
-      if (colorExists) {
-        toast.error(language === 'ar' ? 'هذا اللون مضاف مسبقاً' : 'This color already exists');
-        return;
-      }
-
-      const newColor: Color = {
-        name: colorInput.name.trim(),
-        value: colorInput.value,
-        available: colorInput.available
-      };
-
-      setNewProduct(prev => ({
-        ...prev,
-        colors: [...prev.colors, newColor],
-      }));
-
-      setColorInput({
-        name: '',
-        value: '#000000',
-        available: true
-      });
-      setShowColorPicker(false);
-    } else {
-      toast.error(language === 'ar' ? 'الرجاء إدخال اسم اللون' : 'Please enter color name');
+    if (colorExists) {
+      toast.error(
+        language === 'ar'
+          ? 'هذا اللون مضاف مسبقاً'
+          : 'This color already exists'
+      );
+      return;
     }
-  };
 
-  const removeColor = (colorValue: string) => {
+    const newColor: Color = {
+      name: colorInput.name.trim(),
+      value: colorInput.value,
+      image: colorImage,
+      available: colorInput.available
+    };
+
     setNewProduct(prev => ({
       ...prev,
-      colors: prev.colors.filter(color => color.value !== colorValue),
+      colors: [
+        ...prev.colors,
+        newColor
+      ]
+    }));
+
+    /*
+     * Reset color form
+     */
+
+    setColorInput({
+      name: '',
+      value: '#000000',
+      available: true
+    });
+
+    setColorImage('');
+    setShowColorPicker(false);
+
+    toast.success(
+      language === 'ar'
+        ? 'تمت إضافة اللون بنجاح'
+        : 'Color added successfully'
+    );
+  };
+
+  const removeColor = (
+    colorValue: string
+  ) => {
+    setNewProduct(prev => ({
+      ...prev,
+      colors: prev.colors.filter(
+        color =>
+          color.value !== colorValue
+      )
     }));
   };
 
-  const toggleColorAvailability = (colorValue: string) => {
+  const toggleColorAvailability = (
+    colorValue: string
+  ) => {
     setNewProduct(prev => ({
       ...prev,
       colors: prev.colors.map(color =>
         color.value === colorValue
-          ? { ...color, available: !color.available }
+          ? {
+              ...color,
+              available:
+                !color.available
+            }
           : color
-      ),
+      )
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  /*
+   * ============================================================
+   * SUBMIT PRODUCT
+   * ============================================================
+   */
+
+  const handleSubmit = async (
+    e: React.FormEvent
+  ) => {
     e.preventDefault();
+
     if (!user) {
-      toast.error(language === 'ar' ? 'يجب تسجيل الدخول أولاً' : 'Please log in first');
+      toast.error(
+        language === 'ar'
+          ? 'يجب تسجيل الدخول أولاً'
+          : 'Please log in first'
+      );
+
       return;
     }
 
-    // تجهيز كائن البيانات مع تحويل النصوص الرقمية إلى أرقام حقيقية من أجل مطابقة الـ Validation وقاعدة البيانات
+    /*
+     * Prepare data for Joi
+     */
+
     const preparedDataToValidate = {
       ...newProduct,
-      price: newProduct.price === '' ? undefined : parseFloat(newProduct.price),
-      discountPercentage: parseFloat(newProduct.discountPercentage) || 0,
-      quantity: parseInt(newProduct.quantity) || 0,
+
+      price:
+        newProduct.price === ''
+          ? undefined
+          : parseFloat(
+              newProduct.price
+            ),
+
+      discountPercentage:
+        parseFloat(
+          newProduct.discountPercentage
+        ) || 0,
+
+      quantity:
+        parseInt(
+          newProduct.quantity
+        ) || 0
     };
 
-    // تنفيذ عملية التحقق باستخدام Joi قبل الإرسال
-    const { error } = productValidationSchema.validate(preparedDataToValidate, { abortEarly: true });
+    /*
+     * Validate
+     */
+
+    const {
+      error
+    } =
+      productValidationSchema.validate(
+        preparedDataToValidate,
+        {
+          abortEarly: true
+        }
+      );
 
     if (error) {
-      // عرض رسالة الخطأ المخصصة الأولى للمستخدم مباشرة
-      toast.error(error.details[0].message);
+      toast.error(
+        error.details[0].message
+      );
+
       return;
     }
 
     setLoading(true);
 
     try {
-      const price = parseFloat(newProduct.discountedPrice) || parseFloat(newProduct.price) || 0;
-      const platformFee = getPlatformFeeByPrice(price);
-      const calculatedSellerPercentage = (1 - platformFee) * 100;
+      const price =
+        parseFloat(
+          newProduct.discountedPrice
+        ) ||
+        parseFloat(
+          newProduct.price
+        ) ||
+        0;
+
+      const platformFee =
+        getPlatformFeeByPrice(
+          price
+        );
+
+      const calculatedSellerPercentage =
+        (1 - platformFee) * 100;
+
+      /*
+       * Product payload
+       *
+       * IMPORTANT:
+       * colors contains:
+       * {
+       *   name,
+       *   value,
+       *   image,
+       *   available
+       * }
+       */
 
       const productData = {
-        title: newProduct.title,
-        description: newProduct.description,
-        price: parseFloat(newProduct.price),
-        discountPercentage: parseFloat(newProduct.discountPercentage),
-        discountedPrice: parseFloat(newProduct.discountedPrice) || parseFloat(newProduct.price),
-        category: newProduct.category,
-        brand: newProduct.brand,
-        images: newProduct.images,
-        sizes: newProduct.sizes,
-        colors: newProduct.colors,
-        quantity: parseInt(newProduct.quantity) || 0,
-        isFeatured: newProduct.isFeatured,
-        status: newProduct.status,
-        sellerPercentage: calculatedSellerPercentage
+        title:
+          newProduct.title,
+
+        description:
+          newProduct.description,
+
+        price:
+          parseFloat(
+            newProduct.price
+          ),
+
+        discountPercentage:
+          parseFloat(
+            newProduct.discountPercentage
+          ),
+
+        discountedPrice:
+          parseFloat(
+            newProduct.discountedPrice
+          ) ||
+          parseFloat(
+            newProduct.price
+          ),
+
+        category:
+          newProduct.category,
+
+        brand:
+          newProduct.brand,
+
+        images:
+          newProduct.images,
+
+        sizes:
+          newProduct.sizes,
+
+        colors:
+          newProduct.colors,
+
+        quantity:
+          parseInt(
+            newProduct.quantity
+          ) || 0,
+
+        isFeatured:
+          newProduct.isFeatured,
+
+        status:
+          newProduct.status,
+
+        sellerPercentage:
+          calculatedSellerPercentage
       };
 
-      const response = await productService.createProduct(productData);
+      console.log(
+        'Product data being sent:',
+        productData
+      );
+
+      console.log(
+        'Colors with images:',
+        productData.colors
+      );
+
+      const response =
+        await productService.createProduct(
+          productData
+        );
+
       if (response.data.success) {
-        toast.success(language === 'ar' ? 'تم إنشاء المنتج بنجاح وتم إرسال طلب الاعتماد ' : 'Product added successfully');
+        toast.success(
+          language === 'ar'
+            ? 'تم إنشاء المنتج بنجاح وتم إرسال طلب الاعتماد'
+            : 'Product added successfully'
+        );
       }
+
       onClose();
+
     } catch (error: any) {
-      console.error('Error creating product:', error);
+      console.error(
+        'Error creating product:',
+        error
+      );
+
       toast.error(
         error.response?.data?.message ||
-        (language === 'ar' ? 'حدث خطأ أثناء إضافة المنتج' : 'Error adding product')
+          (
+            language === 'ar'
+              ? 'حدث خطأ أثناء إضافة المنتج'
+              : 'Error adding product'
+          )
       );
+
     } finally {
       setLoading(false);
     }
   };
 
+  /*
+   * ============================================================
+   * UI
+   * ============================================================
+   */
+
   return (
     <Card className="mb-6">
       <CardHeader>
         <CardTitle>
-          {language === 'ar' ? 'إضافة منتج جديد' : 'Add New Product'}
+          {language === 'ar'
+            ? 'إضافة منتج جديد'
+            : 'Add New Product'}
         </CardTitle>
       </CardHeader>
+
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Title */}
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-6"
+        >
+
+          {/* =====================================================
+              TITLE
+          ====================================================== */}
+
           <div>
             <Label htmlFor="title">
-              {language === 'ar' ? 'عنوان المنتج' : 'Product Title'} *
+              {language === 'ar'
+                ? 'عنوان المنتج'
+                : 'Product Title'} *
             </Label>
+
             <Input
               id="title"
               name="title"
               value={newProduct.title}
-              onChange={handleInputChange}
-              placeholder={language === 'ar' ? 'أدخل عنوان المنتج' : 'Enter product title'}
+              onChange={
+                handleInputChange
+              }
+              placeholder={
+                language === 'ar'
+                  ? 'أدخل عنوان المنتج'
+                  : 'Enter product title'
+              }
             />
           </div>
 
-          {/* Description */}
+          {/* =====================================================
+              DESCRIPTION
+          ====================================================== */}
+
           <div>
             <Label htmlFor="description">
-              {language === 'ar' ? 'وصف المنتج' : 'Product Description'} *
+              {language === 'ar'
+                ? 'وصف المنتج'
+                : 'Product Description'} *
             </Label>
+
             <Textarea
               id="description"
               name="description"
-              value={newProduct.description}
-              onChange={handleInputChange}
-              placeholder={language === 'ar' ? 'أدخل وصف المنتج' : 'Enter product description'}
+              value={
+                newProduct.description
+              }
+              onChange={
+                handleInputChange
+              }
+              placeholder={
+                language === 'ar'
+                  ? 'أدخل وصف المنتج'
+                  : 'Enter product description'
+              }
               rows={4}
             />
           </div>
 
+          {/* =====================================================
+              PRICE
+          ====================================================== */}
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Price */}
+
             <div>
-              <Label htmlFor="price">{language === 'ar' ? 'السعر' : 'Price'} *</Label>
+              <Label htmlFor="price">
+                {language === 'ar'
+                  ? 'السعر'
+                  : 'Price'} *
+              </Label>
+
               <Input
                 id="price"
                 name="price"
                 type="text"
-                value={newProduct.price}
-                onChange={handleNumberInputChange}
+                value={
+                  newProduct.price
+                }
+                onChange={
+                  handleNumberInputChange
+                }
                 placeholder="0.00"
               />
             </div>
 
-            {/* Discount Percentage */}
             <div>
               <Label htmlFor="discountPercentage">
-                {language === 'ar' ? 'نسبة الخصم %' : 'Discount Percentage %'}
+                {language === 'ar'
+                  ? 'نسبة الخصم %'
+                  : 'Discount Percentage %'}
               </Label>
+
               <Input
                 id="discountPercentage"
                 name="discountPercentage"
                 type="text"
-                value={newProduct.discountPercentage}
-                onChange={handleNumberInputChange}
+                value={
+                  newProduct.discountPercentage
+                }
+                onChange={
+                  handleNumberInputChange
+                }
                 placeholder="0"
-                min="0"
-                max="100"
               />
             </div>
 
-            {/* Discounted Price (Auto-calculated) */}
             <div>
               <Label htmlFor="discountedPrice">
-                {language === 'ar' ? 'السعر بعد الخصم' : 'Discounted Price'}
+                {language === 'ar'
+                  ? 'السعر بعد الخصم'
+                  : 'Discounted Price'}
               </Label>
+
               <Input
                 id="discountedPrice"
                 name="discountedPrice"
                 type="text"
-                value={newProduct.discountedPrice}
+                value={
+                  newProduct.discountedPrice
+                }
                 readOnly
                 className="bg-gray-100"
               />
             </div>
+
           </div>
 
-          {/* Seller Information Section */}
+          {/* =====================================================
+              SELLER INFORMATION
+          ====================================================== */}
+
           <div className="p-4 border rounded-lg bg-blue-50">
+
             <div className="flex items-center gap-2 mb-3">
+
               <Calculator className="h-5 w-5 text-blue-600" />
+
               <h3 className="text-lg font-semibold text-blue-800">
-                {language === 'ar' ? 'معلومات البائع' : 'Seller Information'}
+                {language === 'ar'
+                  ? 'معلومات البائع'
+                  : 'Seller Information'}
               </h3>
+
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {/* Platform Fee Percentage */}
+
               <div>
                 <Label htmlFor="platformFee">
-                  {language === 'ar' ? 'رسوم المنصة %' : 'Platform Fee %'}
+                  {language === 'ar'
+                    ? 'رسوم المنصة %'
+                    : 'Platform Fee %'}
                 </Label>
+
                 <Input
                   id="platformFee"
                   name="platformFee"
                   type="text"
-                  value={`${(platformFee * 100).toFixed(1)}%`}
+                  value={`${
+  (
+    platformFee * 100
+  ).toFixed(1)
+}% `}
                   disabled
                   className="bg-gray-200 font-bold"
                 />
+
                 <p className="text-xs text-gray-500 mt-1">
                   {language === 'ar'
                     ? 'تختلف حسب السعر بعد الخصم'
@@ -490,19 +1052,26 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
                 </p>
               </div>
 
-              {/* Seller Percentage */}
               <div>
                 <Label htmlFor="sellerPercentage">
-                  {language === 'ar' ? 'نسبة البائع %' : 'Seller Percentage %'}
+                  {language === 'ar'
+                    ? 'نسبة البائع %'
+                    : 'Seller Percentage %'}
                 </Label>
+
                 <Input
                   id="sellerPercentage"
                   name="sellerPercentage"
                   type="text"
-                  value={`${(sellerPercentage * 100).toFixed(1)}%`}
+                  value={`${
+  (
+    sellerPercentage * 100
+  ).toFixed(1)
+}% `}
                   disabled
                   className="bg-gray-200 font-bold"
                 />
+
                 <p className="text-xs text-gray-500 mt-1">
                   {language === 'ar'
                     ? 'نسبة متغيرة حسب السعر'
@@ -510,11 +1079,13 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
                 </p>
               </div>
 
-              {/* Seller Amount */}
               <div>
                 <Label htmlFor="sellerAmount">
-                  {language === 'ar' ? 'مبلغ البائع' : 'Seller Amount'}
+                  {language === 'ar'
+                    ? 'مبلغ البائع'
+                    : 'Seller Amount'}
                 </Label>
+
                 <Input
                   id="sellerAmount"
                   name="sellerAmount"
@@ -523,287 +1094,747 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
                   readOnly
                   className="bg-green-100 font-bold text-green-800"
                 />
+
                 <p className="text-xs text-gray-500 mt-1">
                   {language === 'ar'
-                    ? `السعر بعد الخصم × ${(sellerPercentage * 100).toFixed(1)}%`
-                    : `Discounted price × ${(sellerPercentage * 100).toFixed(1)}%`}
+                    ? `السعر بعد الخصم × ${
+  (
+    sellerPercentage * 100
+  ).toFixed(1)
+}% `
+                    : `Discounted price × ${
+  (
+    sellerPercentage * 100
+  ).toFixed(1)
+}% `}
                 </p>
               </div>
+
             </div>
 
-            {/* Calculation Explanation */}
             <div className="mt-3 p-3 bg-white rounded border">
+
               <p className="text-sm text-gray-600">
+
                 {language === 'ar' ? (
                   <>
-                    <strong>كيفية الحساب:</strong><br />
-                    {getPriceRangeExplanation(discountedPrice, language)}<br />
+                    <strong>
+                      كيفية الحساب:
+                    </strong>
+                    <br />
+
+                    {getPriceRangeExplanation(
+                      discountedPrice,
+                      language
+                    )}
+
+                    <br />
+
                     {discountedPrice > 0 && (
                       <>
-                        <strong>الحساب:</strong> {discountedPrice} × {(sellerPercentage * 100).toFixed(1)}% = <strong>{sellerAmount}</strong>
+                        <strong>
+                          الحساب:
+                        </strong>{' '}
+                        {discountedPrice} ×{' '}
+                        {(
+                          sellerPercentage * 100
+                        ).toFixed(1)}
+                        % ={' '}
+                        <strong>
+                          {sellerAmount}
+                        </strong>
                       </>
                     )}
                   </>
                 ) : (
                   <>
-                    <strong>Calculation:</strong><br />
-                    {getPriceRangeExplanation(discountedPrice, 'en')}<br />
+                    <strong>
+                      Calculation:
+                    </strong>
+                    <br />
+
+                    {getPriceRangeExplanation(
+                      discountedPrice,
+                      'en'
+                    )}
+
+                    <br />
+
                     {discountedPrice > 0 && (
                       <>
-                        <strong>Formula:</strong> {discountedPrice} × {(sellerPercentage * 100).toFixed(1)}% = <strong>{sellerAmount}</strong>
+                        <strong>
+                          Formula:
+                        </strong>{' '}
+                        {discountedPrice} ×{' '}
+                        {(
+                          sellerPercentage * 100
+                        ).toFixed(1)}
+                        % ={' '}
+                        <strong>
+                          {sellerAmount}
+                        </strong>
                       </>
                     )}
                   </>
                 )}
+
               </p>
+
             </div>
+
           </div>
 
-          {/* Sizes */}
+          {/* =====================================================
+              SIZES
+          ====================================================== */}
+
           <div>
-            <Label htmlFor="sizes">{language === 'ar' ? 'المقاسات' : 'Sizes'}</Label>
+
+            <Label htmlFor="sizes">
+              {language === 'ar'
+                ? 'المقاسات'
+                : 'Sizes'}
+            </Label>
+
             <div className="flex gap-2">
+
               <Input
                 id="sizes"
                 value={sizeInput}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSizeInput(e.target.value)}
-                placeholder={language === 'ar' ? 'أدخل مقاساً' : 'Enter a size'}
+                onChange={e =>
+                  setSizeInput(
+                    e.target.value
+                  )
+                }
+                placeholder={
+                  language === 'ar'
+                    ? 'أدخل مقاساً'
+                    : 'Enter a size'
+                }
               />
+
               <Button
                 type="button"
                 onClick={addSize}
                 variant="secondary"
               >
-                {language === 'ar' ? 'إضافة' : 'Add'}
+                {language === 'ar'
+                  ? 'إضافة'
+                  : 'Add'}
               </Button>
+
             </div>
+
             <div className="flex flex-wrap gap-2 mt-2">
-              {newProduct.sizes.map((size, index) => (
-                <div
-                  key={index}
-                  className="flex items-center bg-gray-100 px-3 py-1 rounded-full"
-                >
-                  <span>{size}</span>
-                  <button
-                    type="button"
-                    onClick={() => removeSize(size)}
-                    className="ml-2 text-red-500 hover:text-red-700"
-                  >
-                    <X size={16} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
 
-          {/* Colors */}
-          <div>
-            <Label htmlFor="colors">{language === 'ar' ? 'الألوان' : 'Colors'}</Label>
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 border rounded-lg">
-                <div>
-                  <Label htmlFor="colorName">
-                    {language === 'ar' ? 'اسم اللون' : 'Color Name'} *
-                  </Label>
-                  <Input
-                    id="colorName"
-                    value={colorInput.name}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setColorInput(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder={language === 'ar' ? 'أدخل اسم اللون' : 'Enter color name'}
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="colorValue">
-                    {language === 'ar' ? 'قيمة اللون' : 'Color Value'} *
-                  </Label>
-                  <div className="flex gap-2">
-                    <Popover open={showColorPicker} onOpenChange={setShowColorPicker}>
-                      <PopoverTrigger asChild>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          className="w-full justify-start"
-                        >
-                          <div
-                            className="w-4 h-4 rounded mr-2 border"
-                            style={{ backgroundColor: colorInput.value }}
-                          />
-                          {colorInput.value}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
-                        <ChromePicker
-                          color={colorInput.value}
-                          onChange={handleColorChange}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                </div>
-
-                <div className="flex items-end">
-                  <Button
-                    type="button"
-                    onClick={addColor}
-                    className="w-full"
-                  >
-                    <Plus className="h-4 w-4 mr-1" />
-                    {language === 'ar' ? 'إضافة اللون' : 'Add Color'}
-                  </Button>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap gap-3">
-                {newProduct.colors.map((color, index) => (
+              {newProduct.sizes.map(
+                (size, index) => (
                   <div
                     key={index}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-lg border ${color.available ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'
-                      }`}
+                    className="flex items-center bg-gray-100 px-3 py-1 rounded-full"
                   >
-                    <div
-                      className="w-6 h-6 rounded border"
-                      style={{ backgroundColor: color.value }}
-                      title={color.value}
-                    />
-                    <span className="text-sm font-medium">{color.name}</span>
-                    <div className="flex items-center gap-1">
-                      <button
-                        type="button"
-                        onClick={() => toggleColorAvailability(color.value)}
-                        className={`p-1 rounded ${color.available
-                          ? 'text-green-600 hover:text-green-800'
-                          : 'text-gray-400 hover:text-gray-600'
-                          }`}
-                        title={color.available ?
-                          (language === 'ar' ? 'غير متاح' : 'Make unavailable') :
-                          (language === 'ar' ? 'متاح' : 'Make available')
-                        }
-                      >
-                        {color.available ? '✓' : '✗'}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => removeColor(color.value)}
-                        className="text-red-500 hover:text-red-700 p-1 rounded"
-                        title={language === 'ar' ? 'حذف اللون' : 'Remove color'}
-                      >
-                        <X size={14} />
-                      </button>
-                    </div>
+
+                    <span>
+                      {size}
+                    </span>
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        removeSize(size)
+                      }
+                      className="ml-2 text-red-500 hover:text-red-700"
+                    >
+                      <X size={16} />
+                    </button>
+
                   </div>
-                ))}
+                )
+              )}
+
+            </div>
+
+          </div>
+
+          {/* =====================================================
+              COLORS
+          ====================================================== */}
+
+          <div>
+
+            <Label htmlFor="colors">
+              {language === 'ar'
+                ? 'الألوان'
+                : 'Colors'}
+            </Label>
+
+            <div className="space-y-4">
+
+              {/*
+               * --------------------------------------------------
+               * COLOR CREATION FORM
+               * --------------------------------------------------
+               *
+               * 4 columns:
+               *
+               * 1. Color name
+               * 2. Color value
+               * 3. Color image
+               * 4. Add color button
+               *
+               * This fixes the previous layout issue.
+               */}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4 border rounded-lg">
+
+                {/* COLOR NAME */}
+
+                <div>
+
+                  <Label htmlFor="colorName">
+                    {language === 'ar'
+                      ? 'اسم اللون'
+                      : 'Color Name'} *
+                  </Label>
+
+                  <Input
+                    id="colorName"
+                    value={
+                      colorInput.name
+                    }
+                    onChange={e =>
+                      setColorInput(
+                        prev => ({
+                          ...prev,
+                          name: e.target.value
+                        })
+                      )
+                    }
+                    placeholder={
+                      language === 'ar'
+                        ? 'أدخل اسم اللون'
+                        : 'Enter color name'
+                    }
+                  />
+
+                </div>
+
+                {/* COLOR VALUE */}
+
+                <div>
+
+                  <Label htmlFor="colorValue">
+                    {language === 'ar'
+                      ? 'قيمة اللون'
+                      : 'Color Value'} *
+                  </Label>
+
+                  <Popover
+                    open={
+                      showColorPicker
+                    }
+                    onOpenChange={
+                      setShowColorPicker
+                    }
+                  >
+
+                    <PopoverTrigger
+                      asChild
+                    >
+
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full justify-start"
+                      >
+
+                        <div
+                          className="w-4 h-4 rounded mr-2 border"
+                          style={{
+                            backgroundColor:
+                              colorInput.value
+                          }}
+                        />
+
+                        {
+                          colorInput.value
+                        }
+
+                      </Button>
+
+                    </PopoverTrigger>
+
+                    <PopoverContent className="w-auto p-0">
+
+                      <ChromePicker
+                        color={
+                          colorInput.value
+                        }
+                        onChange={
+                          handleColorChange
+                        }
+                      />
+
+                    </PopoverContent>
+
+                  </Popover>
+
+                </div>
+
+                {/* COLOR IMAGE */}
+
+                <div>
+
+                  <Label>
+                    {language === 'ar'
+                      ? 'صورة اللون'
+                      : 'Color Image'} *
+                  </Label>
+
+                  <div className="space-y-2">
+
+                    {colorImage && (
+                      <div className="relative w-24 h-24">
+
+                        <img
+                          src={colorImage}
+                          alt={
+                            colorInput.name ||
+                            'Color preview'
+                          }
+                          className="w-24 h-24 object-cover rounded border"
+                        />
+
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setColorImage('')
+                          }
+                          className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
+                        >
+                          <X size={14} />
+                        </button>
+
+                      </div>
+                    )}
+
+                    {!colorImage && (
+                      <ImageUploader
+                        onUpload={url => {
+                          setColorImage(
+                            url
+                          );
+
+                          toast.success(
+                            language === 'ar'
+                              ? 'تم رفع صورة اللون بنجاح'
+                              : 'Color image uploaded successfully'
+                          );
+                        }}
+                      />
+                    )}
+
+                  </div>
+
+                </div>
+
+                {/* ADD COLOR BUTTON */}
+
+                <div className="flex items-end">
+
+                  <Button
+                    type="button"
+                    onClick={
+                      addColor
+                    }
+                    className="w-full"
+                  >
+
+                    <Plus className="h-4 w-4 mr-1" />
+
+                    {language === 'ar'
+                      ? 'إضافة اللون'
+                      : 'Add Color'}
+
+                  </Button>
+
+                </div>
+
               </div>
+
+              {/* =================================================
+                  ADDED COLORS
+              ================================================== */}
+
+              <div className="flex flex-wrap gap-3">
+
+                {newProduct.colors.map(
+                  (color, index) => (
+                    <div
+                      key={`${ color.value } -${ index } `}
+                      className={`flex items - center gap - 2 px - 3 py - 2 rounded - lg border ${
+  color.available
+    ? 'bg-green-50 border-green-200'
+    : 'bg-gray-50 border-gray-200'
+} `}
+                    >
+
+                      {/* COLOR SWATCH */}
+
+                      <div
+                        className="w-6 h-6 rounded border"
+                        style={{
+                          backgroundColor:
+                            color.value
+                        }}
+                        title={
+                          color.value
+                        }
+                      />
+
+                      {/* COLOR IMAGE */}
+
+                      <img
+                        src={color.image}
+                        alt={
+                          color.name
+                        }
+                        className="w-12 h-12 object-cover rounded border"
+                      />
+
+                      {/* COLOR NAME */}
+
+                      <span className="text-sm font-medium">
+                        {color.name}
+                      </span>
+
+                      {/* ACTIONS */}
+
+                      <div className="flex items-center gap-1">
+
+                        <button
+                          type="button"
+                          onClick={() =>
+                            toggleColorAvailability(
+                              color.value
+                            )
+                          }
+                          className={`p - 1 rounded ${
+  color.available
+    ? 'text-green-600 hover:text-green-800'
+    : 'text-gray-400 hover:text-gray-600'
+} `}
+                          title={
+                            color.available
+                              ? (
+                                  language === 'ar'
+                                    ? 'غير متاح'
+                                    : 'Make unavailable'
+                                )
+                              : (
+                                  language === 'ar'
+                                    ? 'متاح'
+                                    : 'Make available'
+                                )
+                          }
+                        >
+                          {color.available
+                            ? '✓'
+                            : '✗'}
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() =>
+                            removeColor(
+                              color.value
+                            )
+                          }
+                          className="text-red-500 hover:text-red-700 p-1 rounded"
+                          title={
+                            language === 'ar'
+                              ? 'حذف اللون'
+                              : 'Remove color'
+                          }
+                        >
+                          <X size={14} />
+                        </button>
+
+                      </div>
+
+                    </div>
+                  )
+                )}
+
+              </div>
+
+              {/* NO COLORS */}
 
               {newProduct.colors.length === 0 && (
                 <div className="text-center text-gray-500 py-4 border-2 border-dashed rounded-lg">
+
                   <Palette className="mx-auto h-8 w-8 mb-2" />
-                  <p>{language === 'ar' ? 'لم تتم إضافة أي ألوان بعد' : 'No colors added yet'}</p>
+
+                  <p>
+                    {language === 'ar'
+                      ? 'لم تتم إضافة أي ألوان بعد'
+                      : 'No colors added yet'}
+                  </p>
+
                 </div>
               )}
+
             </div>
+
           </div>
 
-          {/* Category */}
+          {/* =====================================================
+              CATEGORY
+          ====================================================== */}
+
           <div>
+
             <div className="flex items-center justify-between mb-2">
-              <Label htmlFor="category">{language === 'ar' ? 'الفئة' : 'Category'} *</Label>
+
+              <Label htmlFor="category">
+                {language === 'ar'
+                  ? 'الفئة'
+                  : 'Category'} *
+              </Label>
+
             </div>
+
             <Select
-              value={newProduct.category}
-              onValueChange={(value: string) => handleSelectChange('category', value)}
+              value={
+                newProduct.category
+              }
+              onValueChange={value =>
+                handleSelectChange(
+                  'category',
+                  value
+                )
+              }
             >
+
               <SelectTrigger>
-                <SelectValue placeholder={language === 'ar' ? 'اختر الفئة' : 'Select category'} />
+                <SelectValue
+                  placeholder={
+                    language === 'ar'
+                      ? 'اختر الفئة'
+                      : 'Select category'
+                  }
+                />
               </SelectTrigger>
+
               <SelectContent>
-                {categories.map((category: any) => (
-                  <SelectItem key={category._id} value={category._id}>
-                    {language === 'ar' ? category.name : category.nameEn}
-                  </SelectItem>
-                ))}
+
+                {categories.map(
+                  (category: any) => (
+                    <SelectItem
+                      key={
+                        category._id
+                      }
+                      value={
+                        category._id
+                      }
+                    >
+                      {language === 'ar'
+                        ? category.name
+                        : category.nameEn}
+                    </SelectItem>
+                  )
+                )}
+
               </SelectContent>
+
             </Select>
+
           </div>
 
-          {/* Quantity */}
+          {/* =====================================================
+              QUANTITY
+          ====================================================== */}
+
           <div>
+
             <Label htmlFor="quantity">
-              {language === 'ar' ? 'الكمية' : 'Quantity'} *
+              {language === 'ar'
+                ? 'الكمية'
+                : 'Quantity'} *
             </Label>
+
             <Input
               id="quantity"
               name="quantity"
               type="text"
-              value={newProduct.quantity}
-              onChange={handleNumberInputChange}
+              value={
+                newProduct.quantity
+              }
+              onChange={
+                handleNumberInputChange
+              }
               placeholder="0"
             />
+
           </div>
 
-          {/* Status */}
+          {/* =====================================================
+              STATUS
+          ====================================================== */}
+
           <div>
-            <Label htmlFor="status">{language === 'ar' ? 'الحالة' : 'Status'}</Label>
+
+            <Label htmlFor="status">
+              {language === 'ar'
+                ? 'ZZccc'
+                : 'Status'}
+            </Label>
+
             <Select
-              value={newProduct.status}
-              onValueChange={(value: 'available' | 'pending') => handleSelectChange('status', value)}
+              value={
+                newProduct.status
+              }
+              onValueChange={(
+                value:
+                  | 'available'
+                  | 'pending'
+              ) =>
+                handleSelectChange(
+                  'status',
+                  value
+                )
+              }
             >
+
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
+
               <SelectContent>
+
                 <SelectItem value="available">
-                  {language === 'ar' ? 'متاح' : 'Available'}
+                  {language === 'ar'
+                    ? 'متاح'
+                    : 'Available'}
                 </SelectItem>
+
                 <SelectItem value="pending">
-                  {language === 'ar' ? 'قيد الانتظار' : 'Pending'}
+                  {language === 'ar'
+                    ? 'قيد الانتظار'
+                    : 'Pending'}
                 </SelectItem>
+
               </SelectContent>
+
             </Select>
+
           </div>
 
-          {/* Images */}
+          {/* =====================================================
+              PRODUCT IMAGES
+          ====================================================== */}
+
           <div>
-            <Label htmlFor="images">{language === 'ar' ? 'الصور' : 'Images'} *</Label>
+
+            <Label htmlFor="images">
+              {language === 'ar'
+                ? 'الصور'
+                : 'Images'} *
+            </Label>
+
             <div className="space-y-4">
+
               <div className="flex flex-wrap gap-4">
-                {newProduct.images.map((imageUrl, index) => (
-                  <div key={index} className="relative">
-                    <img
-                      src={imageUrl}
-                      alt={`Preview ${index}`}
-                      className="w-24 h-24 object-cover rounded border"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeImage(index)}
-                      className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 -translate-y-1/2 translate-x-1/2"
+
+                {newProduct.images.map(
+                  (imageUrl, index) => (
+                    <div
+                      key={index}
+                      className="relative"
                     >
-                      <X size={16} />
-                    </button>
-                  </div>
-                ))}
+
+                      <img
+                        src={imageUrl}
+                        alt={`Preview ${ index } `}
+                        className="w-24 h-24 object-cover rounded border"
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          removeImage(
+                            index
+                          )
+                        }
+                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 -translate-y-1/2 translate-x-1/2"
+                      >
+                        <X size={16} />
+                      </button>
+
+                    </div>
+                  )
+                )}
+
               </div>
-              <ImageUploader onUpload={handleImageUpload} />
+
+              <ImageUploader
+                onUpload={
+                  handleImageUpload
+                }
+              />
+
             </div>
+
           </div>
 
-          {/* Control Buttons */}
+          {/* =====================================================
+              CONTROL BUTTONS
+          ====================================================== */}
+
           <div className="flex justify-end space-x-2">
-            <Button variant="outline" onClick={onClose} disabled={loading}>
-              {language === 'ar' ? 'إلغاء' : 'Cancel'}
+
+            <Button
+              type="button"
+              variant="outline"
+              onClick={
+                onClose
+              }
+              disabled={
+                loading
+              }
+            >
+              {language === 'ar'
+                ? 'إلغاء'
+                : 'Cancel'}
             </Button>
-            <Button type="submit" disabled={loading}>
+
+            <Button
+              type="submit"
+              disabled={
+                loading
+              }
+            >
+
               {loading ? (
-                <span>{language === 'ar' ? 'جاري الإضافة...' : 'Adding...'}</span>
+                <span>
+                  {language === 'ar'
+                    ? 'جاري الإضافة...'
+                    : 'Adding...'}
+                </span>
               ) : (
                 <>
                   <Plus className="mr-2 h-4 w-4" />
-                  {language === 'ar' ? 'إضافة' : 'Add'}
+
+                  {language === 'ar'
+                    ? 'إضافة'
+                    : 'Add'}
                 </>
               )}
+
             </Button>
+
           </div>
+
         </form>
       </CardContent>
     </Card>

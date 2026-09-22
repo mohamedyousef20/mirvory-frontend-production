@@ -548,54 +548,110 @@ export function ProductGrid() {
     </div>
   );
 
-  const renderPagination = () => (
-    <div className="flex items-center justify-between border-t pt-6">
-      {/* Mobile Pagination */}
-      <div className="flex flex-1 items-center justify-between sm:hidden">
-        <Button
-          variant="outline"
-          onClick={() => setPage(pagination.page - 1)}
-          disabled={pagination.page === 1}
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-        <span className="text-sm text-muted-foreground">
-          {language === "ar" ? `صفحة ${pagination.page}` : `Page ${pagination.page}`}
-        </span>
-        <Button
-          variant="outline"
-          onClick={() => setPage(pagination.page + 1)}
-          disabled={pagination.page === pagination.totalPages}
-        >
-          <ChevronRight className="h-4 w-4" />
-        </Button>
-      </div>
+  const renderPagination = () => {
+    const getPageNumbers = () => {
+      const pages: (number | string)[] = [];
+      const totalPages = pagination.totalPages;
+      const currentPage = pagination.page;
 
-      {/* Desktop Pagination */}
-      <div className="hidden sm:flex items-center justify-end space-x-2">
-        <Button
-          variant="outline"
-          onClick={() => setPage(pagination.page - 1)}
-          disabled={pagination.page === 1}
-        >
-          {language === "ar" ? "السابق" : "Previous"}
-        </Button>
-        <span className="text-sm text-muted-foreground">
+      if (totalPages <= 7) {
+        for (let i = 1; i <= totalPages; i++) {
+          pages.push(i);
+        }
+      } else {
+        if (currentPage <= 4) {
+          for (let i = 1; i <= 5; i++) pages.push(i);
+          pages.push('...');
+          pages.push(totalPages);
+        } else if (currentPage >= totalPages - 3) {
+          pages.push(1);
+          pages.push('...');
+          for (let i = totalPages - 4; i <= totalPages; i++) pages.push(i);
+        } else {
+          pages.push(1);
+          pages.push('...');
+          for (let i = currentPage - 1; i <= currentPage + 1; i++) pages.push(i);
+          pages.push('...');
+          pages.push(totalPages);
+        }
+      }
+      return pages;
+    };
+
+    return (
+      <div className="flex flex-col items-center gap-4 border-t pt-6">
+        {/* Results info */}
+        <div className="text-sm text-muted-foreground">
           {language === "ar"
-            ? `صفحة ${pagination.page} من ${pagination.totalPages}`
-            : `Page ${pagination.page} of ${pagination.totalPages}`
+            ? `عرض ${(pagination.page - 1) * pagination.pageSize + 1}-${Math.min(pagination.page * pagination.pageSize, pagination.totalProducts)} من ${pagination.totalProducts} منتج`
+            : `Showing ${(pagination.page - 1) * pagination.pageSize + 1}-${Math.min(pagination.page * pagination.pageSize, pagination.totalProducts)} of ${pagination.totalProducts} products`
           }
-        </span>
-        <Button
-          variant="outline"
-          onClick={() => setPage(pagination.page + 1)}
-          disabled={pagination.page === pagination.totalPages}
-        >
-          {language === "ar" ? "التالي" : "Next"}
-        </Button>
+        </div>
+
+        {/* Mobile Pagination */}
+        <div className="flex items-center gap-2 sm:hidden">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage(pagination.page - 1)}
+            disabled={pagination.page === 1}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <span className="text-sm font-medium px-3">
+            {pagination.page} / {pagination.totalPages}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage(pagination.page + 1)}
+            disabled={pagination.page === pagination.totalPages}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+
+        {/* Desktop Pagination */}
+        <div className="hidden sm:flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage(pagination.page - 1)}
+            disabled={pagination.page === 1}
+          >
+            {language === "ar" ? "السابق" : "Previous"}
+          </Button>
+
+          {getPageNumbers().map((pageNum, idx) => (
+            pageNum === '...' ? (
+              <span key={`ellipsis-${idx}`} className="px-3 py-1 text-muted-foreground">
+                ...
+              </span>
+            ) : (
+              <Button
+                key={pageNum}
+                variant={pagination.page === pageNum ? "default" : "outline"}
+                size="sm"
+                onClick={() => setPage(pageNum as number)}
+                className="w-10"
+              >
+                {pageNum}
+              </Button>
+            )
+          ))}
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage(pagination.page + 1)}
+            disabled={pagination.page === pagination.totalPages}
+          >
+            {language === "ar" ? "التالي" : "Next"}
+          </Button>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderAnnouncement = () => {
     if (activeAnnouncements.length === 0) return null;
