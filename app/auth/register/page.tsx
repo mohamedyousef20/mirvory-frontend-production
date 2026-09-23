@@ -3,7 +3,6 @@
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import Head from 'next/head';
 import { Eye, EyeOff, Mail, User, Lock, Phone, Building2, MapPin, Globe } from 'lucide-react';
 import { toast } from 'sonner';
 import { signIn } from 'next-auth/react';
@@ -269,11 +268,6 @@ export default function Signup() {
 
   return (
     <>
-      <Head>
-        <title>إنشاء حساب جديد | ميرفوري</title>
-        <meta name="description" content="إنشاء حساب جديد في منصة ميرفوري للتسوق" />
-      </Head>
-
       <div className="min-h-screen flex flex-col md:flex-row-reverse bg-gray-50" dir="rtl">
         {/* Brand Section */}
         <div className="bg-blue-700 text-white md:w-1/2 p-8 flex flex-col justify-center items-center">

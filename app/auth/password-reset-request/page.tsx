@@ -4,7 +4,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import Head from 'next/head';
 import { Mail, ArrowRight } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -43,11 +42,6 @@ export default function PasswordResetRequest() {
 
   return (
     <>
-      <Head>
-        <title>إعادة تعيين كلمة المرور | ميرفوري</title>
-        <meta name="description" content="إعادة تعيين كلمة المرور لحساب ميرفوري الخاص بك" />
-      </Head>
-
       <div className="min-h-screen flex flex-col md:flex-row-reverse bg-gray-50" dir="rtl">
         {/* Brand Section - Same as login page */}
         <div className="bg-blue-700 text-white md:w-1/2 p-8 flex flex-col justify-center items-center">

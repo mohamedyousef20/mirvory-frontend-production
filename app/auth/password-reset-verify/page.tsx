@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import Head from 'next/head';
 import { Mail, ArrowRight, Shield, Clock, RefreshCw } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -156,11 +155,6 @@ export default function PasswordResetVerify() {
 
   return (
     <>
-      <Head>
-        <title>تحقق من كود إعادة التعيين | ميرفوري</title>
-        <meta name="description" content="تحقق من كود إعادة تعيين كلمة المرور لحساب ميرفوري الخاص بك" />
-      </Head>
-
       <div className="min-h-screen flex flex-col md:flex-row-reverse bg-gray-50" dir="rtl">
         {/* Brand Section - Same as other pages */}
         <div className="bg-blue-700 text-white md:w-1/2 p-8 flex flex-col justify-center items-center">

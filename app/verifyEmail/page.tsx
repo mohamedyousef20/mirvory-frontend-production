@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Head from "next/head";
 import {
   Eye,
   EyeOff,
@@ -179,11 +178,6 @@ const VerifyEmail = () => {
   if (isVerified) {
     return (
       <>
-        <Head>
-          <title>تم التحقق | ميرفوري</title>
-          <meta name="description" content="تم التحقق من البريد الإلكتروني بنجاح" />
-        </Head>
-
         <div className="min-h-screen flex flex-col md:flex-row-reverse bg-gray-50" dir="rtl">
           {/* Success Illustration Section */}
           <div className="bg-blue-700 text-white md:w-1/2 p-8 flex flex-col justify-center items-center">
@@ -241,11 +235,6 @@ const VerifyEmail = () => {
   // ===================== MAIN FORM ======================
   return (
     <>
-      <Head>
-        <title>تأكيد البريد الإلكتروني | ميرفوري</title>
-        <meta name="description" content="تأكيد البريد الإلكتروني لحساب ميرفوري" />
-      </Head>
-
       <div className="min-h-screen flex flex-col md:flex-row-reverse bg-gray-50" dir="rtl">
         {/* Brand Section */}
         <div className="bg-blue-700 text-white md:w-1/2 p-8 flex flex-col justify-center items-center">

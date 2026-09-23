@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import Head from 'next/head';
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -42,7 +41,6 @@ export default function ResetPassword() {
         data.newPassword
       );
 
-      //TODO need some modification
       if (response.data?.success) {
         toast.success('تم تغيير كلمة المرور بنجاح');
         router.push('/auth/login');
@@ -58,11 +56,6 @@ export default function ResetPassword() {
 
   return (
     <>
-      <Head>
-        <title>تغيير كلمة المرور | ميرفوري</title>
-        <meta name="description" content="تغيير كلمة المرور لحساب ميرفوري الخاص بك" />
-      </Head>
-
       <div className="min-h-screen flex flex-col md:flex-row-reverse bg-gray-50" dir="rtl">
         {/* Brand Section - Same as login page */}
         <div className="bg-blue-700 text-white md:w-1/2 p-8 flex flex-col justify-center items-center">
