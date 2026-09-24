@@ -202,10 +202,12 @@ const ProductDetail = ({ productId }: { productId: string }) => {
       }
     }
 
-    if (productId && product) {
+    if (productId && product && isLoggedIn) {
       checkFavorite()
+    } else {
+      setIsFavorite(false)
     }
-  }, [productId, product])
+  }, [productId, product, isLoggedIn])
 
   const handleQuantityChange = useCallback((value: number) => {
     const maxQuantity = product?.quantity ?? Infinity
@@ -363,6 +365,13 @@ const ProductDetail = ({ productId }: { productId: string }) => {
     cookiesReady
   ])
   const toggleWishlist = useCallback(async () => {
+    if (!isLoggedIn) {
+      toast.error(language === 'ar'
+        ? 'يجب تسجيل الدخول لإضافة المنتج إلى المفضلة'
+        : 'Please log in to add products to your favorites')
+      return
+    }
+
     try {
       const response = await wishlistService.toggleWishlist(productId)
       const newFavoriteStatus = !isFavorite
@@ -374,7 +383,7 @@ const ProductDetail = ({ productId }: { productId: string }) => {
     } catch (err) {
       toast.error(language === 'ar' ? 'فشل تحديث المفضلة' : 'Failed to update favorites')
     }
-  }, [productId, isFavorite, language])
+  }, [productId, isFavorite, language, isLoggedIn])
 
   const fetchRatings = useCallback(async () => {
     try {
