@@ -1,7 +1,7 @@
 "use client"
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
+import React, { useState, useEffect, useCallback, useMemo, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -36,8 +36,10 @@ interface PickupPoint {
     phone?: string
 }
 
-export default function Checkout() {
+function CheckoutInner() {
     const router = useRouter()
+    const searchParams = useSearchParams()
+    const isBuyNow = searchParams.get('mode') === 'buyNow'
     const { user } = useAuth()
     const { language } = useLanguage()
     const isAr = language === 'ar'
@@ -108,17 +110,47 @@ export default function Checkout() {
         const loadCheckoutData = async () => {
             try {
                 setLoadingData(true)
-                const cartRes = await cartService.getCart();
-                const items = cartRes?.data?.items || []
+
+                let items: any[] = []
+                let couponData: any = null
+
+                if (isBuyNow) {
+                    // ── Buy Now mode: read single item from sessionStorage ──
+                    try {
+                        const raw = sessionStorage.getItem('buyNowItem')
+                        const buyNowItem = raw ? JSON.parse(raw) : null
+                        if (buyNowItem) {
+                            // Shape it to match cart item structure for display
+                            items = [{
+                                _id: buyNowItem.productId,
+                                product: {
+                                    _id: buyNowItem.productId,
+                                    title: buyNowItem.title,
+                                    images: buyNowItem.image ? [buyNowItem.image] : [],
+                                    discountedPrice: buyNowItem.price,
+                                },
+                                quantity: buyNowItem.quantity,
+                                colors: buyNowItem.color ? [buyNowItem.color] : [],
+                                sizes: buyNowItem.size ? [buyNowItem.size] : [],
+                            }]
+                        }
+                    } catch {
+                        // sessionStorage read failed — fall back to cart
+                    }
+                } else {
+                    const cartRes = await cartService.getCart();
+                    items = cartRes?.data?.items || []
+                    couponData = cartRes?.data?.appliedCoupon || null;
+                }
+
                 setCartItems(items);
-                const couponData = cartRes?.data?.appliedCoupon || null;
                 setAppliedCoupon(couponData);
 
                 const sub = items.reduce(
                     (acc: number, item: any) =>
                         acc + ((item?.product?.discountedPrice ?? item?.price ?? 0) * (item?.quantity ?? 1)),
                     0
-                );
+                )
                 setSubtotal(sub)
 
                 // Load shipping settings
@@ -197,7 +229,26 @@ export default function Checkout() {
 
         try {
             setLoading(true)
-            const orderPayload = {
+
+            // In Buy Now mode, send the item directly without touching the cart
+            let buyNowItems: any[] | undefined
+            if (isBuyNow) {
+                try {
+                    const raw = sessionStorage.getItem('buyNowItem')
+                    const parsed = raw ? JSON.parse(raw) : null
+                    if (parsed) {
+                        buyNowItems = [{
+                            productId: parsed.productId,
+                            quantity: parsed.quantity,
+                            color: parsed.color ?? undefined,
+                            size: parsed.size ?? undefined,
+                            image: parsed.image ?? undefined,
+                        }]
+                    }
+                } catch { /* ignore */ }
+            }
+
+            const orderPayload: any = {
                 deliveryMethod,
                 paymentMethod,
                 deliveryInfo: {
@@ -205,8 +256,9 @@ export default function Checkout() {
                     phone: finalPhone,
                     address: finalAddressStr,
                     pickupPoint: deliveryMethod === 'pickup' ? selectedPickupPointId : undefined
-                }
+                },
             }
+            if (buyNowItems) orderPayload.items = buyNowItems
 
             const response = await orderService.createOrder(orderPayload)
             if (response.data) {
@@ -214,6 +266,11 @@ export default function Checkout() {
                     response.data?.data?._id ||
                     response.data?._id ||
                     response.data?.order?._id
+
+                // Clean up Buy Now sessionStorage after successful order
+                if (isBuyNow) {
+                    try { sessionStorage.removeItem('buyNowItem') } catch { /* ignore */ }
+                }
 
                 // Meta Pixel - Purchase Event
                 if (typeof window !== 'undefined' && window.fbq) {
@@ -253,7 +310,8 @@ export default function Checkout() {
         )
     }
 
-    if (cartItems.length === 0) {
+    // Show empty-cart screen only in normal cart mode (not Buy Now)
+    if (!isBuyNow && cartItems.length === 0) {
         return (
             <>
                 <style>{`@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap'); * { font-family: 'Cairo', sans-serif !important; }`}</style>
@@ -622,4 +680,12 @@ export default function Checkout() {
             </section>
         </>
     )
+}
+
+export default function Checkout() {
+  return (
+    <Suspense>
+      <CheckoutInner />
+    </Suspense>
+  )
 }

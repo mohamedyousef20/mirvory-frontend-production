@@ -24,7 +24,8 @@ import {
   ShieldCheck, RotateCcw, Minus, Plus, AlertCircle,
   Pencil,
   Loader2,
-  Trash2
+  Trash2,
+  Zap,
 } from "lucide-react"
 import { toast } from "sonner"
 import { cartService, productService, ratingService, wishlistService } from "@/lib/api"
@@ -32,6 +33,7 @@ import { addToGuestCart } from "@/lib/guestCart"
 import RatingStars from "@/components/Rating/RatingStars"
 import { Separator } from "@/components/ui/separator"
 import { useAuth } from "@/contexts/AuthProvider"
+import { useRouter } from "next/navigation"
 
 // TypeScript interfaces
 interface Product {
@@ -102,6 +104,7 @@ const ProductDetail = ({ productId }: { productId: string }) => {
   const { language, t } = useLanguage()
   const { user, cookiesReady } = useAuth()
   const isLoggedIn = Boolean(user)
+  const router = useRouter()
 
   const [product, setProduct] = useState<Product | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -364,6 +367,55 @@ const ProductDetail = ({ productId }: { productId: string }) => {
     isLoggedIn,
     cookiesReady
   ])
+  // ── Buy Now ────────────────────────────────────────────────────────────────
+  // Validates selections, saves the item to sessionStorage, then navigates
+  // directly to checkout (logged-in) or guest-checkout (guest) with ?mode=buyNow.
+  // The checkout page reads buyNowItem from sessionStorage and sends it as
+  // items[] to the backend — the cart is never touched.
+  const handleBuyNow = useCallback(() => {
+    if (!product) return
+
+    if (product.sizes?.length > 0) {
+      const validSizes = selectedSizes.length === quantity && selectedSizes.every(Boolean)
+      if (!validSizes) {
+        toast.error(language === 'ar' ? 'يرجى اختيار المقاسات لكل قطعة' : 'Please select sizes for all items')
+        return
+      }
+    }
+
+    if (product.colors?.length > 0) {
+      const validColors = selectedColors.length === quantity && selectedColors.every(Boolean)
+      if (!validColors) {
+        toast.error(language === 'ar' ? 'يرجى اختيار الألوان لكل قطعة' : 'Please select colors for all items')
+        return
+      }
+    }
+
+    const buyNowItem = {
+      productId,
+      quantity,
+      color: selectedColors[0] ?? null,
+      size: selectedSizes[0] ?? null,
+      image: mainImage || product.images?.[0] || null,
+      title: product.title,
+      price: product.discountedPrice ?? product.price,
+    }
+
+    try {
+      sessionStorage.setItem('buyNowItem', JSON.stringify(buyNowItem))
+    } catch {
+      // sessionStorage blocked (private browsing?) — gracefully fall back to cart
+      toast.error(language === 'ar' ? 'تعذر تخزين البيانات — يُرجى إضافة المنتج للسلة' : 'Could not store data — please add to cart instead')
+      return
+    }
+
+    if (isLoggedIn) {
+      router.push('/checkout?mode=buyNow')
+    } else {
+      router.push('/guest-checkout?mode=buyNow')
+    }
+  }, [product, productId, quantity, selectedColors, selectedSizes, mainImage, isLoggedIn, language, router])
+
   const toggleWishlist = useCallback(async () => {
     if (!isLoggedIn) {
       toast.error(language === 'ar'
@@ -744,7 +796,20 @@ const ProductDetail = ({ productId }: { productId: string }) => {
           </div>
 
           <div className="flex flex-wrap gap-2 pt-4">
+            {/* Buy Now — skips cart, goes directly to checkout */}
             <Button
+              className="flex-1 bg-orange-500 hover:bg-orange-600 text-white"
+              onClick={handleBuyNow}
+              disabled={isOutOfStock}
+              size="lg"
+            >
+              <Zap className="ml-2 h-4 w-4" />
+              {language === "ar" ? "اشترِ الآن" : "Buy Now"}
+            </Button>
+
+            {/* Add to Cart */}
+            <Button
+              variant="outline"
               className="flex-1"
               onClick={addToCartHandler}
               disabled={isOutOfStock}
@@ -753,6 +818,7 @@ const ProductDetail = ({ productId }: { productId: string }) => {
               <ShoppingCart className="ml-2 h-4 w-4" />
               {language === "ar" ? "أضف إلى السلة" : "Add to Cart"}
             </Button>
+
             <Button
               variant="outline"
               size="icon"
