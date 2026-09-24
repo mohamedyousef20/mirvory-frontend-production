@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect, useMemo, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -46,8 +46,10 @@ interface PickupPoint {
   workingHours?: string;
 }
 
-export default function GuestCheckoutPage() {
+function GuestCheckoutInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isBuyNow = searchParams.get('mode') === 'buyNow';
   const [loading, setLoading] = useState(false);
   const [pickupPoints, setPickupPoints] = useState<PickupPoint[]>([]);
   const [form, setForm] = useState<GuestCheckoutForm>({
@@ -63,7 +65,18 @@ export default function GuestCheckoutPage() {
   const [orderNumber, setOrderNumber] = useState<string | null>(null);
   const [shippingSettings, setShippingSettings] = useState<any>(null);
 
-  const [cartItems] = useState<GuestItem[]>(() => getGuestCart() as GuestItem[]);
+  // In Buy Now mode, read the single item from sessionStorage; otherwise use guest cart
+  const [cartItems] = useState<GuestItem[]>(() => {
+    if (typeof window === 'undefined') return []
+    if (isBuyNow) {
+      try {
+        const raw = sessionStorage.getItem('buyNowItem')
+        const item = raw ? JSON.parse(raw) : null
+        return item ? [{ productId: item.productId, quantity: item.quantity, size: item.size, color: item.color, title: item.title, price: item.price }] : []
+      } catch { return [] }
+    }
+    return getGuestCart() as GuestItem[]
+  });
 
   useEffect(() => {
     const fetchPickupPoints = async () => {
@@ -172,7 +185,12 @@ export default function GuestCheckoutPage() {
 
       const data = response.data;
 
-      clearGuestCart();
+      // Clean up after successful order
+      if (isBuyNow) {
+        try { sessionStorage.removeItem('buyNowItem') } catch { /* ignore */ }
+      } else {
+        clearGuestCart();
+      }
 
       setTrackingToken(data.trackingToken);
       setOrderNumber(data.orderNumber);
@@ -453,4 +471,12 @@ export default function GuestCheckoutPage() {
       </div>
     </div>
   );
+}
+
+export default function GuestCheckoutPage() {
+  return (
+    <Suspense>
+      <GuestCheckoutInner />
+    </Suspense>
+  )
 }
