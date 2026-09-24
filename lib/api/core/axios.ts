@@ -6,6 +6,7 @@ import axios, {
   AxiosError,
 } from 'axios';
 import { clearAuth } from './auth'; import { ApiResponse } from './types';
+import { redirectToLoginIfProtected } from '@/lib/authRedirect';
 
 // Browser: empty baseURL so requests go through the Next.js /api/* proxy
 // (cookies scoped to www.mirvory.net are then sent automatically).
@@ -86,10 +87,7 @@ class ApiClient {
           } catch (refreshErr) {
           this.processQueue(refreshErr);
           clearAuth();
-
-          if (typeof window !== 'undefined') {
-            window.location.href = '/auth/login';
-          }
+          redirectToLoginIfProtected();
 
           return Promise.reject(refreshErr);
         

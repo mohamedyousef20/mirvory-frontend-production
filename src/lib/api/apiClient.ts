@@ -1,4 +1,5 @@
 import axios from "axios";
+import { redirectToLoginIfProtected } from "@/lib/authRedirect";
 
 // Browser: empty baseURL → Next.js /api/* proxy forwards to Railway with cookies.
 // SSR: full Railway URL (server-to-server, no browser cookie domain restriction).
@@ -25,14 +26,7 @@ apiClient.interceptors.response.use(
     if (error.response) {
       // Handle specific status codes
       if (error.response.status === 401) {
-        // Only redirect to login if we're not already on the auth page
-        // and not calling an auth endpoint (avoids redirect loops)
-        if (
-          typeof window !== "undefined" &&
-          !window.location.pathname.startsWith("/auth/")
-        ) {
-          window.location.href = "/auth/login";
-        }
+        redirectToLoginIfProtected();
       }
       return Promise.reject(error.response.data);
     }

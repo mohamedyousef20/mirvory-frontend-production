@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios';
 import { toast } from 'sonner';
 import { clearAuth } from './api/core/auth';
+import { redirectToLoginIfProtected } from './authRedirect';
 // ── Base URL Strategy ────────────────────────────────────────────────────────
 //
 // Browser environment: use an EMPTY baseURL (same-origin requests).
@@ -105,10 +106,7 @@ api.interceptors.response.use(
         processQueue(refreshError, null);
 
         clearAuth();
-
-        if (typeof window !== 'undefined') {
-          window.location.href = '/auth/login';
-        }
+        redirectToLoginIfProtected();
 
         return Promise.reject(refreshError);
       } finally {
