@@ -13,6 +13,7 @@ import { notificationService, userService } from "@/lib/api"
 import { Search, Users, Store, User, X, Loader2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { MirvoryPageLoader } from "@/components/MirvoryLoader"
+import { useAuth } from "@/contexts/AuthProvider"
 
 type NotificationTarget = 'all_users' | 'specific_users' | 'all_sellers' | 'specific_sellers'
 
@@ -28,6 +29,8 @@ interface User {
 export default function NotificationsPage() {
     const { language } = useLanguage()
     const isArabic = language === "ar"
+    const { user: authUser } = useAuth()
+    const router = useRouter()
     const [title, setTitle] = useState("")
     const [message, setMessage] = useState("")
     const [target, setTarget] = useState<NotificationTarget>("all_users")
@@ -40,7 +43,18 @@ export default function NotificationsPage() {
     const [allUsers, setAllUsers] = useState<User[]>([])
     const [isLoadingUsers, setIsLoadingUsers] = useState(false)
     const [hasSearched, setHasSearched] = useState(false)
-    const router = useRouter()
+
+    // ── RBAC guard: admin-only page ──────────────────────────────────────────
+    useEffect(() => {
+        const role = authUser?.role
+        // authUser is null while session is loading — only redirect when we
+        // have a resolved user that is NOT an admin.
+        if (authUser !== undefined && authUser !== null) {
+            if (role !== 'admin' && role !== 'super_admin') {
+                router.replace('/')
+            }
+        }
+    }, [authUser, router])
 
     useEffect(() => {
         if (target === "specific_users" || target === "specific_sellers") {
@@ -258,6 +272,15 @@ export default function NotificationsPage() {
     }
 
     const displayMessage = getDisplayMessage();
+
+    // Render spinner while auth state is resolving; redirect will happen via useEffect if not admin
+    if (!authUser || (authUser.role !== 'admin' && authUser.role !== 'super_admin')) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+        )
+    }
 
     return (
         <div className="container mx-auto p-4 max-w-6xl">
