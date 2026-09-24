@@ -23,18 +23,17 @@ export function Providers({ children, user }: ProvidersProps) {
             <LayoutWrapper>
                 <LanguageProvider>
                     <ColorThemeProvider>
-                        <ThemeProvider attribute="class" defaultTheme="system">
-                            <ErrorBoundaryProvider>
-                                <AuthProvider initialUser={user}>
-                                    <MainNav />
+                        <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>                            <ErrorBoundaryProvider>
+                            <AuthProvider initialUser={user}>
+                                <MainNav />
 
-                                    <Toaster position="top-center" />
+                                <Toaster position="top-center" />
 
-                                    {children}
+                                {children}
 
-                                    <SiteFooter />
-                                </AuthProvider>
-                            </ErrorBoundaryProvider>
+                                <SiteFooter />
+                            </AuthProvider>
+                        </ErrorBoundaryProvider>
                         </ThemeProvider>
                     </ColorThemeProvider>
                 </LanguageProvider>

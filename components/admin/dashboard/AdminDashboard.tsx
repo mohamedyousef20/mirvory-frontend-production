@@ -128,6 +128,29 @@ export function AdminDashboard() {
     newCoupon,
     setNewCoupon,
 
+    // loyalty state
+    loyaltyUsers,
+    loadingLoyalty,
+    errorLoyalty,
+    loyaltyPage,
+    loyaltyPages,
+    setLoyaltyPage,
+    loyaltyTierFilter,
+    setLoyaltyTierFilter,
+    loyaltySearchQuery,
+    setLoyaltySearchQuery,
+    selectedLoyaltyUser,
+    setSelectedLoyaltyUser,
+    adjustDialogOpen,
+    setAdjustDialogOpen,
+    adjustPoints,
+    setAdjustPoints,
+    adjustNotes,
+    setAdjustNotes,
+    adjusting,
+    handleLoyaltySearch,
+    handleAdjustPoints,
+
     // Form states
     newCategory,
     setNewCategory,
@@ -500,7 +523,29 @@ export function AdminDashboard() {
         </TabsContent>
 
         <TabsContent value="loyalty">
-          <LoyaltyTab />
+          <LoyaltyTab
+            loyaltyUsers={loyaltyUsers}
+            loadingLoyalty={loadingLoyalty}
+            errorLoyalty={errorLoyalty}
+            loyaltyPage={loyaltyPage}
+            loyaltyPages={loyaltyPages}
+            setLoyaltyPage={setLoyaltyPage}
+            loyaltyTierFilter={loyaltyTierFilter}
+            setLoyaltyTierFilter={setLoyaltyTierFilter}
+            loyaltySearchQuery={loyaltySearchQuery}
+            setLoyaltySearchQuery={setLoyaltySearchQuery}
+            selectedLoyaltyUser={selectedLoyaltyUser}
+            setSelectedLoyaltyUser={setSelectedLoyaltyUser}
+            adjustDialogOpen={adjustDialogOpen}
+            setAdjustDialogOpen={setAdjustDialogOpen}
+            adjustPoints={adjustPoints}
+            setAdjustPoints={setAdjustPoints}
+            adjustNotes={adjustNotes}
+            setAdjustNotes={setAdjustNotes}
+            adjusting={adjusting}
+            handleLoyaltySearch={handleLoyaltySearch}
+            handleAdjustPoints={handleAdjustPoints}
+          />
         </TabsContent>
 
         <TabsContent value="analytics">
@@ -524,7 +569,7 @@ export function AdminDashboard() {
             transactionsPage={transactionsPage}
             setTransactionsPage={setTransactionsPage}
             transactionsPages={transactionsPages}
-            // fetchAdminTransactions={fetchAdminTransactions}
+          // fetchAdminTransactions={fetchAdminTransactions}
           />
         </TabsContent>
       </Tabs>

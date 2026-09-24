@@ -13,48 +13,63 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useAdminDashboard } from "@/hooks/useAdminDashboard";
 
-interface UserLoyalty {
-  _id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  loyalty: {
-    points: number;
-    tier: string;
-    totalEarned: number;
-    totalRedeemed: number;
-  };
+interface LoyaltyTabProps {
+  loyaltyUsers: any[];
+  loadingLoyalty: boolean;
+  errorLoyalty: string | null;
+  loyaltyPage: number;
+  loyaltyPages: number;
+  setLoyaltyPage: (page: number) => void;
+  loyaltyTierFilter: string;
+  setLoyaltyTierFilter: (tier: string) => void;
+  loyaltySearchQuery: string;
+  setLoyaltySearchQuery: (q: string) => void;
+  selectedLoyaltyUser: any | null;
+  setSelectedLoyaltyUser: (u: any | null) => void;
+  adjustDialogOpen: boolean;
+  setAdjustDialogOpen: (open: boolean) => void;
+  adjustPoints: string;
+  setAdjustPoints: (v: string) => void;
+  adjustNotes: string;
+  setAdjustNotes: (v: string) => void;
+  adjusting: boolean;
+  handleLoyaltySearch: () => void;
+  handleAdjustPoints: () => void;
 }
 
-export function LoyaltyTab() {
+export function LoyaltyTab({
+  loyaltyUsers, loadingLoyalty, errorLoyalty, loyaltyPage, loyaltyPages,
+  setLoyaltyPage, loyaltyTierFilter, setLoyaltyTierFilter, loyaltySearchQuery,
+  setLoyaltySearchQuery, selectedLoyaltyUser, setSelectedLoyaltyUser,
+  adjustDialogOpen, setAdjustDialogOpen, adjustPoints, setAdjustPoints,
+  adjustNotes, setAdjustNotes, adjusting, handleLoyaltySearch, handleAdjustPoints,
+}: LoyaltyTabProps) {
   const { language, isArabic } = useLanguage();
 
-  const {
-    loyaltyUsers,
-    loadingLoyalty,
-    errorLoyalty,
-    loyaltyPage,
-    loyaltyPages,
-    setLoyaltyPage,
-    loyaltyTierFilter,
-    setLoyaltyTierFilter,
-    loyaltySearchQuery,
-    setLoyaltySearchQuery,
-    selectedLoyaltyUser,
-    setSelectedLoyaltyUser,
-    adjustDialogOpen,
-    setAdjustDialogOpen,
-    adjustPoints,
-    setAdjustPoints,
-    adjustNotes,
-    setAdjustNotes,
-    adjusting,
-    handleLoyaltySearch,
-    handleAdjustPoints,
-  } = useAdminDashboard();
+  // const {
+  //   loyaltyUsers,
+  //   loadingLoyalty,
+  //   errorLoyalty,
+  //   loyaltyPage,
+  //   loyaltyPages,
+  //   setLoyaltyPage,
+  //   loyaltyTierFilter,
+  //   setLoyaltyTierFilter,
+  //   loyaltySearchQuery,
+  //   setLoyaltySearchQuery,
+  //   selectedLoyaltyUser,
+  //   setSelectedLoyaltyUser,
+  //   adjustDialogOpen,
+  //   setAdjustDialogOpen,
+  //   adjustPoints,
+  //   setAdjustPoints,
+  //   adjustNotes,
+  //   setAdjustNotes,
+  //   adjusting,
+  //   handleLoyaltySearch,
+  //   handleAdjustPoints,
+  // } = useAdminDashboard();
 
   const tierOptions = useMemo(
     () => [
