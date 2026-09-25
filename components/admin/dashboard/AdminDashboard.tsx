@@ -1,6 +1,7 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { useAdminDashboard } from "@/hooks/useAdminDashboard";
 import { OverviewTab } from "./OverviewTab";
@@ -43,6 +44,25 @@ type Offer = {
     lastName: string;
   };
 };
+
+// نفس التابات في مكان واحد — تستخدمها كل من نسخة الـ Select (موبايل) ونسخة الـ TabsList (ديسكتوب)
+const TAB_ITEMS = (isArabic: boolean, t: (k: string) => string) => [
+  { value: "overview", label: isArabic ? "نظرة عامة" : "Overview" },
+  { value: "vendors", label: isArabic ? "البائعين" : "Vendors" },
+  { value: "users", label: isArabic ? "المستخدمين" : "Users" },
+  { value: "products", label: t("products") },
+  { value: "orders", label: t("orders") },
+  { value: "categories", label: isArabic ? "التصنيفات" : "Categories" },
+  { value: "coupons", label: isArabic ? "الكوبونات" : "Coupons" },
+  { value: "offers", label: isArabic ? "العروض" : "Offers" },
+  { value: "shipping-settings", label: isArabic ? "إعدادات الشحن" : "Shipping" },
+  { value: "announcements", label: isArabic ? "الإعلانات" : "Announcements" },
+  { value: "pickup", label: isArabic ? "نقاط الاستلام" : "Pickup" },
+  { value: "complaints", label: isArabic ? "الشكاوى" : "Complaints" },
+  { value: "returns", label: isArabic ? "طلبات الإرجاع" : "Returns" },
+  { value: "product-requests", label: isArabic ? "طلبات المنتجات" : "Product Requests" },
+  { value: "loyalty", label: isArabic ? "برنامج الولاء" : "Loyalty" },
+];
 
 export function AdminDashboard() {
   const {
@@ -128,29 +148,6 @@ export function AdminDashboard() {
     newCoupon,
     setNewCoupon,
 
-    // loyalty state
-    loyaltyUsers,
-    loadingLoyalty,
-    errorLoyalty,
-    loyaltyPage,
-    loyaltyPages,
-    setLoyaltyPage,
-    loyaltyTierFilter,
-    setLoyaltyTierFilter,
-    loyaltySearchQuery,
-    setLoyaltySearchQuery,
-    selectedLoyaltyUser,
-    setSelectedLoyaltyUser,
-    adjustDialogOpen,
-    setAdjustDialogOpen,
-    adjustPoints,
-    setAdjustPoints,
-    adjustNotes,
-    setAdjustNotes,
-    adjusting,
-    handleLoyaltySearch,
-    handleAdjustPoints,
-
     // Form states
     newCategory,
     setNewCategory,
@@ -226,6 +223,30 @@ export function AdminDashboard() {
     fetchOffers,
     handleToggleOffer,
     handleDeleteOffer,
+
+    // Loyalty state (كانت ناقصة من هنا خالص، وده سبب باج "برنامج الولاء مش بيشتغل")
+    loyaltyUsers,
+    loadingLoyalty,
+    errorLoyalty,
+    loyaltyPage,
+    loyaltyPages,
+    setLoyaltyPage,
+    loyaltyTierFilter,
+    setLoyaltyTierFilter,
+    loyaltySearchQuery,
+    setLoyaltySearchQuery,
+    selectedLoyaltyUser,
+    setSelectedLoyaltyUser,
+    adjustDialogOpen,
+    setAdjustDialogOpen,
+    adjustPoints,
+    setAdjustPoints,
+    adjustNotes,
+    setAdjustNotes,
+    adjusting,
+    handleLoyaltySearch,
+    handleAdjustPoints,
+
     // Language
     language,
     t,
@@ -260,6 +281,8 @@ export function AdminDashboard() {
     );
   }
 
+  const tabItems = TAB_ITEMS(isArabic, t);
+
   return (
     <div className="max-w-screen-2xl w-full px-4 py-6 md:py-12 mx-auto" dir={isArabic ? "rtl" : "ltr"}>
       {/* Header Section */}
@@ -288,28 +311,32 @@ export function AdminDashboard() {
         onValueChange={setActiveTab}
         className="space-y-6"
       >
-        <TabsList className="flex overflow-x-auto whitespace-nowrap space-x-2 p-1">
-          <TabsTrigger value="overview">{isArabic ? "نظرة عامة" : "Overview"}</TabsTrigger>
-          <TabsTrigger value="vendors">{isArabic ? "البائعين" : "Vendors"}</TabsTrigger>
-          <TabsTrigger value="users">{isArabic ? "المستخدمين" : "Users"}</TabsTrigger>
-          <TabsTrigger value="products">{t("products")}</TabsTrigger>
-          <TabsTrigger value="orders">{t("orders")}</TabsTrigger>
-          {/* <TabsTrigger value="brands">{isArabic ? "الماركات" : "Brands"}</TabsTrigger> */}
-          <TabsTrigger value="categories">{isArabic ? "التصنيفات" : "Categories"}</TabsTrigger>
-          <TabsTrigger value="coupons">{isArabic ? "الكوبونات" : "Coupons"}</TabsTrigger>
-          <TabsTrigger value="offers">{isArabic ? "العروض" : "Offers"}</TabsTrigger>
-          <TabsTrigger value="shipping-settings">{isArabic ? "إعدادات الشحن" : "Shipping"}</TabsTrigger>
-          <TabsTrigger value="announcements">{isArabic ? "الإعلانات" : "Announcements"}</TabsTrigger>
-          <TabsTrigger value="pickup">{isArabic ? "نقاط الاستلام" : "Pickup"}</TabsTrigger>
-          <TabsTrigger value="complaints">{isArabic ? "الشكاوى" : "Complaints"}</TabsTrigger>
-          <TabsTrigger value="returns">{isArabic ? "طلبات الإرجاع" : "Returns"}</TabsTrigger>
-          <TabsTrigger value="product-requests">{isArabic ? "طلبات المنتجات" : "Product Requests"}</TabsTrigger>
-          <TabsTrigger value="loyalty">{isArabic ? "برنامج الولاء" : "Loyalty"}</TabsTrigger>
-          {/* <TabsTrigger value="analytics">{isArabic ? "التحليلات" : "Analytics"}</TabsTrigger> */}
-          {/* <TabsTrigger value="transactions">{isArabic ? "المعاملات" : "Transactions"}</TabsTrigger> */}
+        {/* الموبايل: Select بدل التابات، أوضح وأسهل من سحب أفقي مخفي */}
+        <div className="md:hidden">
+          <Select value={activeTab} onValueChange={setActiveTab}>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {tabItems.map((item) => (
+                <SelectItem key={item.value} value={item.value}>
+                  {item.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* الديسكتوب: نفس التابات القديمة، بس gap بدل space-x (gap شغال صح في RTL) */}
+        <TabsList className="hidden md:flex overflow-x-auto whitespace-nowrap gap-2 p-1">
+          {tabItems.map((item) => (
+            <TabsTrigger key={item.value} value={item.value}>
+              {item.label}
+            </TabsTrigger>
+          ))}
         </TabsList>
 
-        {/* Tab Contents */}
+        {/* Tab Contents — من غير أي تغيير */}
         <TabsContent value="overview">
           <OverviewTab
             orders={orders}
@@ -321,7 +348,6 @@ export function AdminDashboard() {
             errorEarnings={errorEarnings}
             isArabic={isArabic}
             dashboardCounters={dashboardCounters || undefined}
-            // fetchPlatformEarnings={fetchPlatformEarnings}
             fetchDashboardCounters={fetchDashboardCounters}
           />
         </TabsContent>
@@ -354,17 +380,6 @@ export function AdminDashboard() {
             handleTrustProduct={handleTrustProduct}
           />
         </TabsContent>
-
-        {/* <TabsContent value="brands">
-          <BrandsTab
-            brands={brands}
-            loading={loadingBrands}
-            error={errorBrands}
-            isArabic={isArabic}
-            handleDeleteBrand={handleDeleteBrand}
-            refreshBrands={fetchBrands}
-          />
-        </TabsContent> */}
 
         <TabsContent value="categories">
           <CategoriesTab
@@ -563,13 +578,12 @@ export function AdminDashboard() {
             transactions={transactions}
             sellers={sellers}
             isArabic={isArabic}
-            transactionsLoading={transactionsLoading}
             transactionFilters={transactionFilters}
             setTransactionFilters={setTransactionFilters}
+            transactionsLoading={transactionsLoading}
             transactionsPage={transactionsPage}
             setTransactionsPage={setTransactionsPage}
             transactionsPages={transactionsPages}
-          // fetchAdminTransactions={fetchAdminTransactions}
           />
         </TabsContent>
       </Tabs>

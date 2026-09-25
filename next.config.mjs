@@ -175,6 +175,14 @@ const nextConfig = {
         source: "/api/shipping-settings/:path*",
         destination: `${backendUrl}/api/shipping-settings/:path*`,
       },
+      {
+        source: "/api/unavailable-product-requests/:path*",
+        destination: `${backendUrl}/api/unavailable-product-requests/:path*`,
+      },
+      {
+        source: "/api/loyalty/:path*",
+        destination: `${backendUrl}/api/loyalty/:path*`,
+      },
     ]
   },
 

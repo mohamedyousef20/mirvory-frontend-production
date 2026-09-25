@@ -120,7 +120,7 @@ fbq('track', 'PageView');
 
                 <ThemeProvider
                   attribute="class"
-                  defaultTheme="system"
+                  defaultTheme="light"
                   enableSystem
                   disableTransitionOnChange
                 >

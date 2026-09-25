@@ -44,6 +44,8 @@ import {
   ArrowLeft,
   ArrowLeftRight,
   MessageCircle,
+  Award,
+  PackagePlus,
 } from "lucide-react"
 import MirvoryLogo from "@/components/mirvory-logo"
 import Image from "next/image"
@@ -230,8 +232,6 @@ export function MainNav() {
         const notificationResponseCount = await notificationService.getNotificationCount();
         const notificationResponse = await notificationService.getNotifications();
 
-        //console.log('Notification Count Response:', notificationResponseCount);
-        //console.log('Notification List Response:', notificationResponse);
 
         // Check if responses are successful
         if (notificationResponseCount.data?.success && notificationResponse.data?.success) {
@@ -1092,6 +1092,19 @@ export function MainNav() {
                         </div>
                       </Link>
                     </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/loyalty" className="cursor-pointer flex items-center gap-2">
+                        <Award className="h-4 w-4" />
+                        {language === "ar" ? "برنامج الولاء" : "Loyalty Program"}
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/request-product" className="cursor-pointer flex items-center gap-2">
+                        <PackagePlus className="h-4 w-4" />
+                        {language === "ar" ? "اطلب منتج غير متوفر" : "Request Unavailable Product"}
+                      </Link>
+                    </DropdownMenuItem>
+                    
                     {/* <DropdownMenuItem asChild>
                       <Link href="/settings" className="cursor-pointer flex items-center gap-2">
                         <Settings className="h-4 w-4" />

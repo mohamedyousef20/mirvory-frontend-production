@@ -17,7 +17,7 @@ interface ProductRequest {
   _id: string;
   phone: string;
   size: string;
-  image: string;
+  imageUrl?: string;
   status: "pending" | "contacted" | "sourcing" | "available" | "completed" | "rejected";
   adminNotes?: string;
   createdAt: string;
@@ -253,7 +253,7 @@ export function ProductRequestsTab() {
                   {/* Image */}
                   <div className="relative h-48 w-full rounded-lg overflow-hidden bg-muted">
                     <Image
-                      src={request.image}
+                      src={request.imageUrl || "/placeholder-image.png"}
                       alt="Product"
                       fill
                       className="object-cover"

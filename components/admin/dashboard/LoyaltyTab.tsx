@@ -4,7 +4,6 @@ import { useMemo } from "react";
 import { useLanguage } from "@/components/language-provider";
 import { Loader2, Search, Crown, Star, TrendingUp, Gift } from "lucide-react";
 import PaginationControls from "@/components/pagination-controls";
-import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,8 +13,22 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
+interface UserLoyalty {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  loyalty: {
+    points: number;
+    tier: string;
+    totalEarned: number;
+    totalRedeemed: number;
+  };
+}
+
 interface LoyaltyTabProps {
-  loyaltyUsers: any[];
+  loyaltyUsers: UserLoyalty[];
   loadingLoyalty: boolean;
   errorLoyalty: string | null;
   loyaltyPage: number;
@@ -25,8 +38,8 @@ interface LoyaltyTabProps {
   setLoyaltyTierFilter: (tier: string) => void;
   loyaltySearchQuery: string;
   setLoyaltySearchQuery: (q: string) => void;
-  selectedLoyaltyUser: any | null;
-  setSelectedLoyaltyUser: (u: any | null) => void;
+  selectedLoyaltyUser: UserLoyalty | null;
+  setSelectedLoyaltyUser: (u: UserLoyalty | null) => void;
   adjustDialogOpen: boolean;
   setAdjustDialogOpen: (open: boolean) => void;
   adjustPoints: string;
@@ -39,37 +52,29 @@ interface LoyaltyTabProps {
 }
 
 export function LoyaltyTab({
-  loyaltyUsers, loadingLoyalty, errorLoyalty, loyaltyPage, loyaltyPages,
-  setLoyaltyPage, loyaltyTierFilter, setLoyaltyTierFilter, loyaltySearchQuery,
-  setLoyaltySearchQuery, selectedLoyaltyUser, setSelectedLoyaltyUser,
-  adjustDialogOpen, setAdjustDialogOpen, adjustPoints, setAdjustPoints,
-  adjustNotes, setAdjustNotes, adjusting, handleLoyaltySearch, handleAdjustPoints,
+  loyaltyUsers,
+  loadingLoyalty,
+  errorLoyalty,
+  loyaltyPage,
+  loyaltyPages,
+  setLoyaltyPage,
+  loyaltyTierFilter,
+  setLoyaltyTierFilter,
+  loyaltySearchQuery,
+  setLoyaltySearchQuery,
+  selectedLoyaltyUser,
+  setSelectedLoyaltyUser,
+  adjustDialogOpen,
+  setAdjustDialogOpen,
+  adjustPoints,
+  setAdjustPoints,
+  adjustNotes,
+  setAdjustNotes,
+  adjusting,
+  handleLoyaltySearch,
+  handleAdjustPoints,
 }: LoyaltyTabProps) {
-  const { language, isArabic } = useLanguage();
-
-  // const {
-  //   loyaltyUsers,
-  //   loadingLoyalty,
-  //   errorLoyalty,
-  //   loyaltyPage,
-  //   loyaltyPages,
-  //   setLoyaltyPage,
-  //   loyaltyTierFilter,
-  //   setLoyaltyTierFilter,
-  //   loyaltySearchQuery,
-  //   setLoyaltySearchQuery,
-  //   selectedLoyaltyUser,
-  //   setSelectedLoyaltyUser,
-  //   adjustDialogOpen,
-  //   setAdjustDialogOpen,
-  //   adjustPoints,
-  //   setAdjustPoints,
-  //   adjustNotes,
-  //   setAdjustNotes,
-  //   adjusting,
-  //   handleLoyaltySearch,
-  //   handleAdjustPoints,
-  // } = useAdminDashboard();
+  const { isArabic } = useLanguage();
 
   const tierOptions = useMemo(
     () => [
@@ -176,21 +181,18 @@ export function LoyaltyTab({
         </div>
       </div>
 
-      {/* Loading */}
       {loadingLoyalty && (
         <div className="flex justify-center py-10">
           <Loader2 className="h-8 w-8 animate-spin" />
         </div>
       )}
 
-      {/* Error */}
       {errorLoyalty && !loadingLoyalty && (
         <div className="text-center py-10 text-destructive">
           {errorLoyalty}
         </div>
       )}
 
-      {/* Users Grid */}
       {!loadingLoyalty && !errorLoyalty && loyaltyUsers.length === 0 && (
         <div className="text-center py-10 text-muted-foreground">
           {copy.noUsers}
@@ -202,7 +204,6 @@ export function LoyaltyTab({
           {loyaltyUsers.map((user) => (
             <Card key={user._id}>
               <CardContent className="p-4 space-y-3">
-                {/* User Info */}
                 <div className="space-y-1">
                   <div className="flex items-center justify-between">
                     <p className="font-semibold">
@@ -219,7 +220,6 @@ export function LoyaltyTab({
                   <p className="text-sm text-muted-foreground">{user.phone}</p>
                 </div>
 
-                {/* Stats */}
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">{copy.points}:</span>
@@ -241,11 +241,13 @@ export function LoyaltyTab({
                   </div>
                 </div>
 
-                {/* Adjust Button */}
-                <Dialog open={adjustDialogOpen && selectedLoyaltyUser?._id === user._id} onOpenChange={(open) => {
-                  setAdjustDialogOpen(open);
-                  if (!open) setSelectedLoyaltyUser(null);
-                }}>
+                <Dialog
+                  open={adjustDialogOpen && selectedLoyaltyUser?._id === user._id}
+                  onOpenChange={(open) => {
+                    setAdjustDialogOpen(open);
+                    if (!open) setSelectedLoyaltyUser(null);
+                  }}
+                >
                   <DialogTrigger asChild>
                     <Button
                       variant="outline"
@@ -259,9 +261,7 @@ export function LoyaltyTab({
                   <DialogContent>
                     <DialogHeader>
                       <DialogTitle>{copy.adjustTitle}</DialogTitle>
-                      <DialogDescription>
-                        {copy.adjustDescription}
-                      </DialogDescription>
+                      <DialogDescription>{copy.adjustDescription}</DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4">
                       <div className="space-y-2">
@@ -282,11 +282,7 @@ export function LoyaltyTab({
                         />
                       </div>
                       <div className="flex gap-2">
-                        <Button
-                          onClick={handleAdjustPoints}
-                          disabled={adjusting}
-                          className="flex-1"
-                        >
+                        <Button onClick={handleAdjustPoints} disabled={adjusting} className="flex-1">
                           {adjusting ? (
                             <>
                               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -315,7 +311,6 @@ export function LoyaltyTab({
         </div>
       )}
 
-      {/* Pagination */}
       {!loadingLoyalty && !errorLoyalty && loyaltyPages > 1 && (
         <PaginationControls
           currentPage={loyaltyPage}

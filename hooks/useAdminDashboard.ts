@@ -606,8 +606,8 @@ export function useAdminDashboard() {
             const list: any[] = Array.isArray(payload?.users)
                 ? payload.users
                 : Array.isArray(payload)
-                  ? payload
-                  : [];
+                    ? payload
+                    : [];
 
             console.log('Processed loyalty users list:', list);
 
@@ -682,14 +682,14 @@ export function useAdminDashboard() {
                 status: requestStatusFilter || undefined,
                 search: requestSearchQuery || undefined,
             });
-
+            console.log(res, 'uns')
             const payload = res?.data;
 
             const list: any[] = Array.isArray(payload?.requests)
                 ? payload.requests
                 : Array.isArray(payload)
-                  ? payload
-                  : [];
+                    ? payload
+                    : [];
 
             setProductRequests(list);
 

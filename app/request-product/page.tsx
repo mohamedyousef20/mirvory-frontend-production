@@ -8,16 +8,14 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { apiServices } from "@/lib/api";
-import { Upload, X, Loader2, CheckCircle2 } from "lucide-react";
-import Image from "next/image";
+import { Loader2, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
-
+import { unavailableProductRequestService } from "@/lib/api";
+import ImageUploader from "@/components/ImageUploader";
 export default function RequestProductPage() {
   const { language } = useLanguage();
   const [loading, setLoading] = useState(false);
-  const [image, setImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [phone, setPhone] = useState("");
   const [size, setSize] = useState("");
   const [guestName, setGuestName] = useState("");
@@ -25,61 +23,61 @@ export default function RequestProductPage() {
 
   const copy = language === "ar"
     ? {
-        title: "طلب منتج غير متوفر",
-        description: "إذا كنت تبحث عن كوتشي معين غير متوفر حالياً، يمكنك طلبه وسنتواصل معك عند توفره",
-        phoneLabel: "رقم الهاتف",
-        phonePlaceholder: "01xxxxxxxxx",
-        sizeLabel: "المقاس المطلوب",
-        sizePlaceholder: "مثال: 40, 42, M, L",
-        nameLabel: "الاسم (اختياري)",
-        namePlaceholder: "اسمك الكامل",
-        emailLabel: "البريد الإلكتروني (اختياري)",
-        emailPlaceholder: "example@email.com",
-        uploadLabel: "صورة المنتج",
-        uploadDescription: "ارفع صورة للكوتشي الذي تبحث عنه",
-        uploadButton: "اختر صورة",
-        removeImage: "حذف الصورة",
-        submitButton: "إرسال الطلب",
-        submitting: "جاري الإرسال...",
-        success: "تم إرسال طلبك بنجاح! سنتواصل معك قريباً",
-        error: "حدث خطأ أثناء إرسال الطلب",
-        backToHome: "العودة للرئيسية",
-        validation: {
-          imageRequired: "الصورة مطلوبة",
-          phoneRequired: "رقم الهاتف مطلوب",
-          phoneInvalid: "رقم الهاتف غير صحيح",
-          sizeRequired: "المقاس مطلوب",
-          emailInvalid: "البريد الإلكتروني غير صحيح",
-        }
+      title: "طلب منتج غير متوفر",
+      description: "إذا كنت تبحث عن كوتشي معين غير متوفر حالياً، يمكنك طلبه وسنتواصل معك عند توفره",
+      phoneLabel: "رقم الهاتف",
+      phonePlaceholder: "01xxxxxxxxx",
+      sizeLabel: "المقاس المطلوب",
+      sizePlaceholder: "مثال: 40, 42, M, L",
+      nameLabel: "الاسم (اختياري)",
+      namePlaceholder: "اسمك الكامل",
+      emailLabel: "البريد الإلكتروني (اختياري)",
+      emailPlaceholder: "example@email.com",
+      uploadLabel: "صورة المنتج",
+      uploadDescription: "ارفع صورة للكوتشي الذي تبحث عنه",
+      uploadButton: "اختر صورة",
+      removeImage: "حذف الصورة",
+      submitButton: "إرسال الطلب",
+      submitting: "جاري الإرسال...",
+      success: "تم إرسال طلبك بنجاح! سنتواصل معك قريباً",
+      error: "حدث خطأ أثناء إرسال الطلب",
+      backToHome: "العودة للرئيسية",
+      validation: {
+        imageRequired: "الصورة مطلوبة",
+        phoneRequired: "رقم الهاتف مطلوب",
+        phoneInvalid: "رقم الهاتف غير صحيح",
+        sizeRequired: "المقاس مطلوب",
+        emailInvalid: "البريد الإلكتروني غير صحيح",
       }
+    }
     : {
-        title: "Request Unavailable Product",
-        description: "If you're looking for a specific bag that's not currently available, you can request it and we'll contact you when it's available",
-        phoneLabel: "Phone Number",
-        phonePlaceholder: "01xxxxxxxxx",
-        sizeLabel: "Required Size",
-        sizePlaceholder: "e.g., 40, 42, M, L",
-        nameLabel: "Name (Optional)",
-        namePlaceholder: "Your full name",
-        emailLabel: "Email (Optional)",
-        emailPlaceholder: "example@email.com",
-        uploadLabel: "Product Image",
-        uploadDescription: "Upload an image of the bag you're looking for",
-        uploadButton: "Choose Image",
-        removeImage: "Remove Image",
-        submitButton: "Submit Request",
-        submitting: "Submitting...",
-        success: "Your request has been submitted successfully! We'll contact you soon",
-        error: "An error occurred while submitting the request",
-        backToHome: "Back to Home",
-        validation: {
-          imageRequired: "Image is required",
-          phoneRequired: "Phone number is required",
-          phoneInvalid: "Invalid phone number",
-          sizeRequired: "Size is required",
-          emailInvalid: "Invalid email address",
-        }
-      };
+      title: "Request Unavailable Product",
+      description: "If you're looking for a specific bag that's not currently available, you can request it and we'll contact you when it's available",
+      phoneLabel: "Phone Number",
+      phonePlaceholder: "01xxxxxxxxx",
+      sizeLabel: "Required Size",
+      sizePlaceholder: "e.g., 40, 42, M, L",
+      nameLabel: "Name (Optional)",
+      namePlaceholder: "Your full name",
+      emailLabel: "Email (Optional)",
+      emailPlaceholder: "example@email.com",
+      uploadLabel: "Product Image",
+      uploadDescription: "Upload an image of the bag you're looking for",
+      uploadButton: "Choose Image",
+      removeImage: "Remove Image",
+      submitButton: "Submit Request",
+      submitting: "Submitting...",
+      success: "Your request has been submitted successfully! We'll contact you soon",
+      error: "An error occurred while submitting the request",
+      backToHome: "Back to Home",
+      validation: {
+        imageRequired: "Image is required",
+        phoneRequired: "Phone number is required",
+        phoneInvalid: "Invalid phone number",
+        sizeRequired: "Size is required",
+        emailInvalid: "Invalid email address",
+      }
+    };
 
   const validatePhone = (phone: string) => {
     return /^01[0125][0-9]{8}$/.test(phone);
@@ -90,88 +88,62 @@ export default function RequestProductPage() {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error(language === "ar" ? "حجم الصورة يجب أن يكون أقل من 5 ميجابايت" : "Image size must be less than 5MB");
-        return;
-      }
-      if (!file.type.startsWith("image/")) {
-        toast.error(language === "ar" ? "يجب أن تكون الصورة بصيغة صورة" : "File must be an image");
-        return;
-      }
-      setImage(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleRemoveImage = () => {
-    setImage(null);
-    setImagePreview(null);
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    if (!image) {
-      toast.error(copy.validation.imageRequired);
-      return;
+    if (!imageUrl) {
+      toast.error(copy.validation.imageRequired)
+      return
     }
 
     if (!phone) {
-      toast.error(copy.validation.phoneRequired);
-      return;
+      toast.error(copy.validation.phoneRequired)
+      return
     }
 
     if (!validatePhone(phone)) {
-      toast.error(copy.validation.phoneInvalid);
-      return;
+      toast.error(copy.validation.phoneInvalid)
+      return
     }
 
     if (!size) {
-      toast.error(copy.validation.sizeRequired);
-      return;
+      toast.error(copy.validation.sizeRequired)
+      return
     }
 
     if (guestEmail && !validateEmail(guestEmail)) {
-      toast.error(copy.validation.emailInvalid);
-      return;
+      toast.error(copy.validation.emailInvalid)
+      return
     }
 
-    setLoading(true);
+    setLoading(true)
 
     try {
-      const formData = new FormData();
-      formData.append("image", image);
-      formData.append("phone", phone);
-      formData.append("size", size);
-      if (guestName) formData.append("guestName", guestName);
-      if (guestEmail) formData.append("guestEmail", guestEmail);
+      await unavailableProductRequestService.createRequest({
+        imageUrl,
+        phone,
+        size,
+        ...(guestName ? { guestName } : {}),
+        ...(guestEmail ? { guestEmail } : {}),
+      })
 
-      await apiServices.unavailableProductRequestService.createRequest(formData);
+      toast.success(copy.success)
 
-      toast.success(copy.success);
-
-      // Reset form
-      setImage(null);
-      setImagePreview(null);
-      setPhone("");
-      setSize("");
-      setGuestName("");
-      setGuestEmail("");
+      setImageUrl(null)
+      setPhone("")
+      setSize("")
+      setGuestName("")
+      setGuestEmail("")
     } catch (error: any) {
-      console.error("Error submitting request:", error);
-      toast.error(error.response?.data?.message || copy.error);
-    } finally {
-      setLoading(false);
-    }
-  };
+      console.error("Error submitting request:", error)
 
+      toast.error(
+        error.response?.data?.message || copy.error
+      )
+    } finally {
+      setLoading(false)
+    }
+  }
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 py-12 px-4">
       <div className="max-w-2xl mx-auto">
@@ -186,45 +158,20 @@ export default function RequestProductPage() {
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Image Upload */}
               <div className="space-y-2">
-                <Label className="text-base font-semibold">{copy.uploadLabel}</Label>
-                <p className="text-sm text-muted-foreground">{copy.uploadDescription}</p>
-                
-                {!imagePreview ? (
-                  <div className="relative border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center hover:border-primary/50 transition-colors">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                      disabled={loading}
-                    />
-                    <Upload className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                    <p className="text-sm text-muted-foreground mb-2">{copy.uploadButton}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {language === "ar" ? "JPG, PNG, WEBP - حد أقصى 5 ميجابايت" : "JPG, PNG, WEBP - Max 5MB"}
-                    </p>
-                  </div>
-                ) : (
-                  <div className="relative rounded-lg overflow-hidden border">
-                    <Image
-                      src={imagePreview}
-                      alt="Product preview"
-                      width={400}
-                      height={300}
-                      className="w-full h-auto object-cover"
-                    />
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="sm"
-                      className="absolute top-2 right-2"
-                      onClick={handleRemoveImage}
-                      disabled={loading}
-                    >
-                      <X className="w-4 h-4" />
-                    </Button>
-                  </div>
-                )}
+                <Label className="text-base font-semibold">
+                  {copy.uploadLabel}
+                </Label>
+
+                <p className="text-sm text-muted-foreground">
+                  {copy.uploadDescription}
+                </p>
+
+                <ImageUploader
+                  maxSizeMb={5}
+                  onUpload={(url) => {
+                    setImageUrl(url)
+                  }}
+                />
               </div>
 
               {/* Phone */}
