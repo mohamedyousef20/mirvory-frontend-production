@@ -665,7 +665,7 @@ export const returnService = {
     status: string;
     rejectionReason?: string;
   }) => api.patch(`/api/returns`, returnData),
-  
+
   deleteReturnRequest: (returnId: string) => api.delete('/api/returns', {
     data: { id: returnId }
   }),
@@ -803,10 +803,14 @@ export const unavailableProductRequestService = {
    * Create a request for unavailable product (public - auth optional)
    * POST /api/unavailable-product-requests
    */
-  createRequest: (data: FormData) =>
-    api.post('/api/unavailable-product-requests', data, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    }),
+  createRequest: (data: {
+    imageUrl: string;
+    phone: string;
+    size: string;
+    guestName?: string;
+    guestEmail?: string;
+  }) =>
+    api.post('/api/unavailable-product-requests', data),    
 
   /**
    * Get user's own requests (authenticated only)

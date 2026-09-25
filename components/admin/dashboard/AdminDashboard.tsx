@@ -46,22 +46,23 @@ type Offer = {
 };
 
 // نفس التابات في مكان واحد — تستخدمها كل من نسخة الـ Select (موبايل) ونسخة الـ TabsList (ديسكتوب)
-const TAB_ITEMS = (isArabic: boolean, t: (k: string) => string) => [
-  { value: "overview", label: isArabic ? "نظرة عامة" : "Overview" },
-  { value: "vendors", label: isArabic ? "البائعين" : "Vendors" },
-  { value: "users", label: isArabic ? "المستخدمين" : "Users" },
-  { value: "products", label: t("products") },
-  { value: "orders", label: t("orders") },
-  { value: "categories", label: isArabic ? "التصنيفات" : "Categories" },
-  { value: "coupons", label: isArabic ? "الكوبونات" : "Coupons" },
-  { value: "offers", label: isArabic ? "العروض" : "Offers" },
-  { value: "shipping-settings", label: isArabic ? "إعدادات الشحن" : "Shipping" },
-  { value: "announcements", label: isArabic ? "الإعلانات" : "Announcements" },
-  { value: "pickup", label: isArabic ? "نقاط الاستلام" : "Pickup" },
-  { value: "complaints", label: isArabic ? "الشكاوى" : "Complaints" },
-  { value: "returns", label: isArabic ? "طلبات الإرجاع" : "Returns" },
-  { value: "product-requests", label: isArabic ? "طلبات المنتجات" : "Product Requests" },
-  { value: "loyalty", label: isArabic ? "برنامج الولاء" : "Loyalty" },
+type TranslateFunction = ReturnType<typeof useAdminDashboard>["t"];
+
+const TAB_ITEMS = (isArabic: boolean, t: TranslateFunction) => [{ value: "overview", label: isArabic ? "نظرة عامة" : "Overview" },
+{ value: "vendors", label: isArabic ? "البائعين" : "Vendors" },
+{ value: "users", label: isArabic ? "المستخدمين" : "Users" },
+{ value: "products", label: t("products") },
+{ value: "orders", label: t("orders") },
+{ value: "categories", label: isArabic ? "التصنيفات" : "Categories" },
+{ value: "coupons", label: isArabic ? "الكوبونات" : "Coupons" },
+{ value: "offers", label: isArabic ? "العروض" : "Offers" },
+{ value: "shipping-settings", label: isArabic ? "إعدادات الشحن" : "Shipping" },
+{ value: "announcements", label: isArabic ? "الإعلانات" : "Announcements" },
+{ value: "pickup", label: isArabic ? "نقاط الاستلام" : "Pickup" },
+{ value: "complaints", label: isArabic ? "الشكاوى" : "Complaints" },
+{ value: "returns", label: isArabic ? "طلبات الإرجاع" : "Returns" },
+{ value: "product-requests", label: isArabic ? "طلبات المنتجات" : "Product Requests" },
+{ value: "loyalty", label: isArabic ? "برنامج الولاء" : "Loyalty" },
 ];
 
 export function AdminDashboard() {
