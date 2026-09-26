@@ -63,6 +63,7 @@ const TAB_ITEMS = (isArabic: boolean, t: TranslateFunction) => [{ value: "overvi
 { value: "returns", label: isArabic ? "طلبات الإرجاع" : "Returns" },
 { value: "product-requests", label: isArabic ? "طلبات المنتجات" : "Product Requests" },
 { value: "loyalty", label: isArabic ? "برنامج الولاء" : "Loyalty" },
+{ value: "analytics", label: isArabic ? "التحليلات" : "Analytics" },
 ];
 
 export function AdminDashboard() {
