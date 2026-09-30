@@ -272,7 +272,7 @@ export default function EditProductPage() {
 
         // Populate form with product data
         const prod = productResponse.data.product;
-        
+
         // Clean colors array - remove _id field if present
         const cleanedColors = (prod.colors || []).map((color: any) => ({
           name: color.name,
@@ -391,10 +391,10 @@ export default function EditProductPage() {
     setNewProduct(prev => {
       const newImages = [...prev.images];
       const removedImage = newImages[index];
-      
+
       // Add to deleted images list
       const deletedImages = [...prev.deletedImages, removedImage];
-      
+
       newImages.splice(index, 1);
 
       return {
@@ -514,15 +514,19 @@ export default function EditProductPage() {
         : 'Color added successfully'
     );
   };
-
   const removeColor = (colorValue: string, colorImage: string) => {
-    setNewProduct(prev => ({
-      ...prev,
-      colors: prev.colors.filter(color => color.value !== colorValue),
-      deletedColorImages: [...prev.deletedColorImages, colorImage]
-    }));
-  };
+    setNewProduct(prev => {
+      const deletedColorImages = colorImage?.trim()
+        ? [...prev.deletedColorImages, colorImage.trim()]
+        : [...prev.deletedColorImages];
 
+      return {
+        ...prev,
+        colors: prev.colors.filter(color => color.value !== colorValue),
+        deletedColorImages,
+      };
+    });
+  };
   const toggleColorAvailability = (colorValue: string) => {
     setNewProduct(prev => ({
       ...prev,
@@ -551,9 +555,14 @@ export default function EditProductPage() {
       );
       return;
     }
-
+    const validDeletedColorImages = newProduct.deletedColorImages.filter(
+      (image): image is string =>
+        typeof image === 'string' && image.trim().length > 0
+    );
     const preparedDataToValidate = {
       ...newProduct,
+
+      deletedColorImages: validDeletedColorImages,
       price: newProduct.price === '' ? undefined : parseFloat(newProduct.price),
       discountPercentage: parseFloat(newProduct.discountPercentage) || 0,
       quantity: parseInt(newProduct.quantity) || 0
@@ -581,7 +590,7 @@ export default function EditProductPage() {
         brand: newProduct.brand,
         images: newProduct.images,
         deletedImages: newProduct.deletedImages,
-        deletedColorImages: newProduct.deletedColorImages,
+        deletedColorImages: validDeletedColorImages,
         sizes: newProduct.sizes,
         colors: newProduct.colors,
         quantity: parseInt(newProduct.quantity) || 0,
@@ -601,9 +610,9 @@ export default function EditProductPage() {
       console.error('Error updating product:', error);
       toast.error(
         error.response?.data?.message ||
-          (language === 'ar'
-            ? 'حدث خطأ أثناء تحديث المنتج'
-            : 'Error updating product')
+        (language === 'ar'
+          ? 'حدث خطأ أثناء تحديث المنتج'
+          : 'Error updating product')
       );
     } finally {
       setSaving(false);
@@ -638,14 +647,14 @@ export default function EditProductPage() {
           {ar ? 'رجوع' : 'Back'}
         </Button>
         <h1 className="text-3xl font-bold text-slate-800">
-          {ar ? 'تعديل المنتج' : 'Edit Product'}
+          {ar ? 'تعديل اxxxxxxxxxxxxxxxxxxxxxxxلمنتج' : 'Edit Product'}
         </h1>
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle>
-            {ar ? 'معلومات المنتج' : 'Product Information'}
+            {ar ? 'معلوماتxxxxxxxxxxxxxxxx المنتج' : 'Product Information'}
           </CardTitle>
         </CardHeader>
 
@@ -918,9 +927,8 @@ export default function EditProductPage() {
                       <button
                         type="button"
                         onClick={() => toggleColorAvailability(color.value)}
-                        className={`text-sm ${
-                          color.available ? 'text-green-600' : 'text-gray-400'
-                        }`}
+                        className={`text-sm ${color.available ? 'text-green-600' : 'text-gray-400'
+                          }`}
                       >
                         {color.available ? (ar ? 'متاح' : 'Available') : (ar ? 'غير متاح' : 'Unavailable')}
                       </button>
