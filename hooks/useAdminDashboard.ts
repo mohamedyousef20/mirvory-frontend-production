@@ -338,115 +338,21 @@ export function useAdminDashboard() {
     //         setLoadingBrands(false);
     //     }
     // };
-    const fetchInitialData = async () => {
-        await Promise.all([
-            fetchOrders(),
-            fetchOffers(),
-            fetchCategories(),
-            // fetchBrands(),
-            fetchProducts(),
-            fetchPickupPoints(),
-            fetchAnnouncements(),
-            fetchSellers(),
-            fetchUsers(),
-            fetchCoupons(),
-            // fetchPlatformEarnings(),
-            fetchDashboardCounters(),
-            fetchProductRequests()
-        ]);
-    };
-
-    // Category fetching based on active tab
+    // Category fetching based on active tab - initial load
     useEffect(() => {
         if (isAuthenticated && isAdmin) {
-            fetchInitialData();
+            fetchCategories();
+            fetchDashboardCounters();
         }
     }, [isAuthenticated, isAdmin]);
 
     useEffect(() => { fetchCategories(); }, []);
 
-    // Refetch sellers when page changes
-    useEffect(() => {
-        fetchSellers();
-    }, [sellersPage]);
+    // NOTE: All paginated fetch useEffects are defined after their useCallback declarations below
+    // (fetchSellers, fetchReturnRequests, fetchUsers, fetchLoyaltyUsers, fetchProductRequests,
+    //  fetchOrders, fetchProducts, fetchOffers - see useEffect blocks after fetchUsers definition)
 
-
-    // Data fetching based on active tab
-    useEffect(() => {
-        if (isAuthenticated && isAdmin) {
-            switch (activeTab) {
-                case 'overview':
-                    // fetchPlatformEarnings();
-                    fetchDashboardCounters();
-                    break;
-                case 'complaints':
-                    fetchComplaints();
-                    break;
-                case 'returns':
-                    fetchReturnRequests();
-                    break;
-                case 'products':
-                    fetchProducts();
-                    break;
-                case 'orders':
-                    fetchOrders();
-                    break;
-                case 'announcements':
-                    fetchAnnouncements();
-                    break;
-                case 'pickup':
-                    fetchPickupPoints();
-                    break;
-                case 'offers':
-                    fetchOffers();
-                    break;
-                case 'loyalty':
-                    fetchLoyaltyUsers();
-                    break;
-                case 'product-requests':
-                    fetchProductRequests();
-                    break;
-                case 'coupons':
-                    fetchCoupons();
-                    break;
-                case 'analytics':
-                    if (!analytics) {
-                        fetchAdminAnalytics();
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-    }, [activeTab, isAuthenticated, isAdmin]);
-
-    // refetch returns when page changes
-    useEffect(() => {
-        fetchReturnRequests();
-    }, [returnsPage]);
-
-    // refetch users on page change
-    useEffect(() => {
-        fetchUsers();
-    }, [usersPage]);
-
-    // refetch loyalty users on page change
-    useEffect(() => {
-        fetchLoyaltyUsers();
-    }, [loyaltyPage]);
-
-    // refetch product requests on page change
-    useEffect(() => {
-        fetchProductRequests();
-    }, [productRequestsPage]);
-
-
-    // refetch transactions when page changes
-    // useEffect(() => {
-    //     fetchAdminTransactions();
-    // }, [transactionsPage]);
-
-    // Complaints operations
+    // Category operations (existing)
     const fetchComplaints = async () => {
         try {
             setLoadingComplaints(true);
@@ -510,7 +416,7 @@ export function useAdminDashboard() {
     //     }
     // };
     // Return requests operations
-    const fetchReturnRequests = async () => {
+    const fetchReturnRequests = useCallback(async () => {
         try {
             setLoadingReturns(true);
             setErrorReturns(null);
@@ -521,7 +427,6 @@ export function useAdminDashboard() {
                 setReturnRequests(response.data);
             }
             if (response.data?.pagination) {
-                setReturnsPage(response.data.pagination.currentPage);
                 setReturnsPages(response.data.pagination.totalPages);
             }
         } catch (error: any) {
@@ -530,22 +435,20 @@ export function useAdminDashboard() {
         } finally {
             setLoadingReturns(false);
         }
-    };
+    }, [returnsPage, isArabic]);
 
     // Offers operations
-    const fetchOffers = async () => {
+    const fetchOffers = useCallback(async () => {
         try {
             setLoadingOffers(true);
             setErrorOffers(null);
             const response = await offerService.getOffers({ page: offersPage, limit: OFFERS_LIMIT });
-            console.log(response, 'responseofoffer')
             if (response.data?.data) {
                 setOffers(response.data.data);
             } else {
                 setOffers(response.data);
             }
             if (response.data?.pagination) {
-                setOffersPage(response.data.pagination.currentPage);
                 setOffersPages(response.data.pagination.totalPages);
             }
         } catch (error: any) {
@@ -554,7 +457,7 @@ export function useAdminDashboard() {
         } finally {
             setLoadingOffers(false);
         }
-    };
+    }, [offersPage, isArabic]);
 
     const handleToggleOffer = async (offerId: string) => {
         try {
@@ -580,17 +483,10 @@ export function useAdminDashboard() {
     };
 
     // Loyalty operations
-    const fetchLoyaltyUsers = async () => {
+    const fetchLoyaltyUsers = useCallback(async () => {
         try {
             setLoadingLoyalty(true);
             setErrorLoyalty(null);
-
-            console.log('Fetching loyalty users with params:', {
-                page: loyaltyPage,
-                limit: LOYALTY_LIMIT,
-                tier: loyaltyTierFilter === "all" ? undefined : loyaltyTierFilter,
-                search: loyaltySearchQuery || undefined,
-            });
 
             const res = await loyaltyService.getAllUsersLoyalty({
                 page: loyaltyPage,
@@ -598,8 +494,6 @@ export function useAdminDashboard() {
                 tier: loyaltyTierFilter === "all" ? undefined : loyaltyTierFilter,
                 search: loyaltySearchQuery || undefined,
             });
-
-            console.log('Loyalty API response:', res);
 
             const payload = res?.data;
 
@@ -609,16 +503,11 @@ export function useAdminDashboard() {
                     ? payload
                     : [];
 
-            console.log('Processed loyalty users list:', list);
-
             setLoyaltyUsers(list);
 
             const pagination = payload?.pagination;
             if (pagination) {
                 setLoyaltyPages(pagination.totalPages || 1);
-                if (pagination.currentPage && pagination.currentPage !== loyaltyPage) {
-                    setLoyaltyPage(pagination.currentPage);
-                }
             } else {
                 setLoyaltyPages(1);
             }
@@ -632,7 +521,7 @@ export function useAdminDashboard() {
         } finally {
             setLoadingLoyalty(false);
         }
-    };
+    }, [loyaltyPage, loyaltyTierFilter, loyaltySearchQuery, isArabic]);
 
     const handleLoyaltySearch = () => {
         setLoyaltyPage(1);
@@ -671,7 +560,7 @@ export function useAdminDashboard() {
     };
 
     // Unavailable product requests operations
-    const fetchProductRequests = async () => {
+    const fetchProductRequests = useCallback(async () => {
         try {
             setLoadingProductRequests(true);
             setErrorProductRequests(null);
@@ -682,7 +571,6 @@ export function useAdminDashboard() {
                 status: requestStatusFilter || undefined,
                 search: requestSearchQuery || undefined,
             });
-            console.log(res, 'uns')
             const payload = res?.data;
 
             const list: any[] = Array.isArray(payload?.requests)
@@ -696,9 +584,6 @@ export function useAdminDashboard() {
             const pagination = payload?.pagination;
             if (pagination) {
                 setProductRequestsPages(pagination.totalPages || 1);
-                if (pagination.currentPage && pagination.currentPage !== productRequestsPage) {
-                    setProductRequestsPage(pagination.currentPage);
-                }
             } else {
                 setProductRequestsPages(1);
             }
@@ -711,7 +596,7 @@ export function useAdminDashboard() {
         } finally {
             setLoadingProductRequests(false);
         }
-    };
+    }, [productRequestsPage, requestStatusFilter, requestSearchQuery, isArabic]);
 
     const handleProductRequestSearch = () => {
         setProductRequestsPage(1);
@@ -868,7 +753,7 @@ export function useAdminDashboard() {
     };
 
     // Fetch products list with pagination
-    const fetchProducts = async () => {
+    const fetchProducts = useCallback(async () => {
         try {
             setLoadingProducts(true);
 
@@ -881,7 +766,6 @@ export function useAdminDashboard() {
                 setProducts([]);
             }
             if (data?.pagination) {
-                setProductsPage(data.pagination.currentPage);
                 setProductsPages(data.pagination.totalPages);
             }
         } catch (error: any) {
@@ -889,17 +773,17 @@ export function useAdminDashboard() {
         } finally {
             setLoadingProducts(false);
         }
-    };
+    }, [productsPage, isArabic]);
 
     // Refetch products when page changes
     useEffect(() => {
         fetchProducts();
-    }, [productsPage]);
+    }, [fetchProducts]);
 
     // refetch offers when page changes
     useEffect(() => {
         fetchOffers();
-    }, [offersPage]);
+    }, [fetchOffers]);
     // fetch coupons
     const fetchCoupons = async () => {
         try {
@@ -1133,7 +1017,7 @@ export function useAdminDashboard() {
         }
     };
 
-    const fetchOrders = async () => {
+    const fetchOrders = useCallback(async () => {
         try {
             setLoadingOrders(true);
             const response = await orderService.getAdminOrders({ page: ordersPage, limit: ORDERS_LIMIT });
@@ -1141,7 +1025,6 @@ export function useAdminDashboard() {
                 setOrders(response.data.data);
             }
             if (response.data?.pagination) {
-                setOrdersPage(response.data.pagination.currentPage);
                 setOrdersPages(response.data.pagination.totalPages);
             }
         } catch (error: any) {
@@ -1149,12 +1032,12 @@ export function useAdminDashboard() {
         } finally {
             setLoadingOrders(false);
         }
-    };
+    }, [ordersPage]);
 
     // Refetch orders when page changes
     useEffect(() => {
         fetchOrders();
-    }, [ordersPage]);
+    }, [fetchOrders]);
 
     const updateDeliveryStatus = async (orderId: string, deliveryStatus: string) => {
         try {
@@ -1254,35 +1137,110 @@ export function useAdminDashboard() {
         }
     };
 
-    const fetchSellers = async () => {
+    const fetchSellers = useCallback(async () => {
         try {
             const response = await userService.getSellerForAdmin({ page: sellersPage, limit: SELLERS_LIMIT });
             if (response.data?.data) {
                 setSellers(response.data.data);
             }
             if (response.data?.pagination) {
-                setSellersPage(response.data.pagination.currentPage);
                 setSellersPages(response.data.pagination.totalPages);
             }
         } catch (error: any) {
             console.error('Error fetching sellers:', error);
         }
-    };
+    }, [sellersPage]);
 
-    const fetchUsers = async () => {
+    const fetchUsers = useCallback(async () => {
         try {
             const response = await userService.getUserForAdmin({ page: usersPage, limit: USERS_LIMIT });
             if (response.data?.data) {
                 setUsers(response.data.data);
             }
             if (response.data?.pagination) {
-                setUsersPage(response.data.pagination.currentPage);
                 setUsersPages(response.data.pagination.totalPages);
             }
         } catch (error: any) {
             console.error('Error fetching users:', error);
         }
-    };
+    }, [usersPage]);
+
+    // ─── All page-change useEffects (must come AFTER all useCallback definitions) ───
+
+    // Refetch sellers when page changes
+    useEffect(() => {
+        fetchSellers();
+    }, [fetchSellers]);
+
+    // Refetch returns when page changes
+    useEffect(() => {
+        fetchReturnRequests();
+    }, [fetchReturnRequests]);
+
+    // Refetch users when page changes
+    useEffect(() => {
+        fetchUsers();
+    }, [fetchUsers]);
+
+    // Refetch loyalty users when page/filter changes
+    useEffect(() => {
+        fetchLoyaltyUsers();
+    }, [fetchLoyaltyUsers]);
+
+    // Refetch product requests when page/filter changes
+    useEffect(() => {
+        fetchProductRequests();
+    }, [fetchProductRequests]);
+
+    // Data fetching based on active tab switch
+    useEffect(() => {
+        if (isAuthenticated && isAdmin) {
+            switch (activeTab) {
+                case 'overview':
+                    fetchDashboardCounters();
+                    break;
+                case 'complaints':
+                    fetchComplaints();
+                    break;
+                case 'returns':
+                    fetchReturnRequests();
+                    break;
+                case 'products':
+                    fetchProducts();
+                    break;
+                case 'orders':
+                    fetchOrders();
+                    break;
+                case 'announcements':
+                    fetchAnnouncements();
+                    break;
+                case 'pickup':
+                    fetchPickupPoints();
+                    break;
+                case 'offers':
+                    fetchOffers();
+                    break;
+                case 'loyalty':
+                    fetchLoyaltyUsers();
+                    break;
+                case 'product-requests':
+                    fetchProductRequests();
+                    break;
+                case 'coupons':
+                    fetchCoupons();
+                    break;
+                case 'analytics':
+                    if (!analytics) {
+                        fetchAdminAnalytics();
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    }, [activeTab, isAuthenticated, isAdmin, fetchReturnRequests, fetchProducts, fetchOrders, fetchOffers, fetchLoyaltyUsers, fetchProductRequests]);
+
+    // ─────────────────────────────────────────────────────────────────────────────
 
     // Category operations (existing)
     const handleCreateCategory = async (event: React.FormEvent) => {
