@@ -28,8 +28,103 @@ import {
 import { useAuth } from '@/contexts/AuthProvider';
 import Joi from 'joi';
 
+// ── ColorSizeManager sub-component ───────────────────────────────────────────
+interface ColorSizeManagerProps {
+  color: { name: string; value: string; image: string; available: boolean; sizes: { size: string; quantity: number }[] };
+  language: string;
+  onToggleAvailability: () => void;
+  onRemove: () => void;
+  onAddSize: (size: string, quantity: number) => void;
+  onRemoveSize: (size: string) => void;
+  onUpdateQty: (size: string, quantity: number) => void;
+}
+
+function ColorSizeManager({ color, language, onToggleAvailability, onRemove, onAddSize, onRemoveSize, onUpdateQty }: ColorSizeManagerProps) {
+  const [newSize, setNewSize] = useState('');
+  const [newQty, setNewQty] = useState(0);
+  const PRESET_SIZES = ['41', '42', '43', '44', '45'];
+
+  const handleAdd = () => {
+    if (!newSize.trim()) return;
+    onAddSize(newSize.trim(), newQty);
+    setNewSize('');
+    setNewQty(0);
+  };
+
+  return (
+    <div className={`border rounded-xl p-4 space-y-3 ${color.available ? 'border-green-200 bg-green-50/30' : 'border-gray-200 bg-gray-50'}`}>
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <div className="w-8 h-8 rounded-full border-2 border-white shadow" style={{ backgroundColor: color.value }} />
+        <img src={color.image} alt={color.name} className="w-10 h-10 object-cover rounded-lg border" />
+        <span className="font-semibold text-sm">{color.name}</span>
+        <span className="text-xs text-muted-foreground">{color.value}</span>
+        <div className="flex items-center gap-1 ms-auto">
+          <button type="button" onClick={onToggleAvailability}
+            className={`text-xs px-2 py-1 rounded-full border ${color.available ? 'bg-green-100 text-green-700 border-green-300' : 'bg-gray-100 text-gray-500 border-gray-300'}`}>
+            {color.available ? (language === 'ar' ? 'متاح ✓' : 'Available ✓') : (language === 'ar' ? 'غير متاح' : 'Unavailable')}
+          </button>
+          <button type="button" onClick={onRemove} className="text-red-500 hover:text-red-700 p-1 rounded">
+            <X size={16} />
+          </button>
+        </div>
+      </div>
+
+      {/* Sizes for this color */}
+      <div className="space-y-2">
+        <p className="text-xs font-medium text-muted-foreground">{language === 'ar' ? 'المقاسات والكميات:' : 'Sizes & Quantities:'}</p>
+
+        {color.sizes.length > 0 && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+            {color.sizes.map(({ size, quantity }) => (
+              <div key={size} className="flex items-center gap-1 bg-white rounded-lg border p-2">
+                <span className="text-sm font-medium w-8 text-center">{size}</span>
+                <input
+                  type="number" min="0" value={quantity}
+                  onChange={e => onUpdateQty(size, parseInt(e.target.value) || 0)}
+                  className="w-14 text-center text-sm border rounded px-1 py-0.5"
+                />
+                <button type="button" onClick={() => onRemoveSize(size)} className="text-red-400 hover:text-red-600">
+                  <X size={12} />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Add size row */}
+        <div className="flex gap-2 items-center flex-wrap">
+          <div className="flex gap-1 flex-wrap">
+            {PRESET_SIZES.map(ps => (
+              <button key={ps} type="button" onClick={() => setNewSize(ps)}
+                className={`px-2 py-1 text-xs rounded border ${newSize === ps ? 'bg-primary text-primary-foreground' : 'bg-white hover:bg-gray-50'}`}>
+                {ps}
+              </button>
+            ))}
+          </div>
+          <Input value={newSize} onChange={e => setNewSize(e.target.value)}
+            placeholder={language === 'ar' ? 'مقاس' : 'Size'} className="w-20 h-8 text-sm" />
+          <Input type="number" min="0" value={newQty} onChange={e => setNewQty(parseInt(e.target.value) || 0)}
+            placeholder={language === 'ar' ? 'كمية' : 'Qty'} className="w-20 h-8 text-sm" />
+          <Button type="button" onClick={handleAdd} size="sm" variant="outline" className="h-8">
+            <Plus className="h-3 w-3 me-1" />
+            {language === 'ar' ? 'إضافة' : 'Add'}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 interface AddProductFormProps {
   onClose: () => void;
+}
+
+interface ColorSize {
+  size: string;
+  quantity: number;
 }
 
 interface Color {
@@ -37,6 +132,7 @@ interface Color {
   value: string;
   image: string;
   available: boolean;
+  sizes: ColorSize[];
 }
 
 export default function AddProductForm({ onClose }: AddProductFormProps) {
@@ -598,7 +694,8 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
       name: colorInput.name.trim(),
       value: colorInput.value,
       image: colorImage,
-      available: colorInput.available
+      available: colorInput.available,
+      sizes: [] // sizes will be managed per-color after adding
     };
 
     setNewProduct(prev => ({
@@ -648,12 +745,48 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
       ...prev,
       colors: prev.colors.map(color =>
         color.value === colorValue
-          ? {
-              ...color,
-              available:
-                !color.available
-            }
+          ? { ...color, available: !color.available }
           : color
+      )
+    }));
+  };
+
+  // ── Per-color size management ───────────────────────────────────────────────
+
+  const addSizeToColor = (colorValue: string, size: string, quantity: number) => {
+    if (!size.trim()) return;
+    setNewProduct(prev => ({
+      ...prev,
+      colors: prev.colors.map(c => {
+        if (c.value !== colorValue) return c;
+        const existing = c.sizes.find(s => s.size === size.trim());
+        if (existing) {
+          return {
+            ...c,
+            sizes: c.sizes.map(s => s.size === size.trim() ? { ...s, quantity } : s)
+          };
+        }
+        return { ...c, sizes: [...c.sizes, { size: size.trim(), quantity }] };
+      })
+    }));
+  };
+
+  const removeSizeFromColor = (colorValue: string, size: string) => {
+    setNewProduct(prev => ({
+      ...prev,
+      colors: prev.colors.map(c =>
+        c.value === colorValue ? { ...c, sizes: c.sizes.filter(s => s.size !== size) } : c
+      )
+    }));
+  };
+
+  const updateSizeQuantity = (colorValue: string, size: string, quantity: number) => {
+    setNewProduct(prev => ({
+      ...prev,
+      colors: prev.colors.map(c =>
+        c.value === colorValue
+          ? { ...c, sizes: c.sizes.map(s => s.size === size ? { ...s, quantity } : s) }
+          : c
       )
     }));
   };
@@ -1463,124 +1596,30 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
               </div>
 
               {/* =================================================
-                  ADDED COLORS
+                  ADDED COLORS — with per-color size management
               ================================================== */}
 
-              <div className="flex flex-wrap gap-3">
-
-                {newProduct.colors.map(
-                  (color, index) => (
-                    <div
-                      key={`${ color.value } -${ index } `}
-                      className={`flex items - center gap - 2 px - 3 py - 2 rounded - lg border ${
-  color.available
-    ? 'bg-green-50 border-green-200'
-    : 'bg-gray-50 border-gray-200'
-} `}
-                    >
-
-                      {/* COLOR SWATCH */}
-
-                      <div
-                        className="w-6 h-6 rounded border"
-                        style={{
-                          backgroundColor:
-                            color.value
-                        }}
-                        title={
-                          color.value
-                        }
-                      />
-
-                      {/* COLOR IMAGE */}
-
-                      <img
-                        src={color.image}
-                        alt={
-                          color.name
-                        }
-                        className="w-12 h-12 object-cover rounded border"
-                      />
-
-                      {/* COLOR NAME */}
-
-                      <span className="text-sm font-medium">
-                        {color.name}
-                      </span>
-
-                      {/* ACTIONS */}
-
-                      <div className="flex items-center gap-1">
-
-                        <button
-                          type="button"
-                          onClick={() =>
-                            toggleColorAvailability(
-                              color.value
-                            )
-                          }
-                          className={`p - 1 rounded ${
-  color.available
-    ? 'text-green-600 hover:text-green-800'
-    : 'text-gray-400 hover:text-gray-600'
-} `}
-                          title={
-                            color.available
-                              ? (
-                                  language === 'ar'
-                                    ? 'غير متاح'
-                                    : 'Make unavailable'
-                                )
-                              : (
-                                  language === 'ar'
-                                    ? 'متاح'
-                                    : 'Make available'
-                                )
-                          }
-                        >
-                          {color.available
-                            ? '✓'
-                            : '✗'}
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() =>
-                            removeColor(
-                              color.value
-                            )
-                          }
-                          className="text-red-500 hover:text-red-700 p-1 rounded"
-                          title={
-                            language === 'ar'
-                              ? 'حذف اللون'
-                              : 'Remove color'
-                          }
-                        >
-                          <X size={14} />
-                        </button>
-
-                      </div>
-
-                    </div>
-                  )
-                )}
-
+              <div className="space-y-4">
+                {newProduct.colors.map((color, index) => (
+                  <ColorSizeManager
+                    key={`${color.value}-${index}`}
+                    color={color}
+                    language={language}
+                    onToggleAvailability={() => toggleColorAvailability(color.value)}
+                    onRemove={() => removeColor(color.value)}
+                    onAddSize={(size, qty) => addSizeToColor(color.value, size, qty)}
+                    onRemoveSize={(size) => removeSizeFromColor(color.value, size)}
+                    onUpdateQty={(size, qty) => updateSizeQuantity(color.value, size, qty)}
+                  />
+                ))}
               </div>
 
               {/* NO COLORS */}
 
               {newProduct.colors.length === 0 && (
                 <div className="text-center text-gray-500 py-4 border-2 border-dashed rounded-lg">
-
                   <Palette className="mx-auto h-8 w-8 mb-2" />
-
-                  <p>
-                    {language === 'ar'
-                      ? 'لم تتم إضافة أي ألوان بعد'
-                      : 'No colors added yet'}
-                  </p>
-
+                  <p>{language === 'ar' ? 'لم تتم إضافة أي ألوان بعد' : 'No colors added yet'}</p>
                 </div>
               )}
 

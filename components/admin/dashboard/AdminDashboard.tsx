@@ -22,6 +22,7 @@ import { LoyaltyTab } from "./LoyaltyTab";
 import { ShippingSettingsTab } from "./ShippingSettingsTab";
 import { TransactionsTab } from "./TransactionsTab";
 import { AnalyticsTab } from "./AnalyticsTab";
+import { InventoryTab } from "./InventoryTab";
 import Link from "next/link";
 
 type Offer = {
@@ -64,6 +65,7 @@ const TAB_ITEMS = (isArabic: boolean, t: TranslateFunction) => [{ value: "overvi
 { value: "product-requests", label: isArabic ? "طلبات المنتجات" : "Product Requests" },
 { value: "loyalty", label: isArabic ? "برنامج الولاء" : "Loyalty" },
 { value: "analytics", label: isArabic ? "التحليلات" : "Analytics" },
+{ value: "inventory", label: isArabic ? "المخزون" : "Inventory" },
 ];
 
 export function AdminDashboard() {
@@ -573,6 +575,10 @@ export function AdminDashboard() {
             fetchAdminAnalytics={fetchAdminAnalytics}
             isArabic={isArabic}
           />
+        </TabsContent>
+
+        <TabsContent value="inventory">
+          <InventoryTab />
         </TabsContent>
 
         <TabsContent value="transactions">
