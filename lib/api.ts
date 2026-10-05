@@ -355,6 +355,14 @@ export const productService = {
   // Clear search history (requires auth)
   clearSearchHistory: () => api.delete("/api/products/search/history"),
 
+  // Best sellers (sorted by sold count)
+  getBestSellers: (limit = 8) =>
+    api.get("/api/products/featured/product", { params: { sort: "sold", limit } }),
+
+  // Trending products (new arrivals)
+  getTrendingProducts: (limit = 8) =>
+    api.get("/api/products/new/product", { params: { limit } }),
+
 };
 
 // Category Services

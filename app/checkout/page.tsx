@@ -237,10 +237,15 @@ function CheckoutInner() {
                     const raw = sessionStorage.getItem('buyNowItem')
                     const parsed = raw ? JSON.parse(raw) : null
                     if (parsed) {
+                        // Build color snapshot for order item
+                        const colorSnapshot = parsed.color
+                            ? { name: parsed.colorName ?? parsed.color, value: parsed.color, image: parsed.image ?? undefined }
+                            : undefined
                         buyNowItems = [{
                             productId: parsed.productId,
                             quantity: parsed.quantity,
                             color: parsed.color ?? undefined,
+                            colorSnapshot: colorSnapshot,
                             size: parsed.size ?? undefined,
                             image: parsed.image ?? undefined,
                         }]

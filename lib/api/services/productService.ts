@@ -65,6 +65,26 @@ export const productService = {
     }
   },
 
+  // Get best sellers (sorted by sold count)
+  async getBestSellers(limit = 8) {
+    try {
+      const response = await api.get(`/api/products/featured?sort=sold&limit=${limit}`);
+      return response;
+    } catch (error: any) {
+      throw error;
+    }
+  },
+
+  // Get trending products (new arrivals that have recent activity)
+  async getTrendingProducts(limit = 8) {
+    try {
+      const response = await api.get(`/api/products/new-arrivals?limit=${limit}`);
+      return response;
+    } catch (error: any) {
+      throw error;
+    }
+  },
+
   // Get product by ID within category
   async getProductById(categoryIdOrProductId: string, productId?: string) {
     try {

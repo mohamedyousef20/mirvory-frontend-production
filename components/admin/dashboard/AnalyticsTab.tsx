@@ -378,6 +378,60 @@ export function AnalyticsTab({ isArabic }: AnalyticsTabProps) {
     else { setOrderSortCol(col); setOrderSortDir("desc"); }
   };
 
+  // ── Combo Analysis state ──────────────────────────────────────────────────
+  const [comboSort, setComboSort] = useState<"qtySold" | "ordersCount" | "revenue">("qtySold");
+  const [comboSearch, setComboSearch] = useState("");
+
+  // ── Derived: Product+Color+Size combo leaderboard ────────────────────────
+  interface ComboEntry {
+    key: string;
+    productTitle: string;
+    colorName: string;
+    size: string;
+    qtySold: number;
+    ordersCount: number;
+    revenue: number;
+  }
+  const comboAnalysis = useMemo((): ComboEntry[] => {
+    const map = new Map<string, ComboEntry>();
+    for (const o of (data?.detailedOrders || [])) {
+      const product = o.productTitle || "—";
+      const color   = o.colorName   || "—";
+      const size    = o.size        || "—";
+      const key     = `${product}|||${color}|||${size}`;
+      const existing = map.get(key);
+      if (existing) {
+        existing.qtySold     += o.quantity;
+        existing.ordersCount += 1;
+        existing.revenue     += o.lineTotal ?? 0;
+      } else {
+        map.set(key, {
+          key,
+          productTitle: product,
+          colorName:    color,
+          size,
+          qtySold:      o.quantity,
+          ordersCount:  1,
+          revenue:      o.lineTotal ?? 0,
+        });
+      }
+    }
+    const arr = Array.from(map.values());
+    if (comboSort === "qtySold")     arr.sort((a, b) => b.qtySold - a.qtySold);
+    if (comboSort === "ordersCount") arr.sort((a, b) => b.ordersCount - a.ordersCount);
+    if (comboSort === "revenue")     arr.sort((a, b) => b.revenue - a.revenue);
+    return arr;
+  }, [data, comboSort]);
+
+  const filteredCombos = useMemo(() => {
+    const q = comboSearch.trim().toLowerCase();
+    if (!q) return comboAnalysis;
+    return comboAnalysis.filter(c =>
+      [c.productTitle, c.colorName, c.size]
+        .some(f => f.toLowerCase().includes(q))
+    );
+  }, [comboAnalysis, comboSearch]);
+
   // ── Export CSV ────────────────────────────────────────────────────────────
   const exportCSV = (rows: any[], filename: string, cols: { key: string; label: string }[]) => {
     const header = cols.map(c => c.label).join(",");
@@ -429,6 +483,15 @@ export function AnalyticsTab({ isArabic }: AnalyticsTabProps) {
     { key: "totalSpent",  label: "إجمالي الإنفاق" },
     { key: "lastOrder",   label: "آخر طلب" },
     { key: "avgOrder",    label: "متوسط الطلب" },
+  ]);
+
+  const exportCombos = () => exportCSV(filteredCombos, "combos_analysis", [
+    { key: "productTitle", label: "المنتج" },
+    { key: "colorName",    label: "اللون" },
+    { key: "size",         label: "المقاس" },
+    { key: "qtySold",      label: "الكمية المباعة" },
+    { key: "ordersCount",  label: "عدد الطلبات" },
+    { key: "revenue",      label: "الإيرادات" },
   ]);
 
   const exportGovernorateS = () => exportCSV(data?.governorateAnalysis || [], "governorates", [
@@ -912,6 +975,145 @@ export function AnalyticsTab({ isArabic }: AnalyticsTabProps) {
             </Section>
           </div>
 
+          {/* ══ 5.5 Product + Color + Size Combo Analysis ════════════════════ */}
+          <Section title="تحليل التوليفات: المنتج / اللون / المقاس" icon={Tag}>
+            <p className="text-xs text-muted-foreground mb-3">
+              أقوى أداة لمعرفة أكثر توليفة مبيعًا — مثلاً: <span className="font-medium text-foreground">Nike Air Force / أسود / 41 ← 38 قطعة</span>
+            </p>
+
+            {/* Sort + Search + Export */}
+            <div className="flex flex-wrap items-center gap-2 mb-3">
+              <span className="text-xs text-muted-foreground">ترتيب حسب:</span>
+              {([
+                { v: "qtySold",      l: "الأكثر مبيعًا" },
+                { v: "ordersCount",  l: "الأكثر طلبًا" },
+                { v: "revenue",      l: "الأعلى إيرادًا" },
+              ] as { v: "qtySold" | "ordersCount" | "revenue"; l: string }[]).map(o => (
+                <Button
+                  key={o.v}
+                  size="sm"
+                  variant={comboSort === o.v ? "default" : "outline"}
+                  onClick={() => setComboSort(o.v)}
+                  className="text-xs h-7"
+                >
+                  {o.l}
+                </Button>
+              ))}
+              <Button size="sm" variant="outline" className="text-xs h-7 mr-auto gap-1" onClick={exportCombos}>
+                <Download className="h-3 w-3" /> تصدير
+              </Button>
+            </div>
+
+            <Input
+              placeholder="بحث بالمنتج أو اللون أو المقاس…"
+              value={comboSearch}
+              onChange={e => setComboSearch(e.target.value)}
+              className="h-8 text-sm mb-3"
+            />
+
+            {filteredCombos.length === 0 ? (
+              <Empty msg="لا توجد توليفات مسجلة — تأكد من أن الطلبات تحتوي على لون ومقاس" />
+            ) : (
+              <>
+                {/* Top 10 bar chart */}
+                <div className="h-64 mb-4">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={filteredCombos.slice(0, 10).map(c => ({
+                        label: `${c.colorName} / ${c.size}`,
+                        product: c.productTitle,
+                        qtySold: c.qtySold,
+                        ordersCount: c.ordersCount,
+                        revenue: Math.round(c.revenue),
+                      }))}
+                      margin={{ top: 5, right: 5, left: 0, bottom: 60 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis
+                        dataKey="label"
+                        tick={{ fontSize: 9 }}
+                        angle={-35}
+                        textAnchor="end"
+                        interval={0}
+                      />
+                      <YAxis tick={{ fontSize: 10 }} />
+                      <Tooltip
+                        formatter={(v: any, name: string) => [
+                          name === "qtySold" ? `${v} قطعة` : name === "ordersCount" ? `${v} طلب` : EGP(v),
+                          name === "qtySold" ? "الكمية" : name === "ordersCount" ? "الطلبات" : "الإيرادات",
+                        ]}
+                        labelFormatter={(label: string, payload: any[]) => {
+                          const p = payload?.[0]?.payload;
+                          return p ? `${p.product} / ${label}` : label;
+                        }}
+                      />
+                      <Bar
+                        dataKey={comboSort === "revenue" ? "revenue" : comboSort}
+                        name={comboSort}
+                        fill="#6366f1"
+                        radius={[4, 4, 0, 0]}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+
+                {/* Full table */}
+                <div className="overflow-x-auto rounded-lg border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-right whitespace-nowrap w-8">#</TableHead>
+                        <TableHead className="text-right whitespace-nowrap">المنتج</TableHead>
+                        <TableHead className="text-right whitespace-nowrap">اللون</TableHead>
+                        <TableHead className="text-right whitespace-nowrap">المقاس</TableHead>
+                        <TableHead className="text-right whitespace-nowrap">الكمية</TableHead>
+                        <TableHead className="text-right whitespace-nowrap">الطلبات</TableHead>
+                        <TableHead className="text-right whitespace-nowrap">الإيرادات</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredCombos.slice(0, 100).map((c, i) => (
+                        <TableRow key={c.key}>
+                          <TableCell className="text-muted-foreground text-xs">{i + 1}</TableCell>
+                          <TableCell className="text-xs font-medium max-w-[160px] truncate">{c.productTitle}</TableCell>
+                          <TableCell>
+                            <span className="text-xs flex items-center gap-1.5">
+                              {c.colorName !== "—" && (
+                                <span
+                                  className="inline-block w-3 h-3 rounded-full border border-border flex-shrink-0"
+                                  style={{ background: c.colorName.startsWith("#") ? c.colorName : undefined }}
+                                />
+                              )}
+                              {c.colorName}
+                            </span>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className="text-xs font-mono">{c.size}</Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              variant={i < 3 ? "default" : "secondary"}
+                              className="text-xs font-bold"
+                            >
+                              {c.qtySold} قطعة
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-xs">{c.ordersCount}</TableCell>
+                          <TableCell className="text-xs font-medium">{EGP(c.revenue)}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+                {filteredCombos.length > 100 && (
+                  <p className="text-xs text-muted-foreground mt-2 text-center">
+                    عرض أول 100 توليفة من أصل {filteredCombos.length.toLocaleString("ar-EG")} — استخدم التصدير للاطلاع على الكل
+                  </p>
+                )}
+              </>
+            )}
+          </Section>
+
           {/* ══ 6. Customers ═══════════════════════════════════════════════ */}
           <Section title="تحليل العملاء" icon={Users}>
             {/* Summary */}
@@ -1328,6 +1530,9 @@ export function AnalyticsTab({ isArabic }: AnalyticsTabProps) {
                 </Button>
                 <Button size="sm" variant="outline" className="text-xs gap-1" onClick={exportProducts}>
                   <Download className="h-3 w-3" /> تقرير المنتجات
+                </Button>
+                <Button size="sm" variant="outline" className="text-xs gap-1" onClick={exportCombos}>
+                  <Download className="h-3 w-3" /> تقرير التوليفات
                 </Button>
                 <Button size="sm" variant="outline" className="text-xs gap-1" onClick={exportCustomers}>
                   <Download className="h-3 w-3" /> تقرير العملاء
