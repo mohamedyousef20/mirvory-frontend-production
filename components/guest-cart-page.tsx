@@ -340,11 +340,11 @@ export function GuestCartPage() {
                     )}
 
                     <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-                      {/* Image */}
+                      {/* Image — colorImage takes priority */}
                       <div className="relative h-24 w-24 rounded-xl overflow-hidden bg-slate-50 border border-slate-100 flex-shrink-0 mx-auto sm:mx-0">
-                        {item.image ? (
+                        {((item as any).colorImage || item.image) ? (
                           <Image
-                            src={normalizeImageUrl(item.image)}
+                            src={normalizeImageUrl((item as any).colorImage || item.image!)}
                             alt={isAr ? (item.title || "") : (item.titleEn || item.title || "")}
                             fill
                             className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -372,7 +372,7 @@ export function GuestCartPage() {
                             <div className="flex items-center gap-1 bg-slate-50 px-2 py-0.5 rounded-md border border-slate-100">
                               <span className="text-[11px] text-slate-400">{isAr ? "اللون:" : "Color:"}</span>
                               <div className="w-2.5 h-2.5 rounded-full border border-slate-200" style={{ backgroundColor: item.color }} />
-                              <span className="text-[11px] font-medium text-slate-600">{item.color}</span>
+                              <span className="text-[11px] font-medium text-slate-600">{(item as any).colorName || item.color}</span>
                             </div>
                           )}
                           {item.size && (

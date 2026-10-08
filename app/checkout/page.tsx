@@ -36,6 +36,94 @@ interface PickupPoint {
     phone?: string
 }
 
+// ── Variant types for Buy Now / cart display ──────────────────────────────────
+interface BuyNowSelection {
+    color?: string
+    colorName?: string
+    colorImage?: string | null
+    size?: string
+    quantity: number
+    image?: string | null
+}
+
+interface DisplayItem {
+    _id: string
+    title: string
+    image: string
+    price: number
+    quantity: number
+    colorName?: string | null
+    colorValue?: string | null
+    colorImage?: string | null
+    size?: string | null
+}
+
+/**
+ * Parse sessionStorage buyNowItem into { items: DisplayItem[], payloadItems: any[] }.
+ * Supports both new { selections[] } and legacy { quantity, color, size } formats.
+ */
+function parseBuyNowItem(raw: string): { items: DisplayItem[]; payloadItems: any[] } {
+    try {
+        const parsed = JSON.parse(raw)
+        // New format: { productId, title, price, selections[] }
+        if (Array.isArray(parsed.selections) && parsed.selections.length > 0) {
+            const items: DisplayItem[] = parsed.selections.map((sel: BuyNowSelection, idx: number) => ({
+                _id: `${parsed.productId}-${idx}`,
+                title: parsed.title || 'Product',
+                image: (sel.colorImage || sel.image) ?? '/placeholder.png',
+                price: parsed.price ?? 0,
+                quantity: sel.quantity,
+                colorName: sel.colorName ?? null,
+                colorValue: sel.color ?? null,
+                colorImage: sel.colorImage ?? null,
+                size: sel.size ?? null,
+            }))
+            const payloadItems = parsed.selections.map((sel: BuyNowSelection) => ({
+                productId: parsed.productId,
+                quantity: sel.quantity,
+                color: sel.color ?? undefined,
+                colorName: sel.colorName ?? undefined,
+                colorImage: sel.colorImage ?? undefined,
+                colorSnapshot: sel.color
+                    ? { name: sel.colorName ?? sel.color, value: sel.color, image: sel.colorImage ?? undefined }
+                    : undefined,
+                size: sel.size ?? undefined,
+                image: (sel.colorImage || sel.image) ?? undefined,
+            }))
+            return { items, payloadItems }
+        }
+        // Legacy format: { productId, quantity, color, size, image, title, price }
+        const colorSnapshot = parsed.color
+            ? { name: parsed.colorName ?? parsed.color, value: parsed.color, image: (parsed.colorImage || parsed.image) ?? undefined }
+            : undefined
+        return {
+            items: [{
+                _id: parsed.productId,
+                title: parsed.title || 'Product',
+                image: (parsed.colorImage || parsed.image) ?? '/placeholder.png',
+                price: parsed.price ?? 0,
+                quantity: parsed.quantity ?? 1,
+                colorName: parsed.colorName ?? null,
+                colorValue: parsed.color ?? null,
+                colorImage: parsed.colorImage ?? null,
+                size: parsed.size ?? null,
+            }],
+            payloadItems: [{
+                productId: parsed.productId,
+                quantity: parsed.quantity ?? 1,
+                color: parsed.color ?? undefined,
+                colorName: parsed.colorName ?? undefined,
+                colorImage: parsed.colorImage ?? undefined,
+                colorSnapshot,
+                size: parsed.size ?? undefined,
+                image: (parsed.colorImage || parsed.image) ?? undefined,
+            }],
+        }
+    } catch {
+        return { items: [], payloadItems: [] }
+    }
+}
+
 function CheckoutInner() {
     const router = useRouter()
     const searchParams = useSearchParams()
@@ -60,6 +148,8 @@ function CheckoutInner() {
 
 
     const [cartItems, setCartItems] = useState<any[]>([])
+    const [buyNowItems, setBuyNowItems] = useState<DisplayItem[]>([])
+    const [buyNowPayload, setBuyNowPayload] = useState<any[]>([])
     const [appliedCoupon, setAppliedCoupon] = useState<any>(null)
     const [subtotal, setSubtotal] = useState(0)
     const [shippingSettings, setShippingSettings] = useState<any>(null)
@@ -115,24 +205,24 @@ function CheckoutInner() {
                 let couponData: any = null
 
                 if (isBuyNow) {
-                    // ── Buy Now mode: read single item from sessionStorage ──
+                    // ── Buy Now mode: read item(s) from sessionStorage ──
                     try {
                         const raw = sessionStorage.getItem('buyNowItem')
-                        const buyNowItem = raw ? JSON.parse(raw) : null
-                        if (buyNowItem) {
-                            // Shape it to match cart item structure for display
-                            items = [{
-                                _id: buyNowItem.productId,
-                                product: {
-                                    _id: buyNowItem.productId,
-                                    title: buyNowItem.title,
-                                    images: buyNowItem.image ? [buyNowItem.image] : [],
-                                    discountedPrice: buyNowItem.price,
-                                },
-                                quantity: buyNowItem.quantity,
-                                colors: buyNowItem.color ? [buyNowItem.color] : [],
-                                sizes: buyNowItem.size ? [buyNowItem.size] : [],
-                            }]
+                        if (raw) {
+                            const { items: parsedItems, payloadItems } = parseBuyNowItem(raw)
+                            setBuyNowItems(parsedItems)
+                            setBuyNowPayload(payloadItems)
+                            // Build synthetic cart items for subtotal calc
+                            items = parsedItems.map(pi => ({
+                                _id: pi._id,
+                                product: { _id: pi._id, title: pi.title, images: [pi.image], discountedPrice: pi.price },
+                                quantity: pi.quantity,
+                                price: pi.price,
+                                color: pi.colorValue,
+                                colorName: pi.colorName,
+                                colorImage: pi.colorImage,
+                                size: pi.size,
+                            }))
                         }
                     } catch {
                         // sessionStorage read failed — fall back to cart
@@ -231,24 +321,19 @@ function CheckoutInner() {
             setLoading(true)
 
             // In Buy Now mode, send the item directly without touching the cart
-            let buyNowItems: any[] | undefined
+            let buyNowOrderItems: any[] | undefined
             if (isBuyNow) {
                 try {
-                    const raw = sessionStorage.getItem('buyNowItem')
-                    const parsed = raw ? JSON.parse(raw) : null
-                    if (parsed) {
-                        // Build color snapshot for order item
-                        const colorSnapshot = parsed.color
-                            ? { name: parsed.colorName ?? parsed.color, value: parsed.color, image: parsed.image ?? undefined }
-                            : undefined
-                        buyNowItems = [{
-                            productId: parsed.productId,
-                            quantity: parsed.quantity,
-                            color: parsed.color ?? undefined,
-                            colorSnapshot: colorSnapshot,
-                            size: parsed.size ?? undefined,
-                            image: parsed.image ?? undefined,
-                        }]
+                    // Use parsed payload stored in state (already handles selections[] + legacy)
+                    if (buyNowPayload.length > 0) {
+                        buyNowOrderItems = buyNowPayload
+                    } else {
+                        // Fallback: re-parse from sessionStorage
+                        const raw = sessionStorage.getItem('buyNowItem')
+                        if (raw) {
+                            const { payloadItems } = parseBuyNowItem(raw)
+                            buyNowOrderItems = payloadItems
+                        }
                     }
                 } catch { /* ignore */ }
             }
@@ -263,7 +348,7 @@ function CheckoutInner() {
                     pickupPoint: deliveryMethod === 'pickup' ? selectedPickupPointId : undefined
                 },
             }
-            if (buyNowItems) orderPayload.items = buyNowItems
+            if (buyNowOrderItems) orderPayload.items = buyNowOrderItems
 
             const response = await orderService.createOrder(orderPayload)
             if (response.data) {
@@ -299,7 +384,7 @@ function CheckoutInner() {
         } finally {
             setLoading(false)
         }
-    }, [fullName, phone, deliveryMethod, paymentMethod, address, selectedPickupPointId, isAr, router])
+    }, [fullName, phone, deliveryMethod, paymentMethod, address, selectedPickupPointId, isAr, router, buyNowPayload, isBuyNow])
 
     if (loadingData) {
         return (
@@ -576,21 +661,28 @@ function CheckoutInner() {
 
                                 {/* Cart Items Summary */}
                                 <div className="max-h-[35vh] overflow-y-auto custom-scrollbar pe-2 space-y-4 mb-6">
-                                    {cartItems.map((item: any) => {
+                                    {(isBuyNow ? buyNowItems : cartItems).map((item: any, idx: number) => {
                                         const product = item.product || {};
-                                        const itemTotal =
-                                            (item.quantity || 0) *
-                                            ((item.product?.discountedPrice ?? item.price) || 0);
+                                        // For buy-now DisplayItems, price is at root; for cart items, it's nested
+                                        const unitPrice = (item.price ?? item.product?.discountedPrice ?? 0)
+                                        const itemTotal = (item.quantity || 0) * unitPrice
+                                        // colorImage priority: DisplayItem.colorImage → item.colorImage → product.images[0]
+                                        const displayImage = item.colorImage || item.image || product.images?.[0] || '/placeholder.png'
+                                        // Color: DisplayItem uses colorValue; cart items use item.color or item.colors[0]
+                                        const colorValue = item.colorValue || item.color || (item.colors?.length > 0 ? item.colors[0] : null)
+                                        const colorLabel = item.colorName || colorValue
+                                        const size = item.size || (item.sizes?.length > 0 ? item.sizes[0] : null)
+                                        const title = item.title || product.title || 'Product'
                                         return (
                                             <div
-                                                key={item._id}
+                                                key={item._id || idx}
                                                 className="flex gap-4 items-center bg-white/10 p-3 rounded-xl border border-white/20"
                                             >
-                                                {/* IMAGE */}
+                                                {/* IMAGE — colorImage takes priority */}
                                                 <div className="w-16 h-16 bg-white rounded-lg overflow-hidden shrink-0 relative">
                                                     <Image
-                                                        src={product.images?.[0] || "/placeholder.png"}
-                                                        alt={product.title || "Item"}
+                                                        src={displayImage}
+                                                        alt={title}
                                                         fill
                                                         className="object-cover"
                                                     />
@@ -599,24 +691,25 @@ function CheckoutInner() {
                                                 {/* DETAILS */}
                                                 <div className="flex-1 min-w-0">
                                                     <h5 className="font-medium text-sm text-white truncate">
-                                                        {product.title || "Product"}
+                                                        {title}
                                                     </h5>
 
                                                     <p className="text-blue-200 text-xs mt-1">
                                                         {isAr ? "الكمية:" : "Qty:"} {item.quantity}
                                                     </p>
 
-                                                    {/* COLOR */}
-                                                    {item.colors?.length > 0 && (
-                                                        <p className="text-blue-200 text-xs mt-1">
-                                                            {isAr ? "اللون:" : "Color:"} {item.colors[0]}
+                                                    {/* COLOR swatch + name */}
+                                                    {colorValue && (
+                                                        <p className="text-blue-200 text-xs mt-1 flex items-center gap-1">
+                                                            <span className="inline-block w-2.5 h-2.5 rounded-full border border-white/30 shrink-0" style={{ backgroundColor: colorValue }} />
+                                                            {colorLabel}
                                                         </p>
                                                     )}
 
-                                                    {/* SIZE */}
-                                                    {item.sizes?.length > 0 && (
+                                                    {/* SIZE badge */}
+                                                    {size && (
                                                         <p className="text-blue-200 text-xs mt-1">
-                                                            {isAr ? "المقاس:" : "Size:"} {item.sizes[0]}
+                                                            {isAr ? "م " : "S "}{size}
                                                         </p>
                                                     )}
                                                 </div>

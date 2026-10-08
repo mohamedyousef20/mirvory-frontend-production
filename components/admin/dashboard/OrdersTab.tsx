@@ -447,9 +447,19 @@ export function OrdersTab({
                                     <div className="space-y-2">
                                         {order.items?.map((item: any, index: number) => (
                                             <div key={index} className="flex items-center gap-2.5 p-2 bg-slate-50 rounded-xl border border-slate-100">
+                                                {/* Color-specific image takes priority over product image */}
                                                 <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-slate-200 shrink-0 border border-slate-200">
                                                     <img
-                                                        src={item.image || item.product?.images?.[0] || "/placeholder-product.jpg"}
+                                                        src={
+                                                            // 1st: color snapshot image
+                                                            (typeof item.color === "object" && item.color?.image)
+                                                                ? item.color.image
+                                                                // 2nd: item.image (set at order creation from colorImage)
+                                                                : item.image
+                                                                    ? item.image
+                                                                    // 3rd: product images
+                                                                    : item.product?.images?.[0] || "/placeholder-product.jpg"
+                                                        }
                                                         alt={item.product?.title || "Product"}
                                                         className="object-cover w-full h-full"
                                                     />
@@ -458,76 +468,41 @@ export function OrdersTab({
                                                     <p className="text-xs font-semibold text-slate-800 truncate">
                                                         {ar ? item.product?.title : item.product?.titleEn || item.product?.title}
                                                     </p>
-                                                    <p className="text-xs text-slate-400 mt-0.5">
-
-                                                        {/* Selected Color */}
+                                                    <div className="flex flex-wrap items-center gap-1 mt-1">
+                                                        {/* Color swatch + name — supports both string (legacy) and object (new snapshot) */}
                                                         {item.color && (
-                                                            <span className="inline-flex items-center gap-1.5">
-                                                                {ar ? "لون مختار: " : "Selected Color: "}
-
+                                                            <span className="inline-flex items-center gap-1 bg-white border border-slate-200 rounded-full px-1.5 py-0.5">
                                                                 <span
-                                                                    className="inline-block w-3.5 h-3.5 rounded-full border border-slate-300 shadow-sm shrink-0"
+                                                                    className="inline-block w-3 h-3 rounded-full border border-slate-300 shrink-0"
                                                                     style={{
                                                                         backgroundColor:
                                                                             typeof item.color === "string"
                                                                                 ? item.color
                                                                                 : item.color.value || "#000000",
                                                                     }}
-                                                                    title={
-                                                                        typeof item.color === "string"
-                                                                            ? item.color
-                                                                            : item.color.value || ""
-                                                                    }
                                                                 />
-
-                                                                <span>
+                                                                <span className="text-xs text-slate-600">
                                                                     {typeof item.color === "string"
                                                                         ? item.color
                                                                         : item.color.name || item.color.value}
                                                                 </span>
                                                             </span>
                                                         )}
-                                                        {/* Show all available colors */}
-                                                        {item.product?.colors?.length > 0 && (
-                                                            <div className="mt-1">
-                                                                {ar ? "الألوان: " : "Colors: "}
-                                                                {item.product.colors.map((c: any, i: number) => (
-                                                                    <span key={i} className="mr-1">
-                                                                        {c.name}{i !== item.product.colors.length - 1 ? "," : ""}
-                                                                    </span>
-                                                                ))}
-                                                            </div>
-                                                        )}
-
-                                                        {/* Separator */}
-                                                        {item.color && item.size && <span> · </span>}
-
-                                                        {/* Selected Size */}
+                                                        {/* Size badge */}
                                                         {item.size && (
-                                                            <>
-                                                                {ar ? "مقاس مختار: " : "Selected Size: "}
-                                                                {item.size}
-                                                            </>
+                                                            <span className="inline-flex items-center bg-blue-50 border border-blue-100 text-blue-700 rounded-full px-1.5 py-0.5 text-xs font-medium">
+                                                                {ar ? "م " : "S "}{item.size}
+                                                            </span>
                                                         )}
-
-                                                        {/* All sizes */}
-                                                        {item.product?.sizes?.length > 0 && (
-                                                            <div className="mt-1">
-                                                                {ar ? "المقاسات: " : "Sizes: "}
-                                                                {item.product.sizes.map((s: string, i: number) => (
-                                                                    <span key={i} className="mr-1">
-                                                                        {s}{i !== item.product.sizes.length - 1 ? "," : ""}
-                                                                    </span>
-                                                                ))}
-                                                            </div>
-                                                        )}
-
-                                                    </p>
+                                                    </div>
                                                 </div>
                                                 <div className="shrink-0 flex flex-col items-end gap-1">
                                                     <span className="text-xs font-bold text-slate-700 bg-white border border-slate-200 rounded-full px-2 py-0.5">
                                                         ×{item.quantity}
                                                     </span>
+                                                    {item.price && (
+                                                        <span className="text-xs text-slate-400">{item.price} EGP</span>
+                                                    )}
                                                 </div>
                                             </div>
                                         ))}

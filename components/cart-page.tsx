@@ -55,6 +55,8 @@ interface CartItem {
   oldPrice?: number
   color?: string
   colorEn?: string
+  colorName?: string    // Human-readable color label (e.g. "Black")
+  colorImage?: string   // Color-specific product image URL
   size?: string
   maxQuantity: number
 }
@@ -135,29 +137,32 @@ function AuthenticatedCartPage() {
       return items.map((item: any) => {
         const product = item.product || {};
 
+        // colorImage takes priority over product images (shows the specific color's photo)
+        const displayImage =
+          item.colorImage ||
+          item.color_image ||
+          (Array.isArray(product.images) && product.images.length > 0
+            ? product.images[0]
+            : "/placeholder.svg");
+
         return {
           _id: item._id || '',
           productId: product._id || '',
           name: product.title || '',
           nameEn: product.titleEn || product.title || '',
-          image: Array.isArray(product.images) && product.images.length > 0
-            ? product.images[0]
-            : "/placeholder.svg",
+          image: displayImage,
           quantity: typeof item.quantity === 'number' ? item.quantity : 1,
           price: typeof item.price === 'number'
             ? item.price
             : (typeof product.price === 'number' ? product.price : 0),
           oldPrice: undefined,
-          color: Array.isArray(item.colors) && item.colors.length > 0
-            ? item.colors[0]
-            : undefined,
-          colorEn: Array.isArray(item.colors) && item.colors.length > 0
-            ? item.colors[0]
-            : undefined,
-          size: Array.isArray(item.sizes) && item.sizes.length > 0
-            ? item.sizes[0]
-            : undefined,
-          maxQuantity: product.quantity 
+          // New variant fields (from backend cartItem)
+          color: item.color ?? (Array.isArray(item.colors) && item.colors.length > 0 ? item.colors[0] : undefined),
+          colorEn: Array.isArray(item.colors) && item.colors.length > 0 ? item.colors[0] : undefined,
+          colorName: item.colorName ?? undefined,
+          colorImage: item.colorImage ?? undefined,
+          size: item.size ?? (Array.isArray(item.sizes) && item.sizes.length > 0 ? item.sizes[0] : undefined),
+          maxQuantity: product.quantity
         };
       });
     } catch (error) {
@@ -637,7 +642,7 @@ function AuthenticatedCartPage() {
                                   {language === "ar" ? "اللون:" : "Color:"}
                                 </span>
                                 <div className="w-2.5 h-2.5 rounded-full border border-slate-200" style={{ backgroundColor: item.color }} />
-                                <span className="text-[11px] font-medium text-slate-600">{language === "ar" ? item.color : item.colorEn}</span>
+                                <span className="text-[11px] font-medium text-slate-600">{item.colorName || (language === "ar" ? item.color : item.colorEn)}</span>
                               </div>
                             )}
                             {item.size && (

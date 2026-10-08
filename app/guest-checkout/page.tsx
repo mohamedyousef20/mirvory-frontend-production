@@ -18,13 +18,63 @@ declare global {
     ) => void;
   }
 }
+interface BuyNowSelection {
+  color?: string;
+  colorName?: string;
+  colorImage?: string | null;
+  size?: string;
+  quantity: number;
+  image?: string | null;
+}
+
 interface GuestItem {
   productId: string;
   quantity: number;
-  size?: string;
-  color?: string;
+  size?: string | null;
+  color?: string | null;
+  colorName?: string | null;
+  colorImage?: string | null;
+  image?: string | null;
   title?: string;
   price?: number;
+}
+
+/**
+ * Parse sessionStorage buyNowItem into GuestItem[].
+ * Supports both new { selections[] } and legacy { quantity, color, size } formats.
+ */
+function parseBuyNowToGuestItems(raw: string): GuestItem[] {
+  try {
+    const parsed = JSON.parse(raw);
+    // New format: { productId, title, price, selections[] }
+    if (Array.isArray(parsed.selections) && parsed.selections.length > 0) {
+      return parsed.selections.map((sel: BuyNowSelection) => ({
+        productId: parsed.productId,
+        quantity: sel.quantity,
+        color: sel.color ?? null,
+        colorName: sel.colorName ?? null,
+        colorImage: sel.colorImage ?? null,
+        size: sel.size ?? null,
+        title: parsed.title,
+        price: parsed.price ?? 0,
+        image: sel.colorImage || sel.image || null,
+      }));
+    }
+    // Legacy format: { productId, quantity, color, size, image, title, price }
+    return [{
+      productId: parsed.productId,
+      quantity: parsed.quantity ?? 1,
+      color: parsed.color ?? null,
+      colorName: parsed.colorName ?? null,
+      colorImage: parsed.colorImage ?? null,
+      size: parsed.size ?? null,
+      title: parsed.title,
+      price: parsed.price ?? 0,
+      image: parsed.colorImage || parsed.image || null,
+    }];
+  } catch {
+    return [];
+  }
 }
 
 interface GuestCheckoutForm {
@@ -71,8 +121,8 @@ function GuestCheckoutInner() {
     if (isBuyNow) {
       try {
         const raw = sessionStorage.getItem('buyNowItem')
-        const item = raw ? JSON.parse(raw) : null
-        return item ? [{ productId: item.productId, quantity: item.quantity, size: item.size, color: item.color, title: item.title, price: item.price }] : []
+        if (!raw) return []
+        return parseBuyNowToGuestItems(raw)
       } catch { return [] }
     }
     return getGuestCart() as GuestItem[]
@@ -180,6 +230,9 @@ function GuestCheckoutInner() {
           quantity: item.quantity,
           size: item.size ?? null,
           color: item.color ?? null,
+          colorName: item.colorName ?? null,
+          colorImage: item.colorImage ?? null,
+          image: item.colorImage || item.image || null,
         })),
       });
 
@@ -417,9 +470,24 @@ function GuestCheckoutInner() {
               <h3 className="font-semibold mb-3">ملخص الطلب</h3>
               <div className="space-y-2">
                 {cartItems.map((item, idx) => (
-                  <div key={idx} className="flex justify-between text-sm">
-                    <span className="text-gray-600">{item.title || `منتج ${idx + 1}`}</span>
-                    <span className="font-medium">
+                  <div key={idx} className="flex justify-between items-start text-sm gap-2">
+                    <div className="flex-1 min-w-0">
+                      <span className="text-gray-700 font-medium">{item.title || `منتج ${idx + 1}`}</span>
+                      <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
+                        {item.color && (
+                          <span className="inline-flex items-center gap-1 bg-white border border-gray-200 rounded-full px-1.5 py-0.5">
+                            <span className="inline-block w-2.5 h-2.5 rounded-full border border-gray-300 shrink-0" style={{ backgroundColor: item.color }} />
+                            <span className="text-xs text-gray-500">{item.colorName || item.color}</span>
+                          </span>
+                        )}
+                        {item.size && (
+                          <span className="inline-flex items-center bg-blue-50 border border-blue-100 text-blue-700 rounded-full px-1.5 py-0.5 text-xs font-medium">
+                            م {item.size}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <span className="font-medium shrink-0">
                       x{item.quantity}
                       {item.price ? ` · ${(item.price * item.quantity).toLocaleString()} ج.م` : ''}
                     </span>

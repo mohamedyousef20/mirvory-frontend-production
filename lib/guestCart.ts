@@ -12,8 +12,10 @@ export interface GuestCartItem {
   quantity: number;
   size?: string | null;
   color?: string | null;
+  colorName?: string | null;   // human-readable color label (e.g. "Black")
+  colorImage?: string | null;  // color-specific product image URL
 
-  // Image belonging to the selected color
+  // Image belonging to the selected color (legacy — prefer colorImage)
   image?: string | null;
 
   title?: string;
@@ -76,6 +78,8 @@ export function addToGuestCart(item: GuestCartItem): GuestCartItem[] {
       ...(item.title ? { title: item.title } : {}),
       ...(item.titleEn ? { titleEn: item.titleEn } : {}),
       ...(item.image ? { image: item.image } : {}),
+      ...(item.colorName !== undefined ? { colorName: item.colorName } : {}),
+      ...(item.colorImage !== undefined ? { colorImage: item.colorImage } : {}),
       ...(item.price !== undefined ? { price: item.price } : {}),
       ...(item.maxQuantity !== undefined ? { maxQuantity: item.maxQuantity } : {}),
       quantity:
