@@ -26,6 +26,7 @@ import {
   Trash2,
   Zap,
   CheckCircle2,
+  Play,
 } from "lucide-react"
 import { toast } from "sonner"
 import { cartService, productService, ratingService, wishlistService } from "@/lib/api"
@@ -35,17 +36,6 @@ import { Separator } from "@/components/ui/separator"
 import { useAuth } from "@/contexts/AuthProvider"
 import { useRouter } from "next/navigation"
 
-// ── Video embed helper ───────────────────────────────────────────────────────
-
-/**
- * Extracts a YouTube video ID from every common URL format:
- *  - https://www.youtube.com/watch?v=VIDEO_ID
- *  - https://youtu.be/VIDEO_ID
- *  - https://m.youtube.com/watch?v=VIDEO_ID
- *  - https://youtube.com/embed/VIDEO_ID          (already an embed)
- *  - https://youtube.com/shorts/VIDEO_ID         (Shorts)
- *  - https://www.youtube.com/watch?v=ID&t=30s    (with extra params)
- */
 function getYouTubeEmbedUrl(url: string): string | null {
   if (!url || typeof url !== 'string') return null
   const trimmed = url.trim()
@@ -53,22 +43,18 @@ function getYouTubeEmbedUrl(url: string): string | null {
     const u = new URL(trimmed)
     const host = u.hostname.replace(/^(www\.|m\.)/, '')
 
-    // youtu.be/VIDEO_ID
     if (host === 'youtu.be') {
       const id = u.pathname.slice(1).split('?')[0].split('/')[0]
       if (id) return `https://www.youtube-nocookie.com/embed/${id}`
     }
 
     if (host === 'youtube.com' || host === 'youtube-nocookie.com') {
-      // /watch?v=VIDEO_ID
       const v = u.searchParams.get('v')
       if (v) return `https://www.youtube-nocookie.com/embed/${v}`
 
-      // /embed/VIDEO_ID (already embed — just normalise domain)
       const embedMatch = u.pathname.match(/\/embed\/([^/?]+)/)
       if (embedMatch) return `https://www.youtube-nocookie.com/embed/${embedMatch[1]}`
 
-      // /shorts/VIDEO_ID
       const shortsMatch = u.pathname.match(/\/shorts\/([^/?]+)/)
       if (shortsMatch) return `https://www.youtube-nocookie.com/embed/${shortsMatch[1]}`
     }
@@ -85,41 +71,32 @@ function ProductVideoEmbed({ url }: { url: string }) {
   if (embedUrl) {
     return (
       <div className="space-y-3">
-        {/* 16:9 responsive container */}
-        <div className="relative w-full rounded-2xl overflow-hidden border border-slate-200 shadow-sm bg-slate-900"
+        <div className="relative w-full rounded-2xl overflow-hidden border-2 border-red-500 shadow-md bg-slate-900"
           style={{ paddingBottom: '56.25%' }}>
           <iframe
             src={embedUrl}
             title="فيديو المنتج"
+            referrerPolicy="strict-origin-when-cross-origin"
             className="absolute inset-0 w-full h-full"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen
             loading="lazy"
           />
         </div>
-        <p className="text-xs text-muted-foreground text-center">
-          انقر على الفيديو لتشغيله — يُفتح في وضع آمن (YouTube Privacy Enhanced)
-        </p>
       </div>
     )
   }
 
-  // Invalid / unsupported URL — show a safe fallback
   const looksLikeUrl = /^https?:\/\//i.test(url.trim())
   if (looksLikeUrl) {
     return (
       <div className="flex flex-col items-center gap-3 py-8 text-center bg-slate-50 rounded-2xl border border-slate-200">
         <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center">
-          <svg className="w-6 h-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-              d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" />
-          </svg>
+          <Play className="w-6 h-6 text-red-500 fill-red-500" />
         </div>
-        <p className="text-sm font-medium text-slate-700">لا يمكن عرض الفيديو مضمّناً</p>
-        <p className="text-xs text-slate-500">رابط الفيديو غير مدعوم للعرض المباشر (يدعم YouTube فقط)</p>
         <a href={url} target="_blank" rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-[#1a4fba] text-white text-sm font-medium rounded-xl hover:bg-[#1640a0] transition">
-          مشاهدة الفيديو ↗
+          className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-xl hover:bg-red-700 transition">
+          مشاهدة الفيديو على يوتيوب ↗
         </a>
       </div>
     )
@@ -132,8 +109,6 @@ function ProductVideoEmbed({ url }: { url: string }) {
   )
 }
 
-// ── TypeScript interfaces ────────────────────────────────────────────────────
-
 interface ColorSize {
   size: string
   quantity: number
@@ -141,10 +116,9 @@ interface ColorSize {
 
 interface ProductColor {
   name: string
-  value: string            // hex e.g. "#000000"
+  value: string
   image?: string | null
   available: boolean
-  /** Per-size inventory — present in new products */
   sizes?: ColorSize[]
 }
 
@@ -158,7 +132,7 @@ interface Product {
   quantity: number
   sold: number
   images: string[]
-  sizes: string[]          // legacy flat sizes list
+  sizes: string[]
   colors: ProductColor[]
   ratings: {
     average: number
@@ -174,7 +148,7 @@ interface Product {
   status: 'available' | 'pending' | 'sold'
   createdAt: string
   updatedAt: string
-  videoUrl?: string  // optional YouTube / embed URL
+  videoUrl?: string
 }
 
 interface Review {
@@ -196,10 +170,8 @@ interface RelatedProduct {
   ratings: { average: number; count: number }
 }
 
-// ── Component ─────────────────────────────────────────────────────────────────
-
 const ProductDetail = ({ productId }: { productId: string }) => {
-  const { language, t } = useLanguage()
+  const { language } = useLanguage()
   const { user, cookiesReady } = useAuth()
   const isLoggedIn = Boolean(user)
   const router = useRouter()
@@ -208,11 +180,8 @@ const ProductDetail = ({ productId }: { productId: string }) => {
   const [isLoading, setIsLoading] = useState(true)
   const [mainImage, setMainImage] = useState('')
 
-  // ── New: single selected color + size ──────────────────────────────────────
-  const [selectedColor, setSelectedColor] = useState<string>('')   // hex value
+  const [selectedColor, setSelectedColor] = useState<string>('')
   const [selectedSize, setSelectedSize] = useState<string>('')
-
-  // Legacy arrays — kept for cart/checkout backwards compatibility
   const [selectedSizes, setSelectedSizes] = useState<string[]>([''])
   const [selectedColors, setSelectedColors] = useState<string[]>([''])
 
@@ -221,7 +190,6 @@ const ProductDetail = ({ productId }: { productId: string }) => {
   const [isFavorite, setIsFavorite] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [reviews, setReviews] = useState<Review[]>([])
-  const [ratingsSummary, setRatingsSummary] = useState<{ average: number; total: number } | null>(null)
   const [userRatingId, setUserRatingId] = useState<string | null>(null)
   const [ratingInput, setRatingInput] = useState(0)
   const [commentInput, setCommentInput] = useState('')
@@ -231,45 +199,34 @@ const ProductDetail = ({ productId }: { productId: string }) => {
   const userId = user?._id || null
   const reviewFormRef = useRef<HTMLFormElement | null>(null)
 
-  // ── Helpers ────────────────────────────────────────────────────────────────
-
-  /** Return the available sizes for a given color hex value */
   const getSizesForColor = useCallback(
     (colorValue: string): ColorSize[] => {
       if (!product) return []
       const colorObj = product.colors?.find(c => c.value === colorValue)
       if (colorObj?.sizes && colorObj.sizes.length > 0) return colorObj.sizes
-      // Fallback: legacy flat sizes array
       return (product.sizes || []).map(s => ({ size: s, quantity: 99 }))
     },
     [product]
   )
 
-  /** Sizes currently relevant to the selected color */
   const activeSizes: ColorSize[] = useMemo(
     () => (selectedColor ? getSizesForColor(selectedColor) : []),
     [selectedColor, getSizesForColor]
   )
 
-  /** Max purchasable quantity for the current color+size combo */
   const maxQty: number = useMemo(() => {
     if (selectedSize) {
       const entry = activeSizes.find(s => s.size === selectedSize)
       if (entry) return entry.quantity
     }
-    // No color-size granularity — fall back to product-level
     return product?.quantity ?? 0
   }, [selectedSize, activeSizes, product?.quantity])
-
-  // ── Reload ─────────────────────────────────────────────────────────────────
 
   const handleReload = useCallback(() => {
     setIsLoading(true)
     setProduct(null)
     setError(null)
   }, [])
-
-  // ── Fetch product ──────────────────────────────────────────────────────────
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -282,12 +239,10 @@ const ProductDetail = ({ productId }: { productId: string }) => {
           const pd = response.data.product as Product
           setProduct(pd)
 
-          // Set initial main image: prefer first color's image, then product images
           const firstColor = pd.colors?.find(c => c.available) ?? pd.colors?.[0]
           const initImage = firstColor?.image || pd.images?.[0] || ''
           setMainImage(initImage)
 
-          // Pre-select first available color
           if (firstColor) {
             setSelectedColor(firstColor.value)
             setSelectedColors([firstColor.value])
@@ -299,7 +254,6 @@ const ProductDetail = ({ productId }: { productId: string }) => {
           setSelectedSizes([''])
           setQuantity(1)
 
-          // Fetch related products
           if (pd.category?._id) {
             fetchRelatedProducts(pd.category._id)
           }
@@ -330,8 +284,6 @@ const ProductDetail = ({ productId }: { productId: string }) => {
     if (productId) fetchProduct()
   }, [productId, language])
 
-  // ── Wishlist check ─────────────────────────────────────────────────────────
-
   useEffect(() => {
     const checkFavorite = async () => {
       try {
@@ -348,8 +300,6 @@ const ProductDetail = ({ productId }: { productId: string }) => {
     else setIsFavorite(false)
   }, [productId, product, isLoggedIn])
 
-  // ── Color selection ────────────────────────────────────────────────────────
-
   const handleColorSelect = useCallback((colorValue: string) => {
     setSelectedColor(colorValue)
     setSelectedColors([colorValue])
@@ -363,22 +313,16 @@ const ProductDetail = ({ productId }: { productId: string }) => {
     }
   }, [product])
 
-  // ── Size selection ─────────────────────────────────────────────────────────
-
   const handleSizeSelect = useCallback((sizeValue: string) => {
     setSelectedSize(sizeValue)
     setSelectedSizes([sizeValue])
     setQuantity(1)
   }, [])
 
-  // ── Quantity change ────────────────────────────────────────────────────────
-
   const handleQuantityChange = useCallback((value: number) => {
     const next = Math.max(1, maxQty > 0 ? Math.min(value, maxQty) : 1)
     setQuantity(next)
   }, [maxQty])
-
-  // ── Validate before add-to-cart / buy-now ─────────────────────────────────
 
   const validateSelections = useCallback((): boolean => {
     if (!product) return false
@@ -405,13 +349,10 @@ const ProductDetail = ({ productId }: { productId: string }) => {
     return true
   }, [product, selectedColor, selectedSize, maxQty, quantity, activeSizes.length, language])
 
-  // ── Add to cart ────────────────────────────────────────────────────────────
-
   const addToCartHandler = useCallback(async () => {
     if (!validateSelections()) return
     if (!product) return
 
-    // Build color snapshot for guest cart display
     const colorObj = product.colors?.find(c => c.value === selectedColor)
     const colorImage = colorObj?.image || product.images?.[0] || null
 
@@ -447,8 +388,6 @@ const ProductDetail = ({ productId }: { productId: string }) => {
     }
   }, [validateSelections, product, selectedColor, selectedSize, selectedColors, selectedSizes, productId, quantity, isLoggedIn, cookiesReady, language])
 
-  // ── Buy Now ────────────────────────────────────────────────────────────────
-
   const handleBuyNow = useCallback(() => {
     if (!validateSelections()) return
     if (!product) return
@@ -473,8 +412,6 @@ const ProductDetail = ({ productId }: { productId: string }) => {
     router.push(isLoggedIn ? '/checkout?mode=buyNow' : '/guest-checkout?mode=buyNow')
   }, [validateSelections, product, productId, quantity, selectedColor, selectedSize, mainImage, isLoggedIn, language, router])
 
-  // ── Wishlist ───────────────────────────────────────────────────────────────
-
   const toggleWishlist = useCallback(async () => {
     if (!isLoggedIn) {
       toast.error(language === 'ar' ? 'يجب تسجيل الدخول لإضافة المنتج إلى المفضلة' : 'Please log in to add products to your favorites')
@@ -491,8 +428,6 @@ const ProductDetail = ({ productId }: { productId: string }) => {
       toast.error(language === 'ar' ? 'فشل تحديث المفضلة' : 'Failed to update favorites')
     }
   }, [productId, isFavorite, language, isLoggedIn])
-
-  // ── Ratings ────────────────────────────────────────────────────────────────
 
   const fetchRatings = useCallback(async () => {
     try {
@@ -572,8 +507,6 @@ const ProductDetail = ({ productId }: { productId: string }) => {
     }
   }, [userRatingId, productId, language, fetchRatings])
 
-  // ── Render guards ──────────────────────────────────────────────────────────
-
   if (isLoading) return <MirvoryPageLoader text={language === "ar" ? "جاري التحميل..." : "Loading..."} />
 
   if (error || !product) {
@@ -586,22 +519,23 @@ const ProductDetail = ({ productId }: { productId: string }) => {
     )
   }
 
-  // ── Derived display values ─────────────────────────────────────────────────
-
   const hasDiscount = product.discountPercentage > 0
   const finalPrice = hasDiscount ? product.discountedPrice : product.price
   const isOutOfStock = product.quantity === 0 || product.status === 'sold'
   const selectedColorObj = product.colors?.find(c => c.value === selectedColor)
 
-  // All thumbnails: color images first, then extra product images
   const colorThumbnails = product.colors?.filter(c => c.image) ?? []
   const productImages = product.images ?? []
 
-  // ── Render ─────────────────────────────────────────────────────────────────
+  const scrollToVideoSection = () => {
+    const videoTabEl = document.getElementById("product-video-section")
+    if (videoTabEl) {
+      videoTabEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }
 
   return (
     <div className="container mx-auto px-4 py-8" dir={language === "ar" ? "rtl" : "ltr"}>
-      {/* Breadcrumb */}
       <Breadcrumb className="mb-6">
         <BreadcrumbList>
           <BreadcrumbItem><BreadcrumbLink href="/">{language === "ar" ? "الرئيسية" : "Home"}</BreadcrumbLink></BreadcrumbItem>
@@ -615,11 +549,8 @@ const ProductDetail = ({ productId }: { productId: string }) => {
       </Breadcrumb>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-
-        {/* ── Left: Images ────────────────────────────────────────────────── */}
+        {/* ── Left Side: Images & Small Video Button ─────────────────────── */}
         <div className="space-y-4">
-
-          {/* Main image */}
           <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-gray-100 shadow">
             {mainImage && (
               <Image src={mainImage} alt={product.title} fill className="object-cover" priority />
@@ -633,10 +564,33 @@ const ProductDetail = ({ productId }: { productId: string }) => {
             )}
           </div>
 
-          {/* Thumbnail strip: colour images + extra product images */}
+          {/* 🌟 زر فيديو المنتج مصغر وأنيق في الجانب الأيسر تحت الصور */}
+          {product.videoUrl && (
+            <button
+              onClick={scrollToVideoSection}
+              className="w-full flex items-center justify-between p-2.5 px-4 bg-red-50 hover:bg-red-100 border border-red-200 rounded-xl text-red-700 transition shadow-sm group"
+            >
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-red-600 flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition">
+                  <Play className="w-4 h-4 fill-white" />
+                </div>
+                <div className="text-start">
+                  <span className="block text-xs font-bold leading-tight">
+                    {language === "ar" ? "فيديو معاينة المنتج" : "Watch Product Video"}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground">
+                    {language === "ar" ? "انقر للمشاهدة السريعة" : "Click to view"}
+                  </span>
+                </div>
+              </div>
+              <span className="text-xs font-semibold text-red-600 underline">
+                {language === "ar" ? "عرض" : "Play"}
+              </span>
+            </button>
+          )}
+
           {(colorThumbnails.length > 0 || productImages.length > 1) && (
             <div className="flex gap-2 flex-wrap">
-              {/* Color thumbnails */}
               {colorThumbnails.map((colorItem) => (
                 <button
                   key={colorItem.value}
@@ -647,12 +601,7 @@ const ProductDetail = ({ productId }: { productId: string }) => {
                     : 'border-transparent hover:border-gray-300'
                     }`}
                 >
-                  <Image
-                    src={colorItem.image!}
-                    alt={colorItem.name}
-                    fill
-                    className="object-cover"
-                  />
+                  <Image src={colorItem.image!} alt={colorItem.name} fill className="object-cover" />
                   {selectedColor === colorItem.value && (
                     <div className="absolute inset-0 bg-primary/10 flex items-center justify-center">
                       <CheckCircle2 className="h-5 w-5 text-primary" />
@@ -661,7 +610,6 @@ const ProductDetail = ({ productId }: { productId: string }) => {
                 </button>
               ))}
 
-              {/* Extra product images (that are not colour images) */}
               {productImages
                 .filter(img => !colorThumbnails.some(c => c.image === img))
                 .map((image, index) => (
@@ -673,22 +621,15 @@ const ProductDetail = ({ productId }: { productId: string }) => {
                       : 'border-transparent hover:border-gray-300'
                       }`}
                   >
-                    <Image
-                      src={image}
-                      alt={`${product.title} ${index + 1}`}
-                      fill
-                      className="object-cover"
-                    />
+                    <Image src={image} alt={`${product.title} ${index + 1}`} fill className="object-cover" />
                   </button>
                 ))}
             </div>
           )}
         </div>
 
-        {/* ── Right: Product info ──────────────────────────────────────────── */}
+        {/* ── Right Side: Product info ─────────────────────────────────────── */}
         <div className="space-y-5">
-
-          {/* Title + ratings */}
           <div>
             <h1 className="text-2xl font-bold leading-snug">{product.title}</h1>
             <div className="flex items-center gap-2 mt-1">
@@ -699,7 +640,6 @@ const ProductDetail = ({ productId }: { productId: string }) => {
             </div>
           </div>
 
-          {/* Price */}
           <div>
             <div className="flex items-baseline gap-3">
               <span className="text-3xl font-bold text-primary">
@@ -712,19 +652,14 @@ const ProductDetail = ({ productId }: { productId: string }) => {
               )}
             </div>
             {!isOutOfStock ? (
-              <span className="text-sm text-green-600 font-medium">
-                ● {language === "ar" ? "متوفر" : "In Stock"}
-              </span>
+              <span className="text-sm text-green-600 font-medium">● {language === "ar" ? "متوفر" : "In Stock"}</span>
             ) : (
-              <span className="text-sm text-red-500 font-medium">
-                ● {language === "ar" ? "نفد من المخزون" : "Out of Stock"}
-              </span>
+              <span className="text-sm text-red-500 font-medium">● {language === "ar" ? "نفد من المخزون" : "Out of Stock"}</span>
             )}
           </div>
 
           <p className="text-muted-foreground text-sm leading-relaxed">{product.description}</p>
 
-          {/* ── Color selector ─────────────────────────────────────────────── */}
           {product.colors?.length > 0 && (
             <div className="space-y-2">
               <Label className="font-semibold">
@@ -759,7 +694,6 @@ const ProductDetail = ({ productId }: { productId: string }) => {
             </div>
           )}
 
-          {/* ── Size selector ──────────────────────────────────────────────── */}
           {(activeSizes.length > 0 || product.sizes?.length > 0) && (
             <div className="space-y-2">
               <Label className="font-semibold">
@@ -790,40 +724,17 @@ const ProductDetail = ({ productId }: { productId: string }) => {
                       {isLow && !isUnavailable && (
                         <span className="absolute -top-1.5 -end-1.5 h-3 w-3 rounded-full bg-orange-500 border border-white" title={`${qty} left`} />
                       )}
-                      {isUnavailable && (
-                        <span className="sr-only">{language === "ar" ? "غير متوفر" : "Out of stock"}</span>
-                      )}
                     </button>
                   )
                 })}
               </div>
-
-              {/* Stock info for selected size */}
-              {selectedSize && (() => {
-                const entry = activeSizes.find(s => s.size === selectedSize)
-                if (!entry) return null
-                if (entry.quantity === 0) return (
-                  <p className="text-sm text-red-500">{language === "ar" ? "هذا المقاس نفد من المخزون" : "This size is out of stock"}</p>
-                )
-                if (entry.quantity <= 3) return (
-                  <p className="text-sm text-orange-500">{language === "ar" ? `باقي ${entry.quantity} قطع فقط!` : `Only ${entry.quantity} left!`}</p>
-                )
-                return null
-              })()}
             </div>
           )}
 
-          {/* ── Quantity ───────────────────────────────────────────────────── */}
           <div className="flex items-center gap-3">
             <Label className="font-semibold">{language === "ar" ? "الكمية" : "Quantity"}</Label>
             <div className="flex items-center border rounded-lg overflow-hidden">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-9 w-9 rounded-none"
-                onClick={() => handleQuantityChange(quantity - 1)}
-                disabled={quantity <= 1}
-              >
+              <Button variant="ghost" size="icon" className="h-9 w-9 rounded-none" onClick={() => handleQuantityChange(quantity - 1)} disabled={quantity <= 1}>
                 <Minus className="h-4 w-4" />
               </Button>
               <Input
@@ -834,22 +745,12 @@ const ProductDetail = ({ productId }: { productId: string }) => {
                 min="1"
                 max={maxQty}
               />
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-9 w-9 rounded-none"
-                onClick={() => handleQuantityChange(quantity + 1)}
-                disabled={maxQty > 0 ? quantity >= maxQty : true}
-              >
+              <Button variant="ghost" size="icon" className="h-9 w-9 rounded-none" onClick={() => handleQuantityChange(quantity + 1)} disabled={maxQty > 0 ? quantity >= maxQty : true}>
                 <Plus className="h-4 w-4" />
               </Button>
             </div>
-            {maxQty > 0 && maxQty <= 5 && (
-              <span className="text-xs text-orange-500">{language === "ar" ? `متوفر: ${maxQty}` : `Available: ${maxQty}`}</span>
-            )}
           </div>
 
-          {/* ── CTA buttons ────────────────────────────────────────────────── */}
           <div className="flex flex-wrap gap-2 pt-2">
             <Button
               className="flex-1 bg-orange-500 hover:bg-orange-600 text-white min-w-[140px]"
@@ -880,7 +781,6 @@ const ProductDetail = ({ productId }: { productId: string }) => {
             </Button>
           </div>
 
-          {/* Trust badges */}
           <div className="grid grid-cols-3 gap-2 pt-2 border-t">
             <div className="flex flex-col items-center text-center gap-1 p-2">
               <Truck className="h-5 w-5 text-muted-foreground" />
@@ -898,18 +798,15 @@ const ProductDetail = ({ productId }: { productId: string }) => {
         </div>
       </div>
 
-      {/* ── Product Tabs ─────────────────────────────────────────────────────── */}
-      <div className="mt-12">
-        <Tabs defaultValue="description" className={language === "ar" ? "dir-rtl" : "dir-ltr"}>
+      <div className="mt-12" id="product-video-section">
+        <Tabs defaultValue={product.videoUrl ? "video" : "description"} className={language === "ar" ? "dir-rtl" : "dir-ltr"}>
           <TabsList className={`grid w-full ${product.videoUrl ? 'grid-cols-4' : 'grid-cols-3'}`}>
             <TabsTrigger value="description">{language === "ar" ? "الوصف" : "Description"}</TabsTrigger>
             <TabsTrigger value="specifications">{language === "ar" ? "المواصفات" : "Specifications"}</TabsTrigger>
             <TabsTrigger value="reviews">{language === "ar" ? "التقييمات" : "Reviews"}</TabsTrigger>
             {product.videoUrl && (
-              <TabsTrigger value="video" className="flex items-center gap-1.5">
-                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M8 5v14l11-7z" />
-                </svg>
+              <TabsTrigger value="video" className="flex items-center gap-1.5 text-red-600 font-bold data-[state=active]:bg-red-50">
+                <Play className="w-4 h-4 fill-red-500 text-red-500" />
                 {language === "ar" ? "فيديو المنتج" : "Product Video"}
               </TabsTrigger>
             )}
@@ -921,11 +818,16 @@ const ProductDetail = ({ productId }: { productId: string }) => {
             </div>
           </TabsContent>
 
-          {/* ── Video Tab ── */}
           {product.videoUrl && (
             <TabsContent value="video">
-              <div className="p-4 md:p-6">
-                <ProductVideoEmbed url={product.videoUrl} />
+              <div className="p-4 md:p-6 bg-red-50/40 rounded-2xl border border-red-100">
+                <div className="max-w-3xl mx-auto">
+                  <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <Play className="w-5 h-5 text-red-500 fill-red-500" />
+                    {language === "ar" ? "عرض فيديو المنتج التفصيلي" : "Detailed Product Video"}
+                  </h3>
+                  <ProductVideoEmbed url={product.videoUrl} />
+                </div>
               </div>
             </TabsContent>
           )}
@@ -947,19 +849,6 @@ const ProductDetail = ({ productId }: { productId: string }) => {
                   <span className="font-medium w-1/3">{language === "ar" ? "الكمية المباعة" : "Sold"}</span>
                   <span className="text-muted-foreground">{product.sold}</span>
                 </div>
-                {product.colors?.length > 0 && (
-                  <div className="flex border-b py-2">
-                    <span className="font-medium w-1/3">{language === "ar" ? "الألوان" : "Colors"}</span>
-                    <div className="flex gap-1 flex-wrap">
-                      {product.colors.map(c => (
-                        <span key={c.value} className="flex items-center gap-1 text-sm text-muted-foreground">
-                          <span className="inline-block h-3 w-3 rounded-full border" style={{ backgroundColor: c.value }} />
-                          {c.name}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
           </TabsContent>
@@ -976,9 +865,6 @@ const ProductDetail = ({ productId }: { productId: string }) => {
                         <RatingStars rating={product.ratings?.average || 0} size={20} showEmptyStars className="text-yellow-400" />
                       </div>
                     </div>
-                    <p className="text-sm text-muted-foreground">
-                      {language === "ar" ? `${product.ratings?.count || 0} تقييم` : `${product.ratings?.count || 0} reviews`}
-                    </p>
                   </CardContent>
                 </Card>
 
@@ -994,9 +880,7 @@ const ProductDetail = ({ productId }: { productId: string }) => {
                         {userRatingId && (
                           <Button type="button" variant="ghost" size="sm" onClick={() => handleDeleteReview()}
                             disabled={!!deletingReviewId} className="text-red-500 hover:text-red-700 hover:bg-red-50">
-                            {deletingReviewId
-                              ? (language === "ar" ? "جاري الحذف..." : "Deleting...")
-                              : (language === "ar" ? "حذف التقييم" : "Delete review")}
+                            {deletingReviewId ? (language === "ar" ? "جاري الحذف..." : "Deleting...") : (language === "ar" ? "حذف التقييم" : "Delete review")}
                           </Button>
                         )}
                       </div>
@@ -1025,60 +909,11 @@ const ProductDetail = ({ productId }: { productId: string }) => {
                   </CardContent>
                 </Card>
               </div>
-
-              <Separator />
-
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">{language === "ar" ? "آراء العملاء" : "Customer reviews"}</h3>
-                {isLoadingReviews ? (
-                  <p className="text-muted-foreground">{language === "ar" ? "جاري تحميل التقييمات..." : "Loading reviews..."}</p>
-                ) : reviews.length === 0 ? (
-                  <p className="text-muted-foreground">{language === "ar" ? "لا توجد تقييمات بعد" : "No reviews yet"}</p>
-                ) : (
-                  <div className="space-y-4">
-                    {reviews.map(review => {
-                      const ratingId = review?._id
-                      const isUserReview = userId && review?.user?._id === userId
-                      const isDeletingThis = deletingReviewId === ratingId
-                      return (
-                        <Card key={ratingId} className="border">
-                          <CardContent className="p-4 space-y-2">
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <p className="font-medium text-sm">{review.user?.fullName || (language === 'ar' ? 'مستخدم' : 'Customer')}</p>
-                                <span className="text-xs text-muted-foreground">
-                                  {new Date(review.createdAt).toLocaleDateString(language === 'ar' ? 'ar-EG' : 'en-US')}
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                {isUserReview && (
-                                  <div className="flex items-center gap-1">
-                                    <Button variant="ghost" size="icon" onClick={() => handleEditReview(review)} className="text-blue-600 hover:text-blue-800">
-                                      <Pencil className="h-4 w-4" />
-                                    </Button>
-                                    <Button variant="ghost" size="icon" className="text-red-600 hover:text-red-800 hover:bg-red-50"
-                                      onClick={() => handleDeleteReview(ratingId)} disabled={isDeletingThis}>
-                                      {isDeletingThis ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
-                                    </Button>
-                                  </div>
-                                )}
-                                <RatingStars rating={review.rating} size={20} showEmptyStars readOnly />
-                              </div>
-                            </div>
-                            {review.comment && <p className="text-sm text-muted-foreground">{review.comment}</p>}
-                          </CardContent>
-                        </Card>
-                      )
-                    })}
-                  </div>
-                )}
-              </div>
             </div>
           </TabsContent>
         </Tabs>
       </div>
 
-      {/* ── Related Products ──────────────────────────────────────────────────── */}
       {relatedProducts.length > 0 && (
         <div className="mt-12">
           <h2 className="text-xl font-bold mb-6">{language === "ar" ? "منتجات ذات صلة" : "Related Products"}</h2>
@@ -1088,25 +923,12 @@ const ProductDetail = ({ productId }: { productId: string }) => {
                 <CardContent className="p-0">
                   <Link href={`/products/${rp._id}`} className="block">
                     <div className="relative aspect-square rounded-t-lg overflow-hidden bg-gray-100">
-                      <Image
-                        src={rp.images?.[0] || '/placeholder.svg'}
-                        alt={rp.title}
-                        fill
-                        className="object-cover hover:scale-105 transition-transform duration-300"
-                      />
+                      <Image src={rp.images?.[0] || '/placeholder.svg'} alt={rp.title} fill className="object-cover hover:scale-105 transition-transform duration-300" />
                     </div>
                     <div className="p-4">
                       <h3 className="font-medium text-sm mb-2 line-clamp-2">{rp.title}</h3>
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold text-sm">{rp.discountedPrice.toLocaleString()} {language === "ar" ? "ج.م" : "EGP"}</span>
-                          {rp.discountPercentage > 0 && (
-                            <span className="text-xs text-muted-foreground line-through">{rp.price.toLocaleString()}</span>
-                          )}
-                        </div>
-                        {rp.discountPercentage > 0 && (
-                          <Badge variant="destructive" className="text-xs">{rp.discountPercentage}%</Badge>
-                        )}
+                        <span className="font-bold text-sm">{rp.discountedPrice.toLocaleString()} {language === "ar" ? "ج.م" : "EGP"}</span>
                       </div>
                     </div>
                   </Link>
