@@ -10,7 +10,7 @@ import { orderService, cartService, pickupPointService, shippingSettingsService 
 import { useAuth } from "@/contexts/AuthProvider"
 import { useLanguage } from "@/components/language-provider"
 import { toast } from 'sonner'
-import { GREATER_CAIRO_AREA, getCitiesByGovernorate } from '@/lib/data/greater-cairo-area'
+import { GREATER_CAIRO_AREA } from '@/lib/data/greater-cairo-area'
 import {
     Loader2, MapPin, User, ShoppingBag, CreditCard,
     Truck, Home, Store, ArrowRight, ArrowLeft, Package,
@@ -138,11 +138,7 @@ function CheckoutInner() {
     const [phone, setPhone] = useState('')
     const [deliveryMethod, setDeliveryMethod] = useState<'home' | 'pickup'>('home')
     const [paymentMethod, setPaymentMethod] = useState<'cash' | 'card'>('cash')
-    const [address, setAddress] = useState({
-        governorate: '',
-        city: '',
-        addressLine: '',
-    })
+    const [governorate, setGovernorate] = useState('')
     const [pickupPoints, setPickupPoints] = useState<PickupPoint[]>([])
     const [selectedPickupPointId, setSelectedPickupPointId] = useState('')
 
@@ -169,18 +165,10 @@ function CheckoutInner() {
             fee = 0;
         }
         
-        if (shippingSettings.freeMetroShipping && address.addressLine) {
-            const isMetro = shippingSettings.metroAreas?.some((area: string) =>
-                address.addressLine.toLowerCase().includes(area.toLowerCase())
-            );
-
-            if (isMetro) {
-                fee = 0;
-            }
-        }
+        // metro check removed — no addressLine field anymore
         
         return fee;
-    }, [subtotal, deliveryMethod, address.addressLine, shippingSettings])
+    }, [subtotal, deliveryMethod, shippingSettings])
         
     const total = useMemo(() => {
         let finalTotal = subtotal + shippingFee;
@@ -190,11 +178,6 @@ function CheckoutInner() {
         return finalTotal;
     }, [subtotal, shippingFee, appliedCoupon]);
 
-
-    const availableCities = useMemo(() => {
-        if (!address.governorate) return []
-        return getCitiesByGovernorate(address.governorate)
-    }, [address.governorate])
 
     useEffect(() => {
         const loadCheckoutData = async () => {
@@ -262,12 +245,8 @@ function CheckoutInner() {
                 if (user) {
                     setFullName(`${user.firstName || ''} ${user.lastName || ''}`.trim())
                     setPhone(user.phone || '')
-                    if (user?.address) {
-                        setAddress({
-                            governorate: user.address.governorate || '',
-                            city: user.address.city || '',
-                            addressLine: user.address.addressLine || '',
-                        })
+                    if (user?.address?.governorate) {
+                        setGovernorate(user.address.governorate)
                     }
                 }
             } catch (err) {
@@ -298,20 +277,11 @@ function CheckoutInner() {
         let finalFullName = fullName.trim()
 
         if (deliveryMethod === 'home') {
-            if (
-                !address.governorate ||
-                !address.city ||
-                !address.addressLine
-            ) {
-                toast.error(
-                    isAr
-                        ? 'الرجاء إدخال بيانات العنوان كاملة'
-                        : 'Please complete address information'
-                )
+            if (!governorate) {
+                toast.error(isAr ? 'الرجاء اختيار المحافظة' : 'Please select a governorate')
                 return
             }
-
-            finalAddressStr = `${address.addressLine}, ${address.city}, ${address.governorate}`
+            finalAddressStr = governorate
         } else if (deliveryMethod === 'pickup' && !selectedPickupPointId) {
             toast.error(isAr ? 'الرجاء اختيار نقطة الاستلام المعتمدة' : 'Please select a pickup point')
             return
@@ -384,7 +354,7 @@ function CheckoutInner() {
         } finally {
             setLoading(false)
         }
-    }, [fullName, phone, deliveryMethod, paymentMethod, address, selectedPickupPointId, isAr, router, buyNowPayload, isBuyNow])
+    }, [fullName, phone, deliveryMethod, paymentMethod, governorate, selectedPickupPointId, isAr, router, buyNowPayload, isBuyNow])
 
     if (loadingData) {
         return (
@@ -510,78 +480,25 @@ function CheckoutInner() {
                                                 {isAr ? "عنوان التوصيل" : "Delivery Address"}
                                             </h3>
 
-                                            {/* Governorate */}
+                                            {/* Governorate — only field required for home delivery */}
                                             <div>
                                                 <Label className="text-xs text-slate-500 mb-1 block">
                                                     {isAr ? "المحافظة" : "Governorate"}
                                                 </Label>
                                                 <select
-                                                    value={address.governorate}
-                                                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                                                        setAddress({
-                                                            governorate: e.target.value,
-                                                            city: '',
-                                                            addressLine: address.addressLine
-                                                        })
-                                                    }
+                                                    value={governorate}
+                                                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setGovernorate(e.target.value)}
                                                     className="w-full h-12 bg-slate-50 rounded-xl px-3 border border-slate-200"
                                                 >
                                                     <option value="">
                                                         {isAr ? "اختر المحافظة" : "Select governorate"}
                                                     </option>
-
                                                     {GREATER_CAIRO_AREA.map((gov: any) => (
                                                         <option key={gov.id} value={gov.id}>
                                                             {isAr ? gov.nameAr : gov.nameEn}
                                                         </option>
                                                     ))}
                                                 </select>
-                                            </div>
-
-                                            {/* City */}
-                                            <div>
-                                                <Label className="text-xs text-slate-500 mb-1 block">
-                                                    {isAr ? "المدينة" : "City"}
-                                                </Label>
-                                                <select
-                                                    value={address.city}
-                                                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                                                        setAddress(prev => ({
-                                                            ...prev,
-                                                            city: e.target.value
-                                                        }))
-                                                    }
-                                                    className="w-full h-12 bg-slate-50 rounded-xl px-3 border border-slate-200"
-                                                    disabled={!address.governorate}
-                                                >
-                                                    <option value="">
-                                                        {isAr ? "اختر المدينة" : "Select city"}
-                                                    </option>
-
-                                                    {availableCities.map((city: any) => (
-                                                        <option key={city.id} value={city.id}>
-                                                            {isAr ? city.nameAr : city.nameEn}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            </div>
-
-                                            {/* Address Line */}
-                                            <div>
-                                                <Label className="text-xs text-slate-500 mb-1 block">
-                                                    {isAr ? "تفاصيل العنوان" : "Street Address"}
-                                                </Label>
-                                                <Input
-                                                    value={address.addressLine}
-                                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                                                        setAddress(prev => ({
-                                                            ...prev,
-                                                            addressLine: e.target.value
-                                                        }))
-                                                    }
-                                                    placeholder={isAr ? "الشارع، رقم المنزل..." : "Street, building no..."}
-                                                    className="h-12 bg-slate-50 rounded-xl border-slate-200"
-                                                />
                                             </div>
                                         </div>
                                     )}

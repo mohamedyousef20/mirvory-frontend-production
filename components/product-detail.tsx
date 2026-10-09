@@ -35,6 +35,51 @@ import { Separator } from "@/components/ui/separator"
 import { useAuth } from "@/contexts/AuthProvider"
 import { useRouter } from "next/navigation"
 
+// ── Video embed helper ───────────────────────────────────────────────────────
+const ALLOWED_EMBED_DOMAINS = ['youtube.com', 'youtu.be', 'youtube-nocookie.com']
+
+function getYouTubeEmbedUrl(url: string): string | null {
+  try {
+    const u = new URL(url)
+    const host = u.hostname.replace(/^www\./, '')
+    if (host === 'youtu.be') return `https://www.youtube-nocookie.com/embed/${u.pathname.slice(1)}`
+    if (host === 'youtube.com' || host === 'm.youtube.com') {
+      const v = u.searchParams.get('v')
+      if (v) return `https://www.youtube-nocookie.com/embed/${v}`
+    }
+    return null
+  } catch { return null }
+}
+
+function ProductVideoEmbed({ url }: { url: string }) {
+  const embedUrl = getYouTubeEmbedUrl(url)
+  if (embedUrl) {
+    return (
+      <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+        <iframe
+          src={embedUrl}
+          title="Product Video"
+          className="absolute inset-0 w-full h-full rounded-xl border border-slate-200"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          loading="lazy"
+        />
+      </div>
+    )
+  }
+  // Fallback: show a clickable link for non-YouTube URLs
+  const isSafe = ALLOWED_EMBED_DOMAINS.some(d => url.includes(d))
+  if (!isSafe) return (
+    <p className="text-sm text-muted-foreground">رابط الفيديو غير مدعوم للعرض المضمّن.</p>
+  )
+  return (
+    <a href={url} target="_blank" rel="noopener noreferrer"
+       className="inline-flex items-center gap-2 text-[#1a4fba] underline text-sm font-medium">
+      مشاهدة الفيديو على المنصة الأصلية ↗
+    </a>
+  )
+}
+
 // ── TypeScript interfaces ────────────────────────────────────────────────────
 
 interface ColorSize {
@@ -77,6 +122,7 @@ interface Product {
   status: 'available' | 'pending' | 'sold'
   createdAt: string
   updatedAt: string
+  videoUrl?: string  // optional YouTube / embed URL
 }
 
 interface Review {
@@ -807,15 +853,27 @@ const ProductDetail = ({ productId }: { productId: string }) => {
       {/* ── Product Tabs ─────────────────────────────────────────────────────── */}
       <div className="mt-12">
         <Tabs defaultValue="description" className={language === "ar" ? "dir-rtl" : "dir-ltr"}>
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className={`grid w-full ${product.videoUrl ? 'grid-cols-4' : 'grid-cols-3'}`}>
             <TabsTrigger value="description">{language === "ar" ? "الوصف" : "Description"}</TabsTrigger>
             <TabsTrigger value="specifications">{language === "ar" ? "المواصفات" : "Specifications"}</TabsTrigger>
+            {product.videoUrl && (
+              <TabsTrigger value="video">{language === "ar" ? "فيديو المنتج" : "Product Video"}</TabsTrigger>
+            )}
             <TabsTrigger value="reviews">{language === "ar" ? "التقييمات" : "Reviews"}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="description">
             <div className="p-4"><p>{product.description}</p></div>
           </TabsContent>
+
+          {/* ── Video Tab ── */}
+          {product.videoUrl && (
+            <TabsContent value="video">
+              <div className="p-4">
+                <ProductVideoEmbed url={product.videoUrl} />
+              </div>
+            </TabsContent>
+          )}
 
           <TabsContent value="specifications">
             <div className="p-4">

@@ -158,6 +158,7 @@ export default function EditProductPage() {
     isFeatured: false,
     isTrusted: false,
     status: 'available' as 'available' | 'pending',
+    videoUrl: '',
   });
 
 
@@ -389,6 +390,7 @@ export default function EditProductPage() {
           isFeatured: prod.isFeatured || false,
           isTrusted: prod.isTrusted || false,
           status: prod.status || 'available',
+          videoUrl: prod.videoUrl || '',
         });
       } catch (error: any) {
         toast.error(
@@ -713,6 +715,7 @@ export default function EditProductPage() {
         isFeatured: newProduct.isFeatured,
         isTrusted: newProduct.isTrusted,
         status: newProduct.status,
+        videoUrl: newProduct.videoUrl.trim() || undefined,
       };
 
       await productService.updateProduct(id as string, productData);
@@ -936,6 +939,22 @@ export default function EditProductPage() {
                   onUpload={handleImageUpload}
                 />
               </div>
+            </div>
+
+            {/* Video URL (optional) */}
+            <div>
+              <Label htmlFor="videoUrl">{ar ? 'رابط الفيديو (اختياري)' : 'Video URL (optional)'}</Label>
+              <input
+                id="videoUrl"
+                type="url"
+                value={newProduct.videoUrl}
+                onChange={(e) => setNewProduct(prev => ({ ...prev, videoUrl: e.target.value }))}
+                placeholder="https://www.youtube.com/watch?v=..."
+                className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                {ar ? 'روابط YouTube — سيظهر الفيديو في صفحة المنتج' : 'YouTube links — video will appear on the product page'}
+              </p>
             </div>
 
             {/* Sizes */}

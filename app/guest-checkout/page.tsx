@@ -173,16 +173,7 @@ function GuestCheckoutInner() {
       fee = 0;
     }
     
-    // Free metro shipping
-    if (shippingSettings.freeMetroShipping && form.address) {
-      const isMetro = shippingSettings.metroAreas?.some((area: string) =>
-        form.address.toLowerCase().includes(area.toLowerCase())
-      );
-
-      if (isMetro) {
-        fee = 0;
-      }
-    }
+    // metro check removed — no address-line field anymore
     
     return fee;
   }, [subtotal, form.deliveryMethod, form.address, shippingSettings]);

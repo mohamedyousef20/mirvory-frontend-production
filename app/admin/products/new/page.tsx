@@ -168,6 +168,7 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
     quantity: '0',
     isFeatured: false,
     status: 'available' as 'available' | 'pending',
+    videoUrl: '',
   });
 
   /*
@@ -942,6 +943,9 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
 
         status:
           newProduct.status,
+
+        videoUrl:
+          newProduct.videoUrl.trim() || undefined,
 
         sellerPercentage:
           calculatedSellerPercentage
@@ -1772,6 +1776,26 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
           {/* =====================================================
               PRODUCT IMAGES
           ====================================================== */}
+
+          {/* ── Video URL (optional) ─────────────────────────── */}
+          <div>
+            <Label htmlFor="videoUrl">
+              {language === 'ar' ? 'رابط الفيديو (اختياري)' : 'Video URL (optional)'}
+            </Label>
+            <Input
+              id="videoUrl"
+              name="videoUrl"
+              value={newProduct.videoUrl}
+              onChange={(e) => setNewProduct(prev => ({ ...prev, videoUrl: e.target.value }))}
+              placeholder="https://www.youtube.com/watch?v=..."
+              className="mt-1"
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              {language === 'ar'
+                ? 'ادعم روابط YouTube — سيظهر الفيديو في صفحة المنتج'
+                : 'Supports YouTube links — video will appear on the product page'}
+            </p>
+          </div>
 
           <div>
 

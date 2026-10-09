@@ -23,6 +23,7 @@ import { ShippingSettingsTab } from "./ShippingSettingsTab";
 import { TransactionsTab } from "./TransactionsTab";
 import { AnalyticsTab } from "./AnalyticsTab";
 import { InventoryTab } from "./InventoryTab";
+import { OrderNotificationBell } from "@/components/admin/OrderNotificationBell";
 import Link from "next/link";
 
 type Offer = {
@@ -301,11 +302,14 @@ export function AdminDashboard() {
               : "Welcome to the admin dashboard, manage your platform from here."}
           </p>
         </div>
-        <Link href="/admin/notifications">
-          <Button>
-            {isArabic ? "إرسال إشعارات" : "Send Notifications"}
-          </Button>
-        </Link>
+        <div className="flex items-center gap-3">
+          <OrderNotificationBell />
+          <Link href="/admin/notifications">
+            <Button>
+              {isArabic ? "إرسال إشعارات" : "Send Notifications"}
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Main Tabs */}

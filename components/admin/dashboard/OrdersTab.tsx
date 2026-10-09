@@ -757,12 +757,20 @@ export function OrdersTab({
                                             }
                                         </Button>
 
-                                        {/* Delete button — only for completed (delivered) orders */}
-                                        {order.deliveryStatus === "delivered" && onDeleteOrder && (
+                                        {/* Delete button — available for all orders, with confirmation dialog */}
+                                        {onDeleteOrder && (
                                             <Button
                                                 variant="outline"
                                                 size="sm"
-                                                onClick={() => onDeleteOrder(order._id)}
+                                                onClick={() => {
+                                                    if (window.confirm(
+                                                        ar
+                                                            ? `هل أنت متأكد من حذف الطلب رقم ${order.orderNumber || order._id}؟\nلا يمكن التراجع عن هذا الإجراء.`
+                                                            : `Delete order ${order.orderNumber || order._id}?\nThis action cannot be undone.`
+                                                    )) {
+                                                        onDeleteOrder(order._id)
+                                                    }
+                                                }}
                                                 className="w-full h-9 rounded-xl text-sm font-semibold border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 hover:text-red-700 transition-all active:scale-[0.98]"
                                             >
                                                 <Trash2 className="h-4 w-4 mr-1.5" />

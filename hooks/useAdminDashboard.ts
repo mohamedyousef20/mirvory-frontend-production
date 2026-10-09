@@ -1097,10 +1097,7 @@ export function useAdminDashboard() {
     };
 
     const handleDeleteOrder = async (orderId: string) => {
-        if (!confirm(isArabic
-            ? 'هل أنت متأكد من حذف هذا الطلب نهائياً؟ لا يمكن التراجع عن هذا الإجراء.'
-            : 'Are you sure you want to permanently delete this order? This action cannot be undone.'
-        )) return;
+        // Confirmation is handled in OrdersTab component
         try {
             await orderService.deleteOrder(orderId);
             setOrders(prev => prev.filter(order => order._id !== orderId));
