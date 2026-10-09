@@ -441,8 +441,8 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
   const sellerAmount =
     discountedPrice > 0
       ? (
-          discountedPrice * sellerPercentage
-        ).toFixed(2)
+        discountedPrice * sellerPercentage
+      ).toFixed(2)
       : '0.00';
 
   /*
@@ -824,8 +824,8 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
         newProduct.price === ''
           ? undefined
           : parseFloat(
-              newProduct.price
-            ),
+            newProduct.price
+          ),
 
       discountPercentage:
         parseFloat(
@@ -984,11 +984,11 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
 
       toast.error(
         error.response?.data?.message ||
-          (
-            language === 'ar'
-              ? 'حدث خطأ أثناء إضافة المنتج'
-              : 'Error adding product'
-          )
+        (
+          language === 'ar'
+            ? 'حدث خطأ أثناء إضافة المنتج'
+            : 'Error adding product'
+        )
       );
 
     } finally {
@@ -1173,11 +1173,10 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
                   id="platformFee"
                   name="platformFee"
                   type="text"
-                  value={`${
-  (
-    platformFee * 100
-  ).toFixed(1)
-}% `}
+                  value={`${(
+                      platformFee * 100
+                    ).toFixed(1)
+                    }% `}
                   disabled
                   className="bg-gray-200 font-bold"
                 />
@@ -1200,11 +1199,10 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
                   id="sellerPercentage"
                   name="sellerPercentage"
                   type="text"
-                  value={`${
-  (
-    sellerPercentage * 100
-  ).toFixed(1)
-}% `}
+                  value={`${(
+                      sellerPercentage * 100
+                    ).toFixed(1)
+                    }% `}
                   disabled
                   className="bg-gray-200 font-bold"
                 />
@@ -1234,16 +1232,14 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
 
                 <p className="text-xs text-gray-500 mt-1">
                   {language === 'ar'
-                    ? `السعر بعد الخصم × ${
-  (
-    sellerPercentage * 100
-  ).toFixed(1)
-}% `
-                    : `Discounted price × ${
-  (
-    sellerPercentage * 100
-  ).toFixed(1)
-}% `}
+                    ? `السعر بعد الخصم × ${(
+                      sellerPercentage * 100
+                    ).toFixed(1)
+                    }% `
+                    : `Discounted price × ${(
+                      sellerPercentage * 100
+                    ).toFixed(1)
+                    }% `}
                 </p>
               </div>
 
@@ -1729,7 +1725,7 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
 
             <Label htmlFor="status">
               {language === 'ar'
-                ? 'ZZccc'
+                ? 'الحالة'
                 : 'Status'}
             </Label>
 
@@ -1818,7 +1814,7 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
 
                       <img
                         src={imageUrl}
-                        alt={`Preview ${ index } `}
+                        alt={`Preview ${index} `}
                         className="w-24 h-24 object-cover rounded border"
                       />
 
