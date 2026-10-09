@@ -9,6 +9,7 @@ import { TrendingSection } from "@/components/trending-section"
 import { getUserServer } from "@/src/lib/getUserServer"
 import { redirect } from "next/navigation"
 import { ShoppingBag } from "lucide-react"
+import { SideAds } from "@/components/side-ads"
 
 /** Lightweight visual divider between homepage sections */
 function SectionDivider({ icon: Icon, label }: { icon?: React.ElementType; label?: string }) {
@@ -34,35 +35,57 @@ export default async function Home() {
         {/* ── Hero Carousel ────────────────────────────────────────── */}
         <HeroCarousel />
 
-        <div className="container px-4 py-6 md:py-10 space-y-2">
-          {/* ── Categories ──────────────────────────────────────────── */}
-          <CategorySection />
+        {/* ── Main content + side ads layout ──────────────────────── */}
+        <div className="container px-4 py-6 md:py-10">
+          {/* On md+: three-column layout with side ads flanking content */}
+          <div className="flex gap-4 items-start">
+            {/* Left side ad (hidden on mobile) */}
+            <aside className="hidden xl:block w-44 flex-shrink-0 sticky top-20">
+              <SideAds position="left" maxAds={2} dismissible />
+            </aside>
 
-          {/* ── Offer Banner ────────────────────────────────────────── */}
-          <OfferBanner />
+            {/* Main content column */}
+            <div className="flex-1 min-w-0 space-y-2">
+              {/* ── Categories ────────────────────────────────────────── */}
+              <CategorySection />
 
-          {/* ── Best Sellers ────────────────────────────────────────── */}
-          <BestSellersSection />
+              {/* ── Offer Banner ──────────────────────────────────────── */}
+              <OfferBanner />
 
-          <SectionDivider />
+              {/* ── Best Sellers ──────────────────────────────────────── */}
+              <BestSellersSection />
 
-          {/* ── Featured Products (curated) ──────────────────────────── */}
-          <FeaturedProducts title="منتجات مميزة" />
+              <SectionDivider />
 
-          <SectionDivider />
+              {/* ── Featured Products (curated) ───────────────────────── */}
+              <FeaturedProducts title="منتجات مميزة" />
 
-          {/* ── Trending / New Arrivals ──────────────────────────────── */}
-          <TrendingSection />
+              <SectionDivider />
 
-          <SectionDivider />
+              {/* ── Trending / New Arrivals ────────────────────────────── */}
+              <TrendingSection />
 
-          {/* ── Newest Products (also new arrivals, different heading) ── */}
-          <NewestProducts title="وصل حديثاً" />
+              <SectionDivider />
 
-          <SectionDivider icon={ShoppingBag} />
+              {/* ── Newest Products ────────────────────────────────────── */}
+              <NewestProducts title="وصل حديثاً" />
 
-          {/* ── Full Product Grid with filters ──────────────────────── */}
-          <ProductGrid />
+              {/* ── Mobile side ads (between sections, below newest) ───── */}
+              <div className="xl:hidden">
+                <SideAds position="both" maxAds={2} dismissible className="grid grid-cols-2 gap-3" />
+              </div>
+
+              <SectionDivider icon={ShoppingBag} />
+
+              {/* ── Full Product Grid with filters ────────────────────── */}
+              <ProductGrid />
+            </div>
+
+            {/* Right side ad (hidden on mobile) */}
+            <aside className="hidden xl:block w-44 flex-shrink-0 sticky top-20">
+              <SideAds position="right" maxAds={2} dismissible />
+            </aside>
+          </div>
         </div>
       </main>
     </div>
