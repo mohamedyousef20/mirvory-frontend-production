@@ -87,7 +87,7 @@ function ProductVideoEmbed({ url }: { url: string }) {
       <div className="space-y-3">
         {/* 16:9 responsive container */}
         <div className="relative w-full rounded-2xl overflow-hidden border border-slate-200 shadow-sm bg-slate-900"
-             style={{ paddingBottom: '56.25%' }}>
+          style={{ paddingBottom: '56.25%' }}>
           <iframe
             src={embedUrl}
             title="فيديو المنتج"
@@ -118,7 +118,7 @@ function ProductVideoEmbed({ url }: { url: string }) {
         <p className="text-sm font-medium text-slate-700">لا يمكن عرض الفيديو مضمّناً</p>
         <p className="text-xs text-slate-500">رابط الفيديو غير مدعوم للعرض المباشر (يدعم YouTube فقط)</p>
         <a href={url} target="_blank" rel="noopener noreferrer"
-           className="inline-flex items-center gap-2 px-4 py-2 bg-[#1a4fba] text-white text-sm font-medium rounded-xl hover:bg-[#1640a0] transition">
+          className="inline-flex items-center gap-2 px-4 py-2 bg-[#1a4fba] text-white text-sm font-medium rounded-xl hover:bg-[#1640a0] transition">
           مشاهدة الفيديو ↗
         </a>
       </div>
@@ -210,10 +210,10 @@ const ProductDetail = ({ productId }: { productId: string }) => {
 
   // ── New: single selected color + size ──────────────────────────────────────
   const [selectedColor, setSelectedColor] = useState<string>('')   // hex value
-  const [selectedSize, setSelectedSize]   = useState<string>('')
+  const [selectedSize, setSelectedSize] = useState<string>('')
 
   // Legacy arrays — kept for cart/checkout backwards compatibility
-  const [selectedSizes,  setSelectedSizes]  = useState<string[]>([''])
+  const [selectedSizes, setSelectedSizes] = useState<string[]>([''])
   const [selectedColors, setSelectedColors] = useState<string[]>([''])
 
   const [quantity, setQuantity] = useState(1)
@@ -384,7 +384,7 @@ const ProductDetail = ({ productId }: { productId: string }) => {
     if (!product) return false
 
     const hasColors = product.colors?.length > 0
-    const hasSizes  = product.sizes?.length > 0 || activeSizes.length > 0
+    const hasSizes = product.sizes?.length > 0 || activeSizes.length > 0
 
     if (hasColors && !selectedColor) {
       toast.error(language === 'ar' ? 'يرجى اختيار اللون' : 'Please select a color')
@@ -588,14 +588,14 @@ const ProductDetail = ({ productId }: { productId: string }) => {
 
   // ── Derived display values ─────────────────────────────────────────────────
 
-  const hasDiscount    = product.discountPercentage > 0
-  const finalPrice     = hasDiscount ? product.discountedPrice : product.price
-  const isOutOfStock   = product.quantity === 0 || product.status === 'sold'
+  const hasDiscount = product.discountPercentage > 0
+  const finalPrice = hasDiscount ? product.discountedPrice : product.price
+  const isOutOfStock = product.quantity === 0 || product.status === 'sold'
   const selectedColorObj = product.colors?.find(c => c.value === selectedColor)
 
   // All thumbnails: color images first, then extra product images
   const colorThumbnails = product.colors?.filter(c => c.image) ?? []
-  const productImages   = product.images ?? []
+  const productImages = product.images ?? []
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
@@ -642,11 +642,10 @@ const ProductDetail = ({ productId }: { productId: string }) => {
                   key={colorItem.value}
                   onClick={() => handleColorSelect(colorItem.value)}
                   title={colorItem.name}
-                  className={`relative h-16 w-16 rounded-xl overflow-hidden border-2 transition-all duration-200 flex-shrink-0 ${
-                    selectedColor === colorItem.value
-                      ? 'border-primary shadow-lg scale-105'
-                      : 'border-transparent hover:border-gray-300'
-                  }`}
+                  className={`relative h-16 w-16 rounded-xl overflow-hidden border-2 transition-all duration-200 flex-shrink-0 ${selectedColor === colorItem.value
+                    ? 'border-primary shadow-lg scale-105'
+                    : 'border-transparent hover:border-gray-300'
+                    }`}
                 >
                   <Image
                     src={colorItem.image!}
@@ -669,11 +668,10 @@ const ProductDetail = ({ productId }: { productId: string }) => {
                   <button
                     key={`pi-${index}`}
                     onClick={() => setMainImage(image)}
-                    className={`relative h-16 w-16 rounded-xl overflow-hidden border-2 transition-all flex-shrink-0 ${
-                      mainImage === image
-                        ? 'border-primary shadow-lg scale-105'
-                        : 'border-transparent hover:border-gray-300'
-                    }`}
+                    className={`relative h-16 w-16 rounded-xl overflow-hidden border-2 transition-all flex-shrink-0 ${mainImage === image
+                      ? 'border-primary shadow-lg scale-105'
+                      : 'border-transparent hover:border-gray-300'
+                      }`}
                   >
                     <Image
                       src={image}
@@ -742,13 +740,12 @@ const ProductDetail = ({ productId }: { productId: string }) => {
                     onClick={() => color.available && handleColorSelect(color.value)}
                     title={color.name}
                     disabled={!color.available}
-                    className={`relative h-9 w-9 rounded-full border-2 transition-all duration-200 ${
-                      selectedColor === color.value
-                        ? 'border-primary scale-110 shadow-md'
-                        : color.available
-                          ? 'border-gray-300 hover:border-gray-500'
-                          : 'border-gray-200 opacity-40 cursor-not-allowed'
-                    }`}
+                    className={`relative h-9 w-9 rounded-full border-2 transition-all duration-200 ${selectedColor === color.value
+                      ? 'border-primary scale-110 shadow-md'
+                      : color.available
+                        ? 'border-gray-300 hover:border-gray-500'
+                        : 'border-gray-200 opacity-40 cursor-not-allowed'
+                      }`}
                     style={{ backgroundColor: color.value }}
                   >
                     {selectedColor === color.value && (
@@ -774,21 +771,20 @@ const ProductDetail = ({ productId }: { productId: string }) => {
               <div className="flex gap-2 flex-wrap">
                 {(activeSizes.length > 0 ? activeSizes : product.sizes.map(s => ({ size: s, quantity: 99 }))).map(({ size, quantity: qty }) => {
                   const isUnavailable = qty === 0
-                  const isLow        = qty > 0 && qty <= 3
-                  const isSelected   = selectedSize === size
+                  const isLow = qty > 0 && qty <= 3
+                  const isSelected = selectedSize === size
 
                   return (
                     <button
                       key={size}
                       onClick={() => !isUnavailable && handleSizeSelect(size)}
                       disabled={isUnavailable}
-                      className={`relative px-4 py-2 rounded-lg border-2 text-sm font-medium transition-all duration-200 ${
-                        isSelected
-                          ? 'border-primary bg-primary text-primary-foreground shadow-md'
-                          : isUnavailable
-                            ? 'border-gray-200 text-gray-400 line-through cursor-not-allowed bg-gray-50'
-                            : 'border-gray-300 hover:border-primary hover:text-primary'
-                      }`}
+                      className={`relative px-4 py-2 rounded-lg border-2 text-sm font-medium transition-all duration-200 ${isSelected
+                        ? 'border-primary bg-primary text-primary-foreground shadow-md'
+                        : isUnavailable
+                          ? 'border-gray-200 text-gray-400 line-through cursor-not-allowed bg-gray-50'
+                          : 'border-gray-300 hover:border-primary hover:text-primary'
+                        }`}
                     >
                       {size}
                       {isLow && !isUnavailable && (
@@ -912,7 +908,7 @@ const ProductDetail = ({ productId }: { productId: string }) => {
             {product.videoUrl && (
               <TabsTrigger value="video" className="flex items-center gap-1.5">
                 <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M8 5v14l11-7z"/>
+                  <path d="M8 5v14l11-7z" />
                 </svg>
                 {language === "ar" ? "فيديو المنتج" : "Product Video"}
               </TabsTrigger>

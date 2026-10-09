@@ -428,7 +428,20 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
       .valid('available', 'pending')
       .default('available'),
 
-    discountedPrice: Joi.any()
+
+    discountedPrice: Joi.any(),
+
+    videoUrl: Joi.string()
+      .trim()
+      .uri({ scheme: ['http', 'https'] })
+      .allow('')
+      .optional()
+      .messages({
+        'string.uri':
+          language === 'ar'
+            ? 'رابط الفيديو غير صالح'
+            : 'Video URL is invalid',
+      }),
   });
 
   /*
@@ -1235,8 +1248,8 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
                   name="platformFee"
                   type="text"
                   value={`${(
-                      platformFee * 100
-                    ).toFixed(1)
+                    platformFee * 100
+                  ).toFixed(1)
                     }% `}
                   disabled
                   className="bg-gray-200 font-bold"
@@ -1261,8 +1274,8 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
                   name="sellerPercentage"
                   type="text"
                   value={`${(
-                      sellerPercentage * 100
-                    ).toFixed(1)
+                    sellerPercentage * 100
+                  ).toFixed(1)
                     }% `}
                   disabled
                   className="bg-gray-200 font-bold"
