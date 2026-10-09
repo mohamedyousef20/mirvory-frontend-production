@@ -109,7 +109,104 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* Force Cairo font everywhere to match Offers page design reference */
+    font-family: var(--font-cairo), 'Cairo', system-ui, sans-serif;
   }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-cairo), 'Cairo', system-ui, sans-serif;
+    font-weight: 700;
+  }
+}
+
+/* ── MIRVORY Design Tokens (based on Offers page reference) ───────────────── */
+:root {
+  --mirvory-blue:        #1a4fba;
+  --mirvory-blue-dark:   #1640a0;
+  --mirvory-blue-deeper: #0d2f75;
+  --mirvory-bg:          #f5f7fb;
+  --mirvory-card-radius: 1rem;        /* 16px */
+  --mirvory-section-gap: 1.75rem;     /* 28px between sections */
+}
+
+/* ── Shared section heading style ─────────────────────────────────────────── */
+.mirvory-section-title {
+  font-family: var(--font-cairo), 'Cairo', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ── Card consistent style ────────────────────────────────────────────────── */
+.mirvory-card {
+  background: #ffffff;
+  border-radius: var(--mirvory-card-radius);
+  border: 1px solid #e9eef6;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.mirvory-card:hover {
+  box-shadow: 0 4px 16px rgba(26,79,186,0.10);
+}
+
+/* ── Primary button consistent style ─────────────────────────────────────── */
+.mirvory-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  background: var(--mirvory-blue);
+  color: #ffffff;
+  font-family: var(--font-cairo), 'Cairo', sans-serif;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border-radius: 0.75rem;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 8px rgba(26,79,186,0.25);
+}
+.mirvory-btn-primary:hover {
+  background: var(--mirvory-blue-dark);
+  box-shadow: 0 4px 12px rgba(26,79,186,0.35);
+}
+
+/* ── Badge / tag pill ─────────────────────────────────────────────────────── */
+.mirvory-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-family: var(--font-cairo), 'Cairo', sans-serif;
+}
+.mirvory-badge-blue   { background: #eff4ff; color: var(--mirvory-blue); }
+.mirvory-badge-green  { background: #f0fdf4; color: #16a34a; }
+.mirvory-badge-red    { background: #fef2f2; color: #dc2626; }
+.mirvory-badge-orange { background: #fff7ed; color: #ea580c; }
+
+/* ── Form inputs unified ──────────────────────────────────────────────────── */
+.mirvory-input {
+  height: 2.75rem;          /* 44px */
+  border-radius: 0.75rem;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  font-family: var(--font-cairo), 'Cairo', sans-serif;
+  font-size: 0.9rem;
+  padding: 0 0.875rem;
+  width: 100%;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.mirvory-input:focus {
+  outline: none;
+  border-color: var(--mirvory-blue);
+  box-shadow: 0 0 0 3px rgba(26,79,186,0.12);
+  background: #ffffff;
 }
 
 /* For hiding scrollbar in featured products */

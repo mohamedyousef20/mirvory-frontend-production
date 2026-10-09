@@ -1,14 +1,15 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, Suspense } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { Loader2, ShoppingBag, User, Phone, Mail, MapPin, Package, Store } from 'lucide-react';
+import { Loader2, ShoppingBag, User, Phone, Mail, MapPin, Package, Store, Home } from 'lucide-react';
 import { guestCartService, pickupPointService, shippingSettingsService } from '@/lib/api';
 import { getGuestCart, clearGuestCart } from '@/lib/guestCart';
+import { GREATER_CAIRO_AREA, getCitiesByGovernorate } from '@/lib/data/greater-cairo-area';
 declare global {
   interface Window {
     fbq?: (
@@ -83,7 +84,10 @@ interface GuestCheckoutForm {
   guestPhone: string;
   deliveryMethod: 'home' | 'pickup';
   paymentMethod: 'cash';
-  address: string;
+  // structured address fields — match the registered user checkout
+  governorate: string;
+  city: string;
+  addressLine: string;
   pickupPoint: string;
 }
 
@@ -108,7 +112,9 @@ function GuestCheckoutInner() {
     guestPhone: '',
     deliveryMethod: 'home',
     paymentMethod: 'cash',
-    address: '',
+    governorate: '',
+    city: '',
+    addressLine: '',
     pickupPoint: '',
   });
   const [trackingToken, setTrackingToken] = useState<string | null>(null);
@@ -153,30 +159,29 @@ function GuestCheckoutInner() {
   }, []);
 
   const handleChange = (field: keyof GuestCheckoutForm, value: string) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
+    setForm((prev) => {
+      const next = { ...prev, [field]: value };
+      // reset city when governorate changes
+      if (field === 'governorate') next.city = '';
+      return next;
+    });
   };
 
   const subtotal = cartItems.reduce((sum, i) => sum + (i.price || 0) * i.quantity, 0);
+
+  // Cities available for selected governorate
+  const availableCities = useMemo(() => {
+    if (!form.governorate) return [];
+    return getCitiesByGovernorate(form.governorate);
+  }, [form.governorate]);
   
   const shippingFee = useMemo(() => {
     if (!shippingSettings) return 70;
-    
-    let fee = shippingSettings.shippingFee;
-    
-    // Free shipping based on minimum order
-    if (shippingSettings.freeShippingEnabled && subtotal >= shippingSettings.freeShippingMinimum) {
-      fee = 0;
-    }
-    
-    // Free pickup shipping
-    if (shippingSettings.freePickupShipping && form.deliveryMethod === 'pickup') {
-      fee = 0;
-    }
-    
-    // metro check removed — no address-line field anymore
-    
+    let fee = shippingSettings.shippingFee ?? 70;
+    if (shippingSettings.freeShippingEnabled && subtotal >= shippingSettings.freeShippingMinimum) fee = 0;
+    if (shippingSettings.freePickupShipping && form.deliveryMethod === 'pickup') fee = 0;
     return fee;
-  }, [subtotal, form.deliveryMethod, form.address, shippingSettings]);
+  }, [subtotal, form.deliveryMethod, shippingSettings]);
   
   const totalAmount = subtotal + shippingFee;
 
@@ -190,8 +195,11 @@ function GuestCheckoutInner() {
       return 'البريد الإلكتروني غير صالح';
     if (!/^01[0125][0-9]{8}$/.test(form.guestPhone))
       return 'رقم الهاتف غير صالح. يجب أن يكون رقمًا مصريًا صحيحًا';
-    if (form.deliveryMethod === 'home' && !form.address.trim())
-      return 'عنوان التوصيل مطلوب';
+    if (form.deliveryMethod === 'home') {
+      if (!form.governorate) return 'المحافظة مطلوبة';
+      if (!form.city) return 'المدينة مطلوبة';
+      if (!form.addressLine.trim()) return 'تفاصيل العنوان مطلوبة';
+    }
     if (form.deliveryMethod === 'pickup' && !form.pickupPoint)
       return 'نقطة الاستلام مطلوبة';
     if (cartItems.length === 0)
@@ -213,7 +221,9 @@ function GuestCheckoutInner() {
         deliveryMethod: form.deliveryMethod,
         paymentMethod: 'cash',
         deliveryInfo: {
-          address: form.deliveryMethod === 'home' ? form.address.trim() : undefined,
+          address: form.deliveryMethod === 'home'
+            ? `${form.addressLine.trim()}, ${form.city}, ${form.governorate}`
+            : undefined,
           pickupPoint: form.deliveryMethod === 'pickup' ? form.pickupPoint : undefined,
         },
         items: cartItems.map(item => ({
@@ -384,19 +394,62 @@ function GuestCheckoutInner() {
             </div>
 
             {form.deliveryMethod === 'home' && (
-              <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
-                <Label htmlFor="address">العنوان التفصيلي *</Label>
-                <Input
-                  id="address"
-                  value={form.address}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('address', e.target.value)}
-                  placeholder="المحافظة، المدينة، الشارع، رقم المبنى"
-                  required={form.deliveryMethod === 'home'}
-                  className="mt-1"
-                />
+              <div className="space-y-3 animate-in fade-in slide-in-from-top-2 bg-slate-50 rounded-xl p-4 border border-slate-200">
+                <h3 className="font-semibold text-slate-800 flex items-center gap-2 text-sm">
+                  <MapPin className="h-4 w-4 text-primary" /> عنوان التوصيل
+                </h3>
+
+                {/* Governorate */}
+                <div>
+                  <Label htmlFor="governorate" className="text-xs text-slate-500">المحافظة *</Label>
+                  <select
+                    id="governorate"
+                    value={form.governorate}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleChange('governorate', e.target.value)}
+                    className="mt-1 w-full h-11 bg-white rounded-xl px-3 border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                    required={form.deliveryMethod === 'home'}
+                  >
+                    <option value="">اختر المحافظة</option>
+                    {GREATER_CAIRO_AREA.map((gov) => (
+                      <option key={gov.id} value={gov.id}>{gov.nameAr}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* City */}
+                <div>
+                  <Label htmlFor="city" className="text-xs text-slate-500">المدينة / الحي *</Label>
+                  <select
+                    id="city"
+                    value={form.city}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleChange('city', e.target.value)}
+                    className="mt-1 w-full h-11 bg-white rounded-xl px-3 border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
+                    required={form.deliveryMethod === 'home'}
+                    disabled={!form.governorate}
+                  >
+                    <option value="">اختر المدينة / الحي</option>
+                    {availableCities.map((city) => (
+                      <option key={city.id} value={city.id}>{city.nameAr}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Address line */}
+                <div>
+                  <Label htmlFor="addressLine" className="text-xs text-slate-500">تفاصيل العنوان *</Label>
+                  <Input
+                    id="addressLine"
+                    value={form.addressLine}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('addressLine', e.target.value)}
+                    placeholder="الشارع، رقم المبنى، الطابق..."
+                    required={form.deliveryMethod === 'home'}
+                    className="mt-1 h-11 bg-white rounded-xl border-slate-200"
+                  />
+                </div>
+
                 {shippingSettings?.freeShippingEnabled && shippingFee > 0 && (
                   subtotal >= shippingSettings.freeShippingMinimum ? (
-                    <p className="text-sm text-green-600">الشحن مجاني لطلبك الحالي لتجاوزه {shippingSettings.freeShippingMinimum} ج.م</p>
+                    <p className="text-sm text-green-600">✓ الشحن مجاني لطلبك الحالي</p>
                   ) : (
                     <p className="text-sm text-blue-600">
                       أضف منتجات بقيمة {(shippingSettings.freeShippingMinimum - subtotal).toLocaleString()} ج.م للحصول على شحن مجاني

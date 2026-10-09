@@ -54,64 +54,115 @@ interface EditColorSizeManagerProps {
 
 function EditColorSizeManager({ color, language, onToggleAvailability, onRemove, onAddSize, onRemoveSize, onUpdateQty }: EditColorSizeManagerProps) {
   const [newSize, setNewSize] = useState('');
-  const [newQty, setNewQty] = useState(0);
-  const PRESET_SIZES = ['41', '42', '43', '44', '45'];
+  const [newQty, setNewQty] = useState(1);
+
+  const SHOE_SIZES = ['37', '38', '39', '40', '41', '42', '43', '44', '45', '46'];
+  const CLOTH_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
 
   const handleAdd = () => {
-    if (!newSize.trim()) return;
-    onAddSize(newSize.trim(), newQty);
-    setNewSize(''); setNewQty(0);
+    const s = newSize.trim();
+    if (!s) return;
+    onAddSize(s, Math.max(0, newQty));
+    setNewSize(''); setNewQty(1);
   };
 
+  const totalStock = color.sizes.reduce((sum, s) => sum + s.quantity, 0);
+
   return (
-    <div className={`border rounded-xl p-4 space-y-3 ${color.available ? 'border-green-200 bg-green-50/30' : 'border-gray-200 bg-gray-50'}`}>
-      <div className="flex items-center gap-3">
-        <div className="w-8 h-8 rounded-full border-2 border-white shadow flex-shrink-0" style={{ backgroundColor: color.value }} />
-        {color.image && <img src={color.image} alt={color.name} className="w-10 h-10 object-cover rounded-lg border flex-shrink-0" />}
-        <span className="font-semibold text-sm">{color.name}</span>
-        <span className="text-xs text-muted-foreground">{color.value}</span>
-        <div className="flex items-center gap-1 ms-auto">
+    <div className={`border-2 rounded-xl p-4 space-y-3 transition-colors ${color.available ? 'border-green-200 bg-green-50/20' : 'border-gray-200 bg-gray-50/50'}`}>
+      <div className="flex items-center gap-3 flex-wrap">
+        <div className="w-9 h-9 rounded-full border-2 border-white shadow-md flex-shrink-0" style={{ backgroundColor: color.value }} />
+        {color.image && <img src={color.image} alt={color.name} className="w-11 h-11 object-cover rounded-lg border-2 border-white shadow flex-shrink-0" />}
+        <div className="flex-1 min-w-0">
+          <p className="font-semibold text-sm">{color.name}</p>
+          <p className="text-xs text-muted-foreground font-mono">{color.value}</p>
+        </div>
+        <div className="flex items-center gap-1.5 flex-shrink-0 ms-auto">
+          <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-medium">
+            {language === 'ar' ? `إجمالي: ${totalStock}` : `Total: ${totalStock}`}
+          </span>
           <button type="button" onClick={onToggleAvailability}
-            className={`text-xs px-2 py-1 rounded-full border ${color.available ? 'bg-green-100 text-green-700 border-green-300' : 'bg-gray-100 text-gray-500 border-gray-300'}`}>
-            {color.available ? (language === 'ar' ? 'متاح ✓' : 'Available ✓') : (language === 'ar' ? 'غير متاح' : 'Unavailable')}
+            className={`text-xs px-2 py-1 rounded-full border font-medium transition-colors ${color.available ? 'bg-green-100 text-green-700 border-green-300 hover:bg-green-200' : 'bg-gray-100 text-gray-500 border-gray-300 hover:bg-gray-200'}`}>
+            {color.available ? (language === 'ar' ? '✓ متاح' : '✓ Active') : (language === 'ar' ? 'غير متاح' : 'Inactive')}
           </button>
-          <button type="button" onClick={onRemove} className="text-red-500 hover:text-red-700 p-1 rounded">
-            <X size={16} />
+          <button type="button" onClick={onRemove}
+            className="text-red-400 hover:text-red-600 hover:bg-red-50 p-1.5 rounded-lg transition-colors">
+            <X size={15} />
           </button>
         </div>
       </div>
 
       <div className="space-y-2">
-        <p className="text-xs font-medium text-muted-foreground">{language === 'ar' ? 'المقاسات والكميات:' : 'Sizes & Quantities:'}</p>
+        <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide">
+          {language === 'ar' ? 'المقاسات والكميات' : 'Sizes & Quantities'}
+        </p>
+
+        {color.sizes.length === 0 && (
+          <p className="text-xs text-muted-foreground italic py-2 text-center">
+            {language === 'ar' ? 'لم تُضف مقاسات — اختر من الأزرار أو أدخل يدوياً' : 'No sizes — pick presets or enter manually'}
+          </p>
+        )}
+
         {color.sizes.length > 0 && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-2">
             {color.sizes.map(({ size, quantity }) => (
-              <div key={size} className="flex items-center gap-1 bg-white rounded-lg border p-2">
-                <span className="text-sm font-medium w-8 text-center">{size}</span>
+              <div key={size} className="flex items-center gap-1.5 bg-white rounded-lg border border-slate-200 shadow-sm p-2">
+                <span className="text-sm font-bold text-slate-700 min-w-[2rem] text-center">{size}</span>
                 <input type="number" min="0" value={quantity}
-                  onChange={e => onUpdateQty(size, parseInt(e.target.value) || 0)}
-                  className="w-14 text-center text-sm border rounded px-1 py-0.5" />
-                <button type="button" onClick={() => onRemoveSize(size)} className="text-red-400 hover:text-red-600">
-                  <X size={12} />
+                  onChange={e => onUpdateQty(size, Math.max(0, parseInt(e.target.value) || 0))}
+                  className="w-14 text-center text-sm border border-slate-200 rounded-md px-1 py-0.5 focus:ring-1 focus:ring-primary focus:outline-none" />
+                <button type="button" onClick={() => onRemoveSize(size)}
+                  className="text-red-300 hover:text-red-500 transition-colors">
+                  <X size={11} />
                 </button>
               </div>
             ))}
           </div>
         )}
-        <div className="flex gap-2 items-center flex-wrap">
-          <div className="flex gap-1 flex-wrap">
-            {PRESET_SIZES.map(ps => (
-              <button key={ps} type="button" onClick={() => setNewSize(ps)}
-                className={`px-2 py-1 text-xs rounded border ${newSize === ps ? 'bg-primary text-primary-foreground' : 'bg-white hover:bg-gray-50'}`}>
-                {ps}
-              </button>
-            ))}
+
+        <div className="pt-1 space-y-2">
+          <div>
+            <p className="text-xs text-muted-foreground mb-1">{language === 'ar' ? 'مقاسات الأحذية:' : 'Shoe sizes:'}</p>
+            <div className="flex gap-1 flex-wrap">
+              {SHOE_SIZES.map(ps => {
+                const added = color.sizes.some(s => s.size === ps);
+                return (
+                  <button key={ps} type="button" onClick={() => !added && setNewSize(ps)}
+                    className={`px-2 py-1 text-xs rounded-lg border font-medium transition-colors ${
+                      added ? 'bg-green-50 text-green-600 border-green-200 cursor-default' :
+                      newSize === ps ? 'bg-primary text-primary-foreground border-primary' :
+                      'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                    }`}>{added ? `✓ ${ps}` : ps}</button>
+                );
+              })}
+            </div>
           </div>
-          <Input value={newSize} onChange={e => setNewSize(e.target.value)} placeholder={language === 'ar' ? 'مقاس' : 'Size'} className="w-20 h-8 text-sm" />
-          <Input type="number" min="0" value={newQty} onChange={e => setNewQty(parseInt(e.target.value) || 0)} placeholder={language === 'ar' ? 'كمية' : 'Qty'} className="w-20 h-8 text-sm" />
-          <Button type="button" onClick={handleAdd} size="sm" variant="outline" className="h-8">
-            <Plus className="h-3 w-3 me-1" />{language === 'ar' ? 'إضافة' : 'Add'}
-          </Button>
+          <div>
+            <p className="text-xs text-muted-foreground mb-1">{language === 'ar' ? 'مقاسات الملابس:' : 'Clothing sizes:'}</p>
+            <div className="flex gap-1 flex-wrap">
+              {CLOTH_SIZES.map(ps => {
+                const added = color.sizes.some(s => s.size === ps);
+                return (
+                  <button key={ps} type="button" onClick={() => !added && setNewSize(ps)}
+                    className={`px-2 py-1 text-xs rounded-lg border font-medium transition-colors ${
+                      added ? 'bg-green-50 text-green-600 border-green-200 cursor-default' :
+                      newSize === ps ? 'bg-primary text-primary-foreground border-primary' :
+                      'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                    }`}>{added ? `✓ ${ps}` : ps}</button>
+                );
+              })}
+            </div>
+          </div>
+          <div className="flex gap-2 items-center flex-wrap">
+            <Input value={newSize} onChange={e => setNewSize(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleAdd())}
+              placeholder={language === 'ar' ? 'مقاس مخصص' : 'Custom size'} className="w-28 h-9 text-sm" />
+            <Input type="number" min="0" value={newQty} onChange={e => setNewQty(Math.max(0, parseInt(e.target.value) || 0))}
+              placeholder={language === 'ar' ? 'الكمية' : 'Qty'} className="w-20 h-9 text-sm" />
+            <Button type="button" onClick={handleAdd} size="sm" className="h-9 bg-primary hover:bg-primary/90">
+              <Plus className="h-3.5 w-3.5 me-1" />{language === 'ar' ? 'إضافة مقاس' : 'Add size'}
+            </Button>
+          </div>
         </div>
       </div>
     </div>
@@ -705,11 +756,12 @@ export default function EditProductPage() {
         deletedImages: newProduct.deletedImages,
         deletedColorImages: newProduct.deletedColorImages,
         sizes: newProduct.sizes,
-        colors: newProduct.colors.map(({ name, value, image, available }) => ({
+        colors: newProduct.colors.map(({ name, value, image, available, sizes }) => ({
           name,
           value,
           image,
-          available
+          available,
+          sizes: sizes ?? [],
         })),
         quantity: parseInt(newProduct.quantity) || 0,
         isFeatured: newProduct.isFeatured,

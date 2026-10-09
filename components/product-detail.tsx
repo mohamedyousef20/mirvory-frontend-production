@@ -36,47 +36,99 @@ import { useAuth } from "@/contexts/AuthProvider"
 import { useRouter } from "next/navigation"
 
 // ── Video embed helper ───────────────────────────────────────────────────────
-const ALLOWED_EMBED_DOMAINS = ['youtube.com', 'youtu.be', 'youtube-nocookie.com']
 
+/**
+ * Extracts a YouTube video ID from every common URL format:
+ *  - https://www.youtube.com/watch?v=VIDEO_ID
+ *  - https://youtu.be/VIDEO_ID
+ *  - https://m.youtube.com/watch?v=VIDEO_ID
+ *  - https://youtube.com/embed/VIDEO_ID          (already an embed)
+ *  - https://youtube.com/shorts/VIDEO_ID         (Shorts)
+ *  - https://www.youtube.com/watch?v=ID&t=30s    (with extra params)
+ */
 function getYouTubeEmbedUrl(url: string): string | null {
+  if (!url || typeof url !== 'string') return null
+  const trimmed = url.trim()
   try {
-    const u = new URL(url)
-    const host = u.hostname.replace(/^www\./, '')
-    if (host === 'youtu.be') return `https://www.youtube-nocookie.com/embed/${u.pathname.slice(1)}`
-    if (host === 'youtube.com' || host === 'm.youtube.com') {
+    const u = new URL(trimmed)
+    const host = u.hostname.replace(/^(www\.|m\.)/, '')
+
+    // youtu.be/VIDEO_ID
+    if (host === 'youtu.be') {
+      const id = u.pathname.slice(1).split('?')[0].split('/')[0]
+      if (id) return `https://www.youtube-nocookie.com/embed/${id}`
+    }
+
+    if (host === 'youtube.com' || host === 'youtube-nocookie.com') {
+      // /watch?v=VIDEO_ID
       const v = u.searchParams.get('v')
       if (v) return `https://www.youtube-nocookie.com/embed/${v}`
+
+      // /embed/VIDEO_ID (already embed — just normalise domain)
+      const embedMatch = u.pathname.match(/\/embed\/([^/?]+)/)
+      if (embedMatch) return `https://www.youtube-nocookie.com/embed/${embedMatch[1]}`
+
+      // /shorts/VIDEO_ID
+      const shortsMatch = u.pathname.match(/\/shorts\/([^/?]+)/)
+      if (shortsMatch) return `https://www.youtube-nocookie.com/embed/${shortsMatch[1]}`
     }
+
     return null
-  } catch { return null }
+  } catch {
+    return null
+  }
 }
 
 function ProductVideoEmbed({ url }: { url: string }) {
   const embedUrl = getYouTubeEmbedUrl(url)
+
   if (embedUrl) {
     return (
-      <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
-        <iframe
-          src={embedUrl}
-          title="Product Video"
-          className="absolute inset-0 w-full h-full rounded-xl border border-slate-200"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-          loading="lazy"
-        />
+      <div className="space-y-3">
+        {/* 16:9 responsive container */}
+        <div className="relative w-full rounded-2xl overflow-hidden border border-slate-200 shadow-sm bg-slate-900"
+             style={{ paddingBottom: '56.25%' }}>
+          <iframe
+            src={embedUrl}
+            title="فيديو المنتج"
+            className="absolute inset-0 w-full h-full"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+            loading="lazy"
+          />
+        </div>
+        <p className="text-xs text-muted-foreground text-center">
+          انقر على الفيديو لتشغيله — يُفتح في وضع آمن (YouTube Privacy Enhanced)
+        </p>
       </div>
     )
   }
-  // Fallback: show a clickable link for non-YouTube URLs
-  const isSafe = ALLOWED_EMBED_DOMAINS.some(d => url.includes(d))
-  if (!isSafe) return (
-    <p className="text-sm text-muted-foreground">رابط الفيديو غير مدعوم للعرض المضمّن.</p>
-  )
+
+  // Invalid / unsupported URL — show a safe fallback
+  const looksLikeUrl = /^https?:\/\//i.test(url.trim())
+  if (looksLikeUrl) {
+    return (
+      <div className="flex flex-col items-center gap-3 py-8 text-center bg-slate-50 rounded-2xl border border-slate-200">
+        <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center">
+          <svg className="w-6 h-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+              d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" />
+          </svg>
+        </div>
+        <p className="text-sm font-medium text-slate-700">لا يمكن عرض الفيديو مضمّناً</p>
+        <p className="text-xs text-slate-500">رابط الفيديو غير مدعوم للعرض المباشر (يدعم YouTube فقط)</p>
+        <a href={url} target="_blank" rel="noopener noreferrer"
+           className="inline-flex items-center gap-2 px-4 py-2 bg-[#1a4fba] text-white text-sm font-medium rounded-xl hover:bg-[#1640a0] transition">
+          مشاهدة الفيديو ↗
+        </a>
+      </div>
+    )
+  }
+
   return (
-    <a href={url} target="_blank" rel="noopener noreferrer"
-       className="inline-flex items-center gap-2 text-[#1a4fba] underline text-sm font-medium">
-      مشاهدة الفيديو على المنصة الأصلية ↗
-    </a>
+    <div className="py-6 text-center text-sm text-muted-foreground bg-slate-50 rounded-2xl border border-slate-200">
+      رابط الفيديو غير صالح أو مفقود.
+    </div>
   )
 }
 
@@ -856,20 +908,27 @@ const ProductDetail = ({ productId }: { productId: string }) => {
           <TabsList className={`grid w-full ${product.videoUrl ? 'grid-cols-4' : 'grid-cols-3'}`}>
             <TabsTrigger value="description">{language === "ar" ? "الوصف" : "Description"}</TabsTrigger>
             <TabsTrigger value="specifications">{language === "ar" ? "المواصفات" : "Specifications"}</TabsTrigger>
-            {product.videoUrl && (
-              <TabsTrigger value="video">{language === "ar" ? "فيديو المنتج" : "Product Video"}</TabsTrigger>
-            )}
             <TabsTrigger value="reviews">{language === "ar" ? "التقييمات" : "Reviews"}</TabsTrigger>
+            {product.videoUrl && (
+              <TabsTrigger value="video" className="flex items-center gap-1.5">
+                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+                {language === "ar" ? "فيديو المنتج" : "Product Video"}
+              </TabsTrigger>
+            )}
           </TabsList>
 
           <TabsContent value="description">
-            <div className="p-4"><p>{product.description}</p></div>
+            <div className="p-4 prose prose-slate max-w-none">
+              <p className="whitespace-pre-line leading-relaxed">{product.description}</p>
+            </div>
           </TabsContent>
 
           {/* ── Video Tab ── */}
           {product.videoUrl && (
             <TabsContent value="video">
-              <div className="p-4">
+              <div className="p-4 md:p-6">
                 <ProductVideoEmbed url={product.videoUrl} />
               </div>
             </TabsContent>
