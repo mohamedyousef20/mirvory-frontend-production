@@ -19,6 +19,7 @@ import { SiteFooter } from "@/components/site-footer"
 import { Toaster } from "sonner"
 import { getUserServer } from "@/src/lib/getUserServer"
 import { AuthProvider } from "@/contexts/AuthProvider"
+import { AnnouncementBar } from "@/components/announcement-bar"
 
 import Script from "next/script"
 
@@ -130,6 +131,9 @@ fbq('track', 'PageView');
                     <AuthProvider
                       initialUser={userData}
                     >
+
+                      {/* ── Scrolling Announcement Bar (above sticky header) ── */}
+                      <AnnouncementBar />
 
                       <MainNav />
 

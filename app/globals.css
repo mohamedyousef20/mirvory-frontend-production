@@ -318,3 +318,40 @@ body {
     opacity: 1;
   }
 }
+
+/* ── Announcement Bar — Seamless RTL Marquee ──────────────────────────────
+ *
+ *  Text flows from Left → Right (Arabic RTL convention).
+ *  The track is 2× wide (content duplicated). We animate:
+ *    translateX(-50%)  →  translateX(0%)
+ *
+ *  At -50%: second copy is visible, first is off-screen to the left.
+ *  At   0%: first  copy is visible, second is off-screen to the right.
+ *  Seamless because both copies are identical content.
+ * ─────────────────────────────────────────────────────────────────────── */
+@keyframes marquee-rtl {
+  0%   { transform: translateX(-50%); }
+  100% { transform: translateX(0%); }
+}
+
+.marquee-track {
+  /* width: max-content ensures the flex row never wraps */
+  width: max-content;
+  animation: marquee-rtl 40s linear infinite;
+  will-change: transform;
+}
+
+/* Pause when parent is hovered (handled via JS ref, but CSS :hover as fallback) */
+.announcement-bar:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+/* Reduced-motion: show a scrollable strip instead of animating */
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+    overflow-x: auto;
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
