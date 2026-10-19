@@ -694,7 +694,15 @@ const ProductDetail = ({ productId }: { productId: string }) => {
             </div>
           )}
 
-          {(activeSizes.length > 0 || product.sizes?.length > 0) && (
+          {/* Show size prompt when color is not selected but some colors have sizes */}
+          {product.colors?.length > 0 && !selectedColor && product.colors.some(c => (c.sizes ?? []).length > 0) && (
+            <p className="text-sm text-muted-foreground bg-muted/50 rounded-lg px-3 py-2">
+              {language === "ar" ? "اختر اللون أولاً لرؤية المقاسات المتاحة" : "Select a color to see available sizes"}
+            </p>
+          )}
+
+          {/* Show sizes only when a color is selected AND it has sizes */}
+          {activeSizes.length > 0 && (
             <div className="space-y-2">
               <Label className="font-semibold">
                 {language === "ar" ? "المقاس" : "Size"}
@@ -703,7 +711,7 @@ const ProductDetail = ({ productId }: { productId: string }) => {
                 )}
               </Label>
               <div className="flex gap-2 flex-wrap">
-                {(activeSizes.length > 0 ? activeSizes : product.sizes.map(s => ({ size: s, quantity: 99 }))).map(({ size, quantity: qty }) => {
+                {activeSizes.map(({ size, quantity: qty }) => {
                   const isUnavailable = qty === 0
                   const isLow = qty > 0 && qty <= 3
                   const isSelected = selectedSize === size
@@ -728,6 +736,11 @@ const ProductDetail = ({ productId }: { productId: string }) => {
                   )
                 })}
               </div>
+              {!selectedSize && (
+                <p className="text-xs text-muted-foreground">
+                  {language === "ar" ? "اختر المقاس المناسب" : "Please select a size"}
+                </p>
+              )}
             </div>
           )}
 

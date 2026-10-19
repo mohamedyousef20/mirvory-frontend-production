@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo, useRef, useCallback } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useLanguage } from "@/components/language-provider";
@@ -33,11 +33,16 @@ export function HeroCarousel() {
   const { language } = useLanguage()
   const ar = language === "ar"
   const [currentSlide, setCurrentSlide] = useState(0)
-  const [announcements, setAnnouncements] = useState<Announcement[]>([])   // main (carousel)
-  const [sideAnnouncements, setSideAnnouncements] = useState<Announcement[]>([]) // non-main (sidebar)
+  const [announcements, setAnnouncements] = useState<Announcement[]>([])
+  const [sideAnnouncements, setSideAnnouncements] = useState<Announcement[]>([])
   const [loading, setLoading] = useState(true)
 
-  // Fetch main announcements (carousel) + all announcements (to derive the sidebar)
+  // Touch swipe tracking
+  const touchStartX = useRef<number | null>(null)
+  const touchStartY = useRef<number | null>(null)
+  const isDragging = useRef(false)
+
+  // Fetch main announcements + all (for sidebar)
   useEffect(() => {
     let cancelled = false
     const fetchAnnouncements = async () => {
@@ -50,7 +55,6 @@ export function HeroCarousel() {
         const main = mainRes.status === 'fulfilled' ? toList(mainRes.value.data) : []
         const all = allRes.status === 'fulfilled' ? toList(allRes.value.data) : []
         const mainIds = new Set(main.map(a => a._id))
-        // Sidebar = active announcements that are NOT in the main carousel
         const side = all.filter(a => a.isActive !== false && !a.isMain && !mainIds.has(a._id))
         if (!cancelled) {
           setAnnouncements(main)
@@ -67,32 +71,65 @@ export function HeroCarousel() {
     return () => { cancelled = true }
   }, [])
 
-  const nextSlide = () => {
+  const nextSlide = useCallback(() => {
     if (announcements.length <= 1) return;
     setCurrentSlide((prev) => (prev === announcements.length - 1 ? 0 : prev + 1))
-  }
+  }, [announcements.length])
 
-  const prevSlide = () => {
+  const prevSlide = useCallback(() => {
     if (announcements.length <= 1) return;
     setCurrentSlide((prev) => (prev === 0 ? announcements.length - 1 : prev - 1))
-  }
+  }, [announcements.length])
 
+  // Auto-play
   useEffect(() => {
     if (announcements.length <= 1) return
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev === announcements.length - 1 ? 0 : prev + 1))
-    }, 5000)
+    const interval = setInterval(nextSlide, 5000)
     return () => clearInterval(interval)
-  }, [announcements.length])
+  }, [announcements.length, nextSlide])
+
+  // ── Touch handlers ────────────────────────────────────────────────────────────
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX
+    touchStartY.current = e.touches[0].clientY
+    isDragging.current = false
+  }, [])
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (touchStartX.current === null || touchStartY.current === null) return
+    const dx = Math.abs(e.touches[0].clientX - touchStartX.current)
+    const dy = Math.abs(e.touches[0].clientY - touchStartY.current)
+    // Only treat as horizontal drag (prevents interfering with page scroll)
+    if (dx > dy && dx > 8) {
+      isDragging.current = true
+    }
+  }, [])
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (!isDragging.current || touchStartX.current === null) return
+    const dx = e.changedTouches[0].clientX - touchStartX.current
+    const SWIPE_THRESHOLD = 40
+    if (Math.abs(dx) > SWIPE_THRESHOLD) {
+      // RTL: swipe right → previous, swipe left → next (inverted for AR)
+      if (ar) {
+        dx > 0 ? nextSlide() : prevSlide()
+      } else {
+        dx < 0 ? nextSlide() : prevSlide()
+      }
+    }
+    touchStartX.current = null
+    touchStartY.current = null
+    isDragging.current = false
+  }, [ar, nextSlide, prevSlide])
 
   const hasSidebar = sideAnnouncements.length > 0
   const hasMultipleSlides = announcements.length > 1
   const layoutCls = useMemo(
-    () => `container mx-auto grid grid-cols-1 gap-4 py-4 ${hasSidebar || loading ? 'lg:grid-cols-[minmax(0,1fr)_320px]' : ''}`,
+    () => `container mx-auto grid grid-cols-1 gap-4 py-4 overflow-hidden ${hasSidebar || loading ? 'lg:grid-cols-[minmax(0,1fr)_320px]' : ''}`,
     [hasSidebar, loading]
   )
 
-  // ── Sidebar card (full-bleed image + gradient + text) ────────────────────────
+  // ── Sidebar card ─────────────────────────────────────────────────────────────
   const renderSideCard = (a: Announcement, cls: string) => {
     const title = ar ? a.title : a.titleEn || a.title
     const text = ar ? a.content : a.contentEn || a.content
@@ -125,7 +162,7 @@ export function HeroCarousel() {
     )
   }
 
-  // ── Loading skeleton ─────────────────────────────────────────────────────────
+  // ── Loading skeleton ──────────────────────────────────────────────────────────
   if (loading) {
     return (
       <div className={layoutCls}>
@@ -140,23 +177,27 @@ export function HeroCarousel() {
 
   if (announcements.length === 0 && !hasSidebar) {
     return (
-      <div className="relative aspect-[21/9] md:aspect-[3/1] bg-muted">
+      <div className="relative aspect-[21/9] md:aspect-[3/1] bg-muted overflow-hidden">
         <div className="container h-full flex items-center justify-center">
-          <div className="text-center">
-            <p className="text-lg text-muted-foreground">
-              {ar ? "لا توجد إعلانات متاحة" : "No announcements available"}
-            </p>
-          </div>
+          <p className="text-lg text-muted-foreground">
+            {ar ? "لا توجد إعلانات متاحة" : "No announcements available"}
+          </p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 overflow-hidden">
       <div className={layoutCls}>
-        {/* ── Main carousel ─────────────────────────────────────────────────── */}
-        <div className="relative overflow-hidden rounded-2xl shadow-sm">
+        {/* ── Main carousel ──────────────────────────────────────────────────── */}
+        <div
+          className="relative overflow-hidden rounded-2xl shadow-sm select-none"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
+          {/* Slide track */}
           <div
             className="flex transition-transform duration-500 ease-in-out"
             style={{
@@ -164,22 +205,23 @@ export function HeroCarousel() {
             }}
           >
             {announcements.map((announcement) => (
-              <div key={announcement._id} className="min-w-full relative">
-                <div className="relative aspect-[21/9] md:aspect-[3/1]">
+              <div key={announcement._id} className="min-w-full relative flex-shrink-0">
+                <div className="relative aspect-[21/9] md:aspect-[3/1] w-full overflow-hidden">
                   <Image
                     src={announcement.image || "/placeholder.svg"}
                     alt={ar ? announcement.title : announcement.titleEn || announcement.title}
                     fill
-                    className="object-cover"
+                    className="object-cover object-center"
                     priority
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 75vw, 60vw"
                   />
                   <div className="absolute inset-0 bg-gradient-to-r from-background/80 to-background/20 dark:from-background/90 dark:to-background/30">
                     <div className="flex h-full items-center px-6 md:px-10">
                       <div className="max-w-lg space-y-4">
-                        <h2 className="text-2xl md:text-4xl font-bold tracking-tight">
+                        <h2 className="text-2xl md:text-4xl font-bold tracking-tight line-clamp-3">
                           {ar ? announcement.title : announcement.titleEn || announcement.title}
                         </h2>
-                        <p className="text-base md:text-lg text-muted-foreground">
+                        <p className="text-base md:text-lg text-muted-foreground line-clamp-2">
                           {ar ? announcement.content : announcement.contentEn || announcement.content}
                         </p>
                         <Button asChild size="lg">
@@ -195,43 +237,48 @@ export function HeroCarousel() {
             ))}
           </div>
 
+          {/* Desktop arrows — hidden on mobile */}
           {hasMultipleSlides && (
             <>
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute top-1/2 left-2 -translate-y-1/2 bg-background/50 hover:bg-background/80 rounded-full h-10 w-10"
+                className="absolute top-1/2 left-2 -translate-y-1/2 bg-background/50 hover:bg-background/80 rounded-full h-10 w-10 hidden sm:flex"
                 onClick={prevSlide}
+                aria-label="Previous slide"
               >
                 <ChevronLeft className="h-6 w-6" />
-                <span className="sr-only">Previous slide</span>
               </Button>
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute top-1/2 right-2 -translate-y-1/2 bg-background/50 hover:bg-background/80 rounded-full h-10 w-10"
+                className="absolute top-1/2 right-2 -translate-y-1/2 bg-background/50 hover:bg-background/80 rounded-full h-10 w-10 hidden sm:flex"
                 onClick={nextSlide}
+                aria-label="Next slide"
               >
                 <ChevronRight className="h-6 w-6" />
-                <span className="sr-only">Next slide</span>
               </Button>
 
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2 rtl:space-x-reverse">
+              {/* Pill indicators */}
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 items-center">
                 {announcements.map((_, index) => (
                   <button
                     key={index}
-                    className={`h-2 rounded-full transition-all ${currentSlide === index ? "w-6 bg-primary" : "w-2 bg-muted"}`}
+                    aria-label={`Go to slide ${index + 1}`}
                     onClick={() => setCurrentSlide(index)}
-                  >
-                    <span className="sr-only">Go to slide {index + 1}</span>
-                  </button>
+                    className={`h-2 rounded-full transition-all duration-300 focus:outline-none ${
+                      currentSlide === index
+                        ? "w-6 bg-primary"
+                        : "w-2 bg-white/60 hover:bg-white/80"
+                    }`}
+                  />
                 ))}
               </div>
             </>
           )}
         </div>
 
-        {/* ── Sidebar: non-main announcements (desktop: stacked beside carousel) ── */}
+        {/* ── Sidebar on desktop: stacked beside carousel ─────────────────────── */}
         {hasSidebar && (
           <div
             className="hidden gap-4 lg:grid"
@@ -242,11 +289,13 @@ export function HeroCarousel() {
         )}
       </div>
 
-      {/* ── Sidebar on mobile/tablet: horizontal swipe row under the carousel ── */}
+      {/* ── Sidebar on mobile/tablet: horizontal scroll row ──────────────────── */}
       {hasSidebar && (
-        <div className="container mx-auto lg:hidden">
-          <div className="-mx-1 flex snap-x gap-3 overflow-x-auto px-1 pb-1">
-            {sideAnnouncements.map(a => renderSideCard(a, "aspect-[16/9] w-[75%] shrink-0 snap-start sm:w-[45%]"))}
+        <div className="container mx-auto lg:hidden overflow-hidden">
+          <div className="-mx-1 flex snap-x gap-3 overflow-x-auto px-1 pb-2 scrollbar-hide">
+            {sideAnnouncements.map(a =>
+              renderSideCard(a, "aspect-[16/9] w-[75%] shrink-0 snap-start sm:w-[45%]")
+            )}
           </div>
         </div>
       )}

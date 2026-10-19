@@ -204,8 +204,6 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
   const [categories, setCategories] = useState<any[]>([]);
   const [brands, setBrands] = useState<any[]>([]);
 
-  const [sizeInput, setSizeInput] = useState('');
-
   const [colorInput, setColorInput] = useState({
     name: '',
     value: '#000000',
@@ -224,7 +222,6 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
     category: '',
     images: [] as string[],
     brand: '',
-    sizes: [] as string[],
     colors: [] as Color[],
     quantity: '0',
     isFeatured: false,
@@ -361,14 +358,7 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
             : 'Please add at least one image'
       }),
 
-    sizes: Joi.array()
-      .items(
-        Joi.string()
-          .trim()
-          .required()
-          .max(50)
-      )
-      .default([]),
+    // v5: sizes are managed per-color — no flat global sizes
 
     /*
      * ============================================================
@@ -666,39 +656,7 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
     });
   };
 
-  /*
-   * ============================================================
-   * SIZES
-   * ============================================================
-   */
-
-  const addSize = () => {
-    const size = sizeInput.trim();
-
-    if (
-      size &&
-      !newProduct.sizes.includes(size)
-    ) {
-      setNewProduct(prev => ({
-        ...prev,
-        sizes: [
-          ...prev.sizes,
-          size
-        ]
-      }));
-
-      setSizeInput('');
-    }
-  };
-
-  const removeSize = (size: string) => {
-    setNewProduct(prev => ({
-      ...prev,
-      sizes: prev.sizes.filter(
-        s => s !== size
-      )
-    }));
-  };
+  // v5: flat sizes removed — per-color sizes handled by ColorSizeManager
 
   /*
    * ============================================================
@@ -1000,9 +958,6 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
 
         images:
           newProduct.images,
-
-        sizes:
-          newProduct.sizes,
 
         colors:
           newProduct.colors,
@@ -1391,77 +1346,7 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
 
           </div>
 
-          {/* =====================================================
-              SIZES
-          ====================================================== */}
-
-          <div>
-
-            <Label htmlFor="sizes">
-              {language === 'ar'
-                ? 'المقاسات'
-                : 'Sizes'}
-            </Label>
-
-            <div className="flex gap-2">
-
-              <Input
-                id="sizes"
-                value={sizeInput}
-                onChange={e =>
-                  setSizeInput(
-                    e.target.value
-                  )
-                }
-                placeholder={
-                  language === 'ar'
-                    ? 'أدخل مقاساً'
-                    : 'Enter a size'
-                }
-              />
-
-              <Button
-                type="button"
-                onClick={addSize}
-                variant="secondary"
-              >
-                {language === 'ar'
-                  ? 'إضافة'
-                  : 'Add'}
-              </Button>
-
-            </div>
-
-            <div className="flex flex-wrap gap-2 mt-2">
-
-              {newProduct.sizes.map(
-                (size, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center bg-gray-100 px-3 py-1 rounded-full"
-                  >
-
-                    <span>
-                      {size}
-                    </span>
-
-                    <button
-                      type="button"
-                      onClick={() =>
-                        removeSize(size)
-                      }
-                      className="ml-2 text-red-500 hover:text-red-700"
-                    >
-                      <X size={16} />
-                    </button>
-
-                  </div>
-                )
-              )}
-
-            </div>
-
-          </div>
+          {/* v5: flat sizes removed — sizes are managed per-color in ColorSizeManager below */}
 
           {/* =====================================================
               COLORS

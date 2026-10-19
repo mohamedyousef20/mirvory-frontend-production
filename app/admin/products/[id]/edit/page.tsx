@@ -181,8 +181,6 @@ export default function EditProductPage() {
   const [categories, setCategories] = useState<any[]>([]);
   const [product, setProduct] = useState<any>(null);
 
-  const [sizeInput, setSizeInput] = useState('');
-
   const [colorInput, setColorInput] = useState({
     name: '',
     value: '#000000',
@@ -203,7 +201,6 @@ export default function EditProductPage() {
     deletedImages: [] as string[],
     deletedColorImages: [] as string[],
     brand: '',
-    sizes: [] as string[],
     colors: [] as Color[],
     quantity: '0',
     isFeatured: false,
@@ -337,14 +334,7 @@ export default function EditProductPage() {
     deletedImages: Joi.array().items(Joi.string().trim()).default([]),
     deletedColorImages: Joi.array().items(Joi.string().trim()).default([]),
 
-    sizes: Joi.array()
-      .items(
-        Joi.string()
-          .trim()
-          .required()
-          .max(50)
-      )
-      .default([]),
+    // v5: flat sizes removed from validation
 
     colors: Joi.array()
       .items(
@@ -435,7 +425,7 @@ export default function EditProductPage() {
           deletedImages: [],
           deletedColorImages: [],
           brand: prod.brand || '',
-          sizes: prod.sizes || [],
+          // v5: flat sizes not stored in form state
           colors: cleanedColors,
           quantity: prod.quantity?.toString() || '0',
           isFeatured: prod.isFeatured || false,
@@ -548,29 +538,7 @@ export default function EditProductPage() {
   };
 
 
-  /*
-   * ============================================================
-   * SIZES
-   * ============================================================
-   */
-
-  const addSize = () => {
-    const size = sizeInput.trim();
-    if (size && !newProduct.sizes.includes(size)) {
-      setNewProduct(prev => ({
-        ...prev,
-        sizes: [...prev.sizes, size]
-      }));
-      setSizeInput('');
-    }
-  };
-
-  const removeSize = (size: string) => {
-    setNewProduct(prev => ({
-      ...prev,
-      sizes: prev.sizes.filter(s => s !== size)
-    }));
-  };
+  // v5: flat sizes removed — per-color sizes handled by EditColorSizeManager
 
   /*
    * ============================================================
@@ -755,7 +723,6 @@ export default function EditProductPage() {
         images: newProduct.images,
         deletedImages: newProduct.deletedImages,
         deletedColorImages: newProduct.deletedColorImages,
-        sizes: newProduct.sizes,
         colors: newProduct.colors.map(({ name, value, image, available, sizes }) => ({
           name,
           value,
@@ -1009,38 +976,7 @@ export default function EditProductPage() {
               </p>
             </div>
 
-            {/* Sizes */}
-            <div>
-              <Label>{ar ? 'المقاسات' : 'Sizes'}</Label>
-              <div className="flex gap-2 mb-2">
-                <Input
-                  value={sizeInput}
-                  onChange={(e) => setSizeInput(e.target.value)}
-                  placeholder={ar ? 'أضف مقاس' : 'Add size'}
-                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSize())}
-                />
-                <Button type="button" onClick={addSize}>
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {newProduct.sizes.map((size, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center gap-2 bg-slate-100 px-3 py-1 rounded-full"
-                  >
-                    <span>{size}</span>
-                    <button
-                      type="button"
-                      onClick={() => removeSize(size)}
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
+            {/* v5: flat sizes removed — sizes are managed per-color in EditColorSizeManager below */}
 
             {/* Colors */}
             <div>
