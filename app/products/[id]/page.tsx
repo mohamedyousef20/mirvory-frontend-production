@@ -8,7 +8,6 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
       <main className="flex-1">
         <ProductDetail productId={id} />
       </main>
-      <SiteFooter />
     </div>
   )
 }

@@ -275,7 +275,7 @@ const ProductDetail = ({ productId }: { productId: string }) => {
     const fetchRelatedProducts = async (categoryId: string) => {
       try {
         const response = await productService.getProducts({ category: categoryId, limit: 4, exclude: productId })
-        if (response.data?.products) setRelatedProducts(response.data.products)
+        if (response.data?.data) setRelatedProducts(response.data.data)
       } catch {
         setRelatedProducts([])
       }

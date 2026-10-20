@@ -619,7 +619,7 @@ export function MainNav() {
 
                 <div className="mt-8 space-y-4">
                   <div className="px-2">
-                    <h3 className="text-sm font-medium text-muted-foreground mb-2">{language === "ar" ? "لوحات التحكم" : "Dashboards"}</h3>
+                    {/* <h3 className="text-sm font-medium text-muted-foreground mb-2">{language === "ar" ? "لوحات التحكم" : "Dashboards"}</h3> */}
                     <div className="space-y-1">
                       {dashboardLinks.map((item) => (
                         <Link
