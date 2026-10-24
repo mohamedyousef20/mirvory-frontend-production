@@ -1,4 +1,5 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { getProductImage } from "@/lib/productVariants"
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MirvoryPageLoader } from "@/components/MirvoryLoader";
@@ -458,7 +459,7 @@ export function OrdersTab({
                                                                 : item.image
                                                                     ? item.image
                                                                     // 3rd: product images
-                                                                    : item.product?.images?.[0] || "/placeholder-product.jpg"
+                                                                    : item.image || getProductImage(item.product)
                                                         }
                                                         alt={item.product?.title || "Product"}
                                                         className="object-cover w-full h-full"

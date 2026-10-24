@@ -138,12 +138,17 @@ function AuthenticatedCartPage() {
         const product = item.product || {};
 
         // colorImage takes priority over product images (shows the specific color's photo)
+        // v5: the image always belongs to the selected color (saved on the cart line by the backend)
+        const selectedColorValue = item.color ?? (Array.isArray(item.colors) ? item.colors[0] : undefined);
+        const productColor = Array.isArray(product.colors)
+          ? product.colors.find((c: any) => c?.value === selectedColorValue)
+          : undefined;
         const displayImage =
+          item.image ||
           item.colorImage ||
           item.color_image ||
-          (Array.isArray(product.images) && product.images.length > 0
-            ? product.images[0]
-            : "/placeholder.svg");
+          productColor?.image ||
+          "/placeholder.svg";
 
         return {
           _id: item._id || '',
@@ -162,7 +167,8 @@ function AuthenticatedCartPage() {
           colorName: item.colorName ?? undefined,
           colorImage: item.colorImage ?? undefined,
           size: item.size ?? (Array.isArray(item.sizes) && item.sizes.length > 0 ? item.sizes[0] : undefined),
-          maxQuantity: product.quantity
+          // v5: the limit is the stock of THIS color + size (calculated by the backend)
+          maxQuantity: typeof item.availableStock === 'number' ? item.availableStock : 0
         };
       });
     } catch (error) {

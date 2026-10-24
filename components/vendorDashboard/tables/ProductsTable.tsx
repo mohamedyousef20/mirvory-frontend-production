@@ -1,4 +1,5 @@
 import Image from "next/image"
+import { getProductImage } from "@/lib/productVariants"
 import Link from "next/link"
 import {
     CheckCircle, Clock, TrendingUp, Star, MoreHorizontal,
@@ -67,7 +68,7 @@ export function ProductsTable({
                             <TableCell>
                                 <div className="relative h-11 w-11 rounded-lg overflow-hidden border border-slate-100">
                                     <Image
-                                        src={product.images[0] || "/placeholder.svg"}
+                                        src={getProductImage(product)}
                                         alt={language === "ar" ? product.title : product.titleEn}
                                         fill className="object-cover"
                                     />

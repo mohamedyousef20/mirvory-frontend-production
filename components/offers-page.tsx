@@ -1,5 +1,6 @@
 "use client"
 
+import { getProductImage } from "@/lib/productVariants"
 import { useState, useEffect, useCallback } from "react"
 import {
   Percent,
@@ -260,46 +261,8 @@ export function OffersPage() {
 
     if (!product) return
 
-    if (isLoggedIn) {
-      try {
-        await cartService.addToCart({
-          productId,
-          quantity: 1,
-        })
-
-        toast.success(
-          language === "ar"
-            ? "تمت إضافة المنتج إلى السلة"
-            : "Added to cart"
-        )
-      } catch (err: any) {
-        const message =
-          err?.response?.data?.message ||
-          (language === "ar"
-            ? "فشل إضافة المنتج"
-            : "Failed to add product")
-
-        toast.error(message)
-      }
-
-      return
-    }
-
-    addToGuestCart({
-      productId,
-      quantity: 1,
-      size: null,
-      color: null,
-      title: product.title,
-      image: product.images?.[0] ?? null,
-      price: product.discountedPrice || product.price,
-    })
-
-    toast.success(
-      language === "ar"
-        ? "تمت إضافة المنتج إلى السلة"
-        : "Added to cart"
-    )
+    // v5: color + size are required, so the product page is opened
+    window.location.assign(`/products/${productId}`)
   }
 
   /* ─────────────────────────────────────────────────────────

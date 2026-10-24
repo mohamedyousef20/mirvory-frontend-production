@@ -1,5 +1,6 @@
 "use client";
 
+import { getProductImage } from "@/lib/productVariants"
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from "sonner";
@@ -589,7 +590,7 @@ export default function OrdersPage() {
                                                         >
                                                             <div className="aspect-square rounded-xl overflow-hidden bg-slate-50 mb-2.5 relative">
                                                                 <img
-                                                                    src={item?.product?.images?.[0] || '/placeholder-product.jpg'}
+                                                                    src={(item as any)?.image || getProductImage((item?.product) as any) || '/placeholder-product.jpg'}
                                                                     alt={item?.product?.title || item?.product?.name || 'product'}
                                                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                                                 />

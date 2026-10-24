@@ -1,4 +1,5 @@
 "use client"
+import { getProductImage } from "@/lib/productVariants"
 import Link from "next/link"
 import Image from "next/image"
 import { useLanguage } from "@/components/language-provider";
@@ -113,6 +114,9 @@ export function NewestProducts({ title }: NewestProductsProps) {
     };
 
     const addToCart = async (productId: string) => {
+        // v5: color + size are required, so the product page is opened
+        window.location.assign(`/products/${productId}`);
+        return;
         if (isLoggedIn) {
             try {
                 await cartService.addToCart({ productId, quantity: 1 });
@@ -130,7 +134,7 @@ export function NewestProducts({ title }: NewestProductsProps) {
                 size: null,
                 color: null,
                 title: (product as any)?.title,
-                image: (product as any)?.images?.[0] ?? null,
+                image: getProductImage(product as any),
                 price: (product as any)?.discountedPrice || (product as any)?.price,
                 maxQuantity: (product as any)?.quantity,
             });

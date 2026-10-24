@@ -1,5 +1,6 @@
 "use client"
 
+import { getProductImage } from "@/lib/productVariants"
 import { useParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
@@ -540,7 +541,7 @@ export default function OrderDetailsPage() {
                                                 <div className="relative w-16 h-16 sm:w-20 sm:h-20 bg-gray-50 rounded-lg overflow-hidden shrink-0 border border-gray-100">
 
                                                     <Image
-                                                        src={item.image || item.product.images?.[0] ||
+                                                        src={item.image || getProductImage((item.product) as any) ||
                                                             "/placeholder-product.jpg"
                                                         }
                                                         alt={

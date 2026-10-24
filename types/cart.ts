@@ -2,7 +2,8 @@ export interface Product {
   _id: string;
   name: string;
   price: number;
-  images: string[];
+  image?: string | null;
+  colors?: Array<{ name: string; value: string; image: string; available?: boolean; sizes?: { size: string; quantity: number }[] }>;
 }
 
 export interface CartItem {

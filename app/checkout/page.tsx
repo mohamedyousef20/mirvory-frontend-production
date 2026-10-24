@@ -1,5 +1,6 @@
 "use client"
 
+import { getProductImage } from "@/lib/productVariants"
 import React, { useState, useEffect, useCallback, useMemo, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from "@/components/ui/button"
@@ -667,7 +668,7 @@ function CheckoutInner() {
                                         const unitPrice = (item.price ?? item.product?.discountedPrice ?? 0)
                                         const itemTotal = (item.quantity || 0) * unitPrice
                                         // colorImage priority: DisplayItem.colorImage → item.colorImage → product.images[0]
-                                        const displayImage = item.colorImage || item.image || product.images?.[0] || '/placeholder.png'
+                                        const displayImage = item.colorImage || item.image || getProductImage(product) || '/placeholder.png'
                                         // Color: DisplayItem uses colorValue; cart items use item.color or item.colors[0]
                                         const colorValue = item.colorValue || item.color || (item.colors?.length > 0 ? item.colors[0] : null)
                                         const colorLabel = item.colorName || colorValue

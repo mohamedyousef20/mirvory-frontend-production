@@ -1,5 +1,6 @@
 "use client"
 
+import { getTotalStock } from "@/lib/productVariants"
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useLanguage } from "@/components/language-provider";
@@ -194,6 +195,9 @@ export function WishlistPage() {
 
   // Add to cart handler
   const addToCartHandler = async (productId: string) => {
+    // v5: color + size are required, so the product page is opened
+    window.location.assign(`/products/${productId}`)
+    return
     try {
       await cartService.addToCart({ productId, quantity: 1 })
       toast({
@@ -212,6 +216,12 @@ export function WishlistPage() {
 
   // Add selected items to cart
   const addSelectedToCart = async () => {
+    // v5: each product needs its own color + size
+    toast({
+      title: language === "ar" ? "اختر اللون والمقاس" : "Choose color and size",
+      description: language === "ar" ? "افتح كل منتج واختر اللون والمقاس قبل الإضافة للسلة" : "Open each product and choose a color and size before adding to cart",
+    })
+    return
     try {
       for (const productId of selectedItems) {
         await cartService.addToCart({ productId, quantity: 1 })
@@ -235,8 +245,8 @@ export function WishlistPage() {
   // Filter items
   const filteredItems = wishlistItems.filter((item) => {
     if (filterOption === "all") return true
-    if (filterOption === "inStock") return item.product.quantity > 0
-    if (filterOption === "outOfStock") return item.product.quantity === 0
+    if (filterOption === "inStock") return getTotalStock(item.product as any) > 0
+    if (filterOption === "outOfStock") return getTotalStock(item.product as any) === 0
     if (filterOption === "withDiscount") return item.product.discountedPrice && item.product.discountedPrice < item.product.price
     return true
   })

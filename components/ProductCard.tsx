@@ -10,12 +10,17 @@ import { cartService, wishlistService } from "@/lib/api"
 import { normalizeImageUrl } from "@/src/lib/normalizeImageUrl"
 import { useAuth } from "@/contexts/AuthProvider"
 import { addToGuestCart } from "@/lib/guestCart"
+import {
+  getActiveColors,
+  getColorStock,
+  getDefaultColor,
+  getProductImage,
+  getSizeStock,
+  getTotalStock,
+  type VariantColor,
+} from "@/lib/productVariants"
 
-type ProductColorOption = {
-  name: string
-  value: string
-  available?: boolean
-}
+type ProductColorOption = VariantColor
 
 type ProductRatings =
   | number
@@ -29,12 +34,13 @@ type ProductRatings =
 type ProductCardProduct = {
   _id: string
   title: string
-  images: string[]
+  /** Main image added by the API (image of the first active color). */
+  image?: string | null
   price: number
   discountPercentage?: number
   discountedPrice?: number
   quantity: number
-  sizes?: string[]
+  totalStock?: number
   colors?: ProductColorOption[]
   category?: {
     name?: string
@@ -63,7 +69,6 @@ const ProductCardComponent = function ProductCard({ product, language, onAddToCa
   const [isTogglingFavorite, setIsTogglingFavorite] = useState(false)
   const [selectedSize, setSelectedSize] = useState<string | null>(null)
   const [selectedColor, setSelectedColor] = useState<string | null>(null)
-  const [isImageHovered, setIsImageHovered] = useState(false)
 
   const computedDiscountedPrice = useMemo(() => {
     if (product.discountedPrice && product.discountedPrice > 0) {
@@ -77,18 +82,22 @@ const ProductCardComponent = function ProductCard({ product, language, onAddToCa
   }, [product.discountedPrice, product.discountPercentage, product.price])
 
   const hasDiscount = computedDiscountedPrice < product.price
-  const isLowStock = product.quantity > 0 && product.quantity <= 5
-  const isOutOfStock = product.quantity === 0
-  const sizes = product.sizes ?? []
-  const colors = product.colors ?? []
-  const hasSizes = sizes.length > 0
-  const hasColors = colors.length > 0
-  const availableColors = colors.filter((color: ProductColorOption) => color.available)
 
-  // ✅ الصورة التانية (لو موجودة) تتعرض لما اليوزر يعمل hover على الكارت
-  const secondImage = product.images?.[1]
-  const displayedImage =
-    isImageHovered && secondImage ? secondImage : product.images?.[0]
+  // v5: image, sizes and stock all come from the COLOR currently shown on the card.
+  const activeColors = getActiveColors(product)
+  const defaultColor = getDefaultColor(product)
+  const currentColor: ProductColorOption | null =
+    activeColors.find((c) => c.value === selectedColor) ?? defaultColor
+  const colorSizes = currentColor?.sizes ?? []
+  const hasSizes = colorSizes.length > 0
+  const hasColors = activeColors.length > 0
+
+  const totalStock = getTotalStock(product)
+  const isOutOfStock = totalStock === 0
+  const isLowStock = totalStock > 0 && totalStock <= 5
+
+  // The image always belongs to the shown color — never to another one.
+  const displayedImage = currentColor?.image || getProductImage(product)
 
   useEffect(() => {
     if (typeof isFavoriteProp === "boolean") {
@@ -143,15 +152,14 @@ const ProductCardComponent = function ProductCard({ product, language, onAddToCa
       return
     }
 
-    // Check if product requires size selection
-    if (hasSizes && !selectedSize) {
+    // The size must be picked explicitly (it belongs to the color shown on the card)
+    if (!currentColor || !selectedSize) {
       toast.error(language === "ar" ? "يرجى اختيار المقاس أولاً" : "Please select a size first")
       return
     }
-
-    // Check if product requires color selection
-    if (hasColors && !selectedColor) {
-      toast.error(language === "ar" ? "يرجى اختيار اللون أولاً" : "Please select a color first")
+    const sizeStock = getSizeStock(currentColor, selectedSize)
+    if (sizeStock <= 0) {
+      toast.error(language === "ar" ? "هذا المقاس نفد من المخزون" : "This size is out of stock")
       return
     }
 
@@ -165,19 +173,21 @@ const ProductCardComponent = function ProductCard({ product, language, onAddToCa
         await cartService.addToCart({
           productId: product._id,
           quantity: 1,
-          sizes: selectedSize ? [selectedSize] : undefined,
-          colors: selectedColor ? [selectedColor] : undefined
+          sizes: [selectedSize],
+          colors: [currentColor.value]
         })
       } else {
         addToGuestCart({
           productId: product._id,
           quantity: 1,
-          size: selectedSize ?? null,
-          color: selectedColor ?? null,
+          size: selectedSize,
+          color: currentColor.value,
+          colorName: currentColor.name,
+          colorImage: currentColor.image,
           title: product.title,
-          image: product.images?.[0] ?? null,
+          image: currentColor.image,
           price: computedDiscountedPrice,
-          maxQuantity: product.quantity,
+          maxQuantity: sizeStock,
         })
       }
       toast.success(language === "ar" ? "تمت الإضافة إلى السلة" : "Added to cart")
@@ -188,7 +198,7 @@ const ProductCardComponent = function ProductCard({ product, language, onAddToCa
     } finally {
       setIsAddingToCart(false)
     }
-  }, [product._id, isOutOfStock, hasSizes, hasColors, selectedSize, selectedColor, language])
+  }, [product._id, product.title, isOutOfStock, currentColor, selectedSize, computedDiscountedPrice, isLoggedIn, cookiesReady, language])
 
 
 
@@ -197,11 +207,7 @@ const ProductCardComponent = function ProductCard({ product, language, onAddToCa
     <Link href={`/products/${product._id}`} className="block" dir={language === "ar" ? "rtl" : "ltr"}>
       <div className="group relative overflow-hidden rounded-lg bg-white shadow-sm transition-all duration-200 hover:shadow-md">
         {/* Product Image */}
-        <div
-          className="aspect-square relative"
-          onMouseEnter={() => setIsImageHovered(true)}
-          onMouseLeave={() => setIsImageHovered(false)}
-        >
+        <div className="aspect-square relative">
           <Image
             src={normalizeImageUrl(displayedImage)}
             alt={product.title}
@@ -212,21 +218,6 @@ const ProductCardComponent = function ProductCard({ product, language, onAddToCa
             }}
             className="object-cover transition-all duration-300 group-hover:scale-105"
           />
-
-          {/* Image count indicator - يظهر بس لو فيه أكتر من صورة */}
-          {product.images && product.images.length > 1 && (
-            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
-              {product.images.slice(0, 5).map((_, idx) => (
-                <span
-                  key={idx}
-                  className={`h-1.5 w-1.5 rounded-full transition-colors ${(isImageHovered ? idx === 1 : idx === 0)
-                    ? "bg-white"
-                    : "bg-white/50"
-                    }`}
-                />
-              ))}
-            </div>
-          )}
 
           {/* Badges and Wishlist Button */}
           <div className="absolute top-2 left-2 flex flex-col gap-1">
@@ -310,64 +301,85 @@ const ProductCardComponent = function ProductCard({ product, language, onAddToCa
             )}
           </div>
 
-          {/* Size Selection */}
-          {hasSizes && (
+          {/* Color Selection — each swatch shows the color's own photo */}
+          {hasColors && (
             <div className="mb-2">
               <p className="text-xs text-gray-600 mb-1">
-                {language === "ar" ? "المقاس:" : "Size:"}
+                {language === "ar" ? "اللون:" : "Color:"}{" "}
+                <span className="font-medium text-gray-800">{currentColor?.name}</span>
               </p>
-              <div className="flex gap-1 flex-wrap">
-                {sizes.slice(0, 4).map((size: string, idx: number) => (
-                  <button
-                    key={idx}
-                    className={`text-xs px-2 py-1 rounded border transition-colors ${selectedSize === size
-                      ? 'bg-blue-500 text-white border-blue-500'
-                      : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200'
-                      }`}
-                    onClick={(e) => {
-                      e.preventDefault()
-                      e.stopPropagation()
-                      setSelectedSize(size)
-                    }}
-                  >
-                    {size}
-                  </button>
-                ))}
-                {sizes.length > 4 && (
+              <div className="flex gap-2 flex-wrap">
+                {activeColors.slice(0, 6).map((color: ProductColorOption) => {
+                  const soldOut = getColorStock(color) === 0
+                  const isCurrent = currentColor?.value === color.value
+                  return (
+                    <button
+                      key={color.value}
+                      type="button"
+                      aria-label={color.name}
+                      aria-pressed={isCurrent}
+                      className={`relative h-8 w-8 overflow-hidden rounded-full border-2 transition-transform ${isCurrent
+                        ? 'border-blue-500 scale-110'
+                        : 'border-gray-300 hover:scale-105'
+                        } ${soldOut ? 'opacity-40' : ''}`}
+                      style={{ backgroundColor: color.value }}
+                      title={soldOut ? `${color.name} — ${language === "ar" ? "نفد" : "sold out"}` : color.name}
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        setSelectedColor(color.value)
+                        setSelectedSize(null) // sizes belong to the color: start fresh for the new one
+                      }}
+                    >
+                      {color.image && (
+                        <img src={normalizeImageUrl(color.image, 'thumbnail')} alt="" className="h-full w-full object-cover" />
+                      )}
+                    </button>
+                  )
+                })}
+                {activeColors.length > 6 && (
                   <span className="text-xs px-1.5 py-0.5 text-gray-500">
-                    +{sizes.length - 4}
+                    +{activeColors.length - 6}
                   </span>
                 )}
               </div>
             </div>
           )}
 
-          {/* Color Selection */}
-          {hasColors && (
+          {/* Size Selection — only the sizes of the color shown above */}
+          {hasSizes && (
             <div className="mb-2">
               <p className="text-xs text-gray-600 mb-1">
-                {language === "ar" ? "اللون:" : "Color:"}
+                {language === "ar" ? "المقاس:" : "Size:"}
               </p>
-              <div className="flex gap-2 flex-wrap">
-                {availableColors.slice(0, 6).map((color: ProductColorOption, idx: number) => (
-                  <button
-                    key={idx}
-                    className={`w-6 h-6 rounded-full border-2 transition-transform ${selectedColor === color.value
-                      ? 'border-blue-500 scale-110'
-                      : 'border-gray-300 hover:scale-105'
-                      }`}
-                    style={{ backgroundColor: color.value }}
-                    title={color.name}
-                    onClick={(e) => {
-                      e.preventDefault()
-                      e.stopPropagation()
-                      setSelectedColor(color.value)
-                    }}
-                  />
-                ))}
-                {availableColors.length > 6 && (
+              <div className="flex gap-1 flex-wrap">
+                {colorSizes.slice(0, 6).map((entry) => {
+                  const soldOut = entry.quantity <= 0
+                  return (
+                    <button
+                      key={entry.size}
+                      type="button"
+                      disabled={soldOut}
+                      aria-pressed={selectedSize === entry.size}
+                      className={`text-xs px-2 py-1 rounded border transition-colors ${soldOut
+                        ? 'bg-gray-50 text-gray-300 border-gray-200 line-through cursor-not-allowed'
+                        : selectedSize === entry.size
+                          ? 'bg-blue-500 text-white border-blue-500'
+                          : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200'
+                        }`}
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        if (!soldOut) setSelectedSize(entry.size)
+                      }}
+                    >
+                      {entry.size}
+                    </button>
+                  )
+                })}
+                {colorSizes.length > 6 && (
                   <span className="text-xs px-1.5 py-0.5 text-gray-500">
-                    +{availableColors.length - 6}
+                    +{colorSizes.length - 6}
                   </span>
                 )}
               </div>
@@ -395,7 +407,7 @@ const ProductCardComponent = function ProductCard({ product, language, onAddToCa
           {/* Stock Warning */}
           {isLowStock && (
             <p className="text-xs text-orange-600 font-medium">
-              {language === "ar" ? `${product.quantity} متبقي فقط` : `Only ${product.quantity} left`}
+              {language === "ar" ? `${totalStock} متبقي فقط` : `Only ${totalStock} left`}
             </p>
           )}
 

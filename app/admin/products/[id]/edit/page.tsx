@@ -173,6 +173,7 @@ function EditColorSizeManager({ color, language, onToggleAvailability, onRemove,
 export default function EditProductPage() {
   const { language } = useLanguage();
   const { user } = useAuth();
+  const isAdminUser = (user as any)?.role === 'admin';
   const router = useRouter();
   const { id } = useParams();
 
@@ -197,12 +198,9 @@ export default function EditProductPage() {
     discountPercentage: '0',
     discountedPrice: '',
     category: '',
-    images: [] as string[],
-    deletedImages: [] as string[],
     deletedColorImages: [] as string[],
     brand: '',
     colors: [] as Color[],
-    quantity: '0',
     isFeatured: false,
     isTrusted: false,
     status: 'available' as 'available' | 'pending',
@@ -305,33 +303,6 @@ export default function EditProductPage() {
       .allow('')
       .default(''),
 
-    quantity: Joi.number()
-      .integer()
-      .min(0)
-      .required()
-      .messages({
-        'number.base':
-          language === 'ar'
-            ? 'الكمية يجب أن تكون رقمًا'
-            : 'Quantity must be a number',
-        'number.min':
-          language === 'ar'
-            ? 'الكمية يجب أن تكون أكبر من صفر'
-            : 'Quantity must be greater than zero'
-      }),
-
-    images: Joi.array()
-      .items(Joi.string().trim())
-      .min(1)
-      .required()
-      .messages({
-        'array.min':
-          language === 'ar'
-            ? 'يجب إضافة صورة واحدة على الأقل'
-            : 'Please add at least one image'
-      }),
-
-    deletedImages: Joi.array().items(Joi.string().trim()).default([]),
     deletedColorImages: Joi.array().items(Joi.string().trim()).default([]),
 
     // v5: flat sizes removed from validation
@@ -421,13 +392,10 @@ export default function EditProductPage() {
           discountPercentage: prod.discountPercentage?.toString() || '0',
           discountedPrice: prod.discountedPrice?.toString() || '',
           category: typeof prod.category === 'object' ? prod.category._id : prod.category,
-          images: prod.images || [],
-          deletedImages: [],
           deletedColorImages: [],
           brand: prod.brand || '',
           // v5: flat sizes not stored in form state
           colors: cleanedColors,
-          quantity: prod.quantity?.toString() || '0',
           isFeatured: prod.isFeatured || false,
           isTrusted: prod.isTrusted || false,
           status: prod.status || 'available',
@@ -506,36 +474,6 @@ export default function EditProductPage() {
    * ============================================================
    */
 
-  const handleImageUpload = (url: string) => {
-    setNewProduct(prev => ({
-      ...prev,
-      images: [...prev.images, url]
-    }));
-    toast.success(
-      language === 'ar'
-        ? 'تم رفع الصورة بنجاح'
-        : 'Image uploaded successfully'
-    );
-  };
-
-
-
-  const removeImage = (index: number) => {
-    setNewProduct(prev => {
-      const newImages = [...prev.images];
-      const removedImage = newImages[index];
-
-      const deletedImages = [...prev.deletedImages, removedImage];
-
-      newImages.splice(index, 1);
-
-      return {
-        ...prev,
-        images: newImages,
-        deletedImages
-      };
-    });
-  };
 
 
   // v5: flat sizes removed — per-color sizes handled by EditColorSizeManager
@@ -696,8 +634,7 @@ export default function EditProductPage() {
     const preparedDataToValidate = {
       ...newProduct,
       price: newProduct.price === '' ? undefined : parseFloat(newProduct.price),
-      discountPercentage: parseFloat(newProduct.discountPercentage) || 0,
-      quantity: parseInt(newProduct.quantity) || 0
+      discountPercentage: parseFloat(newProduct.discountPercentage) || 0
     };
 
     const { error } = productValidationSchema.validate(preparedDataToValidate, {
@@ -720,8 +657,6 @@ export default function EditProductPage() {
         discountedPrice: parseFloat(newProduct.discountedPrice) || parseFloat(newProduct.price),
         category: newProduct.category,
         brand: newProduct.brand,
-        images: newProduct.images,
-        deletedImages: newProduct.deletedImages,
         deletedColorImages: newProduct.deletedColorImages,
         colors: newProduct.colors.map(({ name, value, image, available, sizes }) => ({
           name,
@@ -730,9 +665,8 @@ export default function EditProductPage() {
           available,
           sizes: sizes ?? [],
         })),
-        quantity: parseInt(newProduct.quantity) || 0,
         isFeatured: newProduct.isFeatured,
-        isTrusted: newProduct.isTrusted,
+        ...(isAdminUser ? { isTrusted: newProduct.isTrusted } : {}),
         status: newProduct.status,
         videoUrl: newProduct.videoUrl.trim() || undefined,
       };
@@ -910,56 +844,6 @@ export default function EditProductPage() {
               />
             </div>
 
-            {/* Quantity */}
-            <div>
-              <Label htmlFor="quantity">
-                {ar ? 'الكمية' : 'Quantity'} *
-              </Label>
-              <Input
-                id="quantity"
-                name="quantity"
-                type="number"
-                value={newProduct.quantity}
-                onChange={handleNumberInputChange}
-                min="0"
-                placeholder="0"
-              />
-            </div>
-
-            {/* Images */}
-            <div>
-              <Label>
-                {ar ? 'صور المنتج' : 'Product Images'} *
-              </Label>
-              <div className="space-y-4">
-                {/* Existing images */}
-                {newProduct.images.length > 0 && (
-                  <div className="grid grid-cols-4 gap-4">
-                    {newProduct.images.map((image, index) => (
-                      <div key={index} className="relative group">
-                        <img
-                          src={image}
-                          alt={`Product image ${index + 1}`}
-                          className="w-full h-32 object-cover rounded-lg border"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeImage(index)}
-                          className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                <ImageUploader
-                  onUpload={handleImageUpload}
-                />
-              </div>
-            </div>
-
             {/* Video URL (optional) */}
             <div>
               <Label htmlFor="videoUrl">{ar ? 'رابط الفيديو (اختياري)' : 'Video URL (optional)'}</Label>
@@ -1049,6 +933,7 @@ export default function EditProductPage() {
                 </Label>
               </div>
 
+              {isAdminUser && (
               <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
@@ -1061,6 +946,7 @@ export default function EditProductPage() {
                   {ar ? 'منتج موثوق' : 'Trusted Product'}
                 </Label>
               </div>
+              )}
 
               <div>
                 <Label htmlFor="status">

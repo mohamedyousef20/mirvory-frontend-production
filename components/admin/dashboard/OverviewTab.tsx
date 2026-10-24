@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getProductImage } from "@/lib/productVariants"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { DollarSign, Package, ShoppingBag, Users, TrendingUp, TrendingDown } from "lucide-react";
@@ -368,9 +369,9 @@ export function OverviewTab({
                             safeProducts.slice(0, 5).map((product: any) => (
                                 <div key={product._id} className="flex items-center justify-between py-2 border-b last:border-b-0">
                                     <div className="flex items-center">
-                                        {product.images && product.images.length > 0 ? (
+                                        {getProductImage(product) !== '/placeholder.svg' ? (
                                             <Image
-                                                src={product.images[0]}
+                                                src={getProductImage(product)}
                                                 alt={isArabic ? product.title : product.nameEn}
                                                 width={40}
                                                 height={40}

@@ -35,6 +35,13 @@ import RatingStars from "@/components/Rating/RatingStars"
 import { Separator } from "@/components/ui/separator"
 import { useAuth } from "@/contexts/AuthProvider"
 import { useRouter } from "next/navigation"
+import {
+  findColor,
+  getColorStock,
+  getDefaultColor,
+  getProductImage,
+  getTotalStock,
+} from "@/lib/productVariants"
 
 function getYouTubeEmbedUrl(url: string): string | null {
   if (!url || typeof url !== 'string') return null
@@ -131,8 +138,7 @@ interface Product {
   discountedPrice: number
   quantity: number
   sold: number
-  images: string[]
-  sizes: string[]
+  /** v5: no global images[] / sizes[]. Images, sizes and stock live inside each color. */
   colors: ProductColor[]
   ratings: {
     average: number
@@ -166,7 +172,8 @@ interface RelatedProduct {
   price: number
   discountPercentage: number
   discountedPrice: number
-  images: string[]
+  image?: string | null
+  colors?: ProductColor[]
   ratings: { average: number; count: number }
 }
 
@@ -199,12 +206,11 @@ const ProductDetail = ({ productId }: { productId: string }) => {
   const userId = user?._id || null
   const reviewFormRef = useRef<HTMLFormElement | null>(null)
 
+  // v5: a color's sizes are ONLY the sizes stored inside that color
   const getSizesForColor = useCallback(
     (colorValue: string): ColorSize[] => {
       if (!product) return []
-      const colorObj = product.colors?.find(c => c.value === colorValue)
-      if (colorObj?.sizes && colorObj.sizes.length > 0) return colorObj.sizes
-      return (product.sizes || []).map(s => ({ size: s, quantity: 99 }))
+      return findColor(product, colorValue)?.sizes ?? []
     },
     [product]
   )
@@ -214,13 +220,11 @@ const ProductDetail = ({ productId }: { productId: string }) => {
     [selectedColor, getSizesForColor]
   )
 
+  // Available quantity = stock of the selected color + size (0 until a size is chosen)
   const maxQty: number = useMemo(() => {
-    if (selectedSize) {
-      const entry = activeSizes.find(s => s.size === selectedSize)
-      if (entry) return entry.quantity
-    }
-    return product?.quantity ?? 0
-  }, [selectedSize, activeSizes, product?.quantity])
+    if (!selectedSize) return 0
+    return activeSizes.find(s => s.size === selectedSize)?.quantity ?? 0
+  }, [selectedSize, activeSizes])
 
   const handleReload = useCallback(() => {
     setIsLoading(true)
@@ -239,9 +243,8 @@ const ProductDetail = ({ productId }: { productId: string }) => {
           const pd = response.data.product as Product
           setProduct(pd)
 
-          const firstColor = pd.colors?.find(c => c.available) ?? pd.colors?.[0]
-          const initImage = firstColor?.image || pd.images?.[0] || ''
-          setMainImage(initImage)
+          const firstColor = getDefaultColor(pd)
+          setMainImage(firstColor?.image || getProductImage(pd))
 
           if (firstColor) {
             setSelectedColor(firstColor.value)
@@ -308,8 +311,9 @@ const ProductDetail = ({ productId }: { productId: string }) => {
     setQuantity(1)
 
     if (product) {
-      const colorObj = product.colors?.find(c => c.value === colorValue)
-      setMainImage(colorObj?.image || product.images?.[0] || '')
+      // The main image is ALWAYS the selected color's own image
+      const colorObj = findColor(product, colorValue)
+      if (colorObj?.image) setMainImage(colorObj.image)
     }
   }, [product])
 
@@ -327,14 +331,11 @@ const ProductDetail = ({ productId }: { productId: string }) => {
   const validateSelections = useCallback((): boolean => {
     if (!product) return false
 
-    const hasColors = product.colors?.length > 0
-    const hasSizes = product.sizes?.length > 0 || activeSizes.length > 0
-
-    if (hasColors && !selectedColor) {
+    if (!selectedColor) {
       toast.error(language === 'ar' ? 'يرجى اختيار اللون' : 'Please select a color')
       return false
     }
-    if (hasSizes && !selectedSize) {
+    if (!selectedSize) {
       toast.error(language === 'ar' ? 'يرجى اختيار المقاس' : 'Please select a size')
       return false
     }
@@ -347,14 +348,14 @@ const ProductDetail = ({ productId }: { productId: string }) => {
       return false
     }
     return true
-  }, [product, selectedColor, selectedSize, maxQty, quantity, activeSizes.length, language])
+  }, [product, selectedColor, selectedSize, maxQty, quantity, language])
 
   const addToCartHandler = useCallback(async () => {
     if (!validateSelections()) return
     if (!product) return
 
-    const colorObj = product.colors?.find(c => c.value === selectedColor)
-    const colorImage = colorObj?.image || product.images?.[0] || null
+    const colorObj = findColor(product, selectedColor)
+    const colorImage = colorObj?.image || null
 
     try {
       if (isLoggedIn) {
@@ -373,10 +374,12 @@ const ProductDetail = ({ productId }: { productId: string }) => {
           quantity,
           size: selectedSize || null,
           color: selectedColor || null,
+          colorName: colorObj?.name ?? null,
+          colorImage,
           title: product.title,
           image: colorImage,
           price: product.discountedPrice || product.price,
-          maxQuantity: product.quantity,
+          maxQuantity: maxQty,
         })
         toast.success(language === 'ar' ? 'تم إضافة المنتج إلى السلة بنجاح' : 'Product added to cart successfully')
       }
@@ -397,7 +400,8 @@ const ProductDetail = ({ productId }: { productId: string }) => {
       quantity,
       color: selectedColor || null,
       size: selectedSize || null,
-      image: mainImage || product.images?.[0] || null,
+      colorName: findColor(product, selectedColor)?.name ?? null,
+      image: findColor(product, selectedColor)?.image ?? null,
       title: product.title,
       price: product.discountedPrice ?? product.price,
     }
@@ -410,7 +414,7 @@ const ProductDetail = ({ productId }: { productId: string }) => {
     }
 
     router.push(isLoggedIn ? '/checkout?mode=buyNow' : '/guest-checkout?mode=buyNow')
-  }, [validateSelections, product, productId, quantity, selectedColor, selectedSize, mainImage, isLoggedIn, language, router])
+  }, [validateSelections, product, productId, quantity, selectedColor, selectedSize, isLoggedIn, language, router])
 
   const toggleWishlist = useCallback(async () => {
     if (!isLoggedIn) {
@@ -521,11 +525,11 @@ const ProductDetail = ({ productId }: { productId: string }) => {
 
   const hasDiscount = product.discountPercentage > 0
   const finalPrice = hasDiscount ? product.discountedPrice : product.price
-  const isOutOfStock = product.quantity === 0 || product.status === 'sold'
+  const isOutOfStock = getTotalStock(product) === 0 || product.status === 'sold'
   const selectedColorObj = product.colors?.find(c => c.value === selectedColor)
 
-  const colorThumbnails = product.colors?.filter(c => c.image) ?? []
-  const productImages = product.images ?? []
+  // v5: the gallery IS the colors — one photo per color
+  const colorThumbnails = (product.colors ?? []).filter(c => c.image && c.available !== false)
 
   const scrollToVideoSection = () => {
     const videoTabEl = document.getElementById("product-video-section")
@@ -552,8 +556,8 @@ const ProductDetail = ({ productId }: { productId: string }) => {
         {/* ── Left Side: Images & Small Video Button ─────────────────────── */}
         <div className="space-y-4">
           <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-gray-100 shadow">
-            {mainImage && (
-              <Image src={mainImage} alt={product.title} fill className="object-cover" priority />
+            {(mainImage || selectedColorObj?.image) && (
+              <Image src={selectedColorObj?.image || mainImage} alt={`${product.title}${selectedColorObj ? ' - ' + selectedColorObj.name : ''}`} fill className="object-cover" priority />
             )}
             {hasDiscount && (
               <div className="absolute top-3 start-3">
@@ -589,7 +593,7 @@ const ProductDetail = ({ productId }: { productId: string }) => {
             </button>
           )}
 
-          {(colorThumbnails.length > 0 || productImages.length > 1) && (
+          {colorThumbnails.length > 1 && (
             <div className="flex gap-2 flex-wrap">
               {colorThumbnails.map((colorItem) => (
                 <button
@@ -610,20 +614,6 @@ const ProductDetail = ({ productId }: { productId: string }) => {
                 </button>
               ))}
 
-              {productImages
-                .filter(img => !colorThumbnails.some(c => c.image === img))
-                .map((image, index) => (
-                  <button
-                    key={`pi-${index}`}
-                    onClick={() => setMainImage(image)}
-                    className={`relative h-16 w-16 rounded-xl overflow-hidden border-2 transition-all flex-shrink-0 ${mainImage === image
-                      ? 'border-primary shadow-lg scale-105'
-                      : 'border-transparent hover:border-gray-300'
-                      }`}
-                  >
-                    <Image src={image} alt={`${product.title} ${index + 1}`} fill className="object-cover" />
-                  </button>
-                ))}
             </div>
           )}
         </div>
@@ -669,18 +659,19 @@ const ProductDetail = ({ productId }: { productId: string }) => {
                 )}
               </Label>
               <div className="flex gap-2 flex-wrap">
-                {product.colors.map(color => (
+                {product.colors.filter(c => c.available !== false).map(color => (
                   <button
                     key={color.value}
                     onClick={() => color.available && handleColorSelect(color.value)}
-                    title={color.name}
+                    title={getColorStock(color) === 0 ? `${color.name} — ${language === 'ar' ? 'نفد' : 'sold out'}` : color.name}
+                    aria-label={color.name}
                     disabled={!color.available}
                     className={`relative h-9 w-9 rounded-full border-2 transition-all duration-200 ${selectedColor === color.value
                       ? 'border-primary scale-110 shadow-md'
                       : color.available
                         ? 'border-gray-300 hover:border-gray-500'
                         : 'border-gray-200 opacity-40 cursor-not-allowed'
-                      }`}
+                      } ${getColorStock(color) === 0 ? 'opacity-50' : ''}`}
                     style={{ backgroundColor: color.value }}
                   >
                     {selectedColor === color.value && (
@@ -694,8 +685,8 @@ const ProductDetail = ({ productId }: { productId: string }) => {
             </div>
           )}
 
-          {/* Show size prompt when color is not selected but some colors have sizes */}
-          {product.colors?.length > 0 && !selectedColor && product.colors.some(c => (c.sizes ?? []).length > 0) && (
+          {/* Show size prompt when no color is selected yet */}
+          {product.colors?.length > 0 && !selectedColor && (
             <p className="text-sm text-muted-foreground bg-muted/50 rounded-lg px-3 py-2">
               {language === "ar" ? "اختر اللون أولاً لرؤية المقاسات المتاحة" : "Select a color to see available sizes"}
             </p>
@@ -936,7 +927,7 @@ const ProductDetail = ({ productId }: { productId: string }) => {
                 <CardContent className="p-0">
                   <Link href={`/products/${rp._id}`} className="block">
                     <div className="relative aspect-square rounded-t-lg overflow-hidden bg-gray-100">
-                      <Image src={rp.images?.[0] || '/placeholder.svg'} alt={rp.title} fill className="object-cover hover:scale-105 transition-transform duration-300" />
+                      <Image src={getProductImage(rp)} alt={rp.title} fill className="object-cover hover:scale-105 transition-transform duration-300" />
                     </div>
                     <div className="p-4">
                       <h3 className="font-medium text-sm mb-2 line-clamp-2">{rp.title}</h3>

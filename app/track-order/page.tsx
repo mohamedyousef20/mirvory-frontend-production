@@ -1,5 +1,6 @@
 'use client';
 
+import { getProductImage } from "@/lib/productVariants"
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -160,10 +161,10 @@ export default function TrackOrderPage() {
                 <div className="space-y-3">
                   {order.items.map((item, idx) => (
                     <div key={idx} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-                      {item.product?.images?.[0] && (
+                      {((item as any).image || getProductImage((item.product) as any) !== '/placeholder.svg') && (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
-                          src={item.product.images[0]}
+                          src={(item as any).image || getProductImage((item.product) as any)}
                           alt={item.product?.title || 'منتج'}
                           className="w-12 h-12 object-cover rounded-lg"
                         />

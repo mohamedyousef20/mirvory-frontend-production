@@ -220,10 +220,8 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
     discountPercentage: '0',
     discountedPrice: '',
     category: '',
-    images: [] as string[],
     brand: '',
     colors: [] as Color[],
-    quantity: '0',
     isFeatured: false,
     status: 'available' as 'available' | 'pending',
     videoUrl: '',
@@ -331,33 +329,6 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
       .allow('')
       .default(''),
 
-    quantity: Joi.number()
-      .integer()
-      .min(1)
-      .required()
-      .messages({
-        'number.base':
-          language === 'ar'
-            ? 'الكمية يجب أن تكون رقمًا'
-            : 'Quantity must be a number',
-
-        'number.min':
-          language === 'ar'
-            ? 'الكمية يجب أن تكون أكبر من صفر'
-            : 'Quantity must be greater than zero'
-      }),
-
-    images: Joi.array()
-      .items(Joi.string().trim())
-      .min(1)
-      .required()
-      .messages({
-        'array.min':
-          language === 'ar'
-            ? 'يجب إضافة صورة واحدة على الأقل'
-            : 'Please add at least one image'
-      }),
-
     // v5: sizes are managed per-color — no flat global sizes
 
     /*
@@ -406,11 +377,32 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
             }),
 
           available: Joi.boolean()
-            .default(true)
+            .default(true),
+
+          // v5: every color owns its sizes and stock
+          sizes: Joi.array()
+            .items(Joi.object({
+              size: Joi.string().trim().required(),
+              quantity: Joi.number().integer().min(0).required()
+            }))
+            .min(1)
+            .required()
+            .messages({
+              'array.min':
+                language === 'ar'
+                  ? 'أضف مقاسًا واحدًا على الأقل لكل لون'
+                  : 'Add at least one size to every color'
+            })
         })
       )
+      .min(1)
       .required()
-      .default([]),
+      .messages({
+        'array.min':
+          language === 'ar'
+            ? 'أضف لونًا واحدًا على الأقل'
+            : 'Add at least one color'
+      }),
 
     isFeatured: Joi.boolean().default(false),
 
@@ -619,43 +611,6 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
     }));
   };
 
-  /*
-   * ============================================================
-   * PRODUCT IMAGE UPLOAD
-   * ============================================================
-   */
-
-  const handleImageUpload = (url: string) => {
-    setNewProduct(prev => ({
-      ...prev,
-      images: [
-        ...prev.images,
-        url
-      ]
-    }));
-
-    toast.success(
-      language === 'ar'
-        ? 'تم رفع الصورة بنجاح'
-        : 'Image uploaded successfully'
-    );
-  };
-
-  const removeImage = (index: number) => {
-    setNewProduct(prev => {
-      const newImages = [
-        ...prev.images
-      ];
-
-      newImages.splice(index, 1);
-
-      return {
-        ...prev,
-        images: newImages
-      };
-    });
-  };
-
   // v5: flat sizes removed — per-color sizes handled by ColorSizeManager
 
   /*
@@ -862,11 +817,6 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
       discountPercentage:
         parseFloat(
           newProduct.discountPercentage
-        ) || 0,
-
-      quantity:
-        parseInt(
-          newProduct.quantity
         ) || 0
     };
 
@@ -956,16 +906,8 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
         brand:
           newProduct.brand,
 
-        images:
-          newProduct.images,
-
         colors:
           newProduct.colors,
-
-        quantity:
-          parseInt(
-            newProduct.quantity
-          ) || 0,
 
         isFeatured:
           newProduct.isFeatured,
@@ -1650,33 +1592,6 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
           </div>
 
           {/* =====================================================
-              QUANTITY
-          ====================================================== */}
-
-          <div>
-
-            <Label htmlFor="quantity">
-              {language === 'ar'
-                ? 'الكمية'
-                : 'Quantity'} *
-            </Label>
-
-            <Input
-              id="quantity"
-              name="quantity"
-              type="text"
-              value={
-                newProduct.quantity
-              }
-              onChange={
-                handleNumberInputChange
-              }
-              placeholder="0"
-            />
-
-          </div>
-
-          {/* =====================================================
               STATUS
           ====================================================== */}
 
@@ -1750,59 +1665,6 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
                 ? 'ادعم روابط YouTube — سيظهر الفيديو في صفحة المنتج'
                 : 'Supports YouTube links — video will appear on the product page'}
             </p>
-          </div>
-
-          <div>
-
-            <Label htmlFor="images">
-              {language === 'ar'
-                ? 'الصور'
-                : 'Images'} *
-            </Label>
-
-            <div className="space-y-4">
-
-              <div className="flex flex-wrap gap-4">
-
-                {newProduct.images.map(
-                  (imageUrl, index) => (
-                    <div
-                      key={index}
-                      className="relative"
-                    >
-
-                      <img
-                        src={imageUrl}
-                        alt={`Preview ${index} `}
-                        className="w-24 h-24 object-cover rounded border"
-                      />
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          removeImage(
-                            index
-                          )
-                        }
-                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 -translate-y-1/2 translate-x-1/2"
-                      >
-                        <X size={16} />
-                      </button>
-
-                    </div>
-                  )
-                )}
-
-              </div>
-
-              <ImageUploader
-                onUpload={
-                  handleImageUpload
-                }
-              />
-
-            </div>
-
           </div>
 
           {/* =====================================================

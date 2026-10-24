@@ -206,31 +206,38 @@ export function HeroCarousel() {
           >
             {announcements.map((announcement) => (
               <div key={announcement._id} className="min-w-full relative flex-shrink-0">
-                <div className="relative aspect-[21/9] md:aspect-[3/1] w-full overflow-hidden">
-                  <Image
-                    src={announcement.image || "/placeholder.svg"}
-                    alt={ar ? announcement.title : announcement.titleEn || announcement.title}
-                    fill
-                    className="object-cover object-center"
-                    priority
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 75vw, 60vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-r from-background/80 to-background/20 dark:from-background/90 dark:to-background/30">
-                    <div className="flex h-full items-center px-6 md:px-10">
-                      <div className="max-w-lg space-y-4">
-                        <h2 className="text-2xl md:text-4xl font-bold tracking-tight line-clamp-3">
-                          {ar ? announcement.title : announcement.titleEn || announcement.title}
-                        </h2>
-                        <p className="text-base md:text-lg text-muted-foreground line-clamp-2">
-                          {ar ? announcement.content : announcement.contentEn || announcement.content}
-                        </p>
-                        <Button asChild size="lg">
-                          <Link href={announcement.link || "/"}>
-                            {ar ? "تسوق الآن" : "Shop Now"}
-                          </Link>
-                        </Button>
-                      </div>
+                {/* v5: text section (right in RTL) + separate image section (left) */}
+                <div
+                  dir="rtl"
+                  className="flex h-[190px] w-full overflow-hidden rounded-2xl bg-card md:h-[300px]"
+                >
+                  {/* Text section */}
+                  <div className="flex w-[55%] flex-col justify-center gap-2 px-4 pb-6 text-right md:w-1/2 md:gap-4 md:px-10">
+                    <h2 className="line-clamp-2 text-base font-bold leading-snug tracking-tight md:text-4xl md:line-clamp-3">
+                      {ar ? announcement.title : announcement.titleEn || announcement.title}
+                    </h2>
+                    <p className="line-clamp-2 text-xs text-muted-foreground md:text-lg">
+                      {ar ? announcement.content : announcement.contentEn || announcement.content}
+                    </p>
+                    <div>
+                      <Button asChild size="sm" className="md:h-11 md:px-8 md:text-base">
+                        <Link href={announcement.link || "/"}>
+                          {ar ? "تسوق الآن" : "Shop Now"}
+                        </Link>
+                      </Button>
                     </div>
+                  </div>
+
+                  {/* Image section */}
+                  <div className="relative w-[45%] bg-muted md:w-1/2">
+                    <Image
+                      src={announcement.image || "/placeholder.svg"}
+                      alt={ar ? announcement.title : announcement.titleEn || announcement.title}
+                      fill
+                      className="object-cover object-center"
+                      priority
+                      sizes="(max-width: 768px) 45vw, 40vw"
+                    />
                   </div>
                 </div>
               </div>
@@ -269,7 +276,7 @@ export function HeroCarousel() {
                     className={`h-2 rounded-full transition-all duration-300 focus:outline-none ${
                       currentSlide === index
                         ? "w-6 bg-primary"
-                        : "w-2 bg-white/60 hover:bg-white/80"
+                        : "w-2 bg-foreground/25 hover:bg-foreground/40"
                     }`}
                   />
                 ))}
