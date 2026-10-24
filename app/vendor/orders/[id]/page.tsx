@@ -1,5 +1,6 @@
 "use client"
 
+import { getProductImage } from "@/lib/productVariants"
 import { useParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
@@ -271,7 +272,7 @@ export default function VendorOrderDetailsPage() {
                             <div key={item._id} className="flex gap-4 p-4 border rounded-lg">
                                 <div className="relative h-20 w-20 rounded-lg overflow-hidden flex-shrink-0">
                                     <Image
-                                        src={item.product?.images?.[0] || "/placeholder.svg"}
+                                        src={(item as any).image || getProductImage((item.product) as any)}
                                         alt={language === 'ar' ? item.product?.title : item.product?.titleEn || item.product?.title}
                                         fill
                                         className="object-cover"

@@ -1,5 +1,6 @@
 "use client"
 //TODO CHANGE DROP DOWN MENU
+import { getProductImage } from "@/lib/productVariants"
 import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
 import { removeGuestCartItemByKey } from "@/lib/guestCart";
@@ -928,10 +929,10 @@ export function MainNav() {
                       enhancedCartItems.map((item) => (
                         <div key={item._id} className="flex items-center gap-3">
                           <div className="h-16 w-16 bg-accent rounded-md flex items-center justify-center overflow-hidden flex-shrink-0">
-                            {item.product?.images?.[0] ? (
+                            {(item.image || getProductImage((item.product) as any)) !== '/placeholder.svg' ? (
                               <Image
-                                src={item.product.images[0] || item.image || ""}
-                                alt={item.product.title || "Product"}
+                                src={item.image || getProductImage((item.product) as any)}
+                                alt={item.product?.title || "Product"}
                                 width={64}
                                 height={64}
                                 className="object-cover"

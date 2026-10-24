@@ -1,4 +1,5 @@
 import { SafeImage } from "@/components/SafeImage"
+import { getProductImage } from "@/lib/productVariants"
 import { DollarSign, ShoppingBag, Package, BarChart, Clock, XCircle, Star } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -110,7 +111,7 @@ export function OverviewTab({ language, t, dashboardCounters, balance, orders, p
                             {products.slice(0, 4).map((product) => (
                                 <div key={product._id} className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
                                     <div className="relative h-11 w-11 rounded-lg overflow-hidden flex-shrink-0">
-                                        <SafeImage src={product.images[0] || "/placeholder.svg"} alt={language === "ar" ? product.title : product.titleEn} width={44} height={44} className="object-cover rounded-lg" />
+                                        <SafeImage src={getProductImage(product)} alt={language === "ar" ? product.title : product.titleEn} width={44} height={44} className="object-cover rounded-lg" />
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <p className="font-medium text-slate-800 text-sm truncate">{language === "ar" ? product.title : product.titleEn}</p>

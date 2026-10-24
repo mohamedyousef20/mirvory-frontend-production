@@ -229,10 +229,11 @@ export function ProductsTab({
                                             <div className="w-16">
                                                 <DashboardImageSlider
                                                     images={
-                                                        product.images?.length
-                                                            ? product.images.map((img: string) =>
-                                                                normalizeImageUrl(img)
-                                                            )
+                                                        (product.colors ?? []).some((c: any) => c?.image)
+                                                            ? (product.colors ?? [])
+                                                                .map((c: any) => c?.image)
+                                                                .filter(Boolean)
+                                                                .map((img: string) => normalizeImageUrl(img))
                                                             : ["/placeholder.svg"]
                                                     }
                                                     alt={product.title}

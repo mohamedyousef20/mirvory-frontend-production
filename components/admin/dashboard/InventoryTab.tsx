@@ -6,6 +6,7 @@
  * Shows low-stock alerts, out-of-stock sizes, and total quantities.
  */
 
+import { getProductImage } from "@/lib/productVariants"
 import React, { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -90,7 +91,7 @@ export function InventoryTab() {
         return {
           productId: p._id,
           productTitle: p.title,
-          productImage: p.images?.[0],
+          productImage: getProductImage(p),
           colors,
           totalQuantity: p.quantity ?? colors.reduce((s: number, c: ColorEntry) => s + c.totalQuantity, 0),
         };

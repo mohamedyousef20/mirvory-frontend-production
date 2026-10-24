@@ -1,4 +1,5 @@
 import { SafeImage } from "@/components/SafeImage"
+import { getProductImage } from "@/lib/productVariants"
 import { useRouter } from "next/navigation"
 import {
     CheckCircle,
@@ -140,7 +141,7 @@ export function OrdersTable({
                                                         <div key={item._id} className="flex items-center gap-3 p-2 rounded-lg border border-slate-100">
                                                             <div className="relative h-12 w-12 rounded-lg overflow-hidden border border-slate-100 flex-shrink-0 bg-slate-50">
                                                                 <SafeImage
-                                                                    src={product?.images?.[0] || "/placeholder.png"}
+                                                                    src={getProductImage(product)}
                                                                     alt={product?.title || "Product"}
                                                                     width={48}
                                                                     height={48}
@@ -361,7 +362,7 @@ export function OrdersTable({
                                             <div key={item._id} className="flex gap-3 p-2.5 rounded-xl border border-slate-100 bg-slate-50/50">
                                                 <div className="relative h-14 w-14 rounded-lg overflow-hidden border border-slate-100 flex-shrink-0 bg-white">
                                                     <SafeImage
-                                                        src={product?.images?.[0] || "/placeholder.png"}
+                                                        src={getProductImage(product)}
                                                         alt={product?.title || "Product"}
                                                         width={56}
                                                         height={56}

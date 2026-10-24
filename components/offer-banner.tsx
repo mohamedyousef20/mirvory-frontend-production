@@ -1,5 +1,6 @@
 "use client"
 
+import { getProductImage, PLACEHOLDER_IMAGE } from "@/lib/productVariants"
 import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
 import Image from "next/image"
@@ -81,6 +82,9 @@ export function OfferBanner() {
   }, [products.length])
 
   const handleAddToCart = useCallback(async (product: MiniProduct) => {
+    // v5: a size and a color must be chosen first, so we open the product page
+    window.location.assign(`/products/${product._id}`)
+    return
     setIsAddingToCart(true)
     try {
       if (isLoggedIn) {
@@ -95,7 +99,7 @@ export function OfferBanner() {
           size: null,
           color: null,
           title: product.title,
-          image: product.images?.[0] ?? null,
+          image: getProductImage(product as any),
           price: product.discountedPrice || product.price,
           maxQuantity: product.quantity,
         })
@@ -269,9 +273,9 @@ export function OfferBanner() {
 
               {/* Glass Card Container */}
               <div className="absolute inset-0 rounded-[32px] bg-white/10 border border-white/15 backdrop-blur-md shadow-2xl overflow-hidden flex items-center justify-center p-6">
-                {currentProduct.images?.[0] && (
+                {getProductImage(currentProduct as any) !== PLACEHOLDER_IMAGE && (
                   <Image
-                    src={normalizeImageUrl(currentProduct.images[0])}
+                    src={normalizeImageUrl(getProductImage(currentProduct as any))}
                     alt={
                       language === "ar"
                         ? currentProduct.title

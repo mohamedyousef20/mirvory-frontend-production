@@ -507,6 +507,8 @@ export const cartService = {
     quantity: number;
     sizes?: string[];
     colors?: string[];
+    size?: string;
+    color?: string;
   }) => api.post('/api/carts', data),
 
   updateCartItem: (itemId: string, quantity: number) =>
