@@ -1324,6 +1324,27 @@ export function useAdminDashboard() {
             );
         }
     };
+    // Delete a product (admin/super_admin may delete ANY seller's product —
+    // the backend enforces the permission, this is only the UI flow).
+    const handleDeleteProduct = async (productId: string, title?: string) => {
+        const label = title || (isArabic ? "هذا المنتج" : "this product");
+        const confirmed = window.confirm(
+            isArabic
+                ? `سيتم حذف "${label}" من المتجر. الطلبات السابقة لن تتأثر. متابعة؟`
+                : `"${label}" will be removed from the store. Past orders are kept. Continue?`
+        );
+        if (!confirmed) return;
+        try {
+            const res = await productService.deleteProduct(productId);
+            toast.success(res?.data?.message || (isArabic ? "تم حذف المنتج" : "Product deleted"));
+            await fetchProducts();
+        } catch (error: any) {
+            toast.error(
+                error?.response?.data?.message ||
+                (isArabic ? "فشل حذف المنتج" : "Failed to delete product")
+            );
+        }
+    };
     // Reject product
     const handleRejectProduct = async (productId: string, sellerId: string, title: string, reason: string) => {
         if (!reason) return;
@@ -1612,6 +1633,7 @@ export function useAdminDashboard() {
         handleDeleteCategory,
         handleApproveProduct,
         handleTrustProduct,
+        handleDeleteProduct,
         handleRejectProduct,
         handleSaveAnnouncement,
         handleDeleteAnnouncement,

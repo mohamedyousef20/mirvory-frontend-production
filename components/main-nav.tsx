@@ -52,6 +52,7 @@ import MirvoryLogo from "@/components/mirvory-logo"
 import Image from "next/image"
 import { toast } from 'sonner';
 import { ProductSearch } from "./ProductSearch"
+import { NavbarSearchBar } from "./navbar-search-bar"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/AuthProvider"
 import { authService, cartService, notificationService, wishlistService } from "@/lib/api"
@@ -1158,29 +1159,9 @@ export function MainNav() {
         </div>
       </div>
 
-      {/* v5: always-visible search bar under the navbar */}
+      {/* search bar under the navbar — suggestions, clear button, RTL-safe */}
       <div className="container mx-auto px-4 pb-3">
-        <form
-          onSubmit={handleMobileSearch}
-          role="search"
-          className="relative mx-auto flex w-full max-w-2xl items-center"
-        >
-          <input
-            type="search"
-            value={searchQuery}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
-            placeholder={language === "ar" ? "ابحث عن كوتشياتك المفضلة..." : "Search for your favorite sneakers..."}
-            aria-label={language === "ar" ? "بحث" : "Search"}
-            className="h-11 w-full rounded-full border border-border bg-background ps-5 pe-12 text-sm shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/30"
-          />
-          <button
-            type="submit"
-            aria-label={language === "ar" ? "بحث" : "Search"}
-            className="absolute end-1.5 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground"
-          >
-            <Search className="h-4 w-4" />
-          </button>
-        </form>
+        <NavbarSearchBar />
       </div>
     </header>
   )

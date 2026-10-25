@@ -275,6 +275,9 @@ export const productService = {
     limit?: number;
     exclude?: string;
     category?: string;
+    size?: string;
+    color?: string;
+    minRating?: number;
     search?: string;
     sort?: string;
     minPrice?: number;
@@ -301,8 +304,12 @@ export const productService = {
     id: string,
     updates: Record<string, any>
   ) => api.patch(`/api/products/${id}`, updates),
-  // Delete product
-  deleteProduct: (id: string | number) => api.delete("/api/products", { data: { id } }),
+  // Delete product (seller: own products · admin/super_admin: any product)
+  deleteProduct: (id: string | number) => api.delete(`/api/products/${id}`),
+  // Legacy body-based delete (kept for older callers)
+  deleteProductLegacy: (id: string | number) => api.delete("/api/products", { data: { id } }),
+  // Available filter values (sizes / colors / price bounds)
+  getProductFilterFacets: (params?: any) => api.get("/api/products/filters/facets", { params }),
   // Featured products
   getFeaturedProducts: () => api.get("/api/products/featured/product"),
 
@@ -338,6 +345,9 @@ export const productService = {
     category?: string;
     minPrice?: number;
     maxPrice?: number;
+    size?: string;
+    color?: string;
+    minRating?: number;
     sort?: string;
     availability?: string;
   }) => api.get("/api/products/search", { params }),

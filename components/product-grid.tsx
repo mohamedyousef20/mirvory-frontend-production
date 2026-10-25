@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Slider } from "@/components/ui/slider"
 import { Label } from "@/components/ui/label"
+import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import {
   Filter,
@@ -109,6 +110,9 @@ interface FilterState {
   priceRange: [number, number];
   sort: string;
   searchQuery: string;
+  sizes: string[];
+  colors: string[];
+  minRating: number;
 }
 
 // Constants
@@ -119,8 +123,13 @@ const INITIAL_FILTERS: FilterState = {
   brands: [],
   priceRange: [0, MAX_PRICE],
   sort: "newest",
-  searchQuery: ""
+  searchQuery: "",
+  sizes: [],
+  colors: [],
+  minRating: 0
 };
+
+const RATING_OPTIONS = [4, 3, 2, 1];
 
 const SORT_OPTIONS = [
   { value: "newest", label: { ar: "الأحدث", en: "Newest" } },
@@ -186,6 +195,8 @@ export function ProductGrid() {
     totalPages: 1,
     totalProducts: 0
   });
+  // Available sizes/colors/price bounds, computed on the DB for the active filters
+  const [facets, setFacets] = useState<{ sizes: { size: string; count: number }[]; colors: { name: string; value: string; count: number }[] }>({ sizes: [], colors: [] });
   const [uiState, setUiState] = useState({
     isFilterOpen: false,
     isLoading: false,
@@ -226,7 +237,10 @@ export function ProductGrid() {
     filters.categories.length > 0 ||
     filters.priceRange[0] > 0 ||
     filters.priceRange[1] < MAX_PRICE ||
-    filters.searchQuery.trim() !== ""
+    filters.searchQuery.trim() !== "" ||
+    filters.sizes.length > 0 ||
+    filters.colors.length > 0 ||
+    filters.minRating > 0
     , [filters]);
 
   const activeAnnouncements = React.useMemo(() =>
@@ -290,6 +304,10 @@ export function ProductGrid() {
             searchParamsData.maxPrice = filters.priceRange[1];
           }
 
+          if (filters.sizes.length) searchParamsData.size = filters.sizes.join(",");
+          if (filters.colors.length) searchParamsData.color = filters.colors.join(",");
+          if (filters.minRating > 0) searchParamsData.minRating = filters.minRating;
+
           const sortMap: Record<string, string> = {
             newest: "latest",
             priceHighToLow: "price_desc",
@@ -329,6 +347,10 @@ export function ProductGrid() {
           if (filters.priceRange[1] < MAX_PRICE) {
             params.maxPrice = filters.priceRange[1];
           }
+
+          if (filters.sizes.length) params.size = filters.sizes.join(",");
+          if (filters.colors.length) params.color = filters.colors.join(",");
+          if (filters.minRating > 0) params.minRating = filters.minRating;
 
           params.sort =
             filters.sort === "newest"
@@ -373,6 +395,24 @@ export function ProductGrid() {
     },
     [filters, language]
   );
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const params: any = {};
+        if (filters.categories.length) params.category = filters.categories[0];
+        const res = await productService.getProductFilterFacets(params);
+        const data = res.data?.data;
+        if (active && data) {
+          setFacets({ sizes: data.sizes || [], colors: data.colors || [] });
+        }
+      } catch {
+        /* facets are optional — the filters still work without them */
+      }
+    })();
+    return () => { active = false; };
+  }, [filters.categories]);
+
   useEffect(() => {
     fetchWishlistFavorites();
   }, [fetchWishlistFavorites]);
@@ -465,6 +505,17 @@ export function ProductGrid() {
     updateFilter('searchQuery', '');
   }, [updateFilter]);
 
+  const toggleArrayFilter = useCallback((key: 'sizes' | 'colors', value: string) => {
+    setFilters(prev => {
+      const list = prev[key];
+      return {
+        ...prev,
+        [key]: list.includes(value) ? list.filter(v => v !== value) : [...list, value]
+      };
+    });
+    setPagination(prev => ({ ...prev, page: 1 }));
+  }, []);
+
   const resetFilters = useCallback(() => {
     setFilters(INITIAL_FILTERS);
     setPagination(prev => ({ ...prev, page: 1 }));
@@ -509,6 +560,111 @@ export function ProductGrid() {
             </button>
           );
         })}
+      </div>
+    </div>
+  );
+
+  const renderFacetFilters = () => (
+    <div className="space-y-6">
+      {/* Active filter chips — each one removable on its own */}
+      {hasActiveFilters && (
+        <div className="flex flex-wrap gap-2">
+          {filters.sizes.map(size => (
+            <Badge key={`chip-size-${size}`} variant="secondary" className="gap-1">
+              {size}
+              <button type="button" onClick={() => toggleArrayFilter('sizes', size)} aria-label={`remove ${size}`}>
+                <X className="h-3 w-3" />
+              </button>
+            </Badge>
+          ))}
+          {filters.colors.map(color => (
+            <Badge key={`chip-color-${color}`} variant="secondary" className="gap-1">
+              {facets.colors.find(c => c.value === color)?.name || color}
+              <button type="button" onClick={() => toggleArrayFilter('colors', color)} aria-label={`remove ${color}`}>
+                <X className="h-3 w-3" />
+              </button>
+            </Badge>
+          ))}
+          {filters.minRating > 0 && (
+            <Badge variant="secondary" className="gap-1">
+              {filters.minRating}+ ★
+              <button type="button" onClick={() => updateFilter('minRating', 0)} aria-label="remove rating">
+                <X className="h-3 w-3" />
+              </button>
+            </Badge>
+          )}
+        </div>
+      )}
+
+      {/* Sizes — only sizes that exist with stock */}
+      {facets.sizes.length > 0 && (
+        <div className="space-y-3">
+          <h3 className="font-medium">{language === "ar" ? "المقاس" : "Size"}</h3>
+          <div className="flex flex-wrap gap-2">
+            {facets.sizes.map(({ size, count }) => {
+              const selected = filters.sizes.includes(size);
+              return (
+                <button
+                  key={size}
+                  type="button"
+                  onClick={() => toggleArrayFilter('sizes', size)}
+                  className={`min-w-11 rounded-md border px-2 py-1 text-sm transition ${selected ? "border-primary bg-primary text-primary-foreground" : "hover:border-primary"}`}
+                >
+                  {size}
+                  <span className="ms-1 text-[10px] opacity-70">{count}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Colors — the real colors of the products, with their swatch */}
+      {facets.colors.length > 0 && (
+        <div className="space-y-3">
+          <h3 className="font-medium">{language === "ar" ? "اللون" : "Color"}</h3>
+          <div className="flex flex-wrap gap-2">
+            {facets.colors.map(({ name, value, count }) => {
+              const selected = filters.colors.includes(value);
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => toggleArrayFilter('colors', value)}
+                  title={`${name} (${count})`}
+                  className={`flex items-center gap-1 rounded-full border p-1 pe-2 text-xs transition ${selected ? "border-primary" : "hover:border-primary"}`}
+                >
+                  <span
+                    className="h-4 w-4 rounded-full border"
+                    style={{ backgroundColor: value }}
+                    aria-hidden
+                  />
+                  {name}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Rating */}
+      <div className="space-y-3">
+        <h3 className="font-medium">{language === "ar" ? "التقييم" : "Rating"}</h3>
+        <div className="space-y-1">
+          {RATING_OPTIONS.map(rating => (
+            <button
+              key={rating}
+              type="button"
+              onClick={() => updateFilter('minRating', filters.minRating === rating ? 0 : rating)}
+              className="flex items-center gap-2 text-sm"
+            >
+              <span className={`inline-flex h-4 w-4 items-center justify-center rounded-full border ${filters.minRating === rating ? "border-primary" : "border-gray-300"}`}>
+                {filters.minRating === rating && <span className="h-2 w-2 rounded-full bg-primary" />}
+              </span>
+              <span>{rating} ★ {language === "ar" ? "وأعلى" : "& up"}</span>
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -689,9 +845,16 @@ export function ProductGrid() {
         {/* Header Section */}
         <div className="flex flex-col gap-4">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <h2 className="text-2xl font-bold tracking-tight">
-              {language === "ar" ? "جميع المنتجات" : "All Products"}
-            </h2>
+            <div>
+              <h2 className="text-2xl font-bold tracking-tight">
+                {language === "ar" ? "جميع المنتجات" : "All Products"}
+              </h2>
+              {!uiState.isLoading && (
+                <p className="text-sm text-muted-foreground">
+                  {pagination.totalProducts} {language === "ar" ? "نتيجة مطابقة" : "matching results"}
+                </p>
+              )}
+            </div>
 
             <div className="flex items-center gap-2 w-full sm:w-auto">
               {/* Mobile Filter Trigger */}
@@ -716,6 +879,11 @@ export function ProductGrid() {
                         <AccordionContent>
                           {renderCategoryFilter()}
                         </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="facets">
+                        <AccordionTrigger>{language === "ar" ? "المقاس واللون والتقييم" : "Size, color, rating"}</AccordionTrigger>
+                        <AccordionContent>{renderFacetFilters()}</AccordionContent>
                       </AccordionItem>
 
                       {/* Price Accordion */}
@@ -803,10 +971,13 @@ export function ProductGrid() {
               </div>
             </div>
 
+            {/* Sizes / Colors / Rating */}
+            {renderFacetFilters()}
+
             {/* Reset Filters Button */}
             {hasActiveFilters && (
               <Button variant="outline" onClick={resetFilters} className="w-full">
-                {language === "ar" ? "إعادة ضبط الفلاتر" : "Reset Filters"}
+                {language === "ar" ? "مسح جميع الفلاتر" : "Clear all filters"}
               </Button>
             )}
           </div>
