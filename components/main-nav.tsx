@@ -1,7 +1,8 @@
 "use client"
 //TODO CHANGE DROP DOWN MENU
+import { QuickFilters } from "@/components/quick-filters"
 import { getProductImage } from "@/lib/productVariants"
-import { useState, useEffect, useCallback } from "react"
+import { Suspense, useState, useEffect, useCallback } from "react"
 import Link from "next/link"
 import { removeGuestCartItemByKey } from "@/lib/guestCart";
 import { useLanguage } from "@/components/language-provider";
@@ -1163,6 +1164,11 @@ export function MainNav() {
       <div className="container mx-auto px-4 pb-3">
         <NavbarSearchBar />
       </div>
+
+      {/* color / size / rating / sort — on every page, right under the search bar */}
+      <Suspense fallback={null}>
+        <QuickFilters />
+      </Suspense>
     </header>
   )
 }
