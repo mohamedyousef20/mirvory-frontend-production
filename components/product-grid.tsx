@@ -844,6 +844,14 @@ export function ProductGrid() {
       <div className="flex flex-col gap-6">
         {/* Header Section */}
         <div className="flex flex-col gap-4">
+          {/* Search Bar (filters + sort sit right below it) */}
+          {/* Search Bar */}
+          <ProductSearch
+            onSearch={handleSearch}
+            onClear={handleClearSearch}
+            className="w-full"
+          />
+
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <h2 className="text-2xl font-bold tracking-tight">
@@ -862,7 +870,7 @@ export function ProductGrid() {
                 <SheetTrigger asChild>
                   <Button variant="outline" size="sm" className="h-8 gap-1 md:hidden">
                     <Filter className="h-4 w-4" />
-                    {t("categories")}
+                    {language === "ar" ? "الفلاتر" : "Filters"}
                   </Button>
                 </SheetTrigger>
 
@@ -940,12 +948,6 @@ export function ProductGrid() {
             </div>
           </div>
 
-          {/* Search Bar */}
-          <ProductSearch
-            onSearch={handleSearch}
-            onClear={handleClearSearch}
-            className="w-full"
-          />
         </div>
 
         {/* Main Content Grid */}
