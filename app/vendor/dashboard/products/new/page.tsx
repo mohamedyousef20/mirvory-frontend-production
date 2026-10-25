@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { useLanguage } from "@/components/language-provider";
 import { useRouter } from 'next/navigation';
-import AddProductForm from '@/app/admin/products/new/page';
+import AddProductForm from '@/components/admin/AddProductForm';
 
 export default function NewProductPage() {
   const { language } = useLanguage();
