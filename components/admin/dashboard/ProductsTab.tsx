@@ -12,7 +12,8 @@ import {
     XCircle,
     Search,
     ShieldCheck,
-    Edit
+    Edit,
+    Trash2
 
 } from "lucide-react";
 
@@ -38,6 +39,7 @@ interface ProductsTabProps {
         reason: string
     ) => void;
     handleTrustProduct: (productId: string) => void;
+    onDeleteProduct?: (productId: string, title: string) => Promise<void> | void;
 }
 export function ProductsTab({
     products,
@@ -49,10 +51,12 @@ export function ProductsTab({
     handleApproveProduct,
     handleRejectProduct,
     handleTrustProduct,
+    onDeleteProduct,
 
 }: ProductsTabProps) {
 
     const [sellerSearch, setSellerSearch] = useState("");
+    const [deletingId, setDeletingId] = useState<string | null>(null);
 
     // Filter products by seller
     const filteredProducts = useMemo(() => {
@@ -508,6 +512,27 @@ export function ProductsTab({
                                                             ? "تعديل المنتج"
                                                             : "Edit Product"}
                                                     </Link>
+                                                </Button>
+
+                                                <Button
+                                                    variant="destructive"
+                                                    size="sm"
+                                                    className="w-full justify-start"
+                                                    disabled={deletingId === product._id}
+                                                    onClick={async () => {
+                                                        if (!onDeleteProduct || deletingId) return;
+                                                        setDeletingId(product._id);
+                                                        try {
+                                                            await onDeleteProduct(product._id, product.title);
+                                                        } finally {
+                                                            setDeletingId(null);
+                                                        }
+                                                    }}
+                                                >
+                                                    {deletingId === product._id
+                                                        ? <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                                        : <Trash2 className="h-4 w-4 mr-2" />}
+                                                    {isArabic ? "حذف المنتج" : "Delete Product"}
                                                 </Button>
                                             </div>
                                         </TableCell>

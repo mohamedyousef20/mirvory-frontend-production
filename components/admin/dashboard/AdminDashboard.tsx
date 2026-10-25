@@ -17,6 +17,7 @@ import { ReturnsTab } from "./ReturnsTab";
 import { ComplaintsTab } from "./ComplaintsTab";
 import { CouponsTab } from "./CouponsTab";
 import { OffersTab } from "./OffersTab";
+import { PromotionsTab } from "./PromotionsTab";
 import { ProductRequestsTab } from "./ProductRequestsTab";
 import { LoyaltyTab } from "./LoyaltyTab";
 import { ShippingSettingsTab } from "./ShippingSettingsTab";
@@ -59,6 +60,7 @@ const TAB_ITEMS = (isArabic: boolean, t: TranslateFunction) => [{ value: "overvi
 { value: "categories", label: isArabic ? "التصنيفات" : "Categories" },
 { value: "coupons", label: isArabic ? "الكوبونات" : "Coupons" },
 { value: "offers", label: isArabic ? "العروض" : "Offers" },
+{ value: "promotions", label: isArabic ? "العروض الترويجية" : "Promotions" },
 { value: "shipping-settings", label: isArabic ? "إعدادات الشحن" : "Shipping" },
 { value: "announcements", label: isArabic ? "الإعلانات" : "Announcements" },
 { value: "pickup", label: isArabic ? "نقاط الاستلام" : "Pickup" },
@@ -228,6 +230,10 @@ export function AdminDashboard() {
     handleToggleUserActive,
     // Offer functions
     fetchOffers,
+
+    // Delete a product from the admin table — works for ANY seller's product.
+    // The permission itself is enforced on the backend (admin/super_admin only).
+    handleDeleteProduct,
     handleToggleOffer,
     handleDeleteOffer,
 
@@ -388,6 +394,7 @@ export function AdminDashboard() {
             handleApproveProduct={handleApproveProduct}
             handleRejectProduct={handleRejectProduct}
             handleTrustProduct={handleTrustProduct}
+            onDeleteProduct={handleDeleteProduct}
           />
         </TabsContent>
 
@@ -477,6 +484,10 @@ export function AdminDashboard() {
             handleDeleteOffer={handleDeleteOffer}
             fetchOffers={fetchOffers}
           />
+        </TabsContent>
+
+        <TabsContent value="promotions">
+          <PromotionsTab isArabic={isArabic} />
         </TabsContent>
 
         <TabsContent value="shipping-settings">
