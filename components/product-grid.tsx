@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect, useCallback } from "react"
-import { useSearchParams } from "next/navigation"
+import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { useLanguage } from "@/components/language-provider";
 import { Button } from "@/components/ui/button"
@@ -171,9 +171,26 @@ const isAnnouncementActive = (announcement: Announcement): boolean => {
   return now >= startDate && now <= endDate;
 };
 
+const VALID_SORTS = SORT_OPTIONS.map((o) => o.value);
+const splitCsv = (v: string | null) => (v ? v.split(",").map((x) => x.trim()).filter(Boolean) : []);
+
+// URL (?size=&color=&minRating=&sort=) -> filter state. Shared with the header quick-filters.
+function filtersFromParams(sp: { get: (k: string) => string | null }): Partial<FilterState> {
+  const sort = sp.get("sort");
+  const rating = Number(sp.get("minRating"));
+  return {
+    sizes: splitCsv(sp.get("size")),
+    colors: splitCsv(sp.get("color")),
+    minRating: Number.isFinite(rating) && rating > 0 ? Math.min(5, rating) : 0,
+    sort: sort && VALID_SORTS.includes(sort) ? sort : "newest",
+  };
+}
+
 export function ProductGrid() {
   const { language, t } = useLanguage();
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const { user } = useAuth();
   const isAuthenticated = Boolean(user?.id || user?._id);
 
@@ -186,6 +203,7 @@ export function ProductGrid() {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [filters, setFilters] = useState<FilterState>({
     ...INITIAL_FILTERS,
+    ...filtersFromParams(searchParams),
     searchQuery: initialQuery
   });
 
@@ -425,13 +443,22 @@ export function ProductGrid() {
   useEffect(() => {
     const searchQuery = searchParams.get("q") || "";
 
+    const fromUrl = filtersFromParams(searchParams);
+
     setFilters((prev) => {
-      if (prev.searchQuery === searchQuery) {
+      const same =
+        prev.searchQuery === searchQuery &&
+        prev.sort === fromUrl.sort &&
+        prev.minRating === fromUrl.minRating &&
+        prev.sizes.join(",") === (fromUrl.sizes || []).join(",") &&
+        prev.colors.join(",") === (fromUrl.colors || []).join(",");
+      if (same) {
         return prev;
       }
 
       return {
         ...prev,
+        ...fromUrl,
         searchQuery,
       };
     });
@@ -441,6 +468,25 @@ export function ProductGrid() {
       page: 1,
     }));
   }, [searchParams]);
+  // Keep the address bar in sync with the filters, so the header quick-filters
+  // (and shared links) always show the same selection.
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    const setOrDelete = (key: string, value: string) => {
+      if (value) params.set(key, value);
+      else params.delete(key);
+    };
+    setOrDelete("q", filters.searchQuery.trim());
+    setOrDelete("size", filters.sizes.join(","));
+    setOrDelete("color", filters.colors.join(","));
+    setOrDelete("minRating", filters.minRating > 0 ? String(filters.minRating) : "");
+    setOrDelete("sort", filters.sort !== "newest" ? filters.sort : "");
+    if (params.toString() !== searchParams.toString()) {
+      const qs = params.toString();
+      router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+    }
+  }, [filters.searchQuery, filters.sizes, filters.colors, filters.minRating, filters.sort]); // eslint-disable-line react-hooks/exhaustive-deps
+
   useEffect(() => {
     fetchProducts(
       pagination.page,
