@@ -178,7 +178,14 @@ const splitCsv = (v: string | null) => (v ? v.split(",").map((x) => x.trim()).fi
 function filtersFromParams(sp: { get: (k: string) => string | null }): Partial<FilterState> {
   const sort = sp.get("sort");
   const rating = Number(sp.get("minRating"));
+  const lo = Number(sp.get("minPrice"));
+  const hi = sp.get("maxPrice") === null ? MAX_PRICE : Number(sp.get("maxPrice"));
   return {
+    categories: sp.get("category") ? [sp.get("category") as string] : [],
+    priceRange: [
+      Number.isFinite(lo) && lo > 0 ? lo : 0,
+      Number.isFinite(hi) && hi > 0 && hi < MAX_PRICE ? hi : MAX_PRICE,
+    ] as [number, number],
     sizes: splitCsv(sp.get("size")),
     colors: splitCsv(sp.get("color")),
     minRating: Number.isFinite(rating) && rating > 0 ? Math.min(5, rating) : 0,
@@ -449,6 +456,9 @@ export function ProductGrid() {
       const same =
         prev.searchQuery === searchQuery &&
         prev.sort === fromUrl.sort &&
+        prev.categories.join(",") === (fromUrl.categories || []).join(",") &&
+        prev.priceRange[0] === fromUrl.priceRange![0] &&
+        prev.priceRange[1] === fromUrl.priceRange![1] &&
         prev.minRating === fromUrl.minRating &&
         prev.sizes.join(",") === (fromUrl.sizes || []).join(",") &&
         prev.colors.join(",") === (fromUrl.colors || []).join(",");
@@ -481,11 +491,14 @@ export function ProductGrid() {
     setOrDelete("color", filters.colors.join(","));
     setOrDelete("minRating", filters.minRating > 0 ? String(filters.minRating) : "");
     setOrDelete("sort", filters.sort !== "newest" ? filters.sort : "");
+    setOrDelete("category", filters.categories[0] || "");
+    setOrDelete("minPrice", filters.priceRange[0] > 0 ? String(filters.priceRange[0]) : "");
+    setOrDelete("maxPrice", filters.priceRange[1] < MAX_PRICE ? String(filters.priceRange[1]) : "");
     if (params.toString() !== searchParams.toString()) {
       const qs = params.toString();
       router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
     }
-  }, [filters.searchQuery, filters.sizes, filters.colors, filters.minRating, filters.sort]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [filters.searchQuery, filters.sizes, filters.colors, filters.minRating, filters.sort, filters.categories, filters.priceRange]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     fetchProducts(
@@ -906,7 +919,7 @@ export function ProductGrid() {
               {/* Mobile Filter Trigger */}
               <Sheet open={uiState.isFilterOpen} onOpenChange={(open: boolean) => setUiState(prev => ({ ...prev, isFilterOpen: open }))}>
                 <SheetTrigger asChild>
-                  <Button variant="outline" size="sm" className="h-8 gap-1 md:hidden">
+                  <Button variant="outline" size="sm" className="hidden">
                     <Filter className="h-4 w-4" />
                     {t("categories")}
                   </Button>
