@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
       secure: isProd,
       sameSite: 'lax',
       path: '/',
-      maxAge: 15 * 60, // 15 minutes — matches typical backend JWT_EXPIRE
+      maxAge: 15 * 24 * 60 * 60, // 15 days — matches backend JWT_EXPIRE / COOKIE_EXPIRE
     });
 
     // refreshToken — longer-lived, HTTP-only, same-site
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
       secure: isProd,
       sameSite: 'lax',
       path: '/',
-      maxAge: 20 * 24 * 60 * 60, // 20 days — matches typical JWT_REFRESH_EXPIRE
+      maxAge: 30 * 24 * 60 * 60, // 30 days — matches backend JWT_REFRESH_EXPIRE
     });
 
     // userRole — not HTTP-only so client JS can read it for UI decisions
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
         secure: isProd,
         sameSite: 'lax',
         path: '/',
-        maxAge: 20 * 24 * 60 * 60,
+        maxAge: 30 * 24 * 60 * 60,
       });
     }
 

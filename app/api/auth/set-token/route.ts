@@ -119,7 +119,7 @@ export async function POST(request: NextRequest) {
       secure: isProd,
       sameSite: 'lax',
       path: '/',
-      maxAge: 15 * 60, // 15 minutes — matches backend JWT_EXPIRE default
+      maxAge: 15 * 24 * 60 * 60, // 15 days — matches backend JWT_EXPIRE / COOKIE_EXPIRE
     });
 
     if (refreshToken) {
@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
         secure: isProd,
         sameSite: 'lax',
         path: '/',
-        maxAge: 7 * 24 * 60 * 60, // 7 days — matches backend COOKIE_REFRESH_EXPIRE default
+        maxAge: 30 * 24 * 60 * 60, // 30 days — matches backend COOKIE_REFRESH_EXPIRE
       });
     }
 
@@ -139,7 +139,7 @@ export async function POST(request: NextRequest) {
         secure: isProd,
         sameSite: 'lax',
         path: '/',
-        maxAge: 7 * 24 * 60 * 60,
+        maxAge: 30 * 24 * 60 * 60,
       });
     }
 
