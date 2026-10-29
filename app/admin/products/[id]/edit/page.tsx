@@ -339,11 +339,28 @@ export default function EditProductPage() {
                   : 'Color image is required'
             }),
           available: Joi.boolean()
-            .default(true)
+            .default(true),
+          // v5: every color owns its sizes and stock
+          sizes: Joi.array()
+            .items(Joi.object({
+              _id: Joi.any().optional(),
+              size: Joi.string().trim().required(),
+              quantity: Joi.number().integer().min(0).required()
+            }))
+            .min(1)
+            .required()
+            .messages({
+              'array.min':
+                language === 'ar'
+                  ? 'أضف مقاسًا واحدًا على الأقل لكل لون'
+                  : 'Add at least one size to every color'
+            })
         })
       )
       .required()
       .default([]),
+
+    videoUrl: Joi.string().trim().allow('', null).optional(),
 
     isFeatured: Joi.boolean().default(false),
     isTrusted: Joi.boolean().default(false),
