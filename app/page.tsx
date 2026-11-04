@@ -10,6 +10,7 @@ import { getUserServer } from "@/src/lib/getUserServer"
 import { redirect } from "next/navigation"
 import { ShoppingBag } from "lucide-react"
 import { SideAds } from "@/components/side-ads"
+import { HomeOffersCountdown } from "@/components/home-offers-countdown"
 
 /** Lightweight visual divider between homepage sections */
 function SectionDivider({ icon: Icon, label }: { icon?: React.ElementType; label?: string }) {
@@ -41,13 +42,16 @@ export default async function Home() {
           <div className="flex gap-4 items-start">
             {/* Left side ad (hidden on mobile) */}
             <aside className="hidden xl:block w-44 flex-shrink-0 sticky top-20">
-              <SideAds position="left" maxAds={2} dismissible />
+              <SideAds position="left" dismissible />
             </aside>
 
             {/* Main content column */}
             <div className="flex-1 min-w-0 space-y-2">
               {/* ── Categories ────────────────────────────────────────── */}
               <CategorySection />
+
+              {/* ── Scheduled offers with countdown ───────────────────── */}
+              <HomeOffersCountdown />
 
               {/* ── Offer Banner ──────────────────────────────────────── */}
               <OfferBanner />
@@ -72,7 +76,7 @@ export default async function Home() {
 
               {/* ── Mobile side ads (between sections, below newest) ───── */}
               <div className="xl:hidden">
-                <SideAds position="both" maxAds={2} dismissible className="grid grid-cols-2 gap-3" />
+                <SideAds position="both" dismissible className="grid grid-cols-2 gap-3" />
               </div>
 
               <SectionDivider icon={ShoppingBag} />
@@ -83,7 +87,7 @@ export default async function Home() {
 
             {/* Right side ad (hidden on mobile) */}
             <aside className="hidden xl:block w-44 flex-shrink-0 sticky top-20">
-              <SideAds position="right" maxAds={2} dismissible />
+              <SideAds position="right" dismissible />
             </aside>
           </div>
         </div>
