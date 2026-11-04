@@ -26,6 +26,7 @@ import { AnalyticsTab } from "./AnalyticsTab";
 import { InventoryTab } from "./InventoryTab";
 import { SideAdsTab } from "./SideAdsTab";
 import { OrderNotificationBell } from "@/components/admin/OrderNotificationBell";
+import { PushNotificationToggle } from "@/components/admin/PushNotificationToggle";
 import Link from "next/link";
 
 type Offer = {
@@ -312,6 +313,7 @@ export function AdminDashboard() {
         </div>
         <div className="flex items-center gap-3">
           <OrderNotificationBell />
+          <PushNotificationToggle />
           <Link href="/admin/notifications">
             <Button>
               {isArabic ? "إرسال إشعارات" : "Send Notifications"}
