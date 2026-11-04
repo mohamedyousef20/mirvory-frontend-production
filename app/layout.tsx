@@ -87,6 +87,7 @@ t.src=v;s=b.getElementsByTagName(e)[0];
 s.parentNode.insertBefore(t,s)}(window, document,'script',
 'https://connect.facebook.net/en_US/fbevents.js');
 fbq('init', '2089839991898952');
+fbq('init', '2228813714332492');
 fbq('track', 'PageView');
           `}
         </Script>
@@ -103,6 +104,15 @@ fbq('track', 'PageView');
               display: "none",
             }}
             src="https://www.facebook.com/tr?id=2989899261351129&ev=PageView&noscript=1"
+            alt=""
+          />
+          <img
+            height="1"
+            width="1"
+            style={{
+              display: "none",
+            }}
+            src="https://www.facebook.com/tr?id=2228813714332492&ev=PageView&noscript=1"
             alt=""
           />
         </noscript>
