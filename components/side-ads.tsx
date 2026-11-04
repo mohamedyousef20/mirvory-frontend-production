@@ -19,6 +19,7 @@ import { X } from 'lucide-react'
 
 interface SideAdsProps {
   position?: 'left' | 'right' | 'both' | 'all'
+  /** Optional cap. Omit to show every active ad. */
   maxAds?: number
   className?: string
   /** If true, each ad can be dismissed locally (session) */
@@ -27,7 +28,7 @@ interface SideAdsProps {
 
 export function SideAds({
   position = 'all',
-  maxAds = 3,
+  maxAds,
   className = '',
   dismissible = true,
 }: SideAdsProps) {
@@ -45,7 +46,7 @@ export function SideAds({
                 ad.position === position ||
                 ad.position === 'both'
             )
-      setAds(filtered.slice(0, maxAds))
+      setAds(maxAds === undefined ? filtered : filtered.slice(0, maxAds))
     })
   }, [position, maxAds])
 
