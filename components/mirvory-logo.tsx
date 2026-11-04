@@ -9,7 +9,7 @@ const MirvoryLogo = ({ className = "" }) => {
         <img
           src="/vo-logo.png"
           alt="VO"
-          className="absolute inset-0 w-full h-full rounded-xl object-cover rotate-6 group-hover:rotate-0 transition-all duration-500 ease-in-out"
+          className="absolute inset-0 w-full h-full rounded-xl object-cover transition-all duration-500 ease-in-out"
         />
       </div>
 
