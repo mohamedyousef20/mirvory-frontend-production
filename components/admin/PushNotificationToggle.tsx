@@ -40,32 +40,51 @@ export function PushNotificationToggle() {
 
   const enable = async () => {
     setBusy(true)
+    let step = "permission"
     try {
       const permission = await Notification.requestPermission()
       if (permission !== "granted") {
-        toast.error("لم يتم السماح بالإشعارات")
+        toast.error("لم يتم السماح بالإشعارات", {
+          description: "افتح إعدادات الإشعارات للموقع من المتصفح واسمح بها ثم حاول مرة أخرى.",
+        })
         return
       }
+
+      step = "service-worker"
       const reg = await navigator.serviceWorker.ready
+
+      step = "vapid-key"
       const keyRes = await fetch(`${API_URL}/api/push/vapid-public-key`, { credentials: "include" })
-      if (!keyRes.ok) throw new Error("missing key")
+      if (keyRes.status === 503) {
+        throw new Error("السيرفر لم يُضبط بمفاتيح VAPID بعد (VAPID_PUBLIC_KEY / VAPID_PRIVATE_KEY)")
+      }
+      if (!keyRes.ok) {
+        throw new Error(`تعذر الوصول إلى /api/push/vapid-public-key (الحالة ${keyRes.status}). غالبًا الباك إند لم يُنشر بالتحديث بعد`)
+      }
       const { publicKey } = await keyRes.json()
 
+      step = "push-subscribe"
       const sub = await reg.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(publicKey),
       })
+
+      step = "save-subscription"
       const res = await fetch(`${API_URL}/api/push/subscribe`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(sub.toJSON()),
       })
-      if (!res.ok) throw new Error("subscribe failed")
+      if (!res.ok) {
+        throw new Error(`تعذر حفظ الاشتراك في السيرفر (الحالة ${res.status}). تأكد أنك مسجل دخول كأدمن`)
+      }
       setSubscribed(true)
       toast.success("تم تفعيل إشعارات الطلبات على هذا الجهاز")
-    } catch {
-      toast.error("تعذر تفعيل الإشعارات")
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err)
+      console.error(`[push] failed at step "${step}":`, err)
+      toast.error("تعذر تفعيل الإشعارات", { description: `${message}` })
     } finally {
       setBusy(false)
     }
