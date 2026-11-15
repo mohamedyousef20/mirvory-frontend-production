@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Mirvory - متجر الكوتشيات والملابس",
     short_name: "Mirvory",
-    description: "منصة تجارة إلكترونية متعددة التجار متخصصة في بيع الكوتشيات الميرور والملابس",
+    description: "متجر متخصص في بيع الكوتشيات الميرور والملابس",
     start_url: "/",
     display: "standalone",
     background_color: "#ffffff",
