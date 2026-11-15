@@ -101,7 +101,7 @@ export function NavbarSearchBar({ className = "" }: { className?: string }) {
           onBlur={() => setTimeout(() => setOpen(false), 150)}
           placeholder={language === "ar" ? "ابحث عن كوتشياتك المفضلة..." : "Search for your favorite sneakers..."}
           aria-label={language === "ar" ? "بحث" : "Search"}
-          className="h-11 w-full rounded-full border border-border bg-background ps-5 pe-24 text-sm shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/30"
+          className="h-12 w-full rounded-full border border-[#e2e8f0] bg-[#f5f7fb] ps-5 pe-24 text-sm font-semibold shadow-sm outline-none transition focus:border-[#1a4fba] focus:bg-white focus:ring-2 focus:ring-[#1a4fba]/20"
         />
         <div className="absolute end-1.5 flex items-center gap-1">
           {query ? (
@@ -117,7 +117,7 @@ export function NavbarSearchBar({ className = "" }: { className?: string }) {
           <button
             type="submit"
             aria-label={language === "ar" ? "بحث" : "Search"}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-[#1a4fba] text-white transition hover:bg-[#1640a0]"
           >
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
           </button>
