@@ -131,7 +131,7 @@ export default function AdminReturnDetailsPage() {
                 };
             case 'approved': 
                 return { 
-                    color: 'bg-blue-50 text-blue-700 border-blue-200', 
+                    color: 'bg-blue-50 text-[#1640a0] border-blue-200', 
                     icon: CheckCircle,
                     label: 'تم الموافقة'
                 };

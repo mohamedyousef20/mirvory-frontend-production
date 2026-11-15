@@ -144,7 +144,7 @@ export default function PasswordResetVerify() {
           <p className="text-gray-600 mb-6">لم يتم العثور على بريد إلكتروني للتحقق منه.</p>
           <Link
             href="/auth/forgot-password"
-            className="inline-block bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+            className="inline-block bg-[#1a4fba] text-white py-3 px-6 rounded-lg font-medium hover:bg-[#1640a0] transition-colors"
           >
             العودة لإدخال البريد الإلكتروني
           </Link>
@@ -157,13 +157,13 @@ export default function PasswordResetVerify() {
     <>
       <div className="min-h-screen flex flex-col md:flex-row-reverse bg-gray-50" dir="rtl">
         {/* Brand Section - Same as other pages */}
-        <div className="bg-blue-700 text-white md:w-1/2 p-8 flex flex-col justify-center items-center">
+        <div className="bg-[#1640a0] text-white md:w-1/2 p-8 flex flex-col justify-center items-center">
           <div className="max-w-md mx-auto">
             <h1 className="text-4xl font-bold mb-6">ميرفوري</h1>
             <p className="text-xl mb-8">منصة التسوق الإلكتروني المميزة لكل احتياجاتك</p>
             <div className="bg-white/10 p-6 rounded-lg">
               <p className="mb-4 text-lg">تذكرت كلمة المرور؟</p>
-              <Link href="/auth/login" className="block text-center bg-white text-blue-700 py-3 px-6 rounded-lg font-bold transition-all hover:bg-blue-50">
+              <Link href="/auth/login" className="block text-center bg-white text-[#1640a0] py-3 px-6 rounded-lg font-bold transition-all hover:bg-blue-50">
                 العودة لتسجيل الدخول
               </Link>
             </div>
@@ -176,7 +176,7 @@ export default function PasswordResetVerify() {
             <div className="text-center mb-10">
               <div className="flex justify-center mb-4">
                 <div className="bg-blue-100 p-3 rounded-full">
-                  <Shield className="h-8 w-8 text-blue-600" />
+                  <Shield className="h-8 w-8 text-[#1a4fba]" />
                 </div>
               </div>
               <h2 className="text-3xl font-bold text-gray-800 mb-2">تحقق من كود إعادة التعيين</h2>
@@ -184,8 +184,8 @@ export default function PasswordResetVerify() {
 
               {emailParam && (
                 <div className="mt-4 inline-flex items-center justify-center px-4 py-2 bg-blue-50 rounded-lg">
-                  <Mail className="h-4 w-4 text-blue-600 ml-2" />
-                  <span className="text-blue-700 font-medium text-sm">{emailParam}</span>
+                  <Mail className="h-4 w-4 text-[#1a4fba] ml-2" />
+                  <span className="text-[#1640a0] font-medium text-sm">{emailParam}</span>
                 </div>
               )}
             </div>
@@ -217,7 +217,7 @@ export default function PasswordResetVerify() {
               <button
                 type="submit"
                 disabled={loading}
-                className={`w-full bg-blue-600 text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${loading ? 'bg-blue-400 cursor-not-allowed' : 'hover:bg-blue-700'
+                className={`w-full bg-[#1a4fba] text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${loading ? 'bg-blue-400 cursor-not-allowed' : 'hover:bg-[#1640a0]'
                   }`}
               >
                 {loading ? (
@@ -255,7 +255,7 @@ export default function PasswordResetVerify() {
                   disabled={resendLoading || !emailParam}
                   className={`w-full py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${resendLoading || !emailParam
                       ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                      : 'bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200'
+                      : 'bg-blue-50 text-[#1a4fba] hover:bg-blue-100 border border-blue-200'
                     }`}
                 >
                   {resendLoading ? (
@@ -288,7 +288,7 @@ export default function PasswordResetVerify() {
               <div className="mt-6 space-y-4">
                 <Link
                   href="/auth/forgot-password"
-                  className="block text-center text-blue-600 hover:text-blue-800 transition-colors font-medium"
+                  className="block text-center text-[#1a4fba] hover:text-blue-800 transition-colors font-medium"
                 >
                   إعادة إدخال البريد الإلكتروني
                 </Link>

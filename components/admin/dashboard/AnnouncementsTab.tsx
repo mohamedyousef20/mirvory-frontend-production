@@ -180,7 +180,7 @@ export function AnnouncementsTab({
             return {
                 label: isArabic ? 'قادم' : 'Upcoming',
                 variant: 'outline' as const,
-                color: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900 dark:text-blue-300'
+                color: 'bg-blue-50 text-[#1640a0] border-blue-200 dark:bg-blue-900 dark:text-blue-300'
             };
         }
 
@@ -539,7 +539,7 @@ export function AnnouncementsTab({
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold text-blue-600">
+                                <div className="text-2xl font-bold text-[#1a4fba]">
                                     {announcements.filter(a => a.isMain).length}
                                 </div>
                             </CardContent>
@@ -594,7 +594,7 @@ export function AnnouncementsTab({
                                                 {statusInfo.label}
                                             </Badge>
                                             {announcement.link && (
-                                                <Badge variant="outline" className="border-blue-200 bg-blue-50 text-blue-700">
+                                                <Badge variant="outline" className="border-blue-200 bg-blue-50 text-[#1640a0]">
                                                     <Link className="h-3 w-3 mr-1" />
                                                     {isArabic ? "رابط" : "Link"}
                                                 </Badge>
@@ -619,7 +619,7 @@ export function AnnouncementsTab({
                                                     href={announcement.link}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="text-blue-600 hover:text-blue-800 flex items-center gap-1"
+                                                    className="text-[#1a4fba] hover:text-blue-800 flex items-center gap-1"
                                                 >
                                                     <ExternalLink className="h-3 w-3" />
                                                     {isArabic ? "عرض الرابط" : "View Link"}
@@ -685,7 +685,7 @@ export function AnnouncementsTab({
                                                                 {isArabic ? announcement.title : announcement.titleEn}
                                                             </div>
                                                             {announcement.isMain && (
-                                                                <span className="text-xs text-blue-600 flex items-center gap-1">
+                                                                <span className="text-xs text-[#1a4fba] flex items-center gap-1">
                                                                     <Star className="h-3 w-3" />
                                                                     {isArabic ? "رئيسي" : "Main"}
                                                                 </span>
@@ -711,7 +711,7 @@ export function AnnouncementsTab({
                                                                 href={announcement.link}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
-                                                                className="text-blue-600 hover:text-blue-800 text-sm flex items-center gap-1"
+                                                                className="text-[#1a4fba] hover:text-blue-800 text-sm flex items-center gap-1"
                                                             >
                                                                 <Link className="h-3 w-3" />
                                                                 {isArabic ? "رابط" : "Link"}

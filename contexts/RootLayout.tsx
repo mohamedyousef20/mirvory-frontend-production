@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     default: "Mirvory - متجر الكوتشيات والملابس",
     template: "%s | Mirvory"
   },
-  description: "منصة تجارة إلكترونية متعددة التجار متخصصة في بيع الكوتشيات الميرور والملابس",
+  description: "متجر متخصص في بيع الكوتشيات الميرور والملابس",
   keywords: ["كوتشيات", "ملابس", "موضة", "تسوق", "أونلاين"],
   authors: [{ name: "Mirvory" }],
   creator: "Mirvory",
@@ -41,13 +41,13 @@ export const metadata: Metadata = {
     type: "website",
     locale: "ar_SA",
     title: "Mirvory - متجر الكوتشيات والملابس",
-    description: "منصة تجارة إلكترونية متعددة التجار متخصصة في بيع الكوتشيات الميرور والملابس",
+    description: "متجر متخصص في بيع الكوتشيات الميرور والملابس",
     siteName: "Mirvory",
   },
   twitter: {
     card: "summary_large_image",
     title: "Mirvory - متجر الكوتشيات والملابس",
-    description: "منصة تجارة إلكترونية متعددة التجار متخصصة في بيع الكوتشيات الميرور والملابس",
+    description: "متجر متخصص في بيع الكوتشيات الميرور والملابس",
   },
 }
 

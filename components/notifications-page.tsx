@@ -82,7 +82,7 @@ export function NotificationsPage() {
       case 'ORDER_SHIPPED':
       case 'ORDER_COMPLETED':
       case 'ORDER_DELIVERED':
-        return 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300';
+        return 'bg-blue-100 text-[#1640a0] dark:bg-blue-900 dark:text-blue-300';
       case 'PAYOUT_COMPLETED':
       case 'NEW_ANNOUNCEMENT':
       case 'promo':

@@ -113,8 +113,8 @@ export default function AboutUsPage() {
                     </h1>
                     <p className="text-muted-foreground max-w-2xl mx-auto" dir={isArabic ? "rtl" : "ltr"}>
                         {isArabic
-                            ? "نحن نهدف إلى إعادة تعريف معايير التجارة الإلكترونية، لنبني سوقاً يجمع بين التجار المحترفين والمشترين الباحثين عن الجودة والثقة."
-                            : "We aim to redefine e-commerce standards, building a marketplace that brings together professional sellers and buyers seeking quality and trust."}
+                            ? "نحن نهدف إلى إعادة تعريف معايير التجارة الإلكترونية، لنبني متجراً يخدم المشترين الباحثين عن الجودة والثقة."
+                            : "We aim to redefine e-commerce standards, building an online store that serves buyers seeking quality and trust."}
                     </p>
                 </div>
             </div>

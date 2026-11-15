@@ -212,11 +212,11 @@ export function HeroCarousel() {
                   className="flex h-[190px] w-full overflow-hidden rounded-2xl bg-card md:h-[300px]"
                 >
                   {/* Text section */}
-                  <div className="flex w-[55%] flex-col justify-center gap-2 px-4 pb-6 text-right md:w-1/2 md:gap-4 md:px-10">
-                    <h2 className="line-clamp-2 text-base font-bold leading-snug tracking-tight md:text-4xl md:line-clamp-3">
+                  <div className="flex w-[55%] flex-col justify-center gap-2 bg-[#0d2f75] px-4 pb-6 text-right text-white md:w-1/2 md:gap-4 md:px-10">
+                    <h2 className="line-clamp-2 text-base font-black leading-snug tracking-tight md:text-4xl md:line-clamp-3">
                       {ar ? announcement.title : announcement.titleEn || announcement.title}
                     </h2>
-                    <p className="line-clamp-2 text-xs text-muted-foreground md:text-lg">
+                    <p className="line-clamp-2 text-xs text-blue-100 md:text-lg">
                       {ar ? announcement.content : announcement.contentEn || announcement.content}
                     </p>
                     <div>

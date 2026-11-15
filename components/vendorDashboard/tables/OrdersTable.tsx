@@ -77,7 +77,7 @@ export function OrdersTable({
             case "shipped":
                 return {
                     label: language === "ar" ? "تم الشحن" : "Shipped",
-                    className: "bg-blue-50 text-blue-700 border-blue-200"
+                    className: "bg-blue-50 text-[#1640a0] border-blue-200"
                 }
             case "cancelled":
                 return {

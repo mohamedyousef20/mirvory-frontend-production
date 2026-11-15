@@ -474,7 +474,7 @@ export function ReturnsTab({
                         </div>
                     </div>
                     <div className="bg-blue-50 p-3 rounded-lg border">
-                        <div className="font-medium text-blue-700">{isArabic ? "مقبول" : "Approved"}</div>
+                        <div className="font-medium text-[#1640a0]">{isArabic ? "مقبول" : "Approved"}</div>
                         <div className="text-xl font-bold text-blue-800">
                             {returnRequests.filter(r => r.status === 'approved').length}
                         </div>

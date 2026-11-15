@@ -43,7 +43,7 @@ const notoNaskh = Noto_Naskh_Arabic({
 export const metadata: Metadata = {
   title: "Mirvory - متجر الكوتشيات والملابس",
   description:
-    "منصة تجارة إلكترونية متعددة التجار متخصصة في بيع الكوتشيات الميرور والملابس",
+    "متجر متخصص في بيع الكوتشيات الميرور والملابس العصرية بأفضل الأسعار وأعلى جودة",
   generator: "v0.dev",
 }
 

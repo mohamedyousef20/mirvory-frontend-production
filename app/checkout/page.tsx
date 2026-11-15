@@ -432,7 +432,7 @@ function CheckoutInner() {
                             {/* Header */}
                             <button
                                 onClick={() => router.back()}
-                                className="flex items-center gap-2 text-gray-800 hover:text-blue-600 transition-colors font-medium text-lg mb-6"
+                                className="flex items-center gap-2 text-gray-800 hover:text-[#1a4fba] transition-colors font-medium text-lg mb-6"
                             >
                                 {isAr ? <ArrowRight className="w-5 h-5" /> : <ArrowLeft className="w-5 h-5" />}
                                 {isAr ? "مواصلة التسوق" : "Continue shopping"}
@@ -630,7 +630,7 @@ function CheckoutInner() {
                                     >
                                         {/* <Label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-all ${paymentMethod === 'card' ? 'border-blue-600 bg-blue-50/50 ring-1 ring-blue-600' : 'border-gray-200 hover:border-blue-300'}`}>
                                         <RadioGroupItem value="card" id="card" className="sr-only" />
-                                        <CreditCard className={`w-6 h-6 ${paymentMethod === 'card' ? 'text-blue-600' : 'text-gray-400'}`} />
+                                        <CreditCard className={`w-6 h-6 ${paymentMethod === 'card' ? 'text-[#1a4fba]' : 'text-gray-400'}`} />
                                         <div>
                                             <p className="font-bold text-sm text-gray-800">{isAr ? "بطاقة ائتمانية" : "Card Payment"}</p>
                                         </div>

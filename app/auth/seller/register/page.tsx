@@ -153,13 +153,13 @@ export default function SellerSignup() {
     <>
       <div className="min-h-screen flex flex-col md:flex-row-reverse bg-gray-50" dir="rtl">
         {/* Brand Section */}
-        <div className="bg-blue-700 text-white md:w-1/2 p-8 flex flex-col justify-center items-center">
+        <div className="bg-[#1640a0] text-white md:w-1/2 p-8 flex flex-col justify-center items-center">
           <div className="max-w-md mx-auto">
             <h1 className="text-4xl font-bold mb-6">ميرفوري للبائعين</h1>
             <p className="text-xl mb-8">انضم إلينا كبائع وابدأ بيع منتجاتك على منصتنا</p>
             <div className="bg-white/10 p-6 rounded-lg">
               <p className="mb-4 text-lg">لديك حساب بائع بالفعل؟</p>
-              <Link href="/auth/login" className="block text-center bg-white text-blue-700 py-3 px-6 rounded-lg font-bold transition-all hover:bg-blue-50">
+              <Link href="/auth/login" className="block text-center bg-white text-[#1640a0] py-3 px-6 rounded-lg font-bold transition-all hover:bg-blue-50">
                 تسجيل الدخول
               </Link>
             </div>
@@ -485,11 +485,11 @@ export default function SellerSignup() {
                     type="checkbox"
                     checked={formData.acceptTerms}
                     onChange={handleChange}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-[#1a4fba] focus:ring-blue-500 border-gray-300 rounded"
                     required
                   />
                   <label htmlFor="acceptTerms" className="mr-2 block text-sm text-gray-700">
-                    أوافق على <Link href="/seller-terms" className="text-blue-600 hover:text-blue-800">الشروط والأحكام</Link> و <Link href="/seller/privacy" className="text-blue-600 hover:text-blue-800">سياسة الخصوصية</Link>
+                    أوافق على <Link href="/seller-terms" className="text-[#1a4fba] hover:text-blue-800">الشروط والأحكام</Link> و <Link href="/seller/privacy" className="text-[#1a4fba] hover:text-blue-800">سياسة الخصوصية</Link>
                   </label>
                 </div>
               </div>
@@ -497,7 +497,7 @@ export default function SellerSignup() {
               <button
                 type="submit"
                 disabled={loading}
-                className={`w-full bg-blue-600 text-white py-3 rounded-lg font-medium transition-colors ${loading ? 'bg-blue-400 cursor-not-allowed' : 'hover:bg-blue-700'
+                className={`w-full bg-[#1a4fba] text-white py-3 rounded-lg font-medium transition-colors ${loading ? 'bg-blue-400 cursor-not-allowed' : 'hover:bg-[#1640a0]'
                   }`}
               >
                 {loading ? 'جاري إنشاء الحساب...' : 'إنشاء حساب بائع'}

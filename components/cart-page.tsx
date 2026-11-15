@@ -856,7 +856,7 @@ function AuthenticatedCartPage() {
                   <div className="pt-2">
                     <Button
                       asChild
-                      className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 bg-[#1a4fba] text-white text-sm font-semibold rounded-xl hover:bg-[#1640a0] transition shadow-md shadow-blue-200"
+                      className="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-[#1a4fba] text-white text-base font-black rounded-2xl hover:bg-[#1640a0] transition shadow-md shadow-blue-200"
                     >
                       <Link href="/checkout" className="w-full flex items-center justify-center gap-2">
                         <CreditCard className="h-4 w-4" />

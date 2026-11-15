@@ -115,7 +115,7 @@ export function VendorsTab({
                                                 {seller.wallet?.currency || ' EGP'}
                                             </span>                                          <button
                                                 onClick={() => promptUpdateBalance(seller._id, seller.wallet?.balance || 0, seller.wallet?.pendingBalance || 0)}
-                                                className="text-slate-500 hover:text-blue-600 p-1"
+                                                className="text-slate-500 hover:text-[#1a4fba] p-1"
                                                 title={isArabic ? "تعديل الرصيد" : "Edit Balance"}
                                             >
                                                 <Edit3 className="h-3.5 w-3.5" />
@@ -202,7 +202,7 @@ export function VendorsTab({
                                             <button
                                                 onClick={() => onUpdateStatus(seller._id, !seller.vendorProfile?.trustedSeller)}
                                                 disabled={updatingUserId === seller._id}
-                                                className={`px-2 py-1 text-xs rounded font-medium w-full sm:w-auto ${seller.vendorProfile?.trustedSeller ? 'bg-amber-50 text-amber-700' : 'bg-blue-50 text-blue-700'}`}
+                                                className={`px-2 py-1 text-xs rounded font-medium w-full sm:w-auto ${seller.vendorProfile?.trustedSeller ? 'bg-amber-50 text-amber-700' : 'bg-blue-50 text-[#1640a0]'}`}
                                             >
                                                 {seller.vendorProfile?.trustedSeller ? (isArabic ? "إلغاء التوثيق" : "Untrust") : (isArabic ? "توثيق الحساب" : "Trust")}
                                             </button>

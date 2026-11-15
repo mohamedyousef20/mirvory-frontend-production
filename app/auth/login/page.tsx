@@ -101,15 +101,15 @@ export default function Login() {
   return (
     <div className="min-h-screen flex flex-col md:flex-row-reverse bg-gray-50" dir="rtl">
       {/* Brand Section */}
-      <div className="bg-blue-700 text-white md:w-1/2 p-8 flex flex-col justify-center items-center">
+      <div className="bg-[#0d2f75] text-white md:w-1/2 p-8 flex flex-col justify-center items-center">
         <div className="max-w-md mx-auto">
-          <h1 className="text-4xl font-bold mb-6">ميرفوري</h1>
+          <h1 className="text-4xl font-black mb-6">ميرفوري</h1>
           <p className="text-xl mb-8">منصة التسوق الإلكتروني المميزة لكل احتياجاتك</p>
           <div className="bg-white/10 p-6 rounded-lg">
             <p className="mb-4 text-lg">لم تقم بإنشاء حساب بعد؟</p>
             <Link
               href="/auth/register"
-              className="block text-center bg-white text-blue-700 py-3 px-6 rounded-lg font-bold transition-all hover:bg-blue-50"
+              className="block text-center bg-white text-[#1640a0] py-3 px-6 rounded-lg font-bold transition-all hover:bg-blue-50"
             >
               إنشاء حساب جديد
             </Link>
@@ -183,13 +183,13 @@ export default function Login() {
                 <input
                   id="remember"
                   type="checkbox"
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-[#1a4fba] focus:ring-blue-500 border-gray-300 rounded"
                 />
                 <label htmlFor="remember" className="mr-2 block text-sm text-gray-700">
                   تذكرني
                 </label>
               </div>
-              <Link href="/auth/password-reset-request" className="text-sm text-blue-600 hover:text-blue-800">
+              <Link href="/auth/password-reset-request" className="text-sm text-[#1a4fba] hover:text-blue-800">
                 نسيت كلمة المرور؟
               </Link>
             </div>
@@ -197,8 +197,8 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full bg-blue-600 text-white py-3 rounded-lg font-medium transition-colors ${
-                loading ? 'bg-blue-400 cursor-not-allowed' : 'hover:bg-blue-700'
+              className={`w-full bg-[#1a4fba] text-white py-3 rounded-lg font-medium transition-colors ${
+                loading ? 'bg-blue-400 cursor-not-allowed' : 'hover:bg-[#1640a0]'
               }`}
             >
               {loading ? 'جاري تسجيل الدخول...' : 'تسجيل الدخول'}

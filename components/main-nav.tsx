@@ -735,7 +735,7 @@ export function MainNav() {
                       <Button
                         variant={colorTheme === "blue" ? "default" : "outline"}
                         size="sm"
-                        className={`${colorTheme === "blue" ? "" : "bg-blue-500 text-white hover:text-white hover:bg-blue-600"}`}
+                        className={`${colorTheme === "blue" ? "" : "bg-blue-500 text-white hover:text-white hover:bg-[#1a4fba]"}`}
                         onClick={() => setColorTheme("blue")}
                       >
                         {language === "ar" ? "أزرق" : "Blue"}
@@ -844,7 +844,7 @@ export function MainNav() {
                           }}
                         >
                           <div className={`h-9 w-9 rounded-full flex items-center justify-center ${!notification.seen
-                            ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
+                            ? 'bg-blue-100 dark:bg-blue-900 text-[#1a4fba] dark:text-blue-400'
                             : 'bg-accent text-muted-foreground'
                             }`}>
                             {getNotificationIcon(notification.type)}
@@ -862,7 +862,7 @@ export function MainNav() {
                             </p>
 
                             {notification.data?.orderId && (
-                              <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                              <p className="text-xs text-[#1a4fba] dark:text-blue-400 mt-1">
                                 {language === "ar" ? `رقم الطلب: ${notification.data.orderId}` : `Order #${notification.data.orderId}`}
                               </p>
                             )}

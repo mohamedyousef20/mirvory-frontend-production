@@ -13,13 +13,13 @@ const sections = [
     titleAr: "التعريفات",
     icon: Info,
     contentEn: [
-      "Mirvory is a multi-vendor commerce platform operated as a digital marketplace.",
+      "Mirvory is an online commerce platform operated as a digital store.",
       "User refers to any visitor, buyer, or seller using the platform.",
       "Seller is a registered user who publishes products on Mirvory.",
       "Services include browsing, carts, checkout, reviews, notifications, dashboards, loyalty programs, returns, and pickup services."
     ],
     contentAr: [
-      "Mirvory: منصة تجارة إلكترونية متعددة البائعين تعمل كسوق رقمي.",
+      "Mirvory: منصة تجارة إلكترونية تعمل كمتجر رقمي.",
       "المستخدم: أي شخص يستخدم المنصة كمشتري أو بائع أو زائر.",
       "البائع: مستخدم مسجّل يعرض منتجاته عبر Mirvory.",
       "الخدمات: جميع الميزات مثل عرض المنتجات، السلة، الدفع، التقييمات، الإشعارات، لوحة البائع، نظام النقاط، الاسترجاع ونقاط الاستلام."
@@ -64,7 +64,7 @@ const sections = [
       "Sellers are responsible for product accuracy, availability, and descriptions.",
       "Mirvory may review or remove listings that violate platform policies.",
       "Payments are processed through approved third-party payment providers.",
-      "Mirvory may operate a marketplace fee model without exposing fixed public rates."
+      "Mirvory may apply fees without exposing fixed public rates."
     ],
     contentAr: [
       "البائع مسؤول عن دقة وصف المنتجات وتوفرها.",
@@ -113,7 +113,7 @@ const sections = [
     titleAr: "المسؤولية وإنهاء الحساب",
     icon: Shield,
     contentEn: [
-      "Mirvory acts as a marketplace intermediary between buyers and sellers.",
+      "Mirvory acts as an intermediary between buyers and sellers.",
       "Accounts may be suspended in case of fraud or policy violations.",
       "Disputes are handled according to applicable local regulations."
     ],

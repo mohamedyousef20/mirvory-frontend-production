@@ -478,7 +478,7 @@ export function ProductsTab({
                                                     <Button
                                                         variant="outline"
                                                         size="sm"
-                                                        className="w-full justify-start text-blue-600 hover:bg-blue-50"
+                                                        className="w-full justify-start text-[#1a4fba] hover:bg-blue-50"
                                                         onClick={() => handleTrustProduct(product._id)}
                                                     >
                                                         <ShieldCheck className="h-4 w-4 mr-2" />
