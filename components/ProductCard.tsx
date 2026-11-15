@@ -205,7 +205,7 @@ const ProductCardComponent = function ProductCard({ product, language, onAddToCa
 
   return (
     <Link href={`/products/${product._id}`} className="block" dir={language === "ar" ? "rtl" : "ltr"}>
-      <div className="group relative overflow-hidden rounded-lg bg-white shadow-sm transition-all duration-200 hover:shadow-md">
+      <div className="group relative overflow-hidden rounded-2xl border border-[#e9eef6] bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
         {/* Product Image */}
         <div className="aspect-square relative">
           <Image

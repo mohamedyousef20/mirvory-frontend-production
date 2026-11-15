@@ -768,7 +768,7 @@ const ProductDetail = ({ productId }: { productId: string }) => {
 
             <Button
               variant="outline"
-              className="flex-1 min-w-[140px]"
+              className="flex-1 min-w-[140px] border-[#1a4fba] font-bold text-[#1a4fba] hover:bg-[#eff4ff]"
               onClick={addToCartHandler}
               disabled={isOutOfStock}
               size="lg"
