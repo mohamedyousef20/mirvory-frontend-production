@@ -7,9 +7,18 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { Loader2, Package, Truck, CheckCircle, Clock, Search } from 'lucide-react';
+import { Loader2, Package, Truck, CheckCircle, Clock, Search, MapPin } from 'lucide-react';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'https://http://localhost:5000';
+
+const TRACK_STAGES = [
+  { key: "packed", label: "تم التغليف", icon: Package },
+  { key: "shipped", label: "تم الشحن", icon: Truck },
+  { key: "onway", label: "في الطريق إليك", icon: MapPin },
+  { key: "delivered", label: "تم التسليم", icon: CheckCircle },
+];
+// Maps the backend deliveryStatus onto the 4 visual stops (data itself unchanged).
+const STAGE_BY_STATUS: Record<string, number> = { pending: 0, shipped: 2, delivered: 3 };
 
 const STATUS_MAP: Record<string, { label: string; icon: React.ReactNode; color: string }> = {
   pending: { label: 'قيد الانتظار', icon: <Clock className="h-5 w-5" />, color: 'text-yellow-500' },
@@ -132,26 +141,43 @@ export default function TrackOrderPage() {
               </div>
             </div>
 
-            {/* Status Timeline */}
+            {/* Status Timeline — route-style map */}
             <div className="border-t pt-4">
-              <h3 className="font-semibold mb-3">حالة الطلب</h3>
-              <div className="flex items-center gap-0">
-                {['pending', 'shipped', 'delivered'].map((s, idx) => {
-                  const isActive = ['pending', 'shipped', 'delivered'].indexOf(order.deliveryStatus) >= idx;
-                  const st = STATUS_MAP[s];
-                  return (
-                    <React.Fragment key={s}>
-                      <div className="flex flex-col items-center">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${isActive ? 'bg-primary text-white' : 'bg-gray-100 text-gray-400'}`}>
-                          {idx + 1}
-                        </div>
-                        <span className={`text-xs mt-1 text-center ${isActive ? 'text-primary font-medium' : 'text-gray-400'}`}>{st.label}</span>
-                      </div>
-                      {idx < 2 && <div className={`flex-1 h-0.5 mx-1 mb-5 ${isActive ? 'bg-primary' : 'bg-gray-200'}`} />}
-                    </React.Fragment>
-                  );
-                })}
-              </div>
+              <h3 className="font-black mb-6 text-slate-900">مسار طلبك</h3>
+              {(() => {
+                const currentStage = STAGE_BY_STATUS[order.deliveryStatus] ?? 0;
+                const progress = (currentStage / (TRACK_STAGES.length - 1)) * 75;
+                return (
+                  <div className="relative pt-2 pb-2">
+                    <div className="absolute top-8 left-[12.5%] right-[12.5%] h-1.5 rounded-full bg-slate-200" />
+                    <div
+                      className="absolute top-8 right-[12.5%] h-1.5 rounded-full bg-[#1a4fba] transition-all duration-700"
+                      style={{ width: `${progress}%` }}
+                    />
+                    <div className="relative grid grid-cols-4 gap-2">
+                      {TRACK_STAGES.map((stage, idx) => {
+                        const reached = idx <= currentStage;
+                        const current = idx === currentStage;
+                        const Icon = stage.icon;
+                        return (
+                          <div key={stage.key} className="flex flex-col items-center text-center">
+                            <div
+                              className={`flex h-12 w-12 items-center justify-center rounded-full border-4 border-white shadow-md transition ${
+                                reached ? 'bg-[#1a4fba] text-white' : 'bg-slate-100 text-slate-400'
+                              } ${current ? 'ring-4 ring-[#1a4fba]/25 scale-110' : ''}`}
+                            >
+                              <Icon className="h-5 w-5" />
+                            </div>
+                            <span className={`mt-2 text-xs ${reached ? 'font-black text-slate-900' : 'font-semibold text-slate-400'}`}>
+                              {stage.label}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
 
             {/* Order Items */}
