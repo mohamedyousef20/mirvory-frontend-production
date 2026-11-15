@@ -677,7 +677,7 @@ export function MainNav() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="px-3 py-2 text-sm font-medium rounded-md hover:bg-accent/50 transition-colors flex items-center gap-1.5 relative"
+                  className="px-3 py-2 text-sm font-bold rounded-lg hover:bg-[#eff4ff] hover:text-[#1a4fba] transition-colors flex items-center gap-1.5 relative"
                 >
                   {item.icon}
                   {item.label}
