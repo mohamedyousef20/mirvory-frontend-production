@@ -94,12 +94,12 @@ const CategoriesPage = () => {
             <Link
               key={category._id}
               href={`/categories/${category._id}/products`}
-              className="block transition-transform hover:scale-105"
+              className="block"
             >
               <CategoryCard
                 category={category}
                 language={language}
-                className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow cursor-pointer h-full"
+                className="bg-white rounded-2xl border border-[#e9eef6] shadow-sm p-6 hover:shadow-md hover:-translate-y-0.5 transition cursor-pointer h-full"
               />
             </Link>
           ))}
