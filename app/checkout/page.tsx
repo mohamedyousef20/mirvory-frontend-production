@@ -650,7 +650,7 @@ function CheckoutInner() {
                         </div>
 
                         {/* Right Column - Order Summary */}
-                        <div className="w-full lg:w-5/12 bg-[#1a4fba] text-white p-6 lg:p-10 flex flex-col justify-between rounded-t-[2rem] lg:rounded-t-none lg:rounded-s-[2rem] rtl:lg:rounded-s-none rtl:lg:rounded-e-[2rem] shadow-2xl z-10 -mt-6 lg:mt-0 lg:-ms-6 rtl:lg:ms-0 rtl:lg:-me-6">
+                        <div className="w-full lg:w-5/12 bg-[#0d2f75] text-white p-6 lg:p-10 flex flex-col justify-between rounded-t-[2rem] lg:rounded-t-none lg:rounded-s-[2rem] rtl:lg:rounded-s-none rtl:lg:rounded-e-[2rem] shadow-2xl z-10 -mt-6 lg:mt-0 lg:-ms-6 rtl:lg:ms-0 rtl:lg:-me-6">
 
                             <div>
                                 <div className="flex justify-between items-center mb-6">
@@ -764,7 +764,7 @@ function CheckoutInner() {
                                 <Button
                                     onClick={handleSubmit}
                                     disabled={loading}
-                                    className="w-full h-14 bg-white hover:bg-gray-100 text-gray-900 border border-gray-200 rounded-xl text-lg font-bold flex justify-between items-center px-6 transition-transform active:scale-[0.98] disabled:opacity-70 disabled:active:scale-100 shadow-[0_4px_14px_0_rgba(0,0,0,0.08)]"
+                                    className="w-full h-14 bg-white hover:bg-blue-50 text-[#0d2f75] border border-white rounded-2xl text-lg font-black flex justify-between items-center px-6 transition-transform active:scale-[0.98] disabled:opacity-70 disabled:active:scale-100 shadow-[0_4px_14px_0_rgba(0,0,0,0.08)]"
                                 >
                                     <span>ج.م{total.toFixed(2)}</span>
                                     <span className="flex items-center gap-2">
