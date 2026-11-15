@@ -277,7 +277,7 @@ export function WishlistPage() {
           <Badge variant="outline" className="px-3 py-1 w-fit">
             {isArabic ? "قائمتك الخاصة" : "Your curated list"}
           </Badge>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-800">{isArabic ? "قائمة المفضلة" : "My Wishlist"}</h1>
+          <h1 className="text-2xl font-black tracking-tight text-slate-900">{isArabic ? "قائمة المفضلة" : "My Wishlist"}</h1>
           <p className="text-slate-500 text-sm">
             {isArabic
               ? "احتفظ بكل المنتجات التي تحبها في مكان واحد وارجع إليها بسرعة."

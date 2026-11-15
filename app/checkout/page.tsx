@@ -409,7 +409,7 @@ function CheckoutInner() {
                 <div className="min-h-screen bg-[#f4f6fb] flex items-center justify-center px-4" dir={isAr ? "rtl" : "ltr"}>
                     <div className="text-center space-y-4 max-w-sm bg-white rounded-2xl border border-slate-100 p-5 shadow-sm">
                         <ShoppingBag className="h-10 w-10 text-slate-400 mx-auto" />
-                        <h2 className="text-xl font-bold text-slate-800">{isAr ? "سلة التسوق فارغة" : "Cart is empty"}</h2>
+                        <h2 className="text-xl font-black text-slate-900">{isAr ? "سلة التسوق فارغة" : "Cart is empty"}</h2>
                         <Button onClick={() => router.push('/products')} className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#1a4fba] text-white text-sm font-semibold rounded-xl hover:bg-[#1640a0] transition shadow-md shadow-blue-200 h-12">
                             {isAr ? "العودة للتسوق" : "Back to shop"}
                         </Button>
@@ -442,7 +442,7 @@ function CheckoutInner() {
 
                             <div className="mb-6 flex justify-between items-center">
                                 <div>
-                                    <h2 className="text-xl font-bold text-gray-800">{isAr ? "إتمام الطلب" : "Checkout"}</h2>
+                                    <h2 className="text-xl font-black text-slate-900">{isAr ? "إتمام الطلب" : "Checkout"}</h2>
                                     <p className="text-gray-500 text-sm mt-1">{isAr ? `لديك ${cartItems.length} عناصر في السلة` : `You have ${cartItems.length} items in your cart`}</p>
                                 </div>
                             </div>
