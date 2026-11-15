@@ -63,7 +63,7 @@ export function ReturnsTab({
                                                 {tab.title}
                                                 <Badge
                                                     variant="secondary"
-                                                    className="rounded-full text-xs px-2 py-0.5 bg-slate-100 text-slate-600 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
+                                                    className="rounded-full text-xs px-2 py-0.5 bg-slate-100 text-slate-600 data-[state=active]:bg-blue-50 data-[state=active]:text-[#1640a0]"
                                                 >
                                                     {tab.count}
                                                 </Badge>

@@ -1121,7 +1121,7 @@ export default function AddProductForm({ onClose }: AddProductFormProps) {
 
             <div className="flex items-center gap-2 mb-3">
 
-              <Calculator className="h-5 w-5 text-blue-600" />
+              <Calculator className="h-5 w-5 text-[#1a4fba]" />
 
               <h3 className="text-lg font-semibold text-blue-800">
                 {language === 'ar'

@@ -37,7 +37,7 @@ interface Complaint {
 // ── Status & priority config ──────────────────────────────────────────────────
 const STATUS_CONFIG = {
     pending: { label: "قيد الانتظار", color: "bg-amber-50 text-amber-700 border-amber-200", dot: "bg-amber-400", icon: Clock },
-    in_progress: { label: "قيد المعالجة", color: "bg-blue-50 text-blue-700 border-blue-200", dot: "bg-blue-400", icon: AlertCircle },
+    in_progress: { label: "قيد المعالجة", color: "bg-blue-50 text-[#1640a0] border-blue-200", dot: "bg-blue-400", icon: AlertCircle },
     resolved: { label: "تم الحل", color: "bg-emerald-50 text-emerald-700 border-emerald-200", dot: "bg-emerald-400", icon: CheckCircle },
     cancelled: { label: "ملغي", color: "bg-rose-50 text-rose-700 border-rose-200", dot: "bg-rose-400", icon: XCircle },
 } as const
@@ -333,7 +333,7 @@ export default function ComplaintsListPage() {
                                                         {/* Order */}
                                                         <td className="px-5 py-4">
                                                             {c.order
-                                                                ? <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-xs font-semibold">
+                                                                ? <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-[#1640a0] rounded-lg text-xs font-semibold">
                                                                     <Package className="w-3.5 h-3.5" />
                                                                     #{c.order.orderNumber}
                                                                 </span>
@@ -354,7 +354,7 @@ export default function ComplaintsListPage() {
                                                             <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition">
                                                                 <button
                                                                     onClick={e => { e.stopPropagation(); setSelected(c) }}
-                                                                    className="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition"
+                                                                    className="p-2 rounded-lg bg-blue-50 text-[#1a4fba] hover:bg-blue-100 transition"
                                                                     title="عرض"
                                                                 >
                                                                     <Eye className="w-4 h-4" />
@@ -518,7 +518,7 @@ export default function ComplaintsListPage() {
                                     </span>
                                 )}
                                 {selected.order && (
-                                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-xl text-sm font-semibold">
+                                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-[#1640a0] rounded-xl text-sm font-semibold">
                                         <Package className="w-4 h-4" />
                                         #{selected.order.orderNumber}
                                     </span>

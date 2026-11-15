@@ -39,7 +39,7 @@ export default function UnauthorizedPage() {
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
             href="/"
-            className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center justify-center px-6 py-3 bg-[#1a4fba] text-white rounded-lg font-medium hover:bg-[#1640a0] transition-colors"
           >
             العودة إلى الرئيسية
           </Link>

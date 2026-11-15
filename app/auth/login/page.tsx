@@ -109,7 +109,7 @@ export default function Login() {
             <p className="mb-4 text-lg">لم تقم بإنشاء حساب بعد؟</p>
             <Link
               href="/auth/register"
-              className="block text-center bg-white text-blue-700 py-3 px-6 rounded-lg font-bold transition-all hover:bg-blue-50"
+              className="block text-center bg-white text-[#1640a0] py-3 px-6 rounded-lg font-bold transition-all hover:bg-blue-50"
             >
               إنشاء حساب جديد
             </Link>
@@ -183,13 +183,13 @@ export default function Login() {
                 <input
                   id="remember"
                   type="checkbox"
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-[#1a4fba] focus:ring-blue-500 border-gray-300 rounded"
                 />
                 <label htmlFor="remember" className="mr-2 block text-sm text-gray-700">
                   تذكرني
                 </label>
               </div>
-              <Link href="/auth/password-reset-request" className="text-sm text-blue-600 hover:text-blue-800">
+              <Link href="/auth/password-reset-request" className="text-sm text-[#1a4fba] hover:text-blue-800">
                 نسيت كلمة المرور؟
               </Link>
             </div>
@@ -197,8 +197,8 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full bg-blue-600 text-white py-3 rounded-lg font-medium transition-colors ${
-                loading ? 'bg-blue-400 cursor-not-allowed' : 'hover:bg-blue-700'
+              className={`w-full bg-[#1a4fba] text-white py-3 rounded-lg font-medium transition-colors ${
+                loading ? 'bg-blue-400 cursor-not-allowed' : 'hover:bg-[#1640a0]'
               }`}
             >
               {loading ? 'جاري تسجيل الدخول...' : 'تسجيل الدخول'}

@@ -451,7 +451,7 @@ function GuestCheckoutInner() {
                   subtotal >= shippingSettings.freeShippingMinimum ? (
                     <p className="text-sm text-green-600">✓ الشحن مجاني لطلبك الحالي</p>
                   ) : (
-                    <p className="text-sm text-blue-600">
+                    <p className="text-sm text-[#1a4fba]">
                       أضف منتجات بقيمة {(shippingSettings.freeShippingMinimum - subtotal).toLocaleString()} ج.م للحصول على شحن مجاني
                     </p>
                   )
@@ -484,19 +484,19 @@ function GuestCheckoutInner() {
                   <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 space-y-1 text-sm">
                     <p className="font-medium text-blue-900">{selectedPickupPoint.name}</p>
                     {selectedPickupPoint.address && (
-                      <p className="text-blue-700 flex items-center gap-1">
+                      <p className="text-[#1640a0] flex items-center gap-1">
                         <MapPin className="h-3.5 w-3.5 shrink-0" />
                         {selectedPickupPoint.address}
                       </p>
                     )}
                     {selectedPickupPoint.stationName && (
-                      <p className="text-blue-700 flex items-center gap-1">
+                      <p className="text-[#1640a0] flex items-center gap-1">
                         <Store className="h-3.5 w-3.5 shrink-0" />
                         أقرب محطة مترو: {selectedPickupPoint.stationName}
                       </p>
                     )}
                     {selectedPickupPoint.workingHours && (
-                      <p className="text-blue-700 flex items-center gap-1">
+                      <p className="text-[#1640a0] flex items-center gap-1">
                         🕒 مواعيد العمل: {selectedPickupPoint.workingHours}
                       </p>
                     )}
@@ -525,7 +525,7 @@ function GuestCheckoutInner() {
                           </span>
                         )}
                         {item.size && (
-                          <span className="inline-flex items-center bg-blue-50 border border-blue-100 text-blue-700 rounded-full px-1.5 py-0.5 text-xs font-medium">
+                          <span className="inline-flex items-center bg-blue-50 border border-blue-100 text-[#1640a0] rounded-full px-1.5 py-0.5 text-xs font-medium">
                             م {item.size}
                           </span>
                         )}

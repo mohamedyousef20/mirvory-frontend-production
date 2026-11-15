@@ -28,7 +28,7 @@ export default function ContactPage() {
     //   href: "https://facebook.com/mirvory",
     //   Icon: Facebook,
     //   description: "facebook.com/mirvory",
-    //   bg: "bg-blue-50 text-blue-600",
+    //   bg: "bg-blue-50 text-[#1a4fba]",
     // },
     // {
     //   label: "إنستجرام",

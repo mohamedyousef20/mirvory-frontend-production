@@ -390,7 +390,7 @@ const ProductCardComponent = function ProductCard({ product, language, onAddToCa
           <div className="flex items-center gap-2 mb-2">
             {hasDiscount ? (
               <>
-                <span className="text-base font-bold text-blue-600">
+                <span className="text-base font-bold text-[#1a4fba]">
                   {computedDiscountedPrice.toFixed(2)} {language === "ar" ? "ج.م" : "EGP"}
                 </span>
                 <span className="text-xs text-gray-400 line-through">
@@ -398,7 +398,7 @@ const ProductCardComponent = function ProductCard({ product, language, onAddToCa
                 </span>
               </>
             ) : (
-              <span className="text-base font-bold text-blue-600">
+              <span className="text-base font-bold text-[#1a4fba]">
                 {product.price.toFixed(2)} {language === "ar" ? "ج.م" : "EGP"}
               </span>
             )}

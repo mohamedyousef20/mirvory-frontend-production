@@ -170,7 +170,7 @@ export function ProductsTable({
                                         </SelectContent>
                                     </Select>
                                 ) : (
-                                    <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 rounded-full text-xs">
+                                    <Badge variant="outline" className="bg-blue-50 text-[#1640a0] border-blue-200 rounded-full text-xs">
                                         {typeof product.category === "object" ? product.category.name : product.category}
                                     </Badge>
                                 )}

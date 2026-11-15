@@ -746,10 +746,10 @@ const Profile = () => {
                                                 <div className="p-6 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl border border-blue-200">
                                                     <div className="flex items-center gap-3 mb-3">
                                                         <div className="p-2 bg-blue-100 rounded-lg">
-                                                            <Clock className="h-6 w-6 text-blue-600" />
+                                                            <Clock className="h-6 w-6 text-[#1a4fba]" />
                                                         </div>
                                                         <div>
-                                                            <p className="text-sm text-blue-700 font-medium">الرصيد المعلق</p>
+                                                            <p className="text-sm text-[#1640a0] font-medium">الرصيد المعلق</p>
                                                             <p className="text-2xl font-bold text-blue-900">
                                                                 {user.wallet.pendingBalance?.toFixed(2)} {user.wallet.currency}
                                                             </p>

@@ -234,7 +234,7 @@ export function LoyaltyTab({
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground flex items-center gap-1">
-                      <Gift className="h-3 w-3 text-blue-600" />
+                      <Gift className="h-3 w-3 text-[#1a4fba]" />
                       {copy.totalRedeemed}:
                     </span>
                     <span className="font-bold">{user.loyalty.totalRedeemed}</span>

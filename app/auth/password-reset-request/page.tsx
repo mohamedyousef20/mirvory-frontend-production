@@ -44,13 +44,13 @@ export default function PasswordResetRequest() {
     <>
       <div className="min-h-screen flex flex-col md:flex-row-reverse bg-gray-50" dir="rtl">
         {/* Brand Section - Same as login page */}
-        <div className="bg-blue-700 text-white md:w-1/2 p-8 flex flex-col justify-center items-center">
+        <div className="bg-[#1640a0] text-white md:w-1/2 p-8 flex flex-col justify-center items-center">
           <div className="max-w-md mx-auto">
             <h1 className="text-4xl font-bold mb-6">ميرفوري</h1>
             <p className="text-xl mb-8">منصة التسوق الإلكتروني المميزة لكل احتياجاتك</p>
             <div className="bg-white/10 p-6 rounded-lg">
               <p className="mb-4 text-lg">تذكرت كلمة المرور؟</p>
-              <Link href="/auth/login" className="block text-center bg-white text-blue-700 py-3 px-6 rounded-lg font-bold transition-all hover:bg-blue-50">
+              <Link href="/auth/login" className="block text-center bg-white text-[#1640a0] py-3 px-6 rounded-lg font-bold transition-all hover:bg-blue-50">
                 العودة لتسجيل الدخول
               </Link>
             </div>
@@ -90,7 +90,7 @@ export default function PasswordResetRequest() {
               <button
                 type="submit"
                 disabled={loading}
-                className={`w-full bg-blue-600 text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${loading ? 'bg-blue-400 cursor-not-allowed' : 'hover:bg-blue-700'
+                className={`w-full bg-[#1a4fba] text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${loading ? 'bg-blue-400 cursor-not-allowed' : 'hover:bg-[#1640a0]'
                   }`}
               >
                 {loading ? (
@@ -121,7 +121,7 @@ export default function PasswordResetRequest() {
               <div className="mt-6 space-y-4">
                 <Link
                   href="/auth/login"
-                  className="block text-center text-blue-600 hover:text-blue-800 transition-colors"
+                  className="block text-center text-[#1a4fba] hover:text-blue-800 transition-colors"
                 >
                   العودة إلى تسجيل الدخول
                 </Link>
@@ -136,7 +136,7 @@ export default function PasswordResetRequest() {
 
             {/* Help Text */}
             <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-sm text-blue-700 text-center">
+              <p className="text-sm text-[#1640a0] text-center">
                 سوف نرسل رمز تحقق مكون من 6 أرقام إلى بريدك الإلكتروني.
                 تأكد من صحة البريد الإلكتروني المدخل.
               </p>

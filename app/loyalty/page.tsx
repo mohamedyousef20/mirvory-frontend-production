@@ -258,7 +258,7 @@ export default function LoyaltyPage() {
                     <p className="text-xs text-muted-foreground">{copy.totalEarned}</p>
                   </div>
                   <div className="text-center p-4 bg-muted rounded-lg">
-                    <Gift className="h-5 w-5 mx-auto mb-2 text-blue-600" />
+                    <Gift className="h-5 w-5 mx-auto mb-2 text-[#1a4fba]" />
                     <div className="text-2xl font-bold">{loyalty.totalRedeemed}</div>
                     <p className="text-xs text-muted-foreground">{copy.totalRedeemed}</p>
                   </div>

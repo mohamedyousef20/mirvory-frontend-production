@@ -180,7 +180,7 @@ const VerifyEmail = () => {
       <>
         <div className="min-h-screen flex flex-col md:flex-row-reverse bg-gray-50" dir="rtl">
           {/* Success Illustration Section */}
-          <div className="bg-blue-700 text-white md:w-1/2 p-8 flex flex-col justify-center items-center">
+          <div className="bg-[#1640a0] text-white md:w-1/2 p-8 flex flex-col justify-center items-center">
             <div className="max-w-md mx-auto text-center">
               <div className="flex justify-center mb-6">
                 <div className="bg-white/20 p-4 rounded-full">
@@ -191,7 +191,7 @@ const VerifyEmail = () => {
               <p className="text-xl mb-8">تم تأكيد بريدك الإلكتروني بنجاح</p>
               <div className="bg-white/10 p-6 rounded-lg">
                 <p className="mb-4 text-lg">يمكنك الآن تسجيل الدخول إلى حسابك</p>
-                <Link href="/auth/login" className="block text-center bg-white text-blue-700 py-3 px-6 rounded-lg font-bold transition-all hover:bg-blue-50">
+                <Link href="/auth/login" className="block text-center bg-white text-[#1640a0] py-3 px-6 rounded-lg font-bold transition-all hover:bg-blue-50">
                   الانتقال لتسجيل الدخول
                   <ArrowRight className="inline mr-2" size={18} />
                 </Link>
@@ -237,13 +237,13 @@ const VerifyEmail = () => {
     <>
       <div className="min-h-screen flex flex-col md:flex-row-reverse bg-gray-50" dir="rtl">
         {/* Brand Section */}
-        <div className="bg-blue-700 text-white md:w-1/2 p-8 flex flex-col justify-center items-center">
+        <div className="bg-[#1640a0] text-white md:w-1/2 p-8 flex flex-col justify-center items-center">
           <div className="max-w-md mx-auto">
             <h1 className="text-4xl font-bold mb-6">ميرفوري</h1>
             <p className="text-xl mb-8">منصة التسوق الإلكتروني المميزة لكل احتياجاتك</p>
             <div className="bg-white/10 p-6 rounded-lg">
               <p className="mb-4 text-lg">لم تقم بإنشاء حساب بعد؟</p>
-              <Link href="/auth/register" className="block text-center bg-white text-blue-700 py-3 px-6 rounded-lg font-bold transition-all hover:bg-blue-50">
+              <Link href="/auth/register" className="block text-center bg-white text-[#1640a0] py-3 px-6 rounded-lg font-bold transition-all hover:bg-blue-50">
                 إنشاء حساب جديد
               </Link>
             </div>
@@ -324,9 +324,9 @@ const VerifyEmail = () => {
               <button
                 type="submit"
                 disabled={isLoading || verificationCode.length !== 6 || !email}
-                className={`w-full bg-blue-600 text-white py-3 rounded-lg font-medium transition-colors ${isLoading || verificationCode.length !== 6 || !email
+                className={`w-full bg-[#1a4fba] text-white py-3 rounded-lg font-medium transition-colors ${isLoading || verificationCode.length !== 6 || !email
                   ? 'bg-blue-400 cursor-not-allowed'
-                  : 'hover:bg-blue-700'
+                  : 'hover:bg-[#1640a0]'
                   }`}
               >
                 {isLoading ? 'جاري التحقق...' : 'تأكيد الرمز'}
@@ -350,7 +350,7 @@ const VerifyEmail = () => {
                   disabled={!email || isResendDisabled}
                   className={`inline-flex items-center justify-center space-x-2 space-x-reverse px-4 py-2 rounded-lg font-medium transition-colors ${!email || isResendDisabled
                       ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                      : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+                      : 'bg-blue-50 text-[#1a4fba] hover:bg-blue-100'
                     }`}
                 >
                   <RefreshCw className="h-4 w-4" />
@@ -368,13 +368,13 @@ const VerifyEmail = () => {
                 <div className="space-y-2">
                   <Link
                     href="/contact"
-                    className="block text-blue-600 hover:text-blue-800 font-medium"
+                    className="block text-[#1a4fba] hover:text-blue-800 font-medium"
                   >
                     اتصل بالدعم الفني
                   </Link>
                   <Link
                     href="/auth/forgot-password"
-                    className="block text-blue-600 hover:text-blue-800 font-medium"
+                    className="block text-[#1a4fba] hover:text-blue-800 font-medium"
                   >
                     نسيت كلمة المرور؟
                   </Link>
