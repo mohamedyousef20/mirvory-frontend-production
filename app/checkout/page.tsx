@@ -409,7 +409,7 @@ function CheckoutInner() {
                 <div className="min-h-screen bg-[#f4f6fb] flex items-center justify-center px-4" dir={isAr ? "rtl" : "ltr"}>
                     <div className="text-center space-y-4 max-w-sm bg-white rounded-2xl border border-slate-100 p-5 shadow-sm">
                         <ShoppingBag className="h-10 w-10 text-slate-400 mx-auto" />
-                        <h2 className="text-xl font-bold text-slate-800">{isAr ? "سلة التسوق فارغة" : "Cart is empty"}</h2>
+                        <h2 className="text-xl font-black text-slate-900">{isAr ? "سلة التسوق فارغة" : "Cart is empty"}</h2>
                         <Button onClick={() => router.push('/products')} className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#1a4fba] text-white text-sm font-semibold rounded-xl hover:bg-[#1640a0] transition shadow-md shadow-blue-200 h-12">
                             {isAr ? "العودة للتسوق" : "Back to shop"}
                         </Button>
@@ -442,7 +442,7 @@ function CheckoutInner() {
 
                             <div className="mb-6 flex justify-between items-center">
                                 <div>
-                                    <h2 className="text-xl font-bold text-gray-800">{isAr ? "إتمام الطلب" : "Checkout"}</h2>
+                                    <h2 className="text-xl font-black text-slate-900">{isAr ? "إتمام الطلب" : "Checkout"}</h2>
                                     <p className="text-gray-500 text-sm mt-1">{isAr ? `لديك ${cartItems.length} عناصر في السلة` : `You have ${cartItems.length} items in your cart`}</p>
                                 </div>
                             </div>
@@ -650,7 +650,7 @@ function CheckoutInner() {
                         </div>
 
                         {/* Right Column - Order Summary */}
-                        <div className="w-full lg:w-5/12 bg-[#1a4fba] text-white p-6 lg:p-10 flex flex-col justify-between rounded-t-[2rem] lg:rounded-t-none lg:rounded-s-[2rem] rtl:lg:rounded-s-none rtl:lg:rounded-e-[2rem] shadow-2xl z-10 -mt-6 lg:mt-0 lg:-ms-6 rtl:lg:ms-0 rtl:lg:-me-6">
+                        <div className="w-full lg:w-5/12 bg-[#0d2f75] text-white p-6 lg:p-10 flex flex-col justify-between rounded-t-[2rem] lg:rounded-t-none lg:rounded-s-[2rem] rtl:lg:rounded-s-none rtl:lg:rounded-e-[2rem] shadow-2xl z-10 -mt-6 lg:mt-0 lg:-ms-6 rtl:lg:ms-0 rtl:lg:-me-6">
 
                             <div>
                                 <div className="flex justify-between items-center mb-6">
@@ -764,7 +764,7 @@ function CheckoutInner() {
                                 <Button
                                     onClick={handleSubmit}
                                     disabled={loading}
-                                    className="w-full h-14 bg-white hover:bg-gray-100 text-gray-900 border border-gray-200 rounded-xl text-lg font-bold flex justify-between items-center px-6 transition-transform active:scale-[0.98] disabled:opacity-70 disabled:active:scale-100 shadow-[0_4px_14px_0_rgba(0,0,0,0.08)]"
+                                    className="w-full h-14 bg-white hover:bg-blue-50 text-[#0d2f75] border border-white rounded-2xl text-lg font-black flex justify-between items-center px-6 transition-transform active:scale-[0.98] disabled:opacity-70 disabled:active:scale-100 shadow-[0_4px_14px_0_rgba(0,0,0,0.08)]"
                                 >
                                     <span>ج.م{total.toFixed(2)}</span>
                                     <span className="flex items-center gap-2">

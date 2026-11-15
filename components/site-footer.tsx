@@ -11,7 +11,7 @@ export function SiteFooter() {
   const { language, t } = useLanguage()
 
   return (
-    <footer className="bg-muted/40">
+    <footer className="border-t border-[#e9eef6] bg-white">
       <div className="container px-4 py-12 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>
@@ -43,67 +43,67 @@ export function SiteFooter() {
             </div>
           </div>
           <div>
-            <h3 className="font-medium text-lg mb-4">{language === "ar" ? "روابط سريعة" : "Quick Links"}</h3>
+            <h3 className="text-lg font-black mb-4 text-[#0f172a]">{language === "ar" ? "روابط سريعة" : "Quick Links"}</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/" className="text-muted-foreground hover:text-[#1a4fba] transition-colors">
                   {t("home")}
                 </Link>
               </li>
               <li>
-                <Link href="/products" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/products" className="text-muted-foreground hover:text-[#1a4fba] transition-colors">
                   {t("products")}
                 </Link>
               </li>
               {/* <li>
-                <Link href="/offers" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/offers" className="text-muted-foreground hover:text-[#1a4fba] transition-colors">
                   {t("offers")}
                 </Link>
               </li> */}
               <li>
-                <Link href="/about" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/about" className="text-muted-foreground hover:text-[#1a4fba] transition-colors">
                   {language === "ar" ? "من نحن" : "About Us"}
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/contact" className="text-muted-foreground hover:text-[#1a4fba] transition-colors">
                   {t("contactUs")}
                 </Link>
               </li>
               <li>
-                <Link href="/faq" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/faq" className="text-muted-foreground hover:text-[#1a4fba] transition-colors">
                   {t("faq")}
                 </Link>
               </li>
             </ul>
           </div>
           <div>
-            <h3 className="font-medium text-lg mb-4">{language === "ar" ? "معلومات قانونية" : "Legal Information"}</h3>
+            <h3 className="text-lg font-black mb-4 text-[#0f172a]">{language === "ar" ? "معلومات قانونية" : "Legal Information"}</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/terms" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/terms" className="text-muted-foreground hover:text-[#1a4fba] transition-colors">
                   {t("termsAndConditions")}
                 </Link>
               </li>
               <li>
-                <Link href="/privacy" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/privacy" className="text-muted-foreground hover:text-[#1a4fba] transition-colors">
                   {t("privacyPolicy")}
                 </Link>
               </li>
               <li>
-                <Link href="/return-policy" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/return-policy" className="text-muted-foreground hover:text-[#1a4fba] transition-colors">
                   {language === "ar" ? "سياسة الإرجاع" : "Return Policy"}
                 </Link>
               </li>
               {/* <li>
-                <Link href="/shipping-policy" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/shipping-policy" className="text-muted-foreground hover:text-[#1a4fba] transition-colors">
                   {language === "ar" ? "سياسة الشحن" : "Shipping Policy"}
                 </Link>
               </li> */}
             </ul>
           </div>
           <div>
-            <h3 className="font-medium text-lg mb-4">{language === "ar" ? "اتصل بنا" : "Contact Us"}</h3>
+            <h3 className="text-lg font-black mb-4 text-[#0f172a]">{language === "ar" ? "اتصل بنا" : "Contact Us"}</h3>
             <ul className="space-y-4">
               <li className="flex items-start gap-2">
                 <MapPin className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
@@ -113,7 +113,7 @@ export function SiteFooter() {
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="h-5 w-5 text-muted-foreground" />
-                <a href="tel:+201060167568" className="text-muted-foreground hover:text-foreground transition-colors">
+                <a href="tel:+201060167568" className="text-muted-foreground hover:text-[#1a4fba] transition-colors">
                   +20 106 016 7568
                 </a>
               </li>
@@ -121,7 +121,7 @@ export function SiteFooter() {
                 <Mail className="h-5 w-5 text-muted-foreground" />
                 <a
                   href="mailto:support.mirvory@gmail.com"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-muted-foreground hover:text-[#1a4fba] transition-colors"
                 >
                   support.mirvory@gmail.com
                 </a>

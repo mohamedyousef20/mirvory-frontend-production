@@ -575,7 +575,7 @@ export function ProductGrid() {
   const renderCategoryFilter = () => (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="font-medium">{t("categories")}</h3>
+        <h3 className="font-black text-slate-900">{t("categories")}</h3>
         {filters.categories.length > 0 && (
           <Button variant="ghost" size="sm" onClick={() => handleCategoryChange('clear')}>
             <X className="h-4 w-4 mr-1" />
@@ -645,7 +645,7 @@ export function ProductGrid() {
       {/* Sizes — only sizes that exist with stock */}
       {facets.sizes.length > 0 && (
         <div className="space-y-3">
-          <h3 className="font-medium">{language === "ar" ? "المقاس" : "Size"}</h3>
+          <h3 className="font-black text-slate-900">{language === "ar" ? "المقاس" : "Size"}</h3>
           <div className="flex flex-wrap gap-2">
             {facets.sizes.map(({ size, count }) => {
               const selected = filters.sizes.includes(size);
@@ -668,7 +668,7 @@ export function ProductGrid() {
       {/* Colors — the real colors of the products, with their swatch */}
       {facets.colors.length > 0 && (
         <div className="space-y-3">
-          <h3 className="font-medium">{language === "ar" ? "اللون" : "Color"}</h3>
+          <h3 className="font-black text-slate-900">{language === "ar" ? "اللون" : "Color"}</h3>
           <div className="flex flex-wrap gap-2">
             {facets.colors.map(({ name, value, count }) => {
               const selected = filters.colors.includes(value);
@@ -695,7 +695,7 @@ export function ProductGrid() {
 
       {/* Rating */}
       <div className="space-y-3">
-        <h3 className="font-medium">{language === "ar" ? "التقييم" : "Rating"}</h3>
+        <h3 className="font-black text-slate-900">{language === "ar" ? "التقييم" : "Rating"}</h3>
         <div className="space-y-1">
           {RATING_OPTIONS.map(rating => (
             <button
@@ -900,7 +900,7 @@ export function ProductGrid() {
 
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-              <h2 className="text-2xl font-bold tracking-tight">
+              <h2 className="text-2xl font-black tracking-tight text-slate-900">
                 {language === "ar" ? "جميع المنتجات" : "All Products"}
               </h2>
               {!uiState.isLoading && (
@@ -1004,7 +1004,7 @@ export function ProductGrid() {
 
             {/* Price Filter */}
             <div className="space-y-4">
-              <h3 className="font-medium">{t("price")}</h3>
+              <h3 className="font-black text-slate-900">{t("price")}</h3>
               <div className="space-y-4">
                 <Slider
                   value={filters.priceRange}

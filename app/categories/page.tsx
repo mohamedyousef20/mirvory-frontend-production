@@ -82,7 +82,7 @@ const CategoriesPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8 text-blue-500 text-center">تصنيفات المنتجات</h1>
+      <h1 className="text-3xl font-black mb-8 text-[#1a4fba] text-center">تصنيفات المنتجات</h1>
 
       {categories.length === 0 ? (
         <div className="text-center py-12">
@@ -94,12 +94,12 @@ const CategoriesPage = () => {
             <Link
               key={category._id}
               href={`/categories/${category._id}/products`}
-              className="block transition-transform hover:scale-105"
+              className="block"
             >
               <CategoryCard
                 category={category}
                 language={language}
-                className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow cursor-pointer h-full"
+                className="bg-white rounded-2xl border border-[#e9eef6] shadow-sm p-6 hover:shadow-md hover:-translate-y-0.5 transition cursor-pointer h-full"
               />
             </Link>
           ))}

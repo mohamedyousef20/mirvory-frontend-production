@@ -677,7 +677,7 @@ export function MainNav() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="px-3 py-2 text-sm font-medium rounded-md hover:bg-accent/50 transition-colors flex items-center gap-1.5 relative"
+                  className="px-3 py-2 text-sm font-bold rounded-lg hover:bg-[#eff4ff] hover:text-[#1a4fba] transition-colors flex items-center gap-1.5 relative"
                 >
                   {item.icon}
                   {item.label}
@@ -907,14 +907,15 @@ export function MainNav() {
             {/* Cart Popover */}
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative">
+                <Button variant="ghost" className="relative gap-2 px-3 font-bold">
                   <ShoppingCart className="h-5 w-5" />
+                  <span className="text-sm font-bold">{language === "ar" ? "السلة" : "Cart"}</span>
                   {counts.cart > 0 && (
                     <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center rounded-full text-[10px] p-0">
                       {counts.cart}
                     </Badge>
                   )}
-                  <span className="sr-only">{t("cart")}</span>
+                  
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-80" align="end">
