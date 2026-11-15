@@ -101,9 +101,9 @@ export default function Login() {
   return (
     <div className="min-h-screen flex flex-col md:flex-row-reverse bg-gray-50" dir="rtl">
       {/* Brand Section */}
-      <div className="bg-blue-700 text-white md:w-1/2 p-8 flex flex-col justify-center items-center">
+      <div className="bg-[#0d2f75] text-white md:w-1/2 p-8 flex flex-col justify-center items-center">
         <div className="max-w-md mx-auto">
-          <h1 className="text-4xl font-bold mb-6">ميرفوري</h1>
+          <h1 className="text-4xl font-black mb-6">ميرفوري</h1>
           <p className="text-xl mb-8">منصة التسوق الإلكتروني المميزة لكل احتياجاتك</p>
           <div className="bg-white/10 p-6 rounded-lg">
             <p className="mb-4 text-lg">لم تقم بإنشاء حساب بعد؟</p>

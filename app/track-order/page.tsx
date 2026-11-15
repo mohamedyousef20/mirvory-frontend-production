@@ -78,7 +78,7 @@ export default function TrackOrderPage() {
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-8">
           <Package className="h-12 w-12 text-primary mx-auto mb-2" />
-          <h1 className="text-3xl font-bold text-gray-800">تتبع طلبك</h1>
+          <h1 className="text-3xl font-black text-slate-900">تتبع طلبك</h1>
           <p className="text-gray-500 mt-1">أدخل رمز التتبع الذي استلمته عند الطلب</p>
         </div>
 
