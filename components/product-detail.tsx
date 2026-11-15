@@ -78,7 +78,7 @@ function ProductVideoEmbed({ url }: { url: string }) {
   if (embedUrl) {
     return (
       <div className="space-y-3">
-        <div className="relative w-full rounded-2xl overflow-hidden border-2 border-red-500 shadow-md bg-slate-900"
+        <div className="relative w-full rounded-2xl overflow-hidden border border-[#1a4fba]/25 shadow-md bg-slate-900"
           style={{ paddingBottom: '56.25%' }}>
           <iframe
             src={embedUrl}
