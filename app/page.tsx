@@ -11,6 +11,8 @@ import { redirect } from "next/navigation"
 import { ShoppingBag } from "lucide-react"
 import { SideAds } from "@/components/side-ads"
 import { HomeOffersCountdown } from "@/components/home-offers-countdown"
+import { RequestProductCta } from "@/components/request-product-cta"
+import { TrustStrip } from "@/components/trust-strip"
 
 /** Lightweight visual divider between homepage sections */
 function SectionDivider({ icon: Icon, label }: { icon?: React.ElementType; label?: string }) {
@@ -78,6 +80,10 @@ export default async function Home() {
               <div className="xl:hidden">
                 <SideAds position="both" dismissible className="grid grid-cols-2 gap-3" />
               </div>
+
+              {/* ── Request a product + trust badges ──────────────────── */}
+              <RequestProductCta />
+              <TrustStrip />
 
               <SectionDivider icon={ShoppingBag} />
 

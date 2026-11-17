@@ -12,9 +12,11 @@ export function SiteFooter() {
 
   return (
     <footer className="border-t border-[#e9eef6] bg-white">
-      <div className="container px-4 py-12 md:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div>
+      <div className="container px-4 py-8 md:py-16">
+        {/* Phones only: brand block full width, the two link lists side by side, contact full width.
+            md and up keep the original 2-column / 4-column layout. */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-8 md:gap-8">
+          <div className="col-span-2 md:col-span-1">
             <Link href="/" className="flex items-center gap-2 mb-4">
               <MirvoryLogo className="text-3xl" />
             </Link>
@@ -102,7 +104,7 @@ export function SiteFooter() {
               </li> */}
             </ul>
           </div>
-          <div>
+          <div className="col-span-2 md:col-span-1">
             <h3 className="text-lg font-black mb-4 text-[#0f172a]">{language === "ar" ? "اتصل بنا" : "Contact Us"}</h3>
             <ul className="space-y-4">
               <li className="flex items-start gap-2">
@@ -129,7 +131,7 @@ export function SiteFooter() {
             </ul>
           </div>
         </div>
-        <div className="border-t mt-12 pt-6 text-center text-muted-foreground">
+        <div className="border-t mt-8 md:mt-12 pt-6 text-center text-muted-foreground">
           <p>
             &copy; {new Date().getFullYear()} Mirvory.
             {language === "ar" ? " جميع الحقوق محفوظة." : " All rights reserved."}

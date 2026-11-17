@@ -667,7 +667,7 @@ export function MainNav() {
 
           {/* Logo */}
           <div className="flex items-center">
-            <Link href={isVendor ? "/vendor/dashboard" : "/"} className="flex items-center gap-2 navbar-brand mr-6">
+            <Link href={isVendor ? "/vendor/dashboard" : "/"} className="flex items-center gap-2 navbar-brand mr-0 sm:mr-6">
               <MirvoryLogo className="text-3xl" />
             </Link>
 
@@ -692,7 +692,7 @@ export function MainNav() {
           </div>
 
           {/* Right side actions */}
-          <div className="flex items-center gap-1 sm:gap-2">
+          <div className="flex items-center gap-0 sm:gap-2">
             {/* Search button */}
             <Button variant="ghost" size="icon" onClick={() => setIsSearchOpen(true)} className="hidden sm:flex">
               <Search className="h-5 w-5" />
@@ -702,7 +702,8 @@ export function MainNav() {
             {/* Theme switcher */}
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon">
+                {/* Narrow phones: hidden (dark mode is also in the mobile menu) so the header never overflows */}
+                <Button variant="ghost" size="icon" className="w-9 sm:w-10 max-[385px]:hidden">
                   {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
                   <span className="sr-only">Toggle theme</span>
                 </Button>
@@ -777,7 +778,7 @@ export function MainNav() {
             {/* Notifications */}
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative">
+                <Button variant="ghost" size="icon" className="relative w-9 sm:w-10 max-[349px]:hidden">
                   <Bell className="h-5 w-5" />
                   {counts.notifications > 0 && (
                     <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center rounded-full text-[10px] p-0">
@@ -907,9 +908,10 @@ export function MainNav() {
             {/* Cart Popover */}
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="ghost" className="relative gap-2 px-3 font-bold">
+                {/* Phones: icon-only (the bottom bar already labels the cart). md+: icon + label. */}
+                <Button variant="ghost" className="relative h-10 w-9 gap-2 p-0 font-bold sm:w-10 md:w-auto md:px-3">
                   <ShoppingCart className="h-5 w-5" />
-                  <span className="text-sm font-bold">{language === "ar" ? "السلة" : "Cart"}</span>
+                  <span className="text-sm font-bold max-md:sr-only">{language === "ar" ? "السلة" : "Cart"}</span>
                   {counts.cart > 0 && (
                     <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center rounded-full text-[10px] p-0">
                       {counts.cart}
@@ -1034,7 +1036,7 @@ export function MainNav() {
             {/* User menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full">
+                <Button variant="ghost" size="icon" className="w-9 rounded-full sm:w-10">
                   {isLoggedIn ? (
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={user?.profileImage || ""} alt={user?.firstName || "User"} />
