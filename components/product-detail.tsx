@@ -19,8 +19,8 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import {
-  ShoppingCart, Heart, Share2, Truck,
-  ShieldCheck, RotateCcw, Minus, Plus, AlertCircle,
+  ShoppingCart, Heart, Share2, Truck, Banknote,
+  RotateCcw, Minus, Plus, AlertCircle,
   Pencil,
   Loader2,
   Trash2,
@@ -757,7 +757,7 @@ const ProductDetail = ({ productId }: { productId: string }) => {
 
           <div className="flex flex-wrap gap-2 pt-2">
             <Button
-              className="flex-1 bg-orange-500 hover:bg-orange-600 text-white min-w-[140px]"
+              className="flex-1 bg-[#0d2f75] hover:bg-[#0a2460] text-white min-w-[140px]"
               onClick={handleBuyNow}
               disabled={isOutOfStock}
               size="lg"
@@ -767,8 +767,7 @@ const ProductDetail = ({ productId }: { productId: string }) => {
             </Button>
 
             <Button
-              variant="outline"
-              className="flex-1 min-w-[140px] border-[#1a4fba] font-bold text-[#1a4fba] hover:bg-[#eff4ff]"
+              className="flex-1 min-w-[140px] bg-[#1a4fba] hover:bg-[#15409a] font-black text-white"
               onClick={addToCartHandler}
               disabled={isOutOfStock}
               size="lg"
@@ -788,19 +787,38 @@ const ProductDetail = ({ productId }: { productId: string }) => {
           <div className="grid grid-cols-3 gap-2 pt-2 border-t">
             <div className="flex flex-col items-center text-center gap-1 p-2">
               <Truck className="h-5 w-5 text-muted-foreground" />
-              <span className="text-xs text-muted-foreground">{language === "ar" ? "شحن سريع" : "Fast Shipping"}</span>
+              <span className="text-xs text-muted-foreground">{language === "ar" ? "شحن لكل المحافظات" : "Shipping Nationwide"}</span>
+            </div>
+            <div className="flex flex-col items-center text-center gap-1 p-2">
+              <Banknote className="h-5 w-5 text-muted-foreground" />
+              <span className="text-xs text-muted-foreground">{language === "ar" ? "الدفع عند الاستلام" : "Cash on Delivery"}</span>
             </div>
             <div className="flex flex-col items-center text-center gap-1 p-2">
               <RotateCcw className="h-5 w-5 text-muted-foreground" />
-              <span className="text-xs text-muted-foreground">{language === "ar" ? "إرجاع سهل" : "Easy Returns"}</span>
-            </div>
-            <div className="flex flex-col items-center text-center gap-1 p-2">
-              <ShieldCheck className="h-5 w-5 text-muted-foreground" />
-              <span className="text-xs text-muted-foreground">{language === "ar" ? "ضمان الجودة" : "Quality Guarantee"}</span>
+              <span className="text-xs text-muted-foreground">{language === "ar" ? "استبدال حسب سياسة التاجر" : "Returns per seller policy"}</span>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Mobile sticky buy bar: price + add to cart always visible above the bottom nav */}
+      <div className="md:hidden fixed inset-x-0 bottom-[58px] z-30 flex items-center gap-3 border-t bg-white px-4 py-3">
+        <div className="flex-1 min-w-0">
+          <div className="text-[11px] font-bold text-slate-500">{language === "ar" ? "السعر" : "Price"}</div>
+          <div className="text-lg font-black text-[#0d2f75]">
+            {finalPrice.toLocaleString()} {language === "ar" ? "ج.م" : "EGP"}
+          </div>
+        </div>
+        <Button
+          className="h-12 px-6 bg-[#1a4fba] hover:bg-[#15409a] text-white font-black"
+          onClick={addToCartHandler}
+          disabled={isOutOfStock}
+        >
+          <ShoppingCart className="me-2 h-4 w-4" />
+          {language === "ar" ? "أضف للسلة" : "Add to Cart"}
+        </Button>
+      </div>
+      <div className="h-28 md:hidden" aria-hidden="true" />
 
       <div className="mt-12" id="product-video-section">
         <Tabs defaultValue={product.videoUrl ? "video" : "description"} className={language === "ar" ? "dir-rtl" : "dir-ltr"}>
