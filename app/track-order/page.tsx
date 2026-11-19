@@ -148,7 +148,41 @@ export default function TrackOrderPage() {
                 const currentStage = STAGE_BY_STATUS[order.deliveryStatus] ?? 0;
                 const progress = (currentStage / (TRACK_STAGES.length - 1)) * 75;
                 return (
-                  <div className="relative pt-2 pb-2">
+                  <>
+                  {/* Mobile: vertical route */}
+                  <div className="md:hidden flex flex-col">
+                    {TRACK_STAGES.map((stage, idx) => {
+                      const reached = idx <= currentStage;
+                      const current = idx === currentStage;
+                      const Icon = stage.icon;
+                      const last = idx === TRACK_STAGES.length - 1;
+                      return (
+                        <div key={stage.key} className="grid grid-cols-[2.5rem_1fr] gap-3">
+                          <div className="flex flex-col items-center">
+                            <span
+                              className={`flex h-9 w-9 items-center justify-center rounded-full border-2 border-white shadow ${
+                                reached ? 'bg-[#1a4fba] text-white' : 'bg-slate-100 text-slate-400'
+                              } ${current ? 'ring-4 ring-[#f59e0b]/40' : ''}`}
+                            >
+                              <Icon className="h-4 w-4" />
+                            </span>
+                            {!last && (
+                              <span className={`my-1 w-1 flex-1 min-h-[28px] rounded-full ${idx < currentStage ? 'bg-[#1a4fba]' : 'bg-slate-200'}`} />
+                            )}
+                          </div>
+                          <div className={`${last ? '' : 'pb-5'} pt-1.5`}>
+                            <p className={`text-sm ${reached ? 'font-black text-slate-900' : 'font-semibold text-slate-400'}`}>
+                              {stage.label}
+                            </p>
+                            {current && <p className="text-xs font-bold text-[#b45309]">الحالة الحالية</p>}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Desktop: horizontal route */}
+                  <div className="relative pt-2 pb-2 hidden md:block">
                     <div className="absolute top-8 left-[12.5%] right-[12.5%] h-1.5 rounded-full bg-slate-200" />
                     <div
                       className="absolute top-8 right-[12.5%] h-1.5 rounded-full bg-[#1a4fba] transition-all duration-700"
@@ -176,6 +210,7 @@ export default function TrackOrderPage() {
                       })}
                     </div>
                   </div>
+                  </>
                 );
               })()}
             </div>

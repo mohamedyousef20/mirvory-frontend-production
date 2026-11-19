@@ -893,6 +893,22 @@ function AuthenticatedCartPage() {
           )}
         </div>
       </div>
+
+      {/* Mobile sticky checkout bar: total + checkout above the bottom nav */}
+      {total > 0 && (
+        <div className="md:hidden fixed inset-x-0 bottom-[58px] z-30 flex items-center gap-3 border-t bg-white px-4 py-3">
+          <div className="flex-1 min-w-0">
+            <div className="text-[11px] font-bold text-slate-500">{language === "ar" ? "الإجمالي" : "Total"}</div>
+            <div className="text-lg font-black text-[#0d2f75]">
+              {total.toFixed(2)} {language === "ar" ? "ج.م" : "EGP"}
+            </div>
+          </div>
+          <Button asChild className="h-12 px-6 bg-[#1a4fba] hover:bg-[#15409a] text-white font-black">
+            <Link href="/checkout">{t("checkout")}</Link>
+          </Button>
+        </div>
+      )}
+      {total > 0 && <div className="h-28 md:hidden" aria-hidden="true" />}
     </>
   )
 }

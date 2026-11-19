@@ -144,7 +144,7 @@ export function NewestProducts({ title }: NewestProductsProps) {
 
     return (
         <div className="bg-white shadow-sm rounded-lg p-6">
-            <h2 className="text-xl font-semibold mb-6">{title}</h2>
+            {title?.trim() ? <h2 className="text-xl font-semibold mb-6">{title}</h2> : null}
 
             {/* Loading State */}
             {loading ? (
