@@ -150,7 +150,34 @@ export function CategorySection() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+      {/* Mobile: horizontal circular category chips */}
+      <div className="-mx-4 flex gap-4 overflow-x-auto px-4 pb-2 md:hidden">
+        {categories.map((category) => {
+          const categoryName = category.name?.trim()
+          if (!categoryName) return null
+          return (
+            <Link
+              key={category._id}
+              href={`/categories/${category._id}/products`}
+              aria-label={categoryName}
+              className="flex w-20 shrink-0 flex-col items-center gap-2"
+            >
+              <span className="relative h-16 w-16 overflow-hidden rounded-full border-2 border-primary/20 bg-muted">
+                <Image
+                  src={category.image || "/placeholder.svg"}
+                  alt={categoryName}
+                  fill
+                  sizes="64px"
+                  className="object-cover"
+                />
+              </span>
+              <span className="line-clamp-2 text-center text-xs font-semibold leading-tight">{categoryName}</span>
+            </Link>
+          )
+        })}
+      </div>
+
+      <div className="hidden gap-4 md:grid md:grid-cols-4 lg:grid-cols-5">
         {categories.map((category) => {
           const categoryName = category.name?.trim()
 
