@@ -645,7 +645,19 @@ export function ProductGrid() {
       {/* Sizes — only sizes that exist with stock */}
       {facets.sizes.length > 0 && (
         <div className="space-y-3">
-          <h3 className="font-black text-slate-900">{language === "ar" ? "المقاس" : "Size"}</h3>
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="font-black text-slate-900">{language === "ar" ? "المقاس" : "Size"}</h3>
+            {(() => {
+              const rec = (user as any)?.preferredSize ? String((user as any).preferredSize) : null
+              if (!rec || !facets.sizes.some((f) => f.size === rec) || filters.sizes.includes(rec)) return null
+              return (
+                <button type="button" onClick={() => toggleArrayFilter('sizes', rec)}
+                  className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                  {language === "ar" ? `مقاس موصى به: ${rec}` : `Recommended size: ${rec}`}
+                </button>
+              )
+            })()}
+          </div>
           <div className="flex flex-wrap gap-2">
             {facets.sizes.map(({ size, count }) => {
               const selected = filters.sizes.includes(size);
@@ -789,6 +801,18 @@ export function ProductGrid() {
             : `Showing ${(pagination.page - 1) * pagination.pageSize + 1}-${Math.min(pagination.page * pagination.pageSize, pagination.totalProducts)} of ${pagination.totalProducts} products`
           }
         </div>
+
+        {/* Discovery progress */}
+        {pagination.totalProducts > 0 && (
+          <div className="w-full max-w-xs" aria-hidden="true">
+            <div className="h-1.5 overflow-hidden rounded-full bg-muted">
+              <div
+                className="h-full rounded-full bg-primary"
+                style={{ width: `${Math.min(100, Math.round((Math.min(pagination.page * pagination.pageSize, pagination.totalProducts) / pagination.totalProducts) * 100))}%` }}
+              />
+            </div>
+          </div>
+        )}
 
         {/* Mobile Pagination */}
         <div className="flex items-center gap-2 sm:hidden">
