@@ -222,8 +222,9 @@ const ProductCardComponent = function ProductCard({ product, language, onAddToCa
           {/* Badges and Wishlist Button */}
           <div className="absolute top-2 left-2 flex flex-col gap-1">
             {hasDiscount && (
-              <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
-                -{product.discountPercentage}%
+              <span className="bg-red-500 text-white text-[11px] font-bold px-2.5 py-1 rounded-full">
+                {language === "ar" ? "خصم" : "-"}{" "}
+                {product.discountPercentage || Math.round(((product.price - computedDiscountedPrice) / product.price) * 100)}%
               </span>
             )}
             {product.isFeatured && (
@@ -232,14 +233,14 @@ const ProductCardComponent = function ProductCard({ product, language, onAddToCa
               </span>
             )}
             {product.isTrusted && (
-              <div className="relative inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-sm font-semibold pl-3 pr-4 py-2 rounded-lg shadow-sm">
-                <div className="flex items-center justify-center w-5 h-5 bg-white/20 rounded-full">
-                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <span>{language === "ar" ? "منتج موثوق" : "Trusted Product"}</span>
-              </div>
+              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-600 px-2.5 py-1 text-[11px] font-bold text-white">
+                {language === "ar" ? "بائع موثوق ✓" : "Trusted seller ✓"}
+              </span>
+            )}
+            {isLowStock && (
+              <span className="rounded-full bg-amber-500 px-2.5 py-1 text-[11px] font-bold text-white">
+                {language === "ar" ? `باقي ${totalStock} فقط` : `Only ${totalStock} left`}
+              </span>
             )}
             {isOutOfStock && (
               <span className="bg-gray-800 text-white text-xs font-bold px-2 py-1 rounded">
@@ -252,7 +253,7 @@ const ProductCardComponent = function ProductCard({ product, language, onAddToCa
           <button
             className={`absolute top-2 right-2 p-1.5 rounded-full transition-all ${isFavorite
               ? 'bg-red-500 text-white opacity-100 scale-110'
-              : 'bg-white/90 opacity-0 group-hover:opacity-100 hover:bg-white hover:scale-110'
+              : 'bg-white/90 opacity-100 md:opacity-0 md:group-hover:opacity-100 hover:bg-white hover:scale-110'
               }`}
             onClick={toggleWishlistHandler}
             disabled={isTogglingFavorite}
@@ -396,6 +397,9 @@ const ProductCardComponent = function ProductCard({ product, language, onAddToCa
                 <span className="text-xs text-gray-400 line-through">
                   {product.price.toFixed(2)}
                 </span>
+                <span className="text-[11px] font-semibold text-emerald-600">
+                  {language === "ar" ? `وفر ${Math.round(product.price - computedDiscountedPrice)} ج.م` : `Save EGP ${Math.round(product.price - computedDiscountedPrice)}`}
+                </span>
               </>
             ) : (
               <span className="text-base font-bold text-[#1a4fba]">
@@ -404,12 +408,6 @@ const ProductCardComponent = function ProductCard({ product, language, onAddToCa
             )}
           </div>
 
-          {/* Stock Warning */}
-          {isLowStock && (
-            <p className="text-xs text-orange-600 font-medium">
-              {language === "ar" ? `${totalStock} متبقي فقط` : `Only ${totalStock} left`}
-            </p>
-          )}
 
           {/* Buttons Container */}
           <div className="flex gap-2 mt-2">
