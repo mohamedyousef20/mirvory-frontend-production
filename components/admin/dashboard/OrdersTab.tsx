@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { openWhatsAppConfirmation, getOrderPhone } from "@/lib/whatsapp";
+import { ShipmentEditorDialog } from "@/components/admin/dashboard/ShipmentEditorDialog";
 import {
     ShoppingBag, User, Phone, MapPin, CreditCard,
     Truck, Package, Calendar, Hash, CheckCircle2,
@@ -720,6 +721,8 @@ export function OrdersTab({
                                                 </SelectContent>
                                             </Select>
                                         </div>
+
+                                        <ShipmentEditorDialog order={order} />
 
                                         {/* ── WhatsApp confirmation button ──────────── */}
                                         <Button

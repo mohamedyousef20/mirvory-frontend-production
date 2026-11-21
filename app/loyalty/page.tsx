@@ -12,6 +12,7 @@ import PaginationControls from "@/components/pagination-controls";
 import Link from "next/link";
 import { loyaltyService } from "@/lib/api";
 import { Input } from "@/components/ui/input";
+import { LoyaltyMemberCard } from "@/components/loyalty/member-card";
 
 interface LoyaltyData {
   points: number;
@@ -222,6 +223,10 @@ export default function LoyaltyPage() {
           <h1 className="text-3xl font-black">{copy.title}</h1>
           <p className="text-muted-foreground">{copy.description}</p>
         </div>
+
+        {loyalty && (
+          <LoyaltyMemberCard isArabic={isArabic} points={loyalty.points} totalEarned={loyalty.totalEarned} />
+        )}
 
         {/* Loyalty Overview Card */}
         <Card className="border-2">

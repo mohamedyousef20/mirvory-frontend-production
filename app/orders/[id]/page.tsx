@@ -43,6 +43,8 @@ import {
     openWhatsAppConfirmation,
     getOrderPhone,
 } from "@/lib/whatsapp"
+import { ShipmentTracker, hasShipmentData, type Shipment } from "@/components/orders/shipment-tracker"
+import { WhatsAppHelpButton } from "@/components/whatsapp-help-button"
 
 type DeliveryStatus =
     | "pending"
@@ -117,6 +119,7 @@ interface OrderDetails {
     paymentStatus: PaymentStatus
     deliveryMethod: DeliveryMethod
     deliveryStatus: DeliveryStatus
+    shipment?: Shipment
 
     subtotal: number
     discount: number
@@ -494,6 +497,10 @@ export default function OrderDetailsPage() {
 
                 {/* Order Summary & Delivery Info Column */}
                 <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+
+                    {hasShipmentData(order.shipment) && (
+                        <ShipmentTracker shipment={order.shipment as Shipment} orderNumber={order.orderNumber} />
+                    )}
 
                     {/* Order Summary Card */}
                     <Card>
@@ -1118,6 +1125,13 @@ export default function OrderDetailsPage() {
                                 </Button>
                             </>
                         )}
+
+                        <WhatsAppHelpButton
+                            className="w-full"
+                            variant="outline"
+                            label="مساعدة بخصوص هذا الطلب"
+                            message={`مرحبًا، أحتاج مساعدة بخصوص الطلب ${order.orderNumber || order._id}`}
+                        />
 
                         {order.deliveryStatus === "pending" && (
                             <Button

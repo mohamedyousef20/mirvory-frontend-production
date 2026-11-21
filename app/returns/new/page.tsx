@@ -25,6 +25,7 @@ import {
   Hash,
 } from "lucide-react"
 import { returnService } from "@/lib/api"
+import { ReturnTypeFields } from "@/components/returns/return-type-fields"
 import { useRouter } from 'next/navigation';
 
 // ── Step indicator pill ───────────────────────────────────────────────────────
@@ -99,6 +100,12 @@ export default function ReturnPageRequest() {
     productCode: "",
     images: [] as string[],
     termsAccepted: false,
+    type: "return" as "return" | "exchange",
+    exchangeSize: "",
+    refundMethod: "" as "" | "instapay" | "e_wallet" | "cash",
+    refundAccount: "",
+    preferredSlot: "" as "" | "morning" | "evening",
+    pickupAddress: "",
   })
 
   useEffect(() => {
@@ -132,6 +139,16 @@ export default function ReturnPageRequest() {
   }
 
   const validateCurrentStep = () => {
+    if (currentStep === 2) {
+      if (formData.type === "exchange" && !formData.exchangeSize.trim()) {
+        toast.error(isArabic ? "اختر المقاس البديل" : "Choose the replacement size")
+        return false
+      }
+      if (formData.type === "return" && (formData.refundMethod === "instapay" || formData.refundMethod === "e_wallet") && !formData.refundAccount.trim()) {
+        toast.error(isArabic ? "أدخل بيانات التحويل" : "Enter the transfer details")
+        return false
+      }
+    }
     const currentFields = steps[currentStep - 1].fields
     for (const field of currentFields) {
       if (!formData[field as keyof typeof formData]) {
@@ -165,9 +182,19 @@ export default function ReturnPageRequest() {
         reason: formData.reason,
         itemId: formData.itemId,
         images: formData.images,
+        type: formData.type,
+        exchangeSize: formData.type === "exchange" ? formData.exchangeSize.trim() : undefined,
+        refundMethod: formData.type === "return" && formData.refundMethod ? formData.refundMethod : undefined,
+        refundAccount: formData.type === "return" && formData.refundAccount ? formData.refundAccount.trim() : undefined,
+        preferredSlot: formData.preferredSlot || undefined,
+        pickupAddress: formData.pickupAddress.trim() || undefined,
       }
       await returnService.createReturnRequest(returnData)
-      toast.success(isArabic ? "تم إرسال طلب الإرجاع بنجاح" : "Return request submitted successfully")
+      toast.success(
+        formData.type === "exchange"
+          ? (isArabic ? "تم إرسال طلب الاستبدال بنجاح" : "Exchange request submitted successfully")
+          : (isArabic ? "تم إرسال طلب الإرجاع بنجاح" : "Return request submitted successfully")
+      )
       router.push('/returns')
     } catch (error: any) {
       const errorMessage = error.response?.data?.message ||
@@ -180,6 +207,7 @@ export default function ReturnPageRequest() {
     setFormData({
       orderId: "", itemId: "", reason: "", customerName: "", customerPhone: "",
       productName: "", productCode: "", images: [] as string[], termsAccepted: false,
+      type: "return", exchangeSize: "", refundMethod: "", refundAccount: "", preferredSlot: "", pickupAddress: "",
     })
     setCurrentStep(0)
   }
@@ -370,6 +398,18 @@ export default function ReturnPageRequest() {
                 {/* ── Step 2 ───────────────────────────────────────── */}
                 {currentStep === 2 && (
                   <div className="space-y-5">
+                    <ReturnTypeFields
+                      isArabic={isArabic}
+                      value={{
+                        type: formData.type,
+                        exchangeSize: formData.exchangeSize,
+                        refundMethod: formData.refundMethod,
+                        refundAccount: formData.refundAccount,
+                        preferredSlot: formData.preferredSlot,
+                        pickupAddress: formData.pickupAddress,
+                      }}
+                      onChange={(patch) => setFormData((prev) => ({ ...prev, ...patch }))}
+                    />
                     <Field label={isArabic ? "سبب الإرجاع" : "Return reason"} required>
                       <Textarea
                         id="reason" name="reason"

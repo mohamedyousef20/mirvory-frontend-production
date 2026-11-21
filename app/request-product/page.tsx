@@ -12,6 +12,7 @@ import { Loader2, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { unavailableProductRequestService } from "@/lib/api";
 import ImageUploader from "@/components/ImageUploader";
+import { WhatsAppHelpButton } from "@/components/whatsapp-help-button";
 export default function RequestProductPage() {
   const { language } = useLanguage();
   const [loading, setLoading] = useState(false);
@@ -146,7 +147,19 @@ export default function RequestProductPage() {
   }
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 py-12 px-4">
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-2xl mx-auto space-y-5">
+        <ol className="grid grid-cols-3 gap-2 text-center" dir={language === "ar" ? "rtl" : "ltr"}>
+          {(language === "ar"
+            ? ["ارفع صورة أو اكتب الموديل", "نبحث لك عن أفضل سعر", "نتواصل معك بالتفاصيل"]
+            : ["Upload a photo or model", "We search for the best price", "We contact you with details"]
+          ).map((label, i) => (
+            <li key={i} className="rounded-2xl border bg-card p-3">
+              <span className="mx-auto mb-1.5 flex h-7 w-7 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">{i + 1}</span>
+              <span className="text-[11px] font-semibold leading-snug">{label}</span>
+            </li>
+          ))}
+        </ol>
+
         <Card className="border-2">
           <CardHeader className="text-center">
             <CardTitle className="text-3xl font-bold">{copy.title}</CardTitle>
@@ -262,6 +275,14 @@ export default function RequestProductPage() {
             </form>
           </CardContent>
         </Card>
+
+        <WhatsAppHelpButton
+          className="w-full"
+          variant="outline"
+          label={language === "ar" ? "تحدث مع فريق الكونسيرج عبر واتساب" : "Chat with our concierge on WhatsApp"}
+          message="مرحبًا، أبحث عن موديل غير متوفر وأحتاج مساعدتكم"
+        />
+
       </div>
     </div>
   );

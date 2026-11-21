@@ -179,6 +179,7 @@ function filtersFromParams(sp: { get: (k: string) => string | null }): Partial<F
   const sort = sp.get("sort");
   const rating = Number(sp.get("minRating"));
   return {
+    brands: splitCsv(sp.get("brand")),
     sizes: splitCsv(sp.get("size")),
     colors: splitCsv(sp.get("color")),
     minRating: Number.isFinite(rating) && rating > 0 ? Math.min(5, rating) : 0,
@@ -214,7 +215,7 @@ export function ProductGrid() {
     totalProducts: 0
   });
   // Available sizes/colors/price bounds, computed on the DB for the active filters
-  const [facets, setFacets] = useState<{ sizes: { size: string; count: number }[]; colors: { name: string; value: string; count: number }[] }>({ sizes: [], colors: [] });
+  const [facets, setFacets] = useState<{ brands: { brand: string; count: number }[]; sizes: { size: string; count: number }[]; colors: { name: string; value: string; count: number }[] }>({ brands: [], sizes: [], colors: [] });
   const [uiState, setUiState] = useState({
     isFilterOpen: false,
     isLoading: false,
@@ -256,6 +257,7 @@ export function ProductGrid() {
     filters.priceRange[0] > 0 ||
     filters.priceRange[1] < MAX_PRICE ||
     filters.searchQuery.trim() !== "" ||
+    filters.brands.length > 0 ||
     filters.sizes.length > 0 ||
     filters.colors.length > 0 ||
     filters.minRating > 0
@@ -322,6 +324,7 @@ export function ProductGrid() {
             searchParamsData.maxPrice = filters.priceRange[1];
           }
 
+          if (filters.brands.length) searchParamsData.brand = filters.brands.join(",");
           if (filters.sizes.length) searchParamsData.size = filters.sizes.join(",");
           if (filters.colors.length) searchParamsData.color = filters.colors.join(",");
           if (filters.minRating > 0) searchParamsData.minRating = filters.minRating;
@@ -366,6 +369,7 @@ export function ProductGrid() {
             params.maxPrice = filters.priceRange[1];
           }
 
+          if (filters.brands.length) params.brand = filters.brands.join(",");
           if (filters.sizes.length) params.size = filters.sizes.join(",");
           if (filters.colors.length) params.color = filters.colors.join(",");
           if (filters.minRating > 0) params.minRating = filters.minRating;
@@ -422,7 +426,7 @@ export function ProductGrid() {
         const res = await productService.getProductFilterFacets(params);
         const data = res.data?.data;
         if (active && data) {
-          setFacets({ sizes: data.sizes || [], colors: data.colors || [] });
+          setFacets({ brands: data.brands || [], sizes: data.sizes || [], colors: data.colors || [] });
         }
       } catch {
         /* facets are optional — the filters still work without them */
@@ -450,6 +454,7 @@ export function ProductGrid() {
         prev.searchQuery === searchQuery &&
         prev.sort === fromUrl.sort &&
         prev.minRating === fromUrl.minRating &&
+        prev.brands.join(",") === (fromUrl.brands || []).join(",") &&
         prev.sizes.join(",") === (fromUrl.sizes || []).join(",") &&
         prev.colors.join(",") === (fromUrl.colors || []).join(",");
       if (same) {
@@ -477,6 +482,7 @@ export function ProductGrid() {
       else params.delete(key);
     };
     setOrDelete("q", filters.searchQuery.trim());
+    setOrDelete("brand", filters.brands.join(","));
     setOrDelete("size", filters.sizes.join(","));
     setOrDelete("color", filters.colors.join(","));
     setOrDelete("minRating", filters.minRating > 0 ? String(filters.minRating) : "");
@@ -485,7 +491,7 @@ export function ProductGrid() {
       const qs = params.toString();
       router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
     }
-  }, [filters.searchQuery, filters.sizes, filters.colors, filters.minRating, filters.sort]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [filters.searchQuery, filters.brands, filters.sizes, filters.colors, filters.minRating, filters.sort]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     fetchProducts(
@@ -551,7 +557,7 @@ export function ProductGrid() {
     updateFilter('searchQuery', '');
   }, [updateFilter]);
 
-  const toggleArrayFilter = useCallback((key: 'sizes' | 'colors', value: string) => {
+  const toggleArrayFilter = useCallback((key: 'brands' | 'sizes' | 'colors', value: string) => {
     setFilters(prev => {
       const list = prev[key];
       return {
@@ -642,10 +648,41 @@ export function ProductGrid() {
         </div>
       )}
 
+      {/* Brands */}
+      {facets.brands.length > 0 && (
+        <div className="space-y-3">
+          <h3 className="font-black text-slate-900">{language === "ar" ? "الماركات التجارية" : "Brands"}</h3>
+          <div className="flex flex-wrap gap-2">
+            {facets.brands.map(({ brand }) => {
+              const selected = filters.brands.some((b) => b.toLowerCase() === brand.toLowerCase());
+              return (
+                <button key={brand} type="button" aria-pressed={selected}
+                  onClick={() => toggleArrayFilter('brands', brand)}
+                  className={`rounded-full border px-3.5 py-1.5 text-sm font-semibold transition-colors ${selected ? "border-primary bg-primary text-primary-foreground" : "bg-background hover:bg-muted"}`}>
+                  {brand}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Sizes — only sizes that exist with stock */}
       {facets.sizes.length > 0 && (
         <div className="space-y-3">
-          <h3 className="font-black text-slate-900">{language === "ar" ? "المقاس" : "Size"}</h3>
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="font-black text-slate-900">{language === "ar" ? "المقاس" : "Size"}</h3>
+            {(() => {
+              const rec = (user as any)?.preferredSize ? String((user as any).preferredSize) : null
+              if (!rec || !facets.sizes.some((f) => f.size === rec) || filters.sizes.includes(rec)) return null
+              return (
+                <button type="button" onClick={() => toggleArrayFilter('sizes', rec)}
+                  className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                  {language === "ar" ? `مقاس موصى به: ${rec}` : `Recommended size: ${rec}`}
+                </button>
+              )
+            })()}
+          </div>
           <div className="flex flex-wrap gap-2">
             {facets.sizes.map(({ size, count }) => {
               const selected = filters.sizes.includes(size);
@@ -790,6 +827,18 @@ export function ProductGrid() {
           }
         </div>
 
+        {/* Discovery progress */}
+        {pagination.totalProducts > 0 && (
+          <div className="w-full max-w-xs" aria-hidden="true">
+            <div className="h-1.5 overflow-hidden rounded-full bg-muted">
+              <div
+                className="h-full rounded-full bg-primary"
+                style={{ width: `${Math.min(100, Math.round((Math.min(pagination.page * pagination.pageSize, pagination.totalProducts) / pagination.totalProducts) * 100))}%` }}
+              />
+            </div>
+          </div>
+        )}
+
         {/* Mobile Pagination */}
         <div className="flex items-center gap-2 sm:hidden">
           <Button
@@ -907,6 +956,34 @@ export function ProductGrid() {
                 <p className="text-sm text-muted-foreground">
                   {pagination.totalProducts} {language === "ar" ? "نتيجة مطابقة" : "matching results"}
                 </p>
+              )}
+              {(filters.brands.length > 0 || filters.sizes.length > 0 || filters.colors.length > 0 || filters.minRating > 0) && (
+                <div className="mt-2 flex flex-wrap items-center gap-1.5" aria-label={language === "ar" ? "الفلاتر النشطة" : "Active filters"}>
+                  {filters.brands.map((b) => (
+                    <button key={`b-${b}`} type="button"
+                      onClick={() => setFilters((p) => ({ ...p, brands: p.brands.filter((x) => x !== b) }))}
+                      className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                      {b} <span aria-hidden>×</span>
+                    </button>
+                  ))}
+                  {filters.sizes.map((sz) => (
+                    <button key={`s-${sz}`} type="button"
+                      onClick={() => setFilters((p) => ({ ...p, sizes: p.sizes.filter((x) => x !== sz) }))}
+                      className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                      {language === "ar" ? "مقاس" : "Size"} {sz} <span aria-hidden>×</span>
+                    </button>
+                  ))}
+                  {filters.colors.map((c) => (
+                    <button key={`c-${c}`} type="button"
+                      onClick={() => setFilters((p) => ({ ...p, colors: p.colors.filter((x) => x !== c) }))}
+                      className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                      {c} <span aria-hidden>×</span>
+                    </button>
+                  ))}
+                  <button type="button" onClick={resetFilters} className="text-xs font-semibold text-muted-foreground underline">
+                    {language === "ar" ? "مسح الكل" : "Clear all"}
+                  </button>
+                </div>
               )}
             </div>
 

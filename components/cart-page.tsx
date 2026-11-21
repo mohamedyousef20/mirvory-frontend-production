@@ -39,6 +39,7 @@ import {
   ChevronLeft,
   Sparkles
 } from "lucide-react"
+import { TrustGuarantees } from "@/components/trust-guarantees"
 import { cartService, couponService, shippingSettingsService } from "@/lib/api"
 import { MirvoryPageLoader } from "./MirvoryLoader"
 import { useAuth } from "@/contexts/AuthProvider"
@@ -872,6 +873,8 @@ function AuthenticatedCartPage() {
                   </div>
                 </div>
 
+                <TrustGuarantees isArabic={language === "ar"} />
+
                 {/* Additional Regulatory Compliance Box */}
                 <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-center shadow-sm">
                   <div className="flex items-center justify-center gap-2 mb-1.5">
@@ -893,6 +896,22 @@ function AuthenticatedCartPage() {
           )}
         </div>
       </div>
+      {cartItems.length > 0 && (
+        <div className="fixed inset-x-0 bottom-16 z-30 border-t bg-background/95 p-3 backdrop-blur lg:hidden">
+          <div className="mx-auto flex max-w-xl items-center gap-3" dir={language === "ar" ? "rtl" : "ltr"}>
+            <div className="shrink-0">
+              <p className="text-[11px] text-muted-foreground">{language === "ar" ? "الإجمالي" : "Total"}</p>
+              <p className="text-base font-extrabold">{Number(total).toLocaleString()} {language === "ar" ? "ج.م" : "EGP"}</p>
+            </div>
+            <Button asChild className="h-11 flex-1 font-bold">
+              <Link href="/checkout" className="flex items-center justify-center gap-2">
+                <CreditCard className="h-4 w-4" />
+                {t("checkout")}
+              </Link>
+            </Button>
+          </div>
+        </div>
+      )}
     </>
   )
 }

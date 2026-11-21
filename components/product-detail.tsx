@@ -4,6 +4,9 @@ import { Card, CardContent } from "@/components/ui/card"
 import { MirvoryPageLoader } from "./MirvoryLoader"
 import Image from "next/image"
 import Link from "next/link"
+import { TrustGuarantees } from "@/components/trust-guarantees"
+import { STORE_POLICIES } from "@/lib/store-policies"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { useLanguage } from "@/components/language-provider";
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -701,6 +704,9 @@ const ProductDetail = ({ productId }: { productId: string }) => {
                   <span className="font-normal text-muted-foreground ms-2">— {selectedSize}</span>
                 )}
               </Label>
+              <Link href="/size-guide" className="text-xs font-semibold text-primary underline-offset-2 hover:underline">
+                {language === "ar" ? "دليل المقاسات" : "Size guide"}
+              </Link>
               <div className="flex gap-2 flex-wrap">
                 {activeSizes.map(({ size, quantity: qty }) => {
                   const isUnavailable = qty === 0
@@ -784,6 +790,8 @@ const ProductDetail = ({ productId }: { productId: string }) => {
               <Share2 className="h-5 w-5" />
             </Button>
           </div>
+
+          <TrustGuarantees isArabic={language === "ar"} className="pt-2" />
 
           <div className="grid grid-cols-3 gap-2 pt-2 border-t">
             <div className="flex flex-col items-center text-center gap-1 p-2">
@@ -939,6 +947,44 @@ const ProductDetail = ({ productId }: { productId: string }) => {
                 </CardContent>
               </Card>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Delivery & returns accordion */}
+      <Accordion type="single" collapsible className="mt-6 rounded-2xl border px-4">
+        <AccordionItem value="delivery">
+          <AccordionTrigger className="text-sm font-bold">
+            {language === "ar" ? "التوصيل والمعاينة" : "Delivery & inspection"}
+          </AccordionTrigger>
+          <AccordionContent className="space-y-1.5 text-sm text-muted-foreground">
+            <p>{language === "ar" ? `التوصيل خلال ${STORE_POLICIES.deliveryWindow}.` : `Delivery within ${STORE_POLICIES.deliveryWindowEn}.`}</p>
+            <p>{language === "ar" ? `معاينة المنتج لمدة ${STORE_POLICIES.inspectionMinutes} دقيقة مع المندوب قبل الاستلام.` : `Inspect the item for ${STORE_POLICIES.inspectionMinutes} minutes with the courier before accepting.`}</p>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="returns" className="border-b-0">
+          <AccordionTrigger className="text-sm font-bold">
+            {language === "ar" ? "الإرجاع والاستبدال" : "Returns & exchanges"}
+          </AccordionTrigger>
+          <AccordionContent className="space-y-1.5 text-sm text-muted-foreground">
+            <p>{language === "ar" ? `يمكنك طلب الإرجاع أو الاستبدال خلال ${STORE_POLICIES.returnDays} يومًا من الاستلام.` : `Request a return or exchange within ${STORE_POLICIES.returnDays} days of delivery.`}</p>
+            <Link href="/size-guide" className="font-semibold text-primary">{language === "ar" ? "راجع دليل المقاسات قبل الطلب" : "Check the size guide before ordering"}</Link>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+
+      {/* Sticky mobile buy bar */}
+      {!isOutOfStock && (
+        <div className="fixed inset-x-0 bottom-16 z-30 border-t bg-background/95 p-3 backdrop-blur md:hidden">
+          <div className="mx-auto flex max-w-xl items-center gap-3">
+            <div className="shrink-0">
+              <p className="text-[11px] text-muted-foreground">{language === "ar" ? "السعر" : "Price"}</p>
+              <p className="text-base font-extrabold">{finalPrice.toLocaleString()} {language === "ar" ? "ج.م" : "EGP"}</p>
+            </div>
+            <Button className="h-11 flex-1 font-bold" onClick={addToCartHandler}>
+              <ShoppingCart className="me-2 h-4 w-4" />
+              {language === "ar" ? "أضف إلى السلة" : "Add to Cart"}
+            </Button>
           </div>
         </div>
       )}
