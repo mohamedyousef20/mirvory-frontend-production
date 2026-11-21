@@ -6,7 +6,8 @@ import Link from "next/link"
 import { useLanguage } from "@/components/language-provider";
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { ShoppingCart, Heart, Star, Loader2, Trash2 } from "lucide-react"
+import { ShoppingCart, Heart, Star, Loader2, Trash2, TrendingDown } from "lucide-react"
+import { WhatsAppIcon } from "@/components/whatsapp-help-button"
 import { useToast } from "@/hooks/use-toast"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -49,6 +50,7 @@ interface WishlistItem {
     status?: string;
   };
   dateAdded: Date;
+  priceAtAdd?: number | null;
 }
 
 export function WishlistPage() {
@@ -284,6 +286,43 @@ export function WishlistPage() {
               : "Keep every product you love in one place and revisit them quickly."}
           </p>
         </div>
+
+        {(() => {
+          const drops = wishlistItems
+            .map((it) => {
+              const now = it.product?.discountedPrice ?? it.product?.price
+              const was = it.priceAtAdd
+              return was && now && now < was ? { title: it.product.title, saved: Math.round(was - now) } : null
+            })
+            .filter(Boolean) as { title: string; saved: number }[]
+          if (!drops.length) return null
+          const best = drops.sort((a, b) => b.saved - a.saved)[0]
+          return (
+            <div className="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-3 text-emerald-800">
+              <TrendingDown className="h-5 w-5 shrink-0" />
+              <p className="text-sm font-semibold">
+                {isArabic
+                  ? `انخفاض في السعر: وفّرت ${best.saved.toLocaleString("ar-EG")} ج.م على ${best.title} منذ حفظه`
+                  : `Price drop: you save EGP ${best.saved.toLocaleString()} on ${best.title} since saving it`}
+              </p>
+            </div>
+          )
+        })()}
+
+        {wishlistItems.length > 0 && (
+          <a
+            href={`https://wa.me/?text=${encodeURIComponent(
+              (isArabic ? "قائمة أمنياتي من ميرفوري:\n" : "My Mirvory wishlist:\n") +
+                wishlistItems.map((it) => `• ${it.product?.title}`).join("\n")
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-between rounded-2xl border bg-card p-3"
+          >
+            <span className="text-sm font-semibold">{isArabic ? "شارك قائمة أمنياتك عبر واتساب" : "Share your wishlist on WhatsApp"}</span>
+            <WhatsAppIcon className="h-6 w-6 text-[#25D366]" />
+          </a>
+        )}
 
         {wishlistItems.length === 0 ? (
           <div className="text-center py-12">

@@ -224,6 +224,8 @@ export const notificationService = {
 
 // User Services
 export const userService = {
+  updatePreferredSize: (preferredSize: string | null) =>
+    api.patch('/api/users/preferred-size', { preferredSize }),
   getProfile: () => api.get('/api/users/profile'),
 
   updateProfile: (userData: {
@@ -457,6 +459,13 @@ export const orderService = {
     }
   ) => api.put(`/api/orders/${id}`, orderData),
 
+  updateShipment: (data: {
+    id: string; courier?: string; waybillNumber?: string; currentStation?: string; currentStatus?: string;
+    courierAgent?: { name?: string; phone?: string }; branch?: { name?: string; manager?: string; phone?: string };
+    route?: { label?: string; station?: string; note?: string }[];
+    events?: { title: string; status?: string; description?: string; station?: string; occurredAt?: string }[];
+    replaceEvents?: boolean;
+  }) => api.patch('/api/orders/shipment', data),
   updateDeliveryStatus: (id: string, deliveryStatus: string) =>
     api.patch(`/api/orders/updateDelivery`, { id, deliveryStatus }),
 
@@ -675,7 +684,12 @@ export const pickupPointService = {
 };
 // return services
 export const returnService = {
-  createReturnRequest: (returnData: { orderId: string; itemId: string; reason: string }) =>
+  createReturnRequest: (returnData: {
+    orderId: string; itemId: string; reason: string; images?: string[];
+    type?: 'return' | 'exchange'; exchangeSize?: string; exchangeColor?: string;
+    refundMethod?: 'instapay' | 'e_wallet' | 'cash'; refundAccount?: string;
+    preferredSlot?: 'morning' | 'evening'; pickupAddress?: string; notes?: string;
+  }) =>
     api.post('/api/returns', returnData),
   getReturnRequests: (params?: any) => api.get('/api/returns', { params }),
   getReturnRequestById: (id: string) => api.get(`/api/returns/${id}`),

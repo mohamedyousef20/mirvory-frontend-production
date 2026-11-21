@@ -701,6 +701,9 @@ const ProductDetail = ({ productId }: { productId: string }) => {
                   <span className="font-normal text-muted-foreground ms-2">— {selectedSize}</span>
                 )}
               </Label>
+              <Link href="/size-guide" className="text-xs font-semibold text-primary underline-offset-2 hover:underline">
+                {language === "ar" ? "دليل المقاسات" : "Size guide"}
+              </Link>
               <div className="flex gap-2 flex-wrap">
                 {activeSizes.map(({ size, quantity: qty }) => {
                   const isUnavailable = qty === 0
