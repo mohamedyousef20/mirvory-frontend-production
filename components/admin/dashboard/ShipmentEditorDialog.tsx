@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Truck } from "lucide-react"
+import { Plus, Trash2, Truck } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -30,7 +30,24 @@ export function ShipmentEditorDialog({ order, onSaved }: Props) {
     branchManager: s.branch?.manager || "",
     branchPhone: s.branch?.phone || "",
   })
-  const [event, setEvent] = useState({ title: "", description: "", station: "", occurredAt: "" })
+  type Ev = { title: string; description: string; station: string; occurredAt: string }
+  type Stop = { label: string; station: string; note: string }
+  const toLocal = (d?: string) => {
+    if (!d) return ""
+    const x = new Date(d)
+    const pad = (n: number) => String(n).padStart(2, "0")
+    return `${x.getFullYear()}-${pad(x.getMonth() + 1)}-${pad(x.getDate())}T${pad(x.getHours())}:${pad(x.getMinutes())}`
+  }
+  const [events, setEvents] = useState<Ev[]>(
+    (s.events || []).map((e: any) => ({
+      title: e.title || "", description: e.description || "", station: e.station || "", occurredAt: toLocal(e.occurredAt),
+    }))
+  )
+  const [route, setRoute] = useState<Stop[]>(
+    (s.route || []).map((r: any) => ({ label: r.label || "", station: r.station || "", note: r.note || "" }))
+  )
+  const patchEv = (i: number, k: keyof Ev, v: string) => setEvents((p) => p.map((e, j) => (j === i ? { ...e, [k]: v } : e)))
+  const patchStop = (i: number, k: keyof Stop, v: string) => setRoute((p) => p.map((e, j) => (j === i ? { ...e, [k]: v } : e)))
 
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((p) => ({ ...p, [k]: e.target.value }))
@@ -46,17 +63,18 @@ export function ShipmentEditorDialog({ order, onSaved }: Props) {
         currentStation: form.currentStation,
         courierAgent: { name: form.agentName, phone: form.agentPhone },
         branch: { name: form.branchName, manager: form.branchManager, phone: form.branchPhone },
-        events: event.title.trim()
-          ? [{
-              title: event.title.trim(),
-              description: event.description.trim(),
-              station: event.station.trim(),
-              occurredAt: event.occurredAt ? new Date(event.occurredAt).toISOString() : undefined,
-            }]
-          : undefined,
+        replaceEvents: true,
+        events: events
+          .filter((e) => e.title.trim())
+          .map((e) => ({
+            title: e.title.trim(),
+            description: e.description.trim(),
+            station: e.station.trim(),
+            occurredAt: e.occurredAt ? new Date(e.occurredAt).toISOString() : undefined,
+          })),
+        route: route.filter((r) => r.label.trim() || r.station.trim()),
       })
       toast.success("تم حفظ بيانات الشحن")
-      setEvent({ title: "", description: "", station: "", occurredAt: "" })
       onSaved?.(res.data?.data)
       setOpen(false)
     } catch (e: any) {
@@ -76,7 +94,7 @@ export function ShipmentEditorDialog({ order, onSaved }: Props) {
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg" dir="rtl">
         <DialogHeader>
           <DialogTitle>بيانات شركة الشحن</DialogTitle>
-          <DialogDescription>انسخ البيانات من نظام شركة الشحن. تظهر للعميل في صفحة الطلب.</DialogDescription>
+          <DialogDescription>عدّل كل بيانات التتبع (الحالة، المحطات، السجل، المندوب والفرع). ما تحفظه يظهر للعميل في صفحة الطلب.</DialogDescription>
         </DialogHeader>
 
         <div className="grid grid-cols-2 gap-3">
@@ -92,13 +110,55 @@ export function ShipmentEditorDialog({ order, onSaved }: Props) {
         </div>
 
         <div className="space-y-2 rounded-xl border p-3">
-          <p className="text-sm font-bold">إضافة حدث جديد للسجل (اختياري)</p>
-          <Input placeholder="العنوان، مثل: وصول الشحنة إلى محطة القليوبية" value={event.title} onChange={(e) => setEvent((p) => ({ ...p, title: e.target.value }))} />
-          <Textarea placeholder="التفاصيل" value={event.description} onChange={(e) => setEvent((p) => ({ ...p, description: e.target.value }))} className="min-h-[64px]" />
-          <div className="grid grid-cols-2 gap-2">
-            <Input placeholder="المحطة" value={event.station} onChange={(e) => setEvent((p) => ({ ...p, station: e.target.value }))} />
-            <Input type="datetime-local" value={event.occurredAt} onChange={(e) => setEvent((p) => ({ ...p, occurredAt: e.target.value }))} dir="ltr" />
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-bold">محطات العبور</p>
+            <Button type="button" variant="outline" size="sm" onClick={() => setRoute((p) => [...p, { label: "", station: "", note: "" }])}>
+              <Plus className="h-4 w-4" /> محطة
+            </Button>
           </div>
+          {route.map((r, i) => (
+            <div key={i} className="space-y-1.5 rounded-lg bg-muted/40 p-2">
+              <div className="grid grid-cols-2 gap-2">
+                <Input placeholder="العنوان، مثل: محطة المنشأ" value={r.label} onChange={(e) => patchStop(i, "label", e.target.value)} />
+                <Input placeholder="المحطة" value={r.station} onChange={(e) => patchStop(i, "station", e.target.value)} />
+              </div>
+              <div className="flex gap-2">
+                <Input placeholder="ملاحظة" value={r.note} onChange={(e) => patchStop(i, "note", e.target.value)} />
+                <Button type="button" variant="ghost" size="icon" onClick={() => setRoute((p) => p.filter((_, j) => j !== i))} aria-label="حذف المحطة">
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="space-y-2 rounded-xl border p-3">
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-bold">سجل الشحنة (Timeline)</p>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setEvents((p) => [{ title: "", description: "", station: "", occurredAt: toLocal(new Date().toISOString()) }, ...p])}
+            >
+              <Plus className="h-4 w-4" /> حدث
+            </Button>
+          </div>
+          {events.map((e, i) => (
+            <div key={i} className="space-y-1.5 rounded-lg bg-muted/40 p-2">
+              <div className="flex gap-2">
+                <Input placeholder="العنوان، مثل: وصول الشحنة إلى محطة القليوبية" value={e.title} onChange={(ev) => patchEv(i, "title", ev.target.value)} />
+                <Button type="button" variant="ghost" size="icon" onClick={() => setEvents((p) => p.filter((_, j) => j !== i))} aria-label="حذف الحدث">
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+              <Textarea placeholder="التفاصيل" value={e.description} onChange={(ev) => patchEv(i, "description", ev.target.value)} className="min-h-[56px]" />
+              <div className="grid grid-cols-2 gap-2">
+                <Input placeholder="المحطة" value={e.station} onChange={(ev) => patchEv(i, "station", ev.target.value)} />
+                <Input type="datetime-local" value={e.occurredAt} onChange={(ev) => patchEv(i, "occurredAt", ev.target.value)} dir="ltr" />
+              </div>
+            </div>
+          ))}
         </div>
 
         <DialogFooter>
