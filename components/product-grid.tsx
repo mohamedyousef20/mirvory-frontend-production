@@ -908,6 +908,34 @@ export function ProductGrid() {
                   {pagination.totalProducts} {language === "ar" ? "نتيجة مطابقة" : "matching results"}
                 </p>
               )}
+              {(filters.brands.length > 0 || filters.sizes.length > 0 || filters.colors.length > 0 || filters.minRating > 0) && (
+                <div className="mt-2 flex flex-wrap items-center gap-1.5" aria-label={language === "ar" ? "الفلاتر النشطة" : "Active filters"}>
+                  {filters.brands.map((b) => (
+                    <button key={`b-${b}`} type="button"
+                      onClick={() => setFilters((p) => ({ ...p, brands: p.brands.filter((x) => x !== b) }))}
+                      className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                      {b} <span aria-hidden>×</span>
+                    </button>
+                  ))}
+                  {filters.sizes.map((sz) => (
+                    <button key={`s-${sz}`} type="button"
+                      onClick={() => setFilters((p) => ({ ...p, sizes: p.sizes.filter((x) => x !== sz) }))}
+                      className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                      {language === "ar" ? "مقاس" : "Size"} {sz} <span aria-hidden>×</span>
+                    </button>
+                  ))}
+                  {filters.colors.map((c) => (
+                    <button key={`c-${c}`} type="button"
+                      onClick={() => setFilters((p) => ({ ...p, colors: p.colors.filter((x) => x !== c) }))}
+                      className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                      {c} <span aria-hidden>×</span>
+                    </button>
+                  ))}
+                  <button type="button" onClick={resetFilters} className="text-xs font-semibold text-muted-foreground underline">
+                    {language === "ar" ? "مسح الكل" : "Clear all"}
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className="flex items-center gap-2 w-full sm:w-auto">

@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { MirvoryPageLoader } from "./MirvoryLoader"
 import Image from "next/image"
 import Link from "next/link"
+import { TrustGuarantees } from "@/components/trust-guarantees"
 import { useLanguage } from "@/components/language-provider";
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -787,6 +788,8 @@ const ProductDetail = ({ productId }: { productId: string }) => {
               <Share2 className="h-5 w-5" />
             </Button>
           </div>
+
+          <TrustGuarantees isArabic={language === "ar"} className="pt-2" />
 
           <div className="grid grid-cols-3 gap-2 pt-2 border-t">
             <div className="flex flex-col items-center text-center gap-1 p-2">

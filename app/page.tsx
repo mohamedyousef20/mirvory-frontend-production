@@ -11,6 +11,7 @@ import { redirect } from "next/navigation"
 import { ShoppingBag } from "lucide-react"
 import { SideAds } from "@/components/side-ads"
 import { HomeOffersCountdown } from "@/components/home-offers-countdown"
+import { HomePromoBanners } from "@/components/home-promo-banners"
 
 /** Lightweight visual divider between homepage sections */
 function SectionDivider({ icon: Icon, label }: { icon?: React.ElementType; label?: string }) {
@@ -58,6 +59,8 @@ export default async function Home() {
 
               {/* ── Best Sellers ──────────────────────────────────────── */}
               <BestSellersSection />
+
+              <HomePromoBanners />
 
               <SectionDivider />
 

@@ -39,6 +39,7 @@ import {
   ChevronLeft,
   Sparkles
 } from "lucide-react"
+import { TrustGuarantees } from "@/components/trust-guarantees"
 import { cartService, couponService, shippingSettingsService } from "@/lib/api"
 import { MirvoryPageLoader } from "./MirvoryLoader"
 import { useAuth } from "@/contexts/AuthProvider"
@@ -871,6 +872,8 @@ function AuthenticatedCartPage() {
                     </p>
                   </div>
                 </div>
+
+                <TrustGuarantees isArabic={language === "ar"} />
 
                 {/* Additional Regulatory Compliance Box */}
                 <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-center shadow-sm">
