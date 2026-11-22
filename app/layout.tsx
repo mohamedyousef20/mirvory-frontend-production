@@ -4,7 +4,7 @@
 import type React from "react"
 import type { Metadata } from "next"
 
-import { Cairo, Noto_Naskh_Arabic } from "next/font/google"
+import { Cairo, Noto_Naskh_Arabic, Space_Grotesk, Plus_Jakarta_Sans } from "next/font/google"
 
 import "./globals.css"
 
@@ -40,6 +40,20 @@ const notoNaskh = Noto_Naskh_Arabic({
   weight: ["400", "500", "600", "700"],
 })
 
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-space-grotesk",
+  weight: ["500", "600", "700"],
+})
+
+const plusJakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-jakarta",
+  weight: ["400", "500", "600"],
+})
+
 export const metadata: Metadata = {
   title: "Mirvory - متجر الكوتشيات والملابس",
   description:
@@ -60,10 +74,20 @@ export default async function RootLayout({
       dir="rtl"
       suppressHydrationWarning
     >
+      <head>
+        {/* Material Symbols icon font used by the redesigned mobile screens */}
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        />
+      </head>
       <body
         className={`
                     ${cairo.variable}
                     ${notoNaskh.variable}
+                    ${spaceGrotesk.variable}
+                    ${plusJakarta.variable}
                     font-sans
                     antialiased
                 `}
