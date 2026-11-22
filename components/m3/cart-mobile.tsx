@@ -30,6 +30,8 @@ type Props = {
   updatingItemId: string | null
   error: string | null
   loading?: boolean
+  hideCoupon?: boolean
+  checkoutHref?: string
   onCouponChange: (v: string) => void
   onApplyCoupon: () => void
   onRemoveCoupon: () => void
@@ -184,7 +186,7 @@ export function CartMobile(p: Props) {
           ))}
         </div>
 
-        <div className="bg-m3-surface-container-lowest rounded-2xl p-m3-space-md shadow-sm mb-m3-space-md flex flex-col gap-m3-space-sm">
+        {!p.hideCoupon && <div className="bg-m3-surface-container-lowest rounded-2xl p-m3-space-md shadow-sm mb-m3-space-md flex flex-col gap-m3-space-sm">
           <div className="flex items-center justify-between">
             <span className="font-m3-headline-md text-m3-headline-md text-m3-on-surface">كوبون الخصم</span>
           </div>
@@ -231,7 +233,7 @@ export function CartMobile(p: Props) {
               <span className="font-m3-price-display text-m3-label-md font-bold text-m3-primary shrink-0">-{fmt(p.discount)} ج.م</span>
             </div>
           )}
-        </div>
+        </div>}
 
         <div className="bg-m3-surface-container-lowest rounded-2xl p-m3-space-md shadow-sm mb-m3-space-md">
           <h2 className="font-m3-headline-md text-m3-headline-md text-m3-on-surface mb-m3-space-sm">ملخص الطلب</h2>
@@ -278,7 +280,7 @@ export function CartMobile(p: Props) {
 
         <div className="w-full pt-1">
           <Link
-            href="/checkout"
+            href={p.checkoutHref || "/checkout"}
             className="w-full h-14 bg-m3-primary-container hover:bg-m3-primary active:scale-[0.98] transition-all rounded-2xl shadow-lg shadow-m3-primary/20 flex items-center justify-between px-m3-space-md text-m3-on-primary"
           >
             <div className="flex items-center gap-m3-space-xs">
