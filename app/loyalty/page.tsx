@@ -12,6 +12,7 @@ import PaginationControls from "@/components/pagination-controls";
 import Link from "next/link";
 import { loyaltyService } from "@/lib/api";
 import { Input } from "@/components/ui/input";
+import { LoyaltyMobile } from "@/components/m3/loyalty-mobile";
 import { LoyaltyMemberCard } from "@/components/loyalty/member-card";
 
 interface LoyaltyData {
@@ -33,7 +34,7 @@ interface Transaction {
   createdAt: string;
 }
 
-export default function LoyaltyPage() {
+function LoyaltyDesktop() {
   const { language } = useLanguage();
   const isArabic = language === "ar";
 
@@ -399,5 +400,16 @@ export default function LoyaltyPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoyaltyPage() {
+  return (
+    <>
+      <LoyaltyMobile />
+      <div className="hidden md:block">
+        <LoyaltyDesktop />
+      </div>
+    </>
   );
 }
