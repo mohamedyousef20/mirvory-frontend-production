@@ -20,7 +20,7 @@ import { Toaster } from "sonner"
 import { getUserServer } from "@/src/lib/getUserServer"
 import { AuthProvider } from "@/contexts/AuthProvider"
 import { AnnouncementBar } from "@/components/announcement-bar"
-import { MobileBottomNav } from "@/components/mobile-bottom-nav"
+import { DesktopOnly, MobileHeader, MobileNav, PageOffset } from "@/components/m3/chrome"
 
 import Script from "next/script"
 
@@ -168,11 +168,14 @@ fbq('track', 'PageView');
                     >
 
                       {/* ── Scrolling Announcement Bar (above sticky header) ── */}
-                      <AnnouncementBar />
+                      <DesktopOnly>
+                        <AnnouncementBar />
 
-                      <MainNav />
+                        <MainNav />
+                      </DesktopOnly>
+                      <MobileHeader />
 
-                      <div className="pt-16">
+                      <PageOffset>
 
                         <Toaster
                           position="top-center"
@@ -184,14 +187,14 @@ fbq('track', 'PageView');
 
                         {children}
 
-                      </div>
+                      </PageOffset>
 
                       {/* v5: extra space so the bottom bar never covers the footer (mobile only) */}
                       <div className="pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0">
                         <SiteFooter />
                       </div>
 
-                      <MobileBottomNav />
+                      <MobileNav />
 
                     </AuthProvider>
 
