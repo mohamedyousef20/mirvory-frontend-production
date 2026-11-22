@@ -22,7 +22,7 @@ export function DesktopOnly({ children }: { children: React.ReactNode }) {
 const SELF_SPACED = ["/products", "/cart"]
 export function PageOffset({ children }: { children: React.ReactNode }) {
   const pathname = usePathname() || "/"
-  const self = SELF_SPACED.includes(pathname)
+  const self = SELF_SPACED.includes(pathname) || /^\/products\/[^/]+$/.test(pathname)
   return <div className={!isClassicPath(pathname) && self ? "md:pt-16" : "pt-16"}>{children}</div>
 }
 

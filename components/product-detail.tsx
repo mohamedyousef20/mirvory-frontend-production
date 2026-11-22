@@ -1,5 +1,6 @@
 "use client"
 import { useState, useEffect, useCallback, useRef, useMemo } from "react"
+import { ProductMobile } from "@/components/m3/product-mobile"
 import { Card, CardContent } from "@/components/ui/card"
 import { MirvoryPageLoader } from "./MirvoryLoader"
 import Image from "next/image"
@@ -542,6 +543,51 @@ const ProductDetail = ({ productId }: { productId: string }) => {
   }
 
   return (
+    <>
+      <ProductMobile
+        product={product as any}
+        mainImage={mainImage}
+        onMainImage={setMainImage}
+        selectedColor={selectedColor}
+        selectedSize={selectedSize}
+        activeSizes={activeSizes}
+        quantity={quantity}
+        maxQty={maxQty}
+        isFavorite={isFavorite}
+        isOutOfStock={isOutOfStock}
+        reviews={reviews}
+        onColor={handleColorSelect}
+        onSize={handleSizeSelect}
+        onQuantity={handleQuantityChange}
+        onAddToCart={addToCartHandler}
+        onBuyNow={handleBuyNow}
+        onToggleFavorite={toggleWishlist}
+        onWriteReview={() => document.getElementById("m3-review-form")?.scrollIntoView({ behavior: "smooth", block: "center" })}
+      />
+      <form id="m3-review-form" dir="rtl" onSubmit={handleSubmitReview} className="md:hidden mx-m3-margin mb-24 bg-m3-surface-container-lowest rounded-2xl p-m3-space-md shadow-sm flex flex-col gap-m3-space-sm">
+        <h3 className="font-m3-headline-md text-m3-headline-md text-m3-on-surface">{userRatingId ? "تعديل تقييمك" : "أضف تقييمك"}</h3>
+        {!isLoggedIn ? (
+          <p className="font-m3-body-sm text-m3-body-sm text-m3-on-surface-variant">سجّل الدخول لإضافة تقييمك.</p>
+        ) : (
+          <>
+            <div className="flex gap-1 text-amber-500">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <button type="button" key={i} aria-label={`${i} نجوم`} onClick={() => setRatingInput(i)}>
+                  <span className="material-symbols-outlined text-[28px]" style={{ fontVariationSettings: `'FILL' ${i <= ratingInput ? 1 : 0}` }}>star</span>
+                </button>
+              ))}
+            </div>
+            <textarea value={commentInput} onChange={(e) => setCommentInput(e.target.value)} rows={3} placeholder="اكتب رأيك (اختياري)" className="w-full rounded-xl bg-m3-surface-container-low p-3 font-m3-body-md text-m3-body-md text-m3-on-surface outline-none" />
+            <div className="flex gap-2">
+              <button type="submit" disabled={isSubmittingReview} className="flex-1 h-11 rounded-xl bg-m3-primary text-m3-on-primary font-m3-label-lg text-m3-label-lg font-bold disabled:opacity-60">{isSubmittingReview ? "جارٍ الحفظ..." : "حفظ التقييم"}</button>
+              {userRatingId && (
+                <button type="button" onClick={() => handleDeleteReview()} className="h-11 px-4 rounded-xl bg-m3-error-container text-m3-on-error-container font-m3-label-md text-m3-label-md font-bold">حذف</button>
+              )}
+            </div>
+          </>
+        )}
+      </form>
+      <div className="hidden md:block">
     <div className="container mx-auto px-4 py-8" dir={language === "ar" ? "rtl" : "ltr"}>
       <Breadcrumb className="mb-6">
         <BreadcrumbList>
@@ -989,6 +1035,8 @@ const ProductDetail = ({ productId }: { productId: string }) => {
         </div>
       )}
     </div>
+      </div>
+    </>
   )
 }
 
