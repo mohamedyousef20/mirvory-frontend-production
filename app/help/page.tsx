@@ -7,10 +7,11 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
+import { HelpMobile } from "@/components/m3/help-mobile";
 import { useRouter } from "next/navigation";
 import { HelpCircle, Mail, MessageCircle } from "lucide-react";
 
-export default function HelpPage() {
+function HelpDesktop() {
   const router = useRouter();
 
   const faqs = [
@@ -85,5 +86,16 @@ export default function HelpPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function HelpPage() {
+  return (
+    <>
+      <HelpMobile />
+      <div className="hidden md:block">
+        <HelpDesktop />
+      </div>
+    </>
   );
 }
