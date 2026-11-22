@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { Suspense, useEffect, useMemo, useState } from "react"
+import { ReturnMobile } from "@/components/m3/return-mobile"
 import { useSearchParams } from "next/navigation"
 import { useLanguage } from "@/components/language-provider";
 import { Button } from "@/components/ui/button"
@@ -80,7 +81,7 @@ function Field({ label, required, children }: { label: string; required?: boolea
   )
 }
 
-export default function ReturnPageRequest() {
+function ReturnDesktop() {
   const router = useRouter()
   const { language } = useLanguage()
   const isArabic = language === "ar"
@@ -541,5 +542,15 @@ export default function ReturnPageRequest() {
         </div>
       </div>
     </div>
+  )
+}
+export default function ReturnPageRequest() {
+  return (
+    <Suspense fallback={null}>
+      <ReturnMobile />
+      <div className="hidden md:block">
+        <ReturnDesktop />
+      </div>
+    </Suspense>
   )
 }

@@ -32,6 +32,7 @@ import {
   mergeValidatedItems,
   type GuestCartItem,
 } from "@/lib/guestCart"
+import { CartMobile } from "@/components/m3/cart-mobile"
 import { normalizeImageUrl } from "@/src/lib/normalizeImageUrl"
 
 export function GuestCartPage() {
@@ -202,7 +203,38 @@ export function GuestCartPage() {
   if (items.length === 0) {
     return (
       <>
-        <style>{`@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap'); * { font-family: 'Cairo', sans-serif !important; }`}</style>
+        <CartMobile
+        items={items.map((i, idx) => ({
+          _id: `${i.productId}|${i.size ?? ""}|${i.color ?? ""}|${idx}`,
+          name: (isAr ? i.title : i.titleEn || i.title) || "",
+          image: normalizeImageUrl(i.colorImage || i.image || ""),
+          quantity: i.quantity,
+          price: i.price ?? 0,
+          size: i.size || undefined,
+          colorName: i.colorName || undefined,
+          maxQuantity: i.maxQuantity ?? 99,
+        }))}
+        subtotal={subtotal}
+        discount={0}
+        couponCode=""
+        couponApplied={false}
+        couponLoading={false}
+        couponError={null}
+        shipping={shipping}
+        total={total}
+        freeShipping={{ enabled: Boolean(shippingSettings?.freeShippingEnabled), minimum: Number(shippingSettings?.freeShippingMinimum) || 0 }}
+        updatingItemId={null}
+        error={null}
+        hideCoupon
+        checkoutHref="/guest-checkout"
+        onCouponChange={() => {}}
+        onApplyCoupon={() => {}}
+        onRemoveCoupon={() => {}}
+        onQuantity={(id, q) => { const it = items[Number(id.split("|").pop())]; if (it) handleQuantityChange(it, q) }}
+        onRemove={(id) => { const it = items[Number(id.split("|").pop())]; if (it) handleRemove(it) }}
+      />
+        <div className="hidden md:block cairo-desktop">
+        <style>{`@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap'); .cairo-desktop * { font-family: 'Cairo', sans-serif !important; }`}</style>
         <div dir={isAr ? "rtl" : "ltr"} className="min-h-screen bg-[#f4f6fb]">
           <div className="bg-[#1a4fba] text-white shadow-sm">
             <div className="max-w-7xl mx-auto px-6 py-8">
@@ -228,13 +260,45 @@ export function GuestCartPage() {
             </div>
           </div>
         </div>
+        </div>
       </>
     )
   }
 
   return (
     <>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap'); * { font-family: 'Cairo', sans-serif !important; }`}</style>
+      <CartMobile
+        items={items.map((i, idx) => ({
+          _id: `${i.productId}|${i.size ?? ""}|${i.color ?? ""}|${idx}`,
+          name: (isAr ? i.title : i.titleEn || i.title) || "",
+          image: normalizeImageUrl(i.colorImage || i.image || ""),
+          quantity: i.quantity,
+          price: i.price ?? 0,
+          size: i.size || undefined,
+          colorName: i.colorName || undefined,
+          maxQuantity: i.maxQuantity ?? 99,
+        }))}
+        subtotal={subtotal}
+        discount={0}
+        couponCode=""
+        couponApplied={false}
+        couponLoading={false}
+        couponError={null}
+        shipping={shipping}
+        total={total}
+        freeShipping={{ enabled: Boolean(shippingSettings?.freeShippingEnabled), minimum: Number(shippingSettings?.freeShippingMinimum) || 0 }}
+        updatingItemId={null}
+        error={null}
+        hideCoupon
+        checkoutHref="/guest-checkout"
+        onCouponChange={() => {}}
+        onApplyCoupon={() => {}}
+        onRemoveCoupon={() => {}}
+        onQuantity={(id, q) => { const it = items[Number(id.split("|").pop())]; if (it) handleQuantityChange(it, q) }}
+        onRemove={(id) => { const it = items[Number(id.split("|").pop())]; if (it) handleRemove(it) }}
+      />
+      <div className="hidden md:block cairo-desktop">
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap'); .cairo-desktop * { font-family: 'Cairo', sans-serif !important; }`}</style>
 
       <div dir={isAr ? "rtl" : "ltr"} className="min-h-screen bg-[#f4f6fb]">
         {/* Header */}
@@ -512,6 +576,7 @@ export function GuestCartPage() {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </>
   )

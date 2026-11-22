@@ -1,6 +1,7 @@
 "use client";
 
 import { getProductImage } from "@/lib/productVariants"
+import { TrackingMobile } from "@/components/m3/tracking-mobile";
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from "sonner";
@@ -101,7 +102,7 @@ interface Order {
     trackingNumber?: string;
 }
 
-export default function OrdersPage() {
+function OrdersDesktop() {
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
@@ -652,6 +653,35 @@ export default function OrdersPage() {
                         })}
                     </div>
                 </div>
+            </div>
+        </>
+    );
+}
+
+export default function OrdersPage() {
+    const [showAll, setShowAll] = useState(false);
+    return (
+        <>
+            <div className="md:hidden">
+                {showAll ? (
+                    <div className="pt-0">
+                        <OrdersDesktop />
+                    </div>
+                ) : (
+                    <TrackingMobile />
+                )}
+                <div dir="rtl" className="px-4 py-4 pb-24 text-center">
+                    <button
+                        type="button"
+                        onClick={() => setShowAll((v) => !v)}
+                        className="px-5 py-2.5 rounded-full bg-m3-surface-container text-m3-on-surface-variant text-sm font-semibold"
+                    >
+                        {showAll ? "العودة لتتبع الشحنة" : "عرض كل الطلبات (الدفع، الإلغاء، الإرجاع)"}
+                    </button>
+                </div>
+            </div>
+            <div className="hidden md:block">
+                <OrdersDesktop />
             </div>
         </>
     );

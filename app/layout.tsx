@@ -4,7 +4,7 @@
 import type React from "react"
 import type { Metadata } from "next"
 
-import { Cairo, Noto_Naskh_Arabic } from "next/font/google"
+import { Cairo, Noto_Naskh_Arabic, Space_Grotesk, Plus_Jakarta_Sans } from "next/font/google"
 
 import "./globals.css"
 
@@ -20,7 +20,7 @@ import { Toaster } from "sonner"
 import { getUserServer } from "@/src/lib/getUserServer"
 import { AuthProvider } from "@/contexts/AuthProvider"
 import { AnnouncementBar } from "@/components/announcement-bar"
-import { MobileBottomNav } from "@/components/mobile-bottom-nav"
+import { DesktopOnly, MobileHeader, MobileNav, PageOffset } from "@/components/m3/chrome"
 
 import Script from "next/script"
 
@@ -38,6 +38,20 @@ const notoNaskh = Noto_Naskh_Arabic({
   display: "swap",
   variable: "--font-noto-naskh",
   weight: ["400", "500", "600", "700"],
+})
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-space-grotesk",
+  weight: ["500", "600", "700"],
+})
+
+const plusJakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-jakarta",
+  weight: ["400", "500", "600"],
 })
 
 export const metadata: Metadata = {
@@ -60,10 +74,20 @@ export default async function RootLayout({
       dir="rtl"
       suppressHydrationWarning
     >
+      <head>
+        {/* Material Symbols icon font used by the redesigned mobile screens */}
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        />
+      </head>
       <body
         className={`
                     ${cairo.variable}
                     ${notoNaskh.variable}
+                    ${spaceGrotesk.variable}
+                    ${plusJakarta.variable}
                     font-sans
                     antialiased
                 `}
@@ -144,11 +168,14 @@ fbq('track', 'PageView');
                     >
 
                       {/* ── Scrolling Announcement Bar (above sticky header) ── */}
-                      <AnnouncementBar />
+                      <DesktopOnly>
+                        <AnnouncementBar />
 
-                      <MainNav />
+                        <MainNav />
+                      </DesktopOnly>
+                      <MobileHeader />
 
-                      <div className="pt-16">
+                      <PageOffset>
 
                         <Toaster
                           position="top-center"
@@ -160,14 +187,14 @@ fbq('track', 'PageView');
 
                         {children}
 
-                      </div>
+                      </PageOffset>
 
                       {/* v5: extra space so the bottom bar never covers the footer (mobile only) */}
                       <div className="pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0">
                         <SiteFooter />
                       </div>
 
-                      <MobileBottomNav />
+                      <MobileNav />
 
                     </AuthProvider>
 

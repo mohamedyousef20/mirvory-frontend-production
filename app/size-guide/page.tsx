@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { userService } from "@/lib/api"
 import { useAuth } from "@/contexts/AuthProvider"
+import { SizeGuideMobile } from "@/components/m3/size-guide-mobile"
 import { WhatsAppHelpButton } from "@/components/whatsapp-help-button"
 import { BRAND_FIT, MEN_SIZES, WOMEN_SIZES, type SizeRow } from "@/lib/size-chart"
 
@@ -37,7 +38,7 @@ function SizeTable({ rows, mine, onPick }: { rows: SizeRow[]; mine: string | nul
   )
 }
 
-export default function SizeGuidePage() {
+function SizeGuideDesktop() {
   const { user } = useAuth()
   const [brand, setBrand] = useState(BRAND_FIT[0].brand)
   const [mine, setMine] = useState<string | null>(null)
@@ -128,5 +129,16 @@ export default function SizeGuidePage() {
         </div>
       </div>
     </main>
+  )
+}
+
+export default function SizeGuidePage() {
+  return (
+    <>
+      <SizeGuideMobile />
+      <div className="hidden md:block">
+        <SizeGuideDesktop />
+      </div>
+    </>
   )
 }
