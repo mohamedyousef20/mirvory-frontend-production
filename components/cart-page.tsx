@@ -44,6 +44,7 @@ import { cartService, couponService, shippingSettingsService } from "@/lib/api"
 import { MirvoryPageLoader } from "./MirvoryLoader"
 import { useAuth } from "@/contexts/AuthProvider"
 import { GuestCartPage } from "@/components/guest-cart-page"
+import { CartMobile } from "@/components/m3/cart-mobile"
 
 interface CartItem {
   _id: string
@@ -59,6 +60,8 @@ interface CartItem {
   colorName?: string    // Human-readable color label (e.g. "Black")
   colorImage?: string   // Color-specific product image URL
   size?: string
+  brand?: string
+  sellerName?: string
   maxQuantity: number
 }
 
@@ -167,6 +170,8 @@ function AuthenticatedCartPage() {
           colorEn: Array.isArray(item.colors) && item.colors.length > 0 ? item.colors[0] : undefined,
           colorName: item.colorName ?? undefined,
           colorImage: item.colorImage ?? undefined,
+          brand: product.brand || undefined,
+          sellerName: item.sellerName || undefined,
           size: item.size ?? (Array.isArray(item.sizes) && item.sizes.length > 0 ? item.sizes[0] : undefined),
           // v5: the limit is the stock of THIS color + size (calculated by the backend)
           maxQuantity: typeof item.availableStock === 'number' ? item.availableStock : 0
@@ -463,8 +468,40 @@ function AuthenticatedCartPage() {
 
   return (
     <>
+      <CartMobile
+        items={cartItems.map((i) => ({
+          _id: i._id,
+          name: i.name,
+          image: i.image,
+          quantity: i.quantity,
+          price: i.price,
+          size: i.size,
+          colorName: i.colorName || i.color,
+          brand: i.brand,
+          sellerName: i.sellerName,
+          maxQuantity: i.maxQuantity,
+        }))}
+        subtotal={subtotal}
+        discount={couponApplied ? couponData?.discountAmount || 0 : 0}
+        couponCode={couponCode}
+        couponApplied={couponApplied}
+        couponLoading={couponLoading}
+        couponError={couponError}
+        shipping={shipping}
+        total={total}
+        freeShipping={{ enabled: Boolean(shippingSettings?.freeShippingEnabled), minimum: Number(shippingSettings?.freeShippingMinimum) || 0 }}
+        updatingItemId={updatingItemId}
+        error={error}
+        loading={loading}
+        onCouponChange={setCouponCode}
+        onApplyCoupon={handleApplyCoupon}
+        onRemoveCoupon={handleRemoveCoupon}
+        onQuantity={handleQuantityChange}
+        onRemove={handleRemoveItem}
+      />
+      <div className="hidden md:block cairo-desktop">
       {/* 1. GLOBAL & FONTS INJECTION */}
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap'); * { font-family: 'Cairo', sans-serif !important; }`}</style>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap'); .cairo-desktop * { font-family: 'Cairo', sans-serif !important; }`}</style>
 
       <div dir="rtl" className="min-h-screen bg-[#f4f6fb]">
         {/* Modern Interactive Header Block */}
@@ -912,6 +949,7 @@ function AuthenticatedCartPage() {
           </div>
         </div>
       )}
+      </div>
     </>
   )
 }
