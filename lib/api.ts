@@ -838,9 +838,13 @@ export const unavailableProductRequestService = {
    * POST /api/unavailable-product-requests
    */
   createRequest: (data: {
-    imageUrl: string;
+    imageUrl?: string;
+    productName?: string;
+    brand?: string;
+    maxBudget?: number;
+    notes?: string;
     phone: string;
-    size: string;
+    size?: string;
     guestName?: string;
     guestEmail?: string;
   }) =>

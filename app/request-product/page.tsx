@@ -12,8 +12,9 @@ import { Loader2, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { unavailableProductRequestService } from "@/lib/api";
 import ImageUploader from "@/components/ImageUploader";
+import { ConciergeMobile } from "@/components/m3/concierge-mobile";
 import { WhatsAppHelpButton } from "@/components/whatsapp-help-button";
-export default function RequestProductPage() {
+function RequestProductDesktop() {
   const { language } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null)
@@ -285,5 +286,16 @@ export default function RequestProductPage() {
 
       </div>
     </div>
+  );
+}
+
+export default function RequestProductPage() {
+  return (
+    <>
+      <ConciergeMobile />
+      <div className="hidden md:block">
+        <RequestProductDesktop />
+      </div>
+    </>
   );
 }
