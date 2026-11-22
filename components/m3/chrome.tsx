@@ -19,7 +19,7 @@ export function DesktopOnly({ children }: { children: React.ReactNode }) {
 
 /** Top padding wrapper: the fixed mobile header takes the space on redesigned pages. */
 // Exact paths whose mobile screen already reserves the header space itself (update as screens are rebuilt).
-const SELF_SPACED = ["/products", "/cart"]
+const SELF_SPACED = ["/", "/products", "/cart"]
 export function PageOffset({ children }: { children: React.ReactNode }) {
   const pathname = usePathname() || "/"
   const self = SELF_SPACED.includes(pathname) || /^\/products\/[^/]+$/.test(pathname)
