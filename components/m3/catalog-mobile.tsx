@@ -13,11 +13,14 @@ const PRICE_MIN = 500
 const PRICE_MAX = 8000
 const PAGE_SIZE = 12
 
+// `list` uses the backend sort middleware format (field:asc|desc); `search` uses the search sort keys.
 const SORTS = [
-  { value: "newest", label: "ترتيب: الأحدث إلى الأقدم", search: "latest", list: "-createdAt" },
-  { value: "priceLowToHigh", label: "السعر: من الأقل للأعلى", search: "price_asc", list: "price" },
-  { value: "priceHighToLow", label: "السعر: من الأعلى للأقل", search: "price_desc", list: "-price" },
-  { value: "topRated", label: "الأعلى تقييماً للمتاجر", search: "top_rated", list: "-ratings.average" },
+  { value: "newest", label: "ترتيب: الأحدث إلى الأقدم", search: "latest", list: "createdAt:desc" },
+  { value: "sold", label: "الأكثر مبيعاً", search: "sold", list: "sold:desc" },
+  { value: "discount", label: "أعلى خصم", search: "discount", list: "discountPercentage:desc" },
+  { value: "priceLowToHigh", label: "السعر: من الأقل للأعلى", search: "price_asc", list: "price:asc" },
+  { value: "priceHighToLow", label: "السعر: من الأعلى للأقل", search: "price_desc", list: "price:desc" },
+  { value: "topRated", label: "الأعلى تقييماً للمتاجر", search: "top_rated", list: "ratings.average:desc" },
 ]
 
 const fmt = (n: number) => Math.round(n).toLocaleString("en-US")
@@ -34,7 +37,8 @@ export function CatalogMobile() {
   const [brands, setBrands] = useState<string[]>((sp.get("brand") || "").split(",").filter(Boolean))
   const [sizes, setSizes] = useState<string[]>((sp.get("size") || "").split(",").filter(Boolean))
   const [maxPrice, setMaxPrice] = useState(PRICE_MAX)
-  const [sort, setSort] = useState("newest")
+  const [sort, setSort] = useState(SORTS.some((x) => x.value === sp.get("sort")) ? (sp.get("sort") as string) : "newest")
+  const [limited, setLimited] = useState(sp.get("limited") === "true")
   const [drawer, setDrawer] = useState(false)
   const category = sp.get("category") || ""
 
@@ -83,6 +87,7 @@ export function CatalogMobile() {
       try {
         const common: any = { page: pg, limit: PAGE_SIZE }
         if (category) common.category = category
+        if (limited) common.limited = true
         if (maxPrice < PRICE_MAX) common.maxPrice = maxPrice
         if (brands.length) common.brand = brands.join(",")
         if (sizes.length) common.size = sizes.join(",")
@@ -106,7 +111,7 @@ export function CatalogMobile() {
         setLoading(false)
       }
     },
-    [category, maxPrice, brands, sizes, submitted, sortDef]
+    [category, maxPrice, brands, sizes, submitted, sortDef, limited]
   )
 
   useEffect(() => {
@@ -120,11 +125,12 @@ export function CatalogMobile() {
     setBrands([])
     setSizes([])
     setMaxPrice(PRICE_MAX)
+    setLimited(false)
     setQuery("")
     setSubmitted("")
   }
 
-  const activeCount = brands.length + sizes.length + (maxPrice < PRICE_MAX ? 1 : 0)
+  const activeCount = brands.length + sizes.length + (limited ? 1 : 0) + (maxPrice < PRICE_MAX ? 1 : 0)
 
   const toggleFav = async (id: string) => {
     if (!authed) return toast.error("سجّل الدخول لإضافة المنتج للمفضلة")
@@ -215,6 +221,7 @@ export function CatalogMobile() {
               <span className="w-4 h-4 rounded-full bg-m3-primary text-m3-on-primary text-[10px] flex items-center justify-center font-bold">{activeCount}</span>
             )}
           </button>
+          {limited && <Chip label="إصدارات محدودة (٥ قطع أو أقل)" aria="إزالة فلتر الإصدارات المحدودة" onRemove={() => setLimited(false)} />}
           {brands.map((b) => (
             <Chip key={b} label={`الماركة: ${b}`} aria="إزالة فلتر الماركة" onRemove={() => toggle(brands, b, setBrands)} />
           ))}

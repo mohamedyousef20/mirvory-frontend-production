@@ -101,13 +101,18 @@ export function HomeMobile() {
       <div className="flex flex-col w-full gap-m3-space-lg">
         {free?.enabled && free.min > 0 && (
           <aside className="relative overflow-hidden rounded-xl bg-gradient-to-l from-blue-50 to-slate-100 border border-blue-100/80 px-3.5 py-2 shadow-sm">
-            <div className="flex items-center gap-2 min-w-0">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-m3-primary-container text-white">
-                <span className="material-symbols-outlined text-[15px]">local_shipping</span>
-              </span>
-              <p className="text-xs font-semibold text-slate-800 truncate">
-                شحن مجاني للطلبات فوق <span className="font-bold text-m3-primary">{fmt(free.min)} ج.م</span>
-              </p>
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-m3-primary-container text-white">
+                  <span className="material-symbols-outlined text-[15px]">local_shipping</span>
+                </span>
+                <p className="text-xs font-semibold text-slate-800 truncate">
+                  شحن مجاني للطلبات فوق <span className="font-bold text-m3-primary">{fmt(free.min)} ج.م</span>
+                </p>
+              </div>
+              <Link href="/help" className="shrink-0 bg-white border border-blue-200/60 px-2 py-0.5 rounded-lg shadow-sm text-xs font-bold text-m3-primary-container">
+                احصل على شحن أسرع
+              </Link>
             </div>
           </aside>
         )}
@@ -160,6 +165,10 @@ export function HomeMobile() {
             </div>
             <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1 -mx-m3-margin px-m3-margin">
               <Link href="/products" className="shrink-0 h-9 px-4 rounded-xl bg-slate-950 text-white text-xs font-bold shadow-sm flex items-center">الكل</Link>
+              <Link href="/products?limited=true" className="shrink-0 h-9 px-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold flex items-center gap-1">
+                <span>إصدارات محدودة</span>
+                <span className="material-symbols-outlined text-[15px]">local_fire_department</span>
+              </Link>
               {cats.map((c) => (
                 <Link key={c._id} href={`/categories/${c._id}/products`} className="shrink-0 h-9 px-4 rounded-xl bg-white border border-slate-200 text-slate-800 text-xs font-semibold hover:border-slate-400 transition-colors flex items-center">
                   {c.name}

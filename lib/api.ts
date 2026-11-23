@@ -285,6 +285,8 @@ export const productService = {
     minPrice?: number;
     maxPrice?: number;
     status?: string;
+    brand?: string;
+    limited?: boolean;
   }) => api.get("/api/products", { params }),
   // get products by category with filters / pagination
   getProductsByCategory: (category: string, params?: any) =>
@@ -352,6 +354,8 @@ export const productService = {
     minRating?: number;
     sort?: string;
     availability?: string;
+    brand?: string;
+    limited?: boolean;
   }) => api.get("/api/products/search", { params }),
 
   // Search suggestions/autocomplete
