@@ -8,8 +8,6 @@ import { getProductImage } from "@/lib/productVariants"
 import { normalizeImageUrl } from "@/src/lib/normalizeImageUrl"
 import { getTierProgress } from "@/lib/loyalty-tiers"
 import { toast } from "sonner"
-import { buildSupportWhatsAppUrl } from "@/lib/support-contact"
-import { WhatsAppIcon } from "@/components/whatsapp-help-button"
 import { STORE_POLICIES } from "@/lib/store-policies"
 
 const fmt = (n: number) => Math.round(n).toLocaleString("en-US")
@@ -413,41 +411,6 @@ export function HomeMobile() {
           ))}
         </section>
 
-        <footer className="rounded-2xl bg-slate-950 text-white p-5 flex flex-col gap-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center tracking-tight">
-              <span className="inline-flex font-black text-xl italic tracking-tighter">V<span className="text-rose-500 ml-[-2px]">O</span></span>
-              <span className="font-extrabold text-[19px] tracking-wider font-m3-price-display mr-1.5 uppercase">MIRVORY</span>
-            </div>
-            <a href={buildSupportWhatsAppUrl()} target="_blank" rel="noopener noreferrer" className="h-9 px-3 rounded-full bg-emerald-600 text-white text-xs font-bold flex items-center gap-1.5">
-              <WhatsAppIcon className="w-4 h-4" />
-              <span>واتساب</span>
-            </a>
-          </div>
-          <p className="text-xs text-slate-400 leading-relaxed">سنيكرز وملابس أصلية من بائعين موثّقين في مصر، مع المعاينة عند الاستلام.</p>
-          <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 text-xs font-semibold text-slate-200 border-t border-slate-800 pt-4">
-            {[
-              ["/products", "المنتجات"],
-              ["/offers", "العروض"],
-              ["/size-guide", "دليل المقاسات"],
-              ["/orders", "تتبع طلباتك"],
-              ["/returns/new", "الاستبدال والإرجاع"],
-              ["/help", "المساعدة"],
-              ["/faq", "الأسئلة الشائعة"],
-              ["/contact", "تواصل معنا"],
-              ["/about", "من نحن"],
-              ["/return-policy", "سياسة الإرجاع"],
-              ["/privacy", "سياسة الخصوصية"],
-              ["/terms", "الشروط والأحكام"],
-            ].map(([href, label]) => (
-              <Link key={href} href={href} className="hover:text-white transition-colors">{label}</Link>
-            ))}
-          </div>
-          <div className="flex items-center justify-between text-[11px] text-slate-500 border-t border-slate-800 pt-3">
-            <a href="mailto:support.mirvory@gmail.com" className="truncate">support.mirvory@gmail.com</a>
-            <span className="font-m3-price-display shrink-0">© {new Date().getFullYear()} MIRVORY</span>
-          </div>
-        </footer>
       </div>
     </div>
   )
