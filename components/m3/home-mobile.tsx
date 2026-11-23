@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { announcementService, categoryService, loyaltyService, offerService, productService, shippingSettingsService, wishlistService } from "@/lib/api"
 import { useAuth } from "@/contexts/AuthProvider"
 import { getProductImage } from "@/lib/productVariants"
@@ -23,6 +23,7 @@ export function HomeMobile() {
   const [slide, setSlide] = useState(0)
   const [cats, setCats] = useState<any[]>([])
   const [best, setBest] = useState<any[]>([])
+  const [bestState, setBestState] = useState<"loading" | "ok" | "error">("loading")
   const [discounted, setDiscounted] = useState<any[]>([])
   const [offers, setOffers] = useState<any[]>([])
   const [loyalty, setLoyalty] = useState<{ points: number; totalEarned: number } | null>(null)
@@ -37,10 +38,24 @@ export function HomeMobile() {
     }).catch(() => {})
     announcementService.getMainAnnouncements().then((r: any) => setSlides(list(r.data).filter((a) => a.image))).catch(() => {})
     categoryService.getCategories().then((r: any) => setCats(list(r.data))).catch(() => {})
-    productService.getProducts({ sort: "sold:desc", limit: 8 }).then((r: any) => setBest(list(r.data))).catch(() => {})
     productService.getProducts({ sort: "discountPercentage:desc", limit: 6 }).then((r: any) => setDiscounted(list(r.data).filter((p) => p.discountPercentage > 0))).catch(() => {})
     offerService.getActiveOffers().then((r: any) => setOffers(list(r.data))).catch(() => {})
   }, [])
+
+  const loadBest = useCallback(async () => {
+    setBestState("loading")
+    try {
+      let items = list((await productService.getProducts({ sort: "sold:desc", limit: 8 })).data)
+      if (items.length === 0) items = list((await productService.getProducts({ sort: "createdAt:desc", limit: 8 })).data)
+      setBest(items)
+      setBestState("ok")
+    } catch {
+      setBestState("error")
+    }
+  }, [])
+  useEffect(() => {
+    loadBest()
+  }, [loadBest])
 
   useEffect(() => {
     if (!authed) {
@@ -330,7 +345,7 @@ export function HomeMobile() {
           </section>
         )}
 
-        {best.length > 0 && (
+        {(
           <section className="flex flex-col gap-m3-space-sm">
             <div className="flex items-center justify-between px-1">
               <div>
@@ -342,6 +357,18 @@ export function HomeMobile() {
                 <span className="material-symbols-outlined text-[16px]">chevron_left</span>
               </Link>
             </div>
+            {bestState !== "ok" || best.length === 0 ? (
+              <div className="rounded-2xl bg-white border border-slate-100 p-6 text-center text-xs text-slate-500 flex flex-col items-center gap-2">
+                {bestState === "loading" ? (
+                  <span>جاري تحميل المنتجات...</span>
+                ) : (
+                  <>
+                    <span>{bestState === "error" ? "تعذر تحميل المنتجات الآن" : "لا توجد منتجات متاحة حالياً"}</span>
+                    <button type="button" onClick={loadBest} className="px-4 h-8 rounded-lg bg-m3-primary text-white font-bold">إعادة المحاولة</button>
+                  </>
+                )}
+              </div>
+            ) : (
             <div className="grid grid-cols-2 gap-m3-gutter">
               {best.slice(0, 4).map((p) => {
                 const fp = finalPrice(p)
@@ -378,6 +405,7 @@ export function HomeMobile() {
                 )
               })}
             </div>
+            )}
           </section>
         )}
 
