@@ -59,7 +59,7 @@ export function HelpMobile() {
                   فريق رسمي
                 </span>
               </div>
-              <span className="text-m3-on-surface-variant text-[11px] mt-0.5">التواصل المباشر عبر واتساب</span>
+              <span className="text-m3-on-surface-variant text-[12px] mt-0.5 truncate">خبير فحص الأصالة وكونسيرج ميرفوري</span>
             </div>
           </div>
           <button aria-label="واتساب" onClick={() => send("مرحباً، أحتاج مساعدة")} className="flex items-center justify-center w-10 h-10 rounded-full bg-m3-surface-container text-emerald-600 shrink-0">
@@ -91,6 +91,25 @@ export function HelpMobile() {
           </div>
         </div>
       )}
+
+      <div className="px-m3-margin mb-m3-space-md">
+        <div className="flex items-center gap-1.5 mb-2">
+          <span className="material-symbols-outlined text-m3-primary text-[14px]">bolt</span>
+          <span className="font-bold text-m3-on-surface text-[12px]">استفسارات سريعة مقترحة</span>
+        </div>
+        <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+          {[
+            ["straighten", "طلب مقاس إضافي للمعاينة"],
+            ["qr_code_scanner", "فحص كود استيراد خاص"],
+            ["policy", "سياسة الاسترجاع والضمان"],
+          ].map(([icon, label]) => (
+            <button key={label} type="button" onClick={() => send(label)} className="shrink-0 px-3.5 py-2 rounded-full bg-m3-surface-container-lowest hover:bg-m3-surface-container text-m3-on-surface text-[12px] font-semibold transition-colors shadow-sm active:scale-95 flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-[15px] text-m3-primary">{icon}</span>
+              <span>{label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
 
       <div className="px-m3-margin flex flex-col gap-4 mb-m3-space-md">
         <div className="flex flex-col items-start max-w-[92%]">
