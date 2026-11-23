@@ -91,7 +91,7 @@ export function SizeGuideMobile() {
         </div>
         <div className="grid grid-cols-2 p-1 rounded-xl bg-m3-surface-container-high text-center">
           {([["men", "رجال"], ["women", "نساء"]] as const).map(([v, t]) => (
-            <button key={v} type="button" onClick={() => setGender(v)} className={`py-1.5 rounded-lg font-m3-label-md text-m3-label-md transition-all ${gender === v ? "bg-surface-container-lowest text-on-surface shadow-sm" : "text-on-surface-variant"}`}>{t}</button>
+            <button key={v} type="button" onClick={() => setGender(v)} className={`py-1.5 rounded-[0.5rem] font-m3-label-md text-m3-label-md transition-all ${gender === v ? "bg-surface-container-lowest text-on-surface shadow-sm" : "text-on-surface-variant"}`}>{t}</button>
           ))}
         </div>
         <div className="rounded-2xl bg-m3-surface-container-lowest overflow-hidden shadow-sm">

@@ -62,7 +62,7 @@ export function MobileHeader() {
   if (isClassicPath(pathname)) return null
   if (isHome)
     return (
-      <header dir="rtl" style={{ fontFamily: "var(--font-cairo), Cairo, sans-serif" }} className="md:hidden fixed top-0 w-full z-50 bg-m3-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_12px_rgba(15,23,42,0.06)] pt-[env(safe-area-inset-top)] border-b border-m3-surface-container-highest/60">
+      <header dir="rtl" style={{ fontFamily: "var(--font-cairo), Cairo, sans-serif" }} className="md:hidden fixed top-0 w-full z-50 bg-white/90 backdrop-blur-xl shadow-[0_1px_12px_rgba(15,23,42,0.06)] pt-[env(safe-area-inset-top)] border-b border-[#e2e8f0]/60">
         <div className="h-28 px-m3-margin flex flex-col justify-center gap-m3-space-xs">
           <div className="flex items-center justify-between gap-m3-space-sm">
             <div className="flex items-center gap-2.5">
@@ -80,15 +80,15 @@ export function MobileHeader() {
               </span>
             </div>
             <div className="flex items-center gap-1.5">
-              <Link href="/notifications" aria-label="الإشعارات" className="relative w-10 h-10 flex items-center justify-center rounded-full text-m3-on-surface hover:bg-m3-surface-container transition-colors">
+              <Link href="/notifications" aria-label="الإشعارات" className="relative w-10 h-10 flex items-center justify-center rounded-full text-[#0f172a] hover:bg-[#f1f5f9] transition-colors">
                 <span className="material-symbols-outlined text-[22px]">notifications</span>
                 {unread > 0 && <span className="absolute top-2 left-2 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white" />}
               </Link>
-              <Link href="/wishlist" aria-label="المفضلة" className="relative w-10 h-10 flex items-center justify-center rounded-full text-m3-on-surface hover:bg-m3-surface-container transition-colors">
+              <Link href="/wishlist" aria-label="المفضلة" className="relative w-10 h-10 flex items-center justify-center rounded-full text-[#0f172a] hover:bg-[#f1f5f9] transition-colors">
                 <span className="material-symbols-outlined text-[22px]">favorite</span>
                 {favCount > 0 && <span className="absolute top-1 left-1 min-w-[16px] h-4 px-1 rounded-full bg-m3-primary-container text-white text-[10px] font-bold flex items-center justify-center leading-none">{favCount > 99 ? "99+" : favCount}</span>}
               </Link>
-              <Link href={authed ? "/profile" : "/auth/login"} aria-label="الملف الشخصي" className="w-8 h-8 rounded-full bg-gradient-to-tr from-m3-primary to-blue-500 text-white flex items-center justify-center shrink-0 mr-1 shadow-sm ring-2 ring-m3-primary-fixed">
+              <Link href={authed ? "/profile" : "/auth/login"} aria-label="الملف الشخصي" className="w-8 h-8 rounded-full bg-gradient-to-tr from-m3-primary to-blue-500 text-white flex items-center justify-center shrink-0 mr-1 shadow-sm ring-2 ring-[#dbeafe]">
                 <span className="material-symbols-outlined text-[17px]">person</span>
               </Link>
             </div>
@@ -100,16 +100,16 @@ export function MobileHeader() {
               router.push(q.trim() ? `/products?q=${encodeURIComponent(q.trim())}` : "/products")
             }}
           >
-            <label className="relative flex items-center w-full h-10 px-3.5 bg-m3-surface-container rounded-xl text-m3-on-surface-variant">
-              <span className="material-symbols-outlined text-m3-on-surface-variant text-[20px] ml-2 shrink-0">search</span>
+            <label className="relative flex items-center w-full h-10 px-3.5 bg-[#f1f5f9] rounded-[0.875rem] text-[#475569]">
+              <span className="material-symbols-outlined text-[#475569] text-[20px] ml-2 shrink-0">search</span>
               <input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 enterKeyHint="search"
                 placeholder="ابحث بالموديل، الماركة (Nike, NB, Asics)..."
-                className="flex-1 min-w-0 bg-transparent outline-none text-sm font-semibold text-m3-on-surface placeholder:text-m3-on-surface-variant/80"
+                className="flex-1 min-w-0 bg-transparent outline-none text-sm font-semibold text-[#0f172a] placeholder:text-[#475569]/80"
               />
-              <Link href="/products" aria-label="تصفية" className="material-symbols-outlined text-m3-on-surface-variant text-[18px] mr-auto shrink-0 bg-white p-1 rounded-md">tune</Link>
+              <Link href="/products" aria-label="تصفية" className="material-symbols-outlined text-[#475569] text-[18px] mr-auto shrink-0 bg-white p-1 rounded-[0.375rem]">tune</Link>
             </label>
           </form>
         </div>

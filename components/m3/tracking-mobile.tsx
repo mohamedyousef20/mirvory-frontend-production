@@ -182,9 +182,9 @@ export function TrackingMobile() {
                     <div>
                       <h2 className="font-m3-headline-md text-m3-headline-md text-m3-on-surface truncate">{item.title || item.product?.title}</h2>
                       <div className="flex items-center gap-2 mt-1 flex-wrap">
-                        {item.size && <span className="px-2 py-0.5 rounded-md bg-m3-surface-container text-m3-on-surface font-m3-label-sm text-m3-label-sm">مقاس {item.size}</span>}
-                        {item.color?.name && <span className="px-2 py-0.5 rounded-md bg-m3-surface-container-high text-m3-on-surface-variant font-m3-label-sm text-m3-label-sm">{item.color.name}</span>}
-                        {active.items.length > 1 && <span className="px-2 py-0.5 rounded-md bg-m3-surface-container-high text-m3-on-surface-variant font-m3-label-sm text-m3-label-sm">+{active.items.length - 1} منتجات</span>}
+                        {item.size && <span className="px-2 py-0.5 rounded-[0.375rem] bg-m3-surface-container text-m3-on-surface font-m3-label-sm text-m3-label-sm">مقاس {item.size}</span>}
+                        {item.color?.name && <span className="px-2 py-0.5 rounded-[0.375rem] bg-m3-surface-container-high text-m3-on-surface-variant font-m3-label-sm text-m3-label-sm">{item.color.name}</span>}
+                        {active.items.length > 1 && <span className="px-2 py-0.5 rounded-[0.375rem] bg-m3-surface-container-high text-m3-on-surface-variant font-m3-label-sm text-m3-label-sm">+{active.items.length - 1} منتجات</span>}
                       </div>
                     </div>
                     <div className="flex items-center justify-between mt-2">
@@ -192,7 +192,7 @@ export function TrackingMobile() {
                         <span className="font-m3-price-display text-m3-price-display text-m3-primary font-bold">{fmt(active.total)}</span>
                         <span className="font-m3-label-md text-m3-label-md text-m3-on-surface-variant">ج.م</span>
                       </div>
-                      <Link href={`/orders/${active._id}`} className="flex items-center gap-1 text-m3-secondary font-m3-label-sm text-m3-label-sm bg-m3-surface-container px-2 py-1 rounded-md">
+                      <Link href={`/orders/${active._id}`} className="flex items-center gap-1 text-m3-secondary font-m3-label-sm text-m3-label-sm bg-m3-surface-container px-2 py-1 rounded-[0.375rem]">
                         <span className="material-symbols-outlined text-[14px]">receipt_long</span>
                         <span>تفاصيل الطلب</span>
                       </Link>
@@ -264,7 +264,7 @@ export function TrackingMobile() {
                       </div>
                     </div>
                     {sh.branch.phone && (
-                      <a href={`tel:${sh.branch.phone}`} className="px-2.5 py-1 rounded-lg bg-m3-surface-container text-m3-on-surface text-m3-label-sm font-semibold flex items-center gap-1 shrink-0">
+                      <a href={`tel:${sh.branch.phone}`} className="px-2.5 py-1 rounded-[0.5rem] bg-m3-surface-container text-m3-on-surface text-m3-label-sm font-semibold flex items-center gap-1 shrink-0">
                         <span className="material-symbols-outlined text-[14px]">call</span>
                         <span>اتصال بالفرع</span>
                       </a>

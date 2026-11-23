@@ -207,7 +207,7 @@ export function CartMobile(p: Props) {
                 type="button"
                 disabled={p.couponLoading}
                 onClick={p.onRemoveCoupon}
-                className="px-m3-space-md py-2 rounded-lg bg-m3-surface-container-high text-m3-on-surface-variant font-m3-label-md text-m3-label-md font-bold flex items-center gap-1"
+                className="px-m3-space-md py-2 rounded-[0.5rem] bg-m3-surface-container-high text-m3-on-surface-variant font-m3-label-md text-m3-label-md font-bold flex items-center gap-1"
               >
                 <span className="material-symbols-outlined text-[16px] text-m3-primary">check_circle</span>
                 مطبّق · إزالة
@@ -217,7 +217,7 @@ export function CartMobile(p: Props) {
                 type="button"
                 disabled={p.couponLoading || !p.couponCode.trim()}
                 onClick={p.onApplyCoupon}
-                className="px-m3-space-md py-2 rounded-lg bg-m3-primary-container text-m3-on-primary font-m3-label-md text-m3-label-md font-bold disabled:opacity-50"
+                className="px-m3-space-md py-2 rounded-[0.5rem] bg-m3-primary-container text-m3-on-primary font-m3-label-md text-m3-label-md font-bold disabled:opacity-50"
               >
                 {p.couponLoading ? "..." : "تطبيق"}
               </button>

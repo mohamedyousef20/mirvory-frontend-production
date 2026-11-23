@@ -84,7 +84,7 @@ export function HelpMobile() {
                 <p className="text-m3-on-surface-variant text-[11px]">{it?.size ? `مقاس ${it.size} EU` : ""}</p>
               </div>
             </div>
-            <Link href="/orders" className="shrink-0 px-2.5 py-1.5 rounded-lg bg-m3-surface-container text-m3-on-surface-variant text-[11px] font-semibold flex items-center gap-1">
+            <Link href="/orders" className="shrink-0 px-2.5 py-1.5 rounded-[0.5rem] bg-m3-surface-container text-m3-on-surface-variant text-[11px] font-semibold flex items-center gap-1">
               <span>تتبع</span>
               <span className="material-symbols-outlined text-[14px]">local_shipping</span>
             </Link>
@@ -113,7 +113,7 @@ export function HelpMobile() {
 
       <div className="px-m3-margin flex flex-col gap-4 mb-m3-space-md">
         <div className="flex flex-col items-start max-w-[92%]">
-          <div className="bg-m3-surface-container-lowest rounded-2xl rounded-tr-sm p-3.5 shadow-sm">
+          <div className="bg-m3-surface-container-lowest rounded-2xl rounded-tr-[0.125rem] p-3.5 shadow-sm">
             <div className="flex items-center gap-1.5 mb-1 text-m3-primary">
               <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>shield</span>
               <span className="font-bold text-[12px]">مساعدة ميرفوري</span>

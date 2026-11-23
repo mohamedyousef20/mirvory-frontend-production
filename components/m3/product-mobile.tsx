@@ -103,7 +103,7 @@ export function ProductMobile(p: ProductMobileProps) {
                     onClick={() => p.onColor(c.value)}
                     className={`relative w-16 h-16 rounded-xl bg-m3-surface-container-lowest p-1 shadow-sm transition-all shrink-0 ${on ? "scale-105" : "opacity-60 hover:opacity-100"}`}
                   >
-                    <img alt={c.name} src={c.image!} className="w-full h-full object-contain rounded-lg" />
+                    <img alt={c.name} src={c.image!} className="w-full h-full object-contain rounded-[0.5rem]" />
                   </button>
                 )
               })}
@@ -125,7 +125,7 @@ export function ProductMobile(p: ProductMobileProps) {
           </div>
           <h2 className="font-m3-headline-lg text-m3-headline-lg font-bold text-m3-on-surface mt-2 leading-tight">{product.title}</h2>
           <div className="flex items-center gap-2 mt-2">
-            <div className="flex items-center gap-1 bg-m3-surface-container-high px-2 py-0.5 rounded-lg">
+            <div className="flex items-center gap-1 bg-m3-surface-container-high px-2 py-0.5 rounded-[0.5rem]">
               <span className="material-symbols-outlined text-[16px] text-amber-500" style={star}>star</span>
               <span className="font-m3-headline-md text-m3-headline-md text-m3-on-surface font-bold text-[14px]">{avg ? avg.toFixed(1) : "—"}</span>
             </div>
@@ -153,7 +153,7 @@ export function ProductMobile(p: ProductMobileProps) {
           {unit >= 400 && (
             <div className="mt-3 flex items-center justify-between p-m3-space-sm rounded-xl bg-m3-secondary-container/40 text-m3-on-secondary-fixed">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-lg bg-m3-surface-container-lowest flex items-center justify-center shadow-sm">
+                <div className="w-9 h-9 rounded-[0.5rem] bg-m3-surface-container-lowest flex items-center justify-center shadow-sm">
                   <span className="material-symbols-outlined text-m3-primary text-[20px]">payments</span>
                 </div>
                 <p className="font-m3-body-sm text-m3-body-sm font-medium text-m3-on-surface leading-snug">
@@ -234,11 +234,11 @@ export function ProductMobile(p: ProductMobileProps) {
           <div className="p-3 bg-m3-surface-container-lowest rounded-2xl shadow-sm border border-m3-outline-variant/30 flex items-center justify-between">
             <span className="font-m3-label-md text-m3-label-md font-bold text-m3-on-surface">الكمية المطلوبة</span>
             <div className="flex items-center gap-3 bg-m3-surface-container-low px-2 py-1 rounded-xl">
-              <button aria-label="إنقاص الكمية" disabled={p.quantity <= 1} onClick={() => p.onQuantity(p.quantity - 1)} className="w-8 h-8 rounded-lg bg-m3-surface-container-lowest flex items-center justify-center text-m3-on-surface shadow-sm active:scale-90 transition-all disabled:opacity-40">
+              <button aria-label="إنقاص الكمية" disabled={p.quantity <= 1} onClick={() => p.onQuantity(p.quantity - 1)} className="w-8 h-8 rounded-[0.5rem] bg-m3-surface-container-lowest flex items-center justify-center text-m3-on-surface shadow-sm active:scale-90 transition-all disabled:opacity-40">
                 <span className="material-symbols-outlined text-[16px]">remove</span>
               </button>
               <span className="font-m3-headline-md font-bold text-m3-on-surface text-[16px] min-w-[20px] text-center">{p.quantity}</span>
-              <button aria-label="زيادة الكمية" disabled={p.maxQty > 0 && p.quantity >= p.maxQty} onClick={() => p.onQuantity(p.quantity + 1)} className="w-8 h-8 rounded-lg bg-m3-surface-container-lowest flex items-center justify-center text-m3-on-surface shadow-sm active:scale-90 transition-all disabled:opacity-40">
+              <button aria-label="زيادة الكمية" disabled={p.maxQty > 0 && p.quantity >= p.maxQty} onClick={() => p.onQuantity(p.quantity + 1)} className="w-8 h-8 rounded-[0.5rem] bg-m3-surface-container-lowest flex items-center justify-center text-m3-on-surface shadow-sm active:scale-90 transition-all disabled:opacity-40">
                 <span className="material-symbols-outlined text-[16px]">add</span>
               </button>
             </div>

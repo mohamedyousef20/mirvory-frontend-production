@@ -147,7 +147,7 @@ export function ConciergeMobile() {
                 </div>
                 <div className="grid grid-cols-6 gap-1.5">
                   {SIZES.map((s) => (
-                    <button key={s} type="button" onClick={() => setSize(size === s ? "" : s)} className={`py-2 rounded-lg text-m3-label-md font-m3-label-md text-center transition-all ${size === s ? "bg-on-surface text-surface font-bold" : "bg-surface-container-low text-on-surface hover:bg-surface-container-high"}`}>{s}</button>
+                    <button key={s} type="button" onClick={() => setSize(size === s ? "" : s)} className={`py-2 rounded-[0.5rem] text-m3-label-md font-m3-label-md text-center transition-all ${size === s ? "bg-on-surface text-surface font-bold" : "bg-surface-container-low text-on-surface hover:bg-surface-container-high"}`}>{s}</button>
                   ))}
                 </div>
               </div>
@@ -160,7 +160,7 @@ export function ConciergeMobile() {
                 </div>
                 <div className="flex items-center gap-1.5 mt-2 overflow-x-auto pb-1 no-scrollbar">
                   {BUDGETS.map(([l, v]) => (
-                    <button key={l} type="button" onClick={() => setBudget(String(v))} className="px-2.5 py-1 rounded-md bg-m3-surface-container text-[11px] text-m3-on-surface whitespace-nowrap hover:bg-m3-surface-container-high">{l}</button>
+                    <button key={l} type="button" onClick={() => setBudget(String(v))} className="px-2.5 py-1 rounded-[0.375rem] bg-m3-surface-container text-[11px] text-m3-on-surface whitespace-nowrap hover:bg-m3-surface-container-high">{l}</button>
                   ))}
                 </div>
               </div>

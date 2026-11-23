@@ -191,7 +191,7 @@ export function CatalogMobile() {
               aria-label="فتح التصفية المتقدمة"
               type="button"
               onClick={() => setDrawer((d) => !d)}
-              className="relative flex items-center justify-center w-9 h-9 rounded-lg bg-m3-primary-container text-m3-on-primary shrink-0 transition-transform active:scale-95 shadow-sm"
+              className="relative flex items-center justify-center w-9 h-9 rounded-[0.5rem] bg-m3-primary-container text-m3-on-primary shrink-0 transition-transform active:scale-95 shadow-sm"
             >
               <span className="material-symbols-outlined text-[18px]">tune</span>
               {activeCount > 0 && <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-m3-tertiary" />}
@@ -248,7 +248,7 @@ export function CatalogMobile() {
           <section className="bg-m3-surface-container-lowest rounded-2xl p-m3-space-md shadow-sm flex flex-col gap-m3-space-md transition-all">
             <div className="flex items-center justify-between pb-1">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-m3-primary-fixed flex items-center justify-center text-m3-on-primary-fixed">
+                <div className="w-8 h-8 rounded-[0.5rem] bg-m3-primary-fixed flex items-center justify-center text-m3-on-primary-fixed">
                   <span className="material-symbols-outlined text-[18px]">page_info</span>
                 </div>
                 <div>
@@ -302,8 +302,8 @@ export function CatalogMobile() {
                         onClick={() => toggle(sizes, s, setSizes)}
                         className={
                           on
-                            ? "h-9 rounded-lg bg-m3-primary-container text-m3-on-primary font-m3-price-display text-m3-label-md font-bold flex items-center justify-center shadow-sm"
-                            : "h-9 rounded-lg bg-m3-surface-container-low text-m3-on-surface-variant font-m3-price-display text-m3-label-md flex items-center justify-center hover:bg-m3-surface-container"
+                            ? "h-9 rounded-[0.5rem] bg-m3-primary-container text-m3-on-primary font-m3-price-display text-m3-label-md font-bold flex items-center justify-center shadow-sm"
+                            : "h-9 rounded-[0.5rem] bg-m3-surface-container-low text-m3-on-surface-variant font-m3-price-display text-m3-label-md flex items-center justify-center hover:bg-m3-surface-container"
                         }
                       >
                         {s}
@@ -331,7 +331,7 @@ export function CatalogMobile() {
                   step={250}
                   value={maxPrice}
                   onChange={(e) => setMaxPrice(Number(e.target.value))}
-                  className="w-full accent-m3-primary h-2 bg-m3-surface-container rounded-lg appearance-none cursor-pointer"
+                  className="w-full accent-m3-primary h-2 bg-m3-surface-container rounded-[0.5rem] appearance-none cursor-pointer"
                 />
               </div>
               <div className="flex justify-between text-m3-on-surface-variant font-m3-price-display text-m3-label-sm">

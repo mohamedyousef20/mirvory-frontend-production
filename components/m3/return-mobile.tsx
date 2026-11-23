@@ -137,7 +137,7 @@ export function ReturnMobile() {
             ) : (
               picks.map(({ o, i }) => (
                 <button key={`${o._id}-${i._id}`} onClick={() => { setOrderId(o._id); setItemId(i._id) }} className="flex items-center gap-3 p-2 rounded-xl bg-m3-surface-container-low text-right">
-                  <div className="w-14 h-14 rounded-lg bg-m3-surface-container-lowest p-1 flex items-center justify-center shrink-0">
+                  <div className="w-14 h-14 rounded-[0.5rem] bg-m3-surface-container-lowest p-1 flex items-center justify-center shrink-0">
                     {i.image && <img alt={i.title} src={normalizeImageUrl(i.image)} className="w-full h-full object-contain" />}
                   </div>
                   <div className="min-w-0">
@@ -165,7 +165,7 @@ export function ReturnMobile() {
                 <div className="flex-1 min-w-0">
                   <h2 className="font-bold text-m3-headline-md text-m3-on-surface truncate">{item.title || item.product?.title}</h2>
                   <div className="flex items-center gap-2 mt-1 flex-wrap">
-                    {item.size && <span className="bg-m3-surface-container-high text-m3-on-surface font-m3-label-md text-m3-label-md px-2 py-0.5 rounded-lg">EU {item.size}</span>}
+                    {item.size && <span className="bg-m3-surface-container-high text-m3-on-surface font-m3-label-md text-m3-label-md px-2 py-0.5 rounded-[0.5rem]">EU {item.size}</span>}
                     {item.color?.name && <span className="text-m3-on-surface-variant text-m3-body-sm">اللون: {item.color.name}</span>}
                   </div>
                 </div>

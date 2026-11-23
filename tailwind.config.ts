@@ -134,17 +134,17 @@ const config: Config = {
   			"m3-headline-xl-mobile": ["26px", {"lineHeight": "34px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
   		},
   		fontFamily: {
-  			"m3-price-display": ["var(--font-space-grotesk)", 'sans-serif'],
-  			"m3-body-lg": ["var(--font-jakarta)", 'sans-serif'],
-  			"m3-headline-md": ["var(--font-space-grotesk)", 'sans-serif'],
-  			"m3-label-sm": ["var(--font-space-grotesk)", 'sans-serif'],
-  			"m3-label-lg": ["var(--font-space-grotesk)", 'sans-serif'],
-  			"m3-label-md": ["var(--font-space-grotesk)", 'sans-serif'],
-  			"m3-headline-xl": ["var(--font-space-grotesk)", 'sans-serif'],
-  			"m3-body-sm": ["var(--font-jakarta)", 'sans-serif'],
-  			"m3-headline-lg": ["var(--font-space-grotesk)", 'sans-serif'],
-  			"m3-body-md": ["var(--font-jakarta)", 'sans-serif'],
-  			"m3-headline-xl-mobile": ["var(--font-space-grotesk)", 'sans-serif']
+  			"m3-price-display": ["var(--font-space-grotesk)", "var(--font-cairo)", "Cairo", 'sans-serif'],
+  			"m3-body-lg": ["var(--font-jakarta)", "var(--font-cairo)", "Cairo", 'sans-serif'],
+  			"m3-headline-md": ["var(--font-space-grotesk)", "var(--font-cairo)", "Cairo", 'sans-serif'],
+  			"m3-label-sm": ["var(--font-space-grotesk)", "var(--font-cairo)", "Cairo", 'sans-serif'],
+  			"m3-label-lg": ["var(--font-space-grotesk)", "var(--font-cairo)", "Cairo", 'sans-serif'],
+  			"m3-label-md": ["var(--font-space-grotesk)", "var(--font-cairo)", "Cairo", 'sans-serif'],
+  			"m3-headline-xl": ["var(--font-space-grotesk)", "var(--font-cairo)", "Cairo", 'sans-serif'],
+  			"m3-body-sm": ["var(--font-jakarta)", "var(--font-cairo)", "Cairo", 'sans-serif'],
+  			"m3-headline-lg": ["var(--font-space-grotesk)", "var(--font-cairo)", "Cairo", 'sans-serif'],
+  			"m3-body-md": ["var(--font-jakarta)", "var(--font-cairo)", "Cairo", 'sans-serif'],
+  			"m3-headline-xl-mobile": ["var(--font-space-grotesk)", "var(--font-cairo)", "Cairo", 'sans-serif']
   		},
   		borderRadius: {
   			lg: 'var(--radius)',
