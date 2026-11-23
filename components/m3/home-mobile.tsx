@@ -25,6 +25,7 @@ export function HomeMobile() {
   const [slide, setSlide] = useState(0)
   const [cats, setCats] = useState<any[]>([])
   const [best, setBest] = useState<any[]>([])
+  const [discounted, setDiscounted] = useState<any[]>([])
   const [offers, setOffers] = useState<any[]>([])
   const [loyalty, setLoyalty] = useState<{ points: number; totalEarned: number } | null>(null)
   const [favs, setFavs] = useState<Set<string>>(new Set())
@@ -39,6 +40,7 @@ export function HomeMobile() {
     announcementService.getMainAnnouncements().then((r: any) => setSlides(list(r.data).filter((a) => a.image))).catch(() => {})
     categoryService.getCategories().then((r: any) => setCats(list(r.data))).catch(() => {})
     productService.getProducts({ sort: "sold:desc", limit: 8 }).then((r: any) => setBest(list(r.data))).catch(() => {})
+    productService.getProducts({ sort: "discountPercentage:desc", limit: 6 }).then((r: any) => setDiscounted(list(r.data).filter((p) => p.discountPercentage > 0))).catch(() => {})
     offerService.getActiveOffers().then((r: any) => setOffers(list(r.data))).catch(() => {})
   }, [])
 
@@ -72,13 +74,13 @@ export function HomeMobile() {
         .sort((a, b) => +new Date(a.endDate) - +new Date(b.endDate))[0],
     [offers, now]
   )
-  const deal = useMemo(() => [...best].filter((p) => p.discountPercentage > 0).sort((a, b) => b.discountPercentage - a.discountPercentage)[0], [best])
+  const deal = discounted[0]
   const dealSizes: { size: string; quantity: number }[] = useMemo(() => {
     const c = deal?.colors?.find((x: any) => x.available !== false && x.sizes?.some((s: any) => s.quantity > 0))
     return (c?.sizes || []).filter((s: any) => s.quantity > 0).slice(0, 5)
   }, [deal])
 
-  const miniDeals = useMemo(() => best.filter((p) => p.discountPercentage > 0 && p._id !== deal?._id).slice(0, 3), [best, deal])
+  const miniDeals = useMemo(() => discounted.slice(1, 4), [discounted])
   const left = liveOffer ? Math.max(0, Math.floor((new Date(liveOffer.endDate).getTime() - now) / 1000)) : 0
   const tier = loyalty ? getTierProgress(loyalty.totalEarned) : null
 
