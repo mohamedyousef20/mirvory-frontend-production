@@ -27,6 +27,12 @@ export function PageOffset({ children }: { children: React.ReactNode }) {
   return <div className={!isClassicPath(pathname) && self ? "md:pt-16" : "pt-16"}>{children}</div>
 }
 
+/** The classic multi-column footer is hidden on mobile for the home page, which has its own compact footer. */
+export function FooterSlot({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname() || "/"
+  return <div className={pathname === "/" ? "hidden md:block" : ""}>{children}</div>
+}
+
 export function MobileHeader() {
   const pathname = usePathname() || "/"
   const { user } = useAuth()
