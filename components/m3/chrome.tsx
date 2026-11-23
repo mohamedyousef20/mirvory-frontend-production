@@ -1,6 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useAuth } from "@/contexts/AuthProvider"
@@ -29,8 +30,23 @@ export function PageOffset({ children }: { children: React.ReactNode }) {
 export function MobileHeader() {
   const pathname = usePathname() || "/"
   const { user } = useAuth()
+  const router = useRouter()
   const [unread, setUnread] = useState(0)
+  const [favCount, setFavCount] = useState(0)
+  const [q, setQ] = useState("")
   const authed = Boolean(user)
+  const isHome = pathname === "/"
+
+  useEffect(() => {
+    if (!authed || !isHome) return setFavCount(0)
+    wishlistService
+      .getWishlistCount()
+      .then((r: any) => {
+        const n = r.data?.count ?? r.data?.data?.count ?? r.data?.data ?? 0
+        setFavCount(typeof n === "number" ? n : 0)
+      })
+      .catch(() => setFavCount(0))
+  }, [authed, isHome, pathname])
 
   useEffect(() => {
     if (!authed) return setUnread(0)
@@ -44,6 +60,61 @@ export function MobileHeader() {
   }, [authed, pathname])
 
   if (isClassicPath(pathname)) return null
+  if (isHome)
+    return (
+      <header dir="rtl" style={{ fontFamily: "var(--font-cairo), Cairo, sans-serif" }} className="md:hidden fixed top-0 w-full z-50 bg-m3-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_12px_rgba(15,23,42,0.06)] pt-[env(safe-area-inset-top)] border-b border-m3-surface-container-highest/60">
+        <div className="h-28 px-m3-margin flex flex-col justify-center gap-m3-space-xs">
+          <div className="flex items-center justify-between gap-m3-space-sm">
+            <div className="flex items-center gap-2.5">
+              <Link href="/" className="flex items-center gap-2 select-none group">
+                <div className="flex items-center tracking-tight">
+                  <span className="inline-flex items-center justify-center font-black text-xl italic tracking-tighter text-slate-900">
+                    V<span className="text-rose-600 ml-[-2px]">O</span>
+                  </span>
+                  <span className="font-extrabold text-[19px] tracking-wider text-slate-950 font-m3-price-display mr-1.5 uppercase">MIRVORY</span>
+                </div>
+              </Link>
+              <span className="px-2 py-0.5 rounded-full bg-slate-900 text-white font-bold text-[10px] tracking-widest flex items-center gap-1 shadow-sm">
+                <span>EGYPT</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              </span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <Link href="/notifications" aria-label="الإشعارات" className="relative w-10 h-10 flex items-center justify-center rounded-full text-m3-on-surface hover:bg-m3-surface-container transition-colors">
+                <span className="material-symbols-outlined text-[22px]">notifications</span>
+                {unread > 0 && <span className="absolute top-2 left-2 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white" />}
+              </Link>
+              <Link href="/wishlist" aria-label="المفضلة" className="relative w-10 h-10 flex items-center justify-center rounded-full text-m3-on-surface hover:bg-m3-surface-container transition-colors">
+                <span className="material-symbols-outlined text-[22px]">favorite</span>
+                {favCount > 0 && <span className="absolute top-1 left-1 min-w-[16px] h-4 px-1 rounded-full bg-m3-primary-container text-white text-[10px] font-bold flex items-center justify-center leading-none">{favCount > 99 ? "99+" : favCount}</span>}
+              </Link>
+              <Link href={authed ? "/profile" : "/auth/login"} aria-label="الملف الشخصي" className="w-8 h-8 rounded-full bg-gradient-to-tr from-m3-primary to-blue-500 text-white flex items-center justify-center shrink-0 mr-1 shadow-sm ring-2 ring-m3-primary-fixed">
+                <span className="material-symbols-outlined text-[17px]">person</span>
+              </Link>
+            </div>
+          </div>
+          <form
+            className="w-full"
+            onSubmit={(e) => {
+              e.preventDefault()
+              router.push(q.trim() ? `/products?q=${encodeURIComponent(q.trim())}` : "/products")
+            }}
+          >
+            <label className="relative flex items-center w-full h-10 px-3.5 bg-m3-surface-container rounded-xl text-m3-on-surface-variant">
+              <span className="material-symbols-outlined text-m3-on-surface-variant text-[20px] ml-2 shrink-0">search</span>
+              <input
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                enterKeyHint="search"
+                placeholder="ابحث بالموديل، الماركة (Nike, NB, Asics)..."
+                className="flex-1 min-w-0 bg-transparent outline-none text-sm font-semibold text-m3-on-surface placeholder:text-m3-on-surface-variant/80"
+              />
+              <Link href="/products" aria-label="تصفية" className="material-symbols-outlined text-m3-on-surface-variant text-[18px] mr-auto shrink-0 bg-white p-1 rounded-md">tune</Link>
+            </label>
+          </form>
+        </div>
+      </header>
+    )
   return (
     <header dir="rtl" className="md:hidden fixed top-0 w-full z-50 bg-m3-surface-container-lowest/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(15,23,42,0.03)] pt-[env(safe-area-inset-top)]">
       <div className="px-m3-margin py-3 flex items-center justify-between">
@@ -100,7 +171,7 @@ export function MobileNav() {
   if (isClassicPath(pathname)) return null
   const items = [
     { href: "/", icon: "home", label: "الرئيسية", exact: true },
-    { href: "/products", icon: "grid_view", label: "المنتجات" },
+    { href: "/products", icon: "grid_view", label: "الأقسام" },
     { href: "/wishlist", icon: "favorite", label: "المفضلة" },
     { href: "/cart", icon: "shopping_bag", label: "السلة", badge: cart },
     { href: authed ? "/profile" : "/auth/login", icon: "person", label: "حسابي", match: "/profile" },

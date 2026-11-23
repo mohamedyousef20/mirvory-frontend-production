@@ -30,7 +30,7 @@ const cairo = Cairo({
   subsets: ["latin", "arabic"],
   display: "swap",
   variable: "--font-cairo",
-  weight: ["400", "500", "700"],
+  weight: ["400", "500", "600", "700", "800", "900"],
 })
 
 const notoNaskh = Noto_Naskh_Arabic({

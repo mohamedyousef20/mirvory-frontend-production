@@ -8,6 +8,7 @@ import { getProductImage } from "@/lib/productVariants"
 import { normalizeImageUrl } from "@/src/lib/normalizeImageUrl"
 import { getTierProgress } from "@/lib/loyalty-tiers"
 import { toast } from "sonner"
+import { STORE_POLICIES } from "@/lib/store-policies"
 
 const fmt = (n: number) => Math.round(n).toLocaleString("en-US")
 const list = (d: any): any[] => (Array.isArray(d) ? d : Array.isArray(d?.data) ? d.data : Array.isArray(d?.announcements) ? d.announcements : d && d._id ? [d] : [])
@@ -75,6 +76,7 @@ export function HomeMobile() {
     return (c?.sizes || []).filter((s: any) => s.quantity > 0).slice(0, 5)
   }, [deal])
 
+  const miniDeals = useMemo(() => best.filter((p) => p.discountPercentage > 0 && p._id !== deal?._id).slice(0, 3), [best, deal])
   const left = liveOffer ? Math.max(0, Math.floor((new Date(liveOffer.endDate).getTime() - now) / 1000)) : 0
   const tier = loyalty ? getTierProgress(loyalty.totalEarned) : null
 
@@ -95,7 +97,7 @@ export function HomeMobile() {
   const cur = slides[slide]
 
   return (
-    <div dir="rtl" className="md:hidden relative w-full px-m3-margin pt-28 pb-24 bg-m3-surface font-m3-body-md min-h-screen">
+    <div dir="rtl" style={{ fontFamily: "var(--font-cairo), Cairo, sans-serif" }} className="md:hidden relative w-full px-m3-margin pt-28 pb-24 bg-m3-surface min-h-screen">
       <div className="flex flex-col w-full gap-m3-space-lg">
         {free?.enabled && free.min > 0 && (
           <aside className="relative overflow-hidden rounded-xl bg-gradient-to-l from-blue-50 to-slate-100 border border-blue-100/80 px-3.5 py-2 shadow-sm">
@@ -113,7 +115,12 @@ export function HomeMobile() {
         {cur && (
           <section className="relative w-full rounded-2xl bg-white p-4 shadow-sm border border-slate-100 overflow-hidden flex flex-col gap-3">
             <div className="relative w-full aspect-[4/3] rounded-xl bg-gradient-to-br from-slate-100 via-blue-50/40 to-slate-200/60 overflow-hidden flex items-center justify-center">
-              <img alt={cur.title} src={normalizeImageUrl(cur.image)} className="relative z-10 w-full h-full object-contain p-2 drop-shadow-xl" />
+              <div className="absolute top-2.5 right-2.5 z-10 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-md shadow-sm border border-slate-100">
+                <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+                <span className="text-[11px] font-bold text-slate-900 tracking-wide">إصدارات حصرية</span>
+              </div>
+              <div className="absolute top-2.5 left-2.5 z-10 px-2 py-0.5 rounded-md bg-slate-900/80 backdrop-blur-sm text-white text-[10px] font-bold">ORIGINAL VERIFIED</div>
+              <img alt={cur.title} src={normalizeImageUrl(cur.image)} className="relative z-10 w-full h-full object-contain p-2 drop-shadow-xl transition-transform duration-500 hover:scale-105" />
               {slides.length > 1 && (
                 <div className="absolute bottom-2.5 left-0 right-0 flex items-center justify-center gap-1.5 z-10">
                   {slides.map((_, i) => (
@@ -123,6 +130,13 @@ export function HomeMobile() {
               )}
             </div>
             <div className="flex flex-col gap-1.5 text-right">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold tracking-wider text-slate-500 uppercase font-m3-price-display">MIRVORY EDITORIAL SELECTION</span>
+                <span className="text-[11px] font-bold text-emerald-600 flex items-center gap-0.5">
+                  <span className="material-symbols-outlined text-[14px]">check_circle</span>
+                  100% أصلي ومفحوص
+                </span>
+              </div>
               <h2 className="text-xl font-extrabold text-slate-900 leading-snug">{cur.title}</h2>
               {cur.content && <p className="text-xs text-slate-600 leading-relaxed font-medium line-clamp-3">{cur.content}</p>}
               <div className="mt-2 flex items-center gap-2">
@@ -219,6 +233,30 @@ export function HomeMobile() {
                 <span className="material-symbols-outlined text-[20px]">shopping_bag</span>
                 <span>اشتري الآن - توصيل سريع</span>
               </Link>
+              {miniDeals.length > 0 && (
+                <div className="mt-2 pt-3 border-t border-slate-800/80 flex flex-col gap-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-slate-400 font-bold">صفقات إضافية</span>
+                    <Link href="/products?sort=discount" className="text-blue-400 font-bold">عرض {miniDeals.length} قطع</Link>
+                  </div>
+                  {miniDeals.map((m) => (
+                    <div key={m._id} className="flex items-center gap-2 p-2 rounded-xl bg-slate-900/80 border border-slate-800">
+                      <img alt={m.title} src={normalizeImageUrl(m.image || getProductImage(m) || "")} className="w-14 h-14 object-contain rounded-lg bg-slate-800/60 p-1 shrink-0" />
+                      <div className="flex flex-col flex-1 min-w-0 text-right">
+                        <span className="text-xs font-bold text-white truncate">{m.title}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="font-m3-price-display text-sm font-extrabold text-blue-400">{fmt(finalPrice(m))} ج.م</span>
+                          <span className="font-m3-price-display text-[11px] line-through text-slate-500">{fmt(m.price)} ج.م</span>
+                        </div>
+                      </div>
+                      <Link href={`/products/${m._id}`} className="px-3 h-8 rounded-lg bg-slate-800 text-white text-xs font-bold shrink-0 flex items-center gap-1 border border-slate-700">
+                        <span>معاينة</span>
+                        <span className="material-symbols-outlined text-[15px]">chevron_left</span>
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </section>
         )}
@@ -333,19 +371,22 @@ export function HomeMobile() {
         )}
 
         <section className="rounded-2xl bg-white p-4 shadow-sm border border-slate-100 flex flex-col gap-3">
-          <div className="flex items-center gap-2">
-            <span className="w-8 h-8 rounded-full bg-blue-100 text-m3-primary flex items-center justify-center">
-              <span className="material-symbols-outlined text-[20px]">verified</span>
-            </span>
-            <div>
-              <h4 className="text-sm font-extrabold text-slate-900">ضمان ميرفوري الأصلي</h4>
-              <span className="text-xs text-slate-500">تجربة شراء موثوقة في جمهورية مصر العربية</span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="w-8 h-8 rounded-full bg-blue-100 text-m3-primary flex items-center justify-center">
+                <span className="material-symbols-outlined text-[20px]">verified</span>
+              </span>
+              <div>
+                <h4 className="text-sm font-extrabold text-slate-900">ضمان ميرفوري الأصلي</h4>
+                <span className="text-xs text-slate-500">تجربة شراء موثوقة في جمهورية مصر العربية</span>
+              </div>
             </div>
+            <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-xs font-bold text-slate-700">معتمد رسمياً</span>
           </div>
           {[
-            ["verified_user", "bg-blue-100 text-m3-primary", "ضمان استبدال واسترجاع 14 يوم", "فحص الخامات والباركود والبوكس الأصلي قطعة بقطعة"],
+            ["verified_user", "bg-blue-100 text-m3-primary", `ضمان استبدال واسترجاع ${STORE_POLICIES.returnDays} يوم`, "فحص الخامات والباركود والبوكس الأصلي قطعة بقطعة"],
             ["visibility", "bg-emerald-100 text-emerald-700", "المعاينة وتجربة المقاس عند الاستلام", "حقك الكامل في فحص وتجربة السنيكرز قبل الدفع للمندوب"],
-            ["electric_bolt", "bg-rose-100 text-rose-700", "شحن سريع لجميع المحافظات", "توصيل لباب بيتك مع تتبع الشحنة"],
+            ["electric_bolt", "bg-rose-100 text-rose-700", "شحن سريع لجميع المحافظات", `وصول خلال ${STORE_POLICIES.deliveryWindow} مع تتبع الشحنة`],
           ].map(([icon, cls, t, d]) => (
             <div key={icon} className="flex items-center gap-3 p-2.5 rounded-xl bg-slate-50 border border-slate-100">
               <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${cls}`}>
