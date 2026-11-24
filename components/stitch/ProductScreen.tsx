@@ -1,4 +1,5 @@
 "use client"
+import { normalizeImageUrl } from "@/src/lib/normalizeImageUrl"
 
 import Link from "next/link"
 import { useEffect, useMemo, useRef, useState } from "react"
@@ -109,7 +110,7 @@ export function ProductMobileInner(p: ProductMobileProps) {
             <span className="material-symbols-outlined text-[22px]" style={{ fontVariationSettings: `'FILL' ${p.isFavorite ? 1 : 0}` }}>favorite</span>
           </button>
           <div className="relative w-full aspect-square rounded-2xl bg-gradient-to-b from-[#ffffff] to-[#eceef0] overflow-hidden flex items-center justify-center">
-            {p.mainImage && <img alt={product.title} src={p.mainImage} className="w-full h-full object-contain p-[1rem] transition-all duration-300 drop-shadow-md" />}
+            {p.mainImage && <img alt={product.title} src={normalizeImageUrl(p.mainImage, "product")} fetchPriority="high" decoding="async" className="w-full h-full object-contain p-[1rem] transition-all duration-300 drop-shadow-md" />}
           </div>
           {gallery.length > 1 && (
             <div className="flex items-center justify-center gap-[0.5rem] mt-3 px-2 overflow-x-auto">
@@ -121,7 +122,7 @@ export function ProductMobileInner(p: ProductMobileProps) {
                     onClick={() => p.onColor(c.value)}
                     className={`relative w-16 h-16 rounded-[0.75rem] bg-[#ffffff] p-1 shadow-sm transition-all shrink-0 ${on ? "scale-105" : "opacity-60 hover:opacity-100"}`}
                   >
-                    <img alt={c.name} src={c.image!} className="w-full h-full object-contain rounded-[0.5rem]" />
+                    <img alt={c.name} src={normalizeImageUrl(c.image!, "thumbnail")} loading="lazy" decoding="async" className="w-full h-full object-contain rounded-[0.5rem]" />
                   </button>
                 )
               })}

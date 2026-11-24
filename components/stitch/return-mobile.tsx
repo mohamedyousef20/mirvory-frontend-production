@@ -138,7 +138,7 @@ export function ReturnMobile() {
               picks.map(({ o, i }) => (
                 <button key={`${o._id}-${i._id}`} onClick={() => { setOrderId(o._id); setItemId(i._id) }} className="flex items-center gap-3 p-2 rounded-[0.75rem] bg-[#f2f4f6] text-right">
                   <div className="w-14 h-14 rounded-[0.5rem] bg-[#ffffff] p-1 flex items-center justify-center shrink-0">
-                    {i.image && <img alt={i.title} src={normalizeImageUrl(i.image)} className="w-full h-full object-contain" />}
+                    {i.image && <img loading="lazy" decoding="async" alt={i.title} src={normalizeImageUrl(i.image, "thumbnail")} className="w-full h-full object-contain" />}
                   </div>
                   <div className="min-w-0">
                     <span className="font-bold text-[#191c1e] text-[14px] leading-[22px] tracking-[0em] font-[400] block truncate">{i.title || i.product?.title}</span>
@@ -160,7 +160,7 @@ export function ReturnMobile() {
               </div>
               <div className="flex gap-[1rem] items-center py-[0.25rem]">
                 <div className="w-20 h-20 rounded-[0.75rem] bg-[#f2f4f6] p-1.5 shrink-0 flex items-center justify-center overflow-hidden">
-                  {item.image && <img alt={item.title} className="w-full h-full object-contain mix-blend-multiply" src={normalizeImageUrl(item.image)} />}
+                  {item.image && <img loading="lazy" decoding="async" alt={item.title} className="w-full h-full object-contain mix-blend-multiply" src={normalizeImageUrl(item.image, "thumbnail")} />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <h2 className="font-bold text-[18px] leading-[26px] tracking-[-0.01em] font-[600] text-[#191c1e] truncate">{item.title || item.product?.title}</h2>

@@ -1,4 +1,5 @@
 "use client"
+import { normalizeImageUrl } from "@/src/lib/normalizeImageUrl"
 
 import Link from "next/link"
 import { useState } from "react"
@@ -113,7 +114,7 @@ export function CartMobileInner(p: Props) {
           {p.items.map((it) => (
             <div key={it._id} className="relative bg-[#ffffff] rounded-2xl p-[0.5rem] shadow-sm flex gap-[0.5rem] items-stretch transition-all duration-300">
               <div className="relative w-24 h-28 bg-[#f2f4f6] rounded-[0.75rem] overflow-hidden shrink-0 flex items-center justify-center">
-                <img alt={it.name} className="w-full h-full object-cover" src={it.image} />
+                <img alt={it.name} className="w-full h-full object-cover" src={normalizeImageUrl(it.image, "thumbnail")} loading="lazy" decoding="async" />
                 {it.size && (
                   <span className="absolute bottom-1 right-1 px-1.5 py-0.5 rounded-[0.25rem] bg-[#ffffff]/90 backdrop-blur-sm text-[9px] font-bold text-[#191c1e]">EU {it.size}</span>
                 )}

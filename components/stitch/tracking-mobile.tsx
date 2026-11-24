@@ -176,7 +176,7 @@ export function TrackingMobile() {
                 <span className="[font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[10px] leading-[14px] tracking-[0.06em] font-[700] text-[#434655] uppercase tracking-wider block mb-3">تفاصيل المنتج</span>
                 <div className="flex gap-4">
                   <div className="w-24 h-24 rounded-[0.75rem] bg-[#f2f4f6] shrink-0 p-2 overflow-hidden flex items-center justify-center">
-                    {item.image && <img alt={item.title} className="w-full h-full object-contain" src={normalizeImageUrl(item.image)} />}
+                    {item.image && <img loading="lazy" decoding="async" alt={item.title} className="w-full h-full object-contain" src={normalizeImageUrl(item.image, "thumbnail")} />}
                   </div>
                   <div className="flex flex-col justify-between flex-1 min-w-0">
                     <div>
@@ -307,7 +307,7 @@ export function TrackingMobile() {
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex gap-3 min-w-0">
                     <div className="w-16 h-16 rounded-[0.75rem] bg-[#f2f4f6] flex items-center justify-center p-1.5 shrink-0">
-                      {it?.image && <img alt={it.title} className="w-full h-full object-contain" src={normalizeImageUrl(it.image)} />}
+                      {it?.image && <img loading="lazy" decoding="async" alt={it.title} className="w-full h-full object-contain" src={normalizeImageUrl(it.image, "thumbnail")} />}
                     </div>
                     <div className="min-w-0">
                       <span className="[font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[18px] leading-[26px] tracking-[-0.01em] font-[600] text-[#191c1e] block truncate">{it?.title || it?.product?.title}</span>

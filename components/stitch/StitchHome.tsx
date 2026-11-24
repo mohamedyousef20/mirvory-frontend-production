@@ -128,7 +128,7 @@ export default function StitchHome() {
           <section className="relative w-full rounded-[1.25rem] bg-white p-4 shadow-sm border border-slate-100 overflow-hidden flex flex-col gap-3">
             <div className="relative w-full aspect-[4/3] md:aspect-[21/8] rounded-[0.875rem] bg-gradient-to-br from-slate-100 via-blue-50/40 to-slate-200/60 overflow-hidden flex items-center justify-center">
               <div className="absolute top-2.5 left-2.5 z-10 px-2 py-0.5 rounded-md bg-slate-900/80 backdrop-blur-xs text-white text-[10px] font-bold">ORIGINAL VERIFIED</div>
-              <img alt={cur.title} src={normalizeImageUrl(cur.image)} className="relative z-10 w-full h-full object-contain p-2 drop-shadow-xl" />
+              <img alt={cur.title} src={normalizeImageUrl(cur.image, "product")} fetchPriority="high" decoding="async" className="relative z-10 w-full h-full object-contain p-2 drop-shadow-xl" />
               {slides.length > 1 && (
                 <div className="absolute bottom-2.5 left-0 right-0 flex items-center justify-center gap-1.5 z-10">
                   {slides.map((_, i) => (
@@ -198,7 +198,7 @@ export default function StitchHome() {
             <div className="relative z-10 flex flex-col gap-3">
               <Link href={`/products/${deal._id}`} className="relative w-full aspect-[4/3] md:aspect-[21/8] rounded-[0.875rem] bg-gradient-to-b from-slate-900/90 to-slate-800/60 border border-slate-700/40 flex items-center justify-center overflow-hidden p-2">
                 <span className="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-[0.625rem] bg-rose-600 text-white [font-family:var(--font-space-grotesk),Space_Grotesk,sans-serif] text-xs font-black shadow-md">-{Math.round(deal.discountPercentage)}% خصم حصري</span>
-                <img alt={deal.title} src={normalizeImageUrl(deal.image || getProductImage(deal) || "")} className="w-full h-full object-contain drop-shadow-2xl" />
+                <img alt={deal.title} src={normalizeImageUrl(deal.image || getProductImage(deal) || "", "product")} loading="lazy" decoding="async" className="w-full h-full object-contain drop-shadow-2xl" />
               </Link>
               <div className="flex flex-col gap-1 text-right">
                 <div className="flex items-center justify-between">
@@ -314,7 +314,7 @@ export default function StitchHome() {
                     </button>
                     {p.discountPercentage > 0 && <span className="absolute top-2.5 right-2.5 z-10 px-2 py-0.5 rounded-md bg-rose-100 text-rose-700 font-bold text-[10px]">-{Math.round(p.discountPercentage)}%</span>}
                     <Link href={`/products/${p._id}`} className="relative w-full aspect-square rounded-[0.875rem] bg-slate-50 flex items-center justify-center overflow-hidden mb-2 p-1">
-                      <img alt={p.title} src={normalizeImageUrl(p.image || getProductImage(p) || "")} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300" />
+                      <img alt={p.title} src={normalizeImageUrl(p.image || getProductImage(p) || "", "card")} loading="lazy" decoding="async" className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300" />
                     </Link>
                     <div className="flex flex-col gap-1 text-right">
                       {p.ratings?.count > 0 && (

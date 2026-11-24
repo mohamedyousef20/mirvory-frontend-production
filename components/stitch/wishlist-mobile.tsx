@@ -171,7 +171,7 @@ export function WishlistMobile() {
               return (
                 <article key={p._id} className="group flex flex-col bg-[#ffffff] rounded-2xl p-2.5 shadow-sm relative">
                   <Link href={`/products/${p._id}`} className="relative w-full aspect-square rounded-[0.75rem] bg-[#f2f4f6] overflow-hidden flex items-center justify-center p-2">
-                    <img alt={p.title} src={normalizeImageUrl(p.image || getProductImage(p) || "")} className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105" />
+                    <img alt={p.title} src={normalizeImageUrl(p.image || getProductImage(p) || "", "card")} loading="lazy" decoding="async" className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105" />
                     <div className="absolute top-2 start-2 flex flex-col gap-1 items-start">
                       {hasSale ? (
                         <span className="px-2 py-0.5 rounded-[9999px] bg-[#cf2c30] text-[#ffecea] [font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[10px] leading-[14px] tracking-[0.06em] font-[700] font-bold flex items-center gap-1 shadow-sm">

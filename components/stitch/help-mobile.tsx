@@ -73,7 +73,7 @@ export function HelpMobile() {
           <div className="bg-[#ffffff] rounded-2xl p-3 shadow-sm flex items-center justify-between gap-3">
             <div className="flex items-center gap-3 min-w-0">
               <div className="w-14 h-14 rounded-[0.75rem] overflow-hidden bg-[#f2f4f6] shrink-0 flex items-center justify-center p-1">
-                {it?.image && <img alt={it.title} className="w-full h-full object-contain mix-blend-multiply" src={normalizeImageUrl(it.image)} />}
+                {it?.image && <img loading="lazy" decoding="async" alt={it.title} className="w-full h-full object-contain mix-blend-multiply" src={normalizeImageUrl(it.image, "thumbnail")} />}
               </div>
               <div className="flex flex-col min-w-0">
                 <div className="flex items-center gap-2">

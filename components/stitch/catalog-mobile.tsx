@@ -390,7 +390,7 @@ function CatalogCard({ p, fav, onFav }: { p: any; fav: boolean; onFav: () => voi
   const pct = Number(p.discountPercentage) || 0
   const final = p.discountedPrice && p.discountedPrice < price ? Number(p.discountedPrice) : pct > 0 ? price * (1 - pct / 100) : price
   const hasDiscount = final < price
-  const img = normalizeImageUrl(p.image || getProductImage(p) || "")
+  const img = normalizeImageUrl(p.image || getProductImage(p) || "", "card")
   const brand = p.brand || p.category?.name || ""
   const out = getTotalStock(p) <= 0
   const badge = hasDiscount
@@ -403,7 +403,7 @@ function CatalogCard({ p, fav, onFav }: { p: any; fav: boolean; onFav: () => voi
   return (
     <article className="bg-[#ffffff] rounded-2xl p-2.5 flex flex-col gap-2 shadow-sm relative group">
       <Link href={`/products/${p._id}`} className="relative aspect-square w-full rounded-[0.75rem] bg-[#f2f4f6] overflow-hidden flex items-center justify-center">
-        {img && <img alt={p.title} src={img} className="object-contain w-full h-full p-1 transform group-hover:scale-105 transition-transform duration-300" />}
+        {img && <img alt={p.title} src={img} loading="lazy" decoding="async" className="object-contain w-full h-full p-1 transform group-hover:scale-105 transition-transform duration-300" />}
         {badge && (
           <span className={`absolute top-2 right-2 px-2 py-0.5 rounded-[9999px] [font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[10px] leading-[14px] tracking-[0.06em] font-[700] font-bold shadow-sm ${badge.cls}`}>{badge.text}</span>
         )}
