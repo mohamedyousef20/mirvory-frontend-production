@@ -91,7 +91,7 @@ export function ProductMobile(p: ProductMobileProps) {
             <span className="material-symbols-outlined text-[22px]" style={{ fontVariationSettings: `'FILL' ${p.isFavorite ? 1 : 0}` }}>favorite</span>
           </button>
           <div className="relative w-full aspect-square rounded-2xl bg-gradient-to-b from-m3-surface-container-lowest to-m3-surface-container overflow-hidden flex items-center justify-center">
-            {p.mainImage && <img alt={product.title} src={p.mainImage} className="w-full h-full object-contain p-m3-space-md transition-all duration-300 drop-shadow-md" />}
+            {p.mainImage && <img alt={product.title} src={p.mainImage} className="mix-blend-multiply w-full h-full object-contain p-m3-space-md transition-all duration-300 drop-shadow-md" />}
           </div>
           {gallery.length > 1 && (
             <div className="flex items-center justify-center gap-m3-space-sm mt-3 px-2 overflow-x-auto">

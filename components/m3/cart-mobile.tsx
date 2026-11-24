@@ -113,7 +113,7 @@ export function CartMobile(p: Props) {
           {p.items.map((it) => (
             <div key={it._id} className="relative bg-m3-surface-container-lowest rounded-2xl p-m3-space-sm shadow-sm flex gap-m3-space-sm items-stretch transition-all duration-300">
               <div className="relative w-24 h-28 bg-m3-surface-container-low rounded-xl overflow-hidden shrink-0 flex items-center justify-center">
-                <img alt={it.name} className="w-full h-full object-cover" src={it.image} />
+                <img alt={it.name} className="mix-blend-multiply w-full h-full object-cover" src={it.image} />
                 {it.size && (
                   <span className="absolute bottom-1 right-1 px-1.5 py-0.5 rounded bg-m3-surface-container-lowest/90 backdrop-blur-sm text-[9px] font-bold text-m3-on-surface">EU {it.size}</span>
                 )}

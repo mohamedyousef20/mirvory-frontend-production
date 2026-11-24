@@ -176,7 +176,7 @@ export function TrackingMobile() {
                 <span className="font-m3-label-sm text-m3-label-sm text-m3-on-surface-variant uppercase tracking-wider block mb-3">تفاصيل المنتج</span>
                 <div className="flex gap-4">
                   <div className="w-24 h-24 rounded-xl bg-m3-surface-container-low shrink-0 p-2 overflow-hidden flex items-center justify-center">
-                    {item.image && <img alt={item.title} className="w-full h-full object-contain" src={normalizeImageUrl(item.image)} />}
+                    {item.image && <img alt={item.title} className="mix-blend-multiply w-full h-full object-contain" src={normalizeImageUrl(item.image)} />}
                   </div>
                   <div className="flex flex-col justify-between flex-1 min-w-0">
                     <div>
@@ -307,7 +307,7 @@ export function TrackingMobile() {
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex gap-3 min-w-0">
                     <div className="w-16 h-16 rounded-xl bg-m3-surface-container-low flex items-center justify-center p-1.5 shrink-0">
-                      {it?.image && <img alt={it.title} className="w-full h-full object-contain" src={normalizeImageUrl(it.image)} />}
+                      {it?.image && <img alt={it.title} className="mix-blend-multiply w-full h-full object-contain" src={normalizeImageUrl(it.image)} />}
                     </div>
                     <div className="min-w-0">
                       <span className="font-m3-headline-md text-m3-headline-md text-m3-on-surface block truncate">{it?.title || it?.product?.title}</span>

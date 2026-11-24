@@ -142,7 +142,7 @@ export function HomeMobile() {
                 <span className="text-[11px] font-bold text-slate-900 tracking-wide">إصدارات حصرية</span>
               </div>
               <div className="absolute top-2.5 left-2.5 z-10 px-2 py-0.5 rounded-[0.375rem] bg-slate-900/80 backdrop-blur-sm text-white text-[10px] font-bold">ORIGINAL VERIFIED</div>
-              <img alt={cur.title} src={normalizeImageUrl(cur.image)} className="relative z-10 w-full h-full object-contain p-2 drop-shadow-xl transition-transform duration-500 hover:scale-105" />
+              <img alt={cur.title} src={normalizeImageUrl(cur.image)} className="mix-blend-multiply relative z-10 w-full h-full object-contain p-2 drop-shadow-xl transition-transform duration-500 hover:scale-105" />
               {slides.length > 1 && (
                 <div className="absolute bottom-2.5 left-0 right-0 flex items-center justify-center gap-1.5 z-10">
                   {slides.map((_, i) => (
@@ -380,7 +380,7 @@ export function HomeMobile() {
                     </button>
                     {p.discountPercentage > 0 && <span className="absolute top-2.5 right-2.5 z-10 px-2 py-0.5 rounded-[0.375rem] bg-rose-100 text-rose-700 font-bold text-[10px]">-{Math.round(p.discountPercentage)}%</span>}
                     <Link href={`/products/${p._id}`} className="relative w-full aspect-square rounded-[0.875rem] bg-slate-50 flex items-center justify-center overflow-hidden mb-2 p-1">
-                      <img alt={p.title} src={normalizeImageUrl(p.image || getProductImage(p) || "")} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300" />
+                      <img alt={p.title} src={normalizeImageUrl(p.image || getProductImage(p) || "")} className="mix-blend-multiply w-full h-full object-contain group-hover:scale-105 transition-transform duration-300" />
                     </Link>
                     <div className="flex flex-col gap-1 text-right">
                       {p.ratings?.count > 0 && (

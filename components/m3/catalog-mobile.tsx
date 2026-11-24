@@ -410,7 +410,7 @@ function CatalogCard({ p, fav, onFav }: { p: any; fav: boolean; onFav: () => voi
   return (
     <article className="bg-m3-surface-container-lowest rounded-2xl p-2.5 flex flex-col gap-2 shadow-sm relative group">
       <Link href={`/products/${p._id}`} className="relative aspect-square w-full rounded-xl bg-m3-surface-container-low overflow-hidden flex items-center justify-center">
-        {img && <img alt={p.title} src={img} className="object-contain w-full h-full p-1 transform group-hover:scale-105 transition-transform duration-300" />}
+        {img && <img alt={p.title} src={img} className="mix-blend-multiply object-contain w-full h-full p-1 transform group-hover:scale-105 transition-transform duration-300" />}
         {badge && (
           <span className={`absolute top-2 right-2 px-2 py-0.5 rounded-full font-m3-label-sm text-m3-label-sm font-bold shadow-sm ${badge.cls}`}>{badge.text}</span>
         )}
