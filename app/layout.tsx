@@ -57,6 +57,7 @@ const plusJakarta = Plus_Jakarta_Sans({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://www.mirvory.net"),
   title: "Mirvory - متجر الكوتشيات والملابس",
   description:
     "متجر متخصص في بيع الكوتشيات الميرور والملابس العصرية بأفضل الأسعار وأعلى جودة",
