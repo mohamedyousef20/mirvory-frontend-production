@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect, useCallback, useRef, useMemo } from "react"
-import { ProductMobile } from "@/components/m3/product-mobile"
+import { ProductMobile } from "@/components/stitch/ProductScreen"
 import { Card, CardContent } from "@/components/ui/card"
 import { MirvoryPageLoader } from "./MirvoryLoader"
 import Image from "next/image"
@@ -773,7 +773,7 @@ const ProductDetail = ({ productId }: { productId: string }) => {
                     >
                       {size}
                       {isLow && !isUnavailable && (
-                        <span className="absolute -top-1.5 -end-1.5 h-3 w-3 rounded-full bg-orange-500 border border-white" title={`${qty} left`} />
+                        <span className="absolute -top-1.5 -end-1.5 h-3 w-3 rounded-full bg-[#ab0b1c] border border-white" title={`${qty} left`} />
                       )}
                     </button>
                   )
@@ -809,7 +809,7 @@ const ProductDetail = ({ productId }: { productId: string }) => {
 
           <div className="flex flex-wrap gap-2 pt-2">
             <Button
-              className="flex-1 bg-orange-500 hover:bg-orange-600 text-white min-w-[140px]"
+              className="flex-1 bg-[#004ac6] hover:bg-[#003ea8] text-white min-w-[140px]"
               onClick={handleBuyNow}
               disabled={isOutOfStock}
               size="lg"

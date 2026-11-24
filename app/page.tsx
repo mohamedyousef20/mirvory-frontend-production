@@ -12,7 +12,7 @@ import { ShoppingBag } from "lucide-react"
 import { SideAds } from "@/components/side-ads"
 import { HomeOffersCountdown } from "@/components/home-offers-countdown"
 import { HomePromoBanners } from "@/components/home-promo-banners"
-import { HomeMobile } from "@/components/m3/home-mobile"
+import StitchHome from "@/components/stitch/StitchHome"
 
 /** Lightweight visual divider between homepage sections */
 function SectionDivider({ icon: Icon, label }: { icon?: React.ElementType; label?: string }) {
@@ -34,8 +34,9 @@ export default async function Home() {
 
   return (
     <>
-    <HomeMobile />
-    <div className="hidden md:flex min-h-screen flex-col">
+    <StitchHome />
+    {/* Legacy desktop home kept below but hidden: delete this block once the Stitch desktop home is approved. */}
+    <div className="hidden min-h-screen flex-col">
       <main className="flex-1">
         {/* ── Hero Carousel ────────────────────────────────────────── */}
         <HeroCarousel />

@@ -12,7 +12,7 @@ import PaginationControls from "@/components/pagination-controls";
 import Link from "next/link";
 import { loyaltyService } from "@/lib/api";
 import { Input } from "@/components/ui/input";
-import { LoyaltyMobile } from "@/components/m3/loyalty-mobile";
+import { LoyaltyMobile } from "@/components/stitch/loyalty-mobile";
 import { LoyaltyMemberCard } from "@/components/loyalty/member-card";
 
 interface LoyaltyData {
@@ -246,16 +246,6 @@ function LoyaltyDesktop() {
                   <p className="text-sm text-muted-foreground mt-1">{isArabic ? "نقطة" : "points"}</p>
                 </div>
 
-                {/* Tier Badge */}
-                <div className="flex justify-center">
-                  <Badge className={`text-lg px-4 py-2 ${copy.tierColors[loyalty.tier as keyof typeof copy.tierColors]}`}>
-                    <span className="flex items-center gap-2">
-                      {getTierIcon(loyalty.tier)}
-                      {copy.tierNames[loyalty.tier as keyof typeof copy.tierNames]}
-                    </span>
-                  </Badge>
-                </div>
-
                 {/* Stats Grid */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center p-4 bg-muted rounded-lg">
@@ -276,14 +266,10 @@ function LoyaltyDesktop() {
 
         {/* Tabs for Transactions and Redeem */}
         <Tabs defaultValue="transactions" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-1">
             <TabsTrigger value="transactions" className="flex items-center gap-2">
               <History className="h-4 w-4" />
               {copy.transactions}
-            </TabsTrigger>
-            <TabsTrigger value="redeem" className="flex items-center gap-2">
-              <Gift className="h-4 w-4" />
-              {copy.redeemPoints}
             </TabsTrigger>
           </TabsList>
 
@@ -347,47 +333,6 @@ function LoyaltyDesktop() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="redeem">
-            <Card>
-              <CardHeader>
-                <CardTitle>{copy.redeemPoints}</CardTitle>
-                <CardDescription>{copy.redeemDescription}</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium mb-2 block">{copy.pointsToRedeem}</label>
-                  <Input
-                    type="number"
-                    placeholder={isArabic ? "أدخل عدد النقاط" : "Enter points amount"}
-                    value={redeemAmount}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      setRedeemAmount(e.target.value)
-                    } min="1"
-                    max={loyalty?.points || 0}
-                  />
-                  {loyalty && (
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {isArabic ? "متاح" : "Available"}: {loyalty.points} {isArabic ? "نقطة" : "points"}
-                    </p>
-                  )}
-                </div>
-                <Button
-                  onClick={handleRedeem}
-                  disabled={redeeming || !redeemAmount}
-                  className="w-full"
-                >
-                  {redeeming ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      {isArabic ? "جاري الاستبدال..." : "Redeeming..."}
-                    </>
-                  ) : (
-                    copy.confirmRedeem
-                  )}
-                </Button>
-              </CardContent>
-            </Card>
-          </TabsContent>
         </Tabs>
 
         {/* Back to Home */}

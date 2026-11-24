@@ -7,7 +7,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { HelpMobile } from "@/components/m3/help-mobile";
+import { HelpMobile } from "@/components/stitch/help-mobile";
 import { useRouter } from "next/navigation";
 import { HelpCircle, Mail, MessageCircle } from "lucide-react";
 

@@ -1,5 +1,5 @@
 import { ProductGrid } from "@/components/product-grid"
-import { CatalogMobile } from "@/components/m3/catalog-mobile"
+import { CatalogMobile } from "@/components/stitch/catalog-mobile"
 
 export default function ProductsPage() {
   return (

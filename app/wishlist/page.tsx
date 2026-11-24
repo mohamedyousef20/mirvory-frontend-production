@@ -1,5 +1,5 @@
 import { WishlistPage } from "@/components/wishlist-page"
-import { WishlistMobile } from "@/components/m3/wishlist-mobile"
+import { WishlistMobile } from "@/components/stitch/wishlist-mobile"
 
 export default function Wishlist() {
   return (

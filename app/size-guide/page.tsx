@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { userService } from "@/lib/api"
 import { useAuth } from "@/contexts/AuthProvider"
-import { SizeGuideMobile } from "@/components/m3/size-guide-mobile"
+import { SizeGuideMobile } from "@/components/stitch/size-guide-mobile"
 import { WhatsAppHelpButton } from "@/components/whatsapp-help-button"
 import { BRAND_FIT, MEN_SIZES, WOMEN_SIZES, type SizeRow } from "@/lib/size-chart"
 

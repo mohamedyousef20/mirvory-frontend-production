@@ -12,7 +12,7 @@ import { Loader2, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { unavailableProductRequestService } from "@/lib/api";
 import ImageUploader from "@/components/ImageUploader";
-import { ConciergeMobile } from "@/components/m3/concierge-mobile";
+import { ConciergeMobile } from "@/components/stitch/concierge-mobile";
 import { WhatsAppHelpButton } from "@/components/whatsapp-help-button";
 function RequestProductDesktop() {
   const { language } = useLanguage();

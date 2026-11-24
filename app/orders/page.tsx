@@ -1,7 +1,7 @@
 "use client";
 
 import { getProductImage } from "@/lib/productVariants"
-import { TrackingMobile } from "@/components/m3/tracking-mobile";
+import { TrackingMobile } from "@/components/stitch/tracking-mobile";
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from "sonner";

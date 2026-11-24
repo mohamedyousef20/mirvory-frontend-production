@@ -15,12 +15,14 @@ import { StoreProvider } from "@/src/app/providers/StoreProvider"
 import { LayoutWrapper } from "./layout-wrapper"
 import { MainNav } from "@/components/main-nav"
 import ErrorBoundaryProvider from "@/providers/ErrorBoundaryProvider"
-import { SiteFooter } from "@/components/site-footer"
+import { NavSwitch } from "@/components/stitch/StitchDesktopHeader"
+import { FloatingWhatsApp } from "@/components/stitch/FloatingWhatsApp"
+import { StitchFooter } from "@/components/stitch/StitchFooter"
 import { Toaster } from "sonner"
 import { getUserServer } from "@/src/lib/getUserServer"
 import { AuthProvider } from "@/contexts/AuthProvider"
 import { AnnouncementBar } from "@/components/announcement-bar"
-import { DesktopOnly, MobileHeader, MobileNav, PageOffset } from "@/components/m3/chrome"
+import { DesktopOnly, HideOnStitch, HideHeaderOnBrand, StitchBrandBar, StitchBackBar, MobileHeader, MobileNav, PageOffset } from "@/components/m3/chrome"
 
 import Script from "next/script"
 
@@ -171,9 +173,11 @@ fbq('track', 'PageView');
                       <DesktopOnly>
                         <AnnouncementBar />
 
-                        <MainNav />
+                        <NavSwitch classic={<MainNav />} />
                       </DesktopOnly>
-                      <MobileHeader />
+                      <HideOnStitch><HideHeaderOnBrand><MobileHeader /></HideHeaderOnBrand></HideOnStitch>
+                      <StitchBrandBar />
+                      <StitchBackBar />
 
                       <PageOffset>
 
@@ -191,10 +195,11 @@ fbq('track', 'PageView');
 
                       {/* v5: extra space so the bottom bar never covers the footer (mobile only) */}
                       <div className="pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0">
-                        <SiteFooter />
+                        <StitchFooter />
                       </div>
 
-                      <MobileNav />
+                      <FloatingWhatsApp />
+                      <HideOnStitch><MobileNav /></HideOnStitch>
 
                     </AuthProvider>
 

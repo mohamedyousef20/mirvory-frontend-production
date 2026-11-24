@@ -32,7 +32,7 @@ import {
   mergeValidatedItems,
   type GuestCartItem,
 } from "@/lib/guestCart"
-import { CartMobile } from "@/components/m3/cart-mobile"
+import { CartMobile } from "@/components/stitch/CartScreen"
 import { normalizeImageUrl } from "@/src/lib/normalizeImageUrl"
 
 export function GuestCartPage() {
