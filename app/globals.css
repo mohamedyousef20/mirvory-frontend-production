@@ -397,3 +397,11 @@ html:not(.msf-ready) .material-symbols-outlined {
   overflow: hidden;
   color: transparent !important;
 }
+
+/* Several pages inject a `* { font-family: 'Cairo' !important }` <style>, which turned every icon into plain text
+   (e.g. "shopping_bag"). A higher-specificity !important rule keeps the icon font on icons. */
+html .material-symbols-outlined {
+  font-family: "Material Symbols Outlined" !important;
+  font-feature-settings: "liga" !important;
+  letter-spacing: normal !important;
+}

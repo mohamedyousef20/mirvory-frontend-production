@@ -1,6 +1,7 @@
 "use client"
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link"
+import { PRODUCTS_NAV_LABEL } from "@/lib/nav-labels"
 import { useCallback, useEffect, useState } from "react"
 import { usePathname } from "next/navigation"
 import { useAuth } from "@/contexts/AuthProvider"
@@ -93,7 +94,7 @@ export function StitchNav() {
 
   const items = [
     { href: "/", icon: "home", label: "الرئيسية", exact: true },
-    { href: "/products", icon: "grid_view", label: "الأقسام", exact: true },
+    { href: "/products", icon: "grid_view", label: PRODUCTS_NAV_LABEL, exact: true },
     { href: authed ? "/wishlist" : "/auth/login", icon: "favorite", label: "المفضلة", match: "/wishlist" },
     { href: "/cart", icon: "shopping_bag", label: "السلة", badge: cart },
     { href: authed ? "/profile" : "/auth/login", icon: "person", label: "حسابي", match: "/profile" },

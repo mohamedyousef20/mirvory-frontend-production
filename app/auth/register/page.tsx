@@ -268,31 +268,21 @@ export default function Signup() {
 
   return (
     <>
-      <div className="min-h-screen flex flex-col md:flex-row-reverse bg-gray-50" dir="rtl">
-        {/* Brand Section */}
-        <div className="bg-[#1640a0] text-white md:w-1/2 p-8 flex flex-col justify-center items-center">
-          <div className="max-w-md mx-auto">
-            <h1 className="text-4xl font-bold mb-6">ميرفوري</h1>
-            <p className="text-xl mb-8">انضم إلينا واستمتع بتجربة تسوق فريدة من نوعها</p>
-            <div className="bg-white/10 p-6 rounded-lg">
-              <p className="mb-4 text-lg">لديك حساب بالفعل؟</p>
-              <Link href="/auth/login" className="block text-center bg-white text-[#1640a0] py-3 px-6 rounded-lg font-bold transition-all hover:bg-blue-50">
-                تسجيل الدخول
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        {/* Signup Form */}
-        <div className="md:w-1/2 p-8 flex justify-center items-center">
-          <div className="w-full max-w-md py-8">
-            <div className="text-center mb-10">
-              <h2 className="text-3xl font-bold text-gray-800 mb-2">إنشاء حساب جديد</h2>
-              <p className="text-gray-600">أنشئ حسابك واستمتع بالتسوق معنا</p>
+      <div className="min-h-screen bg-[#f7f9fb] font-[Cairo,sans-serif]" dir="rtl">
+        <div className="mx-auto w-full max-w-md px-4 pt-8 pb-12">
+          <Link href="/" className="flex items-center justify-center gap-2 mb-6 select-none">
+            <span className="font-extrabold text-2xl tracking-wider text-slate-950 font-['Space_Grotesk'] uppercase">MIRVORY</span>
+            <span className="px-2 py-0.5 rounded-[9999px] bg-slate-900 text-white font-bold text-[10px] tracking-widest">EGYPT</span>
+          </Link>
+          <div className="rounded-[1.5rem] bg-white border border-slate-100 shadow-sm p-5 md:p-7">
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-extrabold text-slate-900 mb-1">إنشاء حساب جديد</h2>
+              <p className="text-sm text-slate-500">أنشئ حسابك واستمتع بالتسوق معنا</p>
+              <p className="text-sm text-slate-600 mt-2">لديك حساب بالفعل؟ <Link href="/auth/login" className="font-extrabold text-[#004ac6] hover:underline">تسجيل الدخول</Link></p>
             </div>
 
             {error && (
-              <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-r-lg">
+              <div className="bg-rose-50 border border-rose-200 text-rose-700 p-3 mb-5 rounded-[0.875rem]">
                 <div className="flex">
                   <div className="flex-shrink-0">
                     <svg className="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
@@ -309,7 +299,7 @@ export default function Signup() {
             <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div>
-                  <label htmlFor="firstName" className="block text-gray-700 mb-2">الاسم الأول</label>
+                  <label htmlFor="firstName" className="block text-[13px] font-bold text-slate-700 mb-1.5">الاسم الأول</label>
                   <div className="relative">
                     <input
                       id="firstName"
@@ -317,15 +307,15 @@ export default function Signup() {
                       type="text"
                       value={formData.firstName}
                       onChange={handleChange}
-                      className="w-full pr-4 pl-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                      className="w-full h-12 pr-4 pl-11 rounded-[0.875rem] bg-[#f1f5f9] border border-transparent text-sm font-semibold text-slate-900 placeholder:text-slate-400 outline-none focus:bg-white focus:border-[#004ac6] focus:ring-4 focus:ring-[#004ac6]/10 transition"
                        placeholder="الاسم الأول" 
                       required
                     />
-                    <User className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
+                    <User className="absolute left-3.5 top-3.5 h-5 w-5 text-slate-400" />
                   </div>
                 </div>
                 <div>
-                  <label htmlFor="lastName" className="block text-gray-700 mb-2">الاسم الأخير</label>
+                  <label htmlFor="lastName" className="block text-[13px] font-bold text-slate-700 mb-1.5">الاسم الأخير</label>
                   <div className="relative">
                     <input
                       id="lastName"
@@ -333,17 +323,17 @@ export default function Signup() {
                       type="text"
                       value={formData.lastName}
                       onChange={handleChange}
-                      className="w-full pr-4 pl-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                      className="w-full h-12 pr-4 pl-11 rounded-[0.875rem] bg-[#f1f5f9] border border-transparent text-sm font-semibold text-slate-900 placeholder:text-slate-400 outline-none focus:bg-white focus:border-[#004ac6] focus:ring-4 focus:ring-[#004ac6]/10 transition"
                       placeholder= "الاسم الأخير"
                       required
                     />
-                    <User className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
+                    <User className="absolute left-3.5 top-3.5 h-5 w-5 text-slate-400" />
                   </div>
                 </div>
               </div>
 
-              <div className="mb-6">
-                <label htmlFor="email" className="block text-gray-700 mb-2">البريد الإلكتروني</label>
+              <div className="mb-4">
+                <label htmlFor="email" className="block text-[13px] font-bold text-slate-700 mb-1.5">البريد الإلكتروني</label>
                 <div className="relative">
                   <input
                     id="email"
@@ -351,16 +341,16 @@ export default function Signup() {
                     type="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full pr-4 pl-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                    className="w-full h-12 pr-4 pl-11 rounded-[0.875rem] bg-[#f1f5f9] border border-transparent text-sm font-semibold text-slate-900 placeholder:text-slate-400 outline-none focus:bg-white focus:border-[#004ac6] focus:ring-4 focus:ring-[#004ac6]/10 transition"
                     placeholder="أدخل بريدك الإلكتروني"
                     required
                   />
-                  <Mail className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
+                  <Mail className="absolute left-3.5 top-3.5 h-5 w-5 text-slate-400" />
                 </div>
               </div>
 
-              <div className="mb-6">
-                <label htmlFor="phone" className="block text-gray-700 mb-2">رقم الهاتف</label>
+              <div className="mb-4">
+                <label htmlFor="phone" className="block text-[13px] font-bold text-slate-700 mb-1.5">رقم الهاتف</label>
                 <div className="relative">
                   <input
                     id="phone"
@@ -368,18 +358,18 @@ export default function Signup() {
                     type="tel"
                     value={formData.phone}
                     onChange={handleChange}
-                    className="w-full pr-4 pl-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                    className="w-full h-12 pr-4 pl-11 rounded-[0.875rem] bg-[#f1f5f9] border border-transparent text-sm font-semibold text-slate-900 placeholder:text-slate-400 outline-none focus:bg-white focus:border-[#004ac6] focus:ring-4 focus:ring-[#004ac6]/10 transition"
                     placeholder="05xxxxxxxx"
                     required
                   />
-                  <Phone className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
+                  <Phone className="absolute left-3.5 top-3.5 h-5 w-5 text-slate-400" />
                 </div>
-                <p className="mt-1 text-xs text-gray-500">مثال: 01012345678 (رقم هاتف مصري)</p>
+                <p className="mt-1 text-xs text-slate-500">مثال: 01012345678 (رقم هاتف مصري)</p>
               </div>
 
 
-              <div className="mb-6">
-                <label htmlFor="password" className="block text-gray-700 mb-2">كلمة المرور</label>
+              <div className="mb-4">
+                <label htmlFor="password" className="block text-[13px] font-bold text-slate-700 mb-1.5">كلمة المرور</label>
                 <div className="relative">
                   <input
                     id="password"
@@ -387,7 +377,7 @@ export default function Signup() {
                     type={showPassword ? "text" : "password"}
                     value={formData.password}
                     onChange={handleChange}
-                    className="w-full pr-4 pl-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                    className="w-full h-12 pr-4 pl-11 rounded-[0.875rem] bg-[#f1f5f9] border border-transparent text-sm font-semibold text-slate-900 placeholder:text-slate-400 outline-none focus:bg-white focus:border-[#004ac6] focus:ring-4 focus:ring-[#004ac6]/10 transition"
                     placeholder="أدخل كلمة المرور"
                     required
                     minLength={8}
@@ -395,20 +385,20 @@ export default function Signup() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute left-3 top-3.5"
+                    className="absolute left-3.5 top-3.5 z-10"
                   >
                     {showPassword ? (
-                      <EyeOff className="h-5 w-5 text-gray-400" />
+                      <EyeOff className="h-5 w-5 text-slate-400" />
                     ) : (
-                      <Eye className="h-5 w-5 text-gray-400" />
+                      <Eye className="h-5 w-5 text-slate-400" />
                     )}
                   </button>
                 </div>
-                <p className="mt-1 text-xs text-gray-500">يجب أن تحتوي على 8 أحرف على الأقل</p>
+                <p className="mt-1 text-xs text-slate-500">يجب أن تحتوي على 8 أحرف على الأقل</p>
               </div>
 
-              <div className="mb-6">
-                <label htmlFor="confirmPassword" className="block text-gray-700 mb-2">تأكيد كلمة المرور</label>
+              <div className="mb-4">
+                <label htmlFor="confirmPassword" className="block text-[13px] font-bold text-slate-700 mb-1.5">تأكيد كلمة المرور</label>
                 <div className="relative">
                   <input
                     id="confirmPassword"
@@ -416,19 +406,19 @@ export default function Signup() {
                     type={showConfirmPassword ? "text" : "password"}
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    className="w-full pr-4 pl-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                    className="w-full h-12 pr-4 pl-11 rounded-[0.875rem] bg-[#f1f5f9] border border-transparent text-sm font-semibold text-slate-900 placeholder:text-slate-400 outline-none focus:bg-white focus:border-[#004ac6] focus:ring-4 focus:ring-[#004ac6]/10 transition"
                     placeholder="أعد إدخال كلمة المرور"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute left-3 top-3.5"
+                    className="absolute left-3.5 top-3.5 z-10"
                   >
                     {showConfirmPassword ? (
-                      <EyeOff className="h-5 w-5 text-gray-400" />
+                      <EyeOff className="h-5 w-5 text-slate-400" />
                     ) : (
-                      <Eye className="h-5 w-5 text-gray-400" />
+                      <Eye className="h-5 w-5 text-slate-400" />
                     )}
                   </button>
                 </div>
@@ -437,8 +427,8 @@ export default function Signup() {
               <div className="mb-8">
 
                 {/* Governorate Dropdown */}
-                <div className="mb-6">
-                  <label htmlFor="address.governorate" className="block text-gray-700 mb-2">
+                <div className="mb-4">
+                  <label htmlFor="address.governorate" className="block text-[13px] font-bold text-slate-700 mb-1.5">
                     المحافظة
                   </label>
 
@@ -449,7 +439,7 @@ export default function Signup() {
                       value={formData.address.governorate}
                       onChange={handleChange}
                       required
-                      className="w-full pr-4 pl-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-white"
+                      className="w-full h-12 pr-4 pl-11 rounded-[0.875rem] bg-[#f1f5f9] border border-transparent text-sm font-semibold text-slate-900 placeholder:text-slate-400 outline-none focus:bg-white focus:border-[#004ac6] focus:ring-4 focus:ring-[#004ac6]/10 transition"
                     >
                       <option value="">اختر المحافظة</option>
                       {GREATER_CAIRO_AREA.map((gov: any) => (
@@ -459,13 +449,13 @@ export default function Signup() {
                       ))}
                     </select>
 
-                    <MapPin className="absolute left-3 top-3.5 h-5 w-5 text-gray-400 pointer-events-none" />
+                    <MapPin className="absolute left-3.5 top-3.5 h-5 w-5 text-slate-400 pointer-events-none" />
                   </div>
                 </div>
 
                 {/* City Dropdown */}
-                <div className="mb-6">
-                  <label htmlFor="address.city" className="block text-gray-700 mb-2">
+                <div className="mb-4">
+                  <label htmlFor="address.city" className="block text-[13px] font-bold text-slate-700 mb-1.5">
                     المنطقة / المدينة
                   </label>
 
@@ -477,7 +467,7 @@ export default function Signup() {
                       onChange={handleChange}
                       required
                       disabled={!formData.address.governorate}
-                      className={`w-full pr-4 pl-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-white ${
+                      className={`w-full h-12 pr-4 pl-11 rounded-[0.875rem] bg-[#f1f5f9] border border-transparent text-sm font-semibold text-slate-900 placeholder:text-slate-400 outline-none focus:bg-white focus:border-[#004ac6] focus:ring-4 focus:ring-[#004ac6]/10 transition ${
                         !formData.address.governorate ? 'bg-gray-100 cursor-not-allowed' : ''
                       }`}
                     >
@@ -491,13 +481,13 @@ export default function Signup() {
                       ))}
                     </select>
 
-                    <MapPin className="absolute left-3 top-3.5 h-5 w-5 text-gray-400 pointer-events-none" />
+                    <MapPin className="absolute left-3.5 top-3.5 h-5 w-5 text-slate-400 pointer-events-none" />
                   </div>
                 </div>
 
                 {/* Detailed Address */}
-                <div className="mb-6">
-                  <label htmlFor="address.addressLine" className="block text-gray-700 mb-2">
+                <div className="mb-4">
+                  <label htmlFor="address.addressLine" className="block text-[13px] font-bold text-slate-700 mb-1.5">
                     العنوان بالتفصيل
                   </label>
 
@@ -508,12 +498,12 @@ export default function Signup() {
                       type="text"
                       value={formData.address.addressLine}
                       onChange={handleChange}
-                      className="w-full pr-4 pl-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                      className="w-full h-12 pr-4 pl-11 rounded-[0.875rem] bg-[#f1f5f9] border border-transparent text-sm font-semibold text-slate-900 placeholder:text-slate-400 outline-none focus:bg-white focus:border-[#004ac6] focus:ring-4 focus:ring-[#004ac6]/10 transition"
                       placeholder="مثال: شارع التحرير، عمارة 15، الدور 3"
                       required
                     />
 
-                    <MapPin className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
+                    <MapPin className="absolute left-3.5 top-3.5 h-5 w-5 text-slate-400" />
                   </div>
                 </div>
               </div>
@@ -523,10 +513,10 @@ export default function Signup() {
                     id="terms"
                     type="checkbox"
                     required
-                    className="h-4 w-4 text-[#1a4fba] focus:ring-blue-500 border-gray-300 rounded"
+                    className="h-4 w-4 accent-[#004ac6] rounded"
                   />
-                  <label htmlFor="terms" className="mr-2 block text-sm text-gray-700">
-                    أوافق على <Link href="/terms" className="text-[#1a4fba] hover:text-blue-800">الشروط والأحكام</Link> و <Link href="/privacy" className="text-[#1a4fba] hover:text-blue-800">سياسة الخصوصية</Link>
+                  <label htmlFor="terms" className="mr-2 block text-sm text-slate-700">
+                    أوافق على <Link href="/terms" className="font-bold text-[#004ac6] hover:underline">الشروط والأحكام</Link> و <Link href="/privacy" className="font-bold text-[#004ac6] hover:underline">سياسة الخصوصية</Link>
                   </label>
                 </div>
               </div>
@@ -534,8 +524,7 @@ export default function Signup() {
               <button
                 type="submit"
                 disabled={loading}
-                className={`w-full bg-[#1a4fba] text-white py-3 rounded-lg font-medium transition-colors ${loading ? 'bg-blue-400 cursor-not-allowed' : 'hover:bg-[#1640a0]'
-                  }`}
+                className="w-full h-12 rounded-[0.875rem] bg-[#004ac6] text-white text-sm font-extrabold shadow-md transition active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed hover:bg-[#2563eb]"
               >
                 {loading ? 'جاري إنشاء الحساب...' : 'إنشاء حساب'}
               </button>
@@ -544,10 +533,10 @@ export default function Signup() {
             <div className="mt-8">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300"></div>
+                  <div className="w-full border-t border-slate-200"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-4 bg-gray-50 text-gray-500">أو التسجيل باستخدام</span>
+                  <span className="px-4 bg-white text-slate-500 text-xs font-semibold">أو التسجيل باستخدام</span>
                 </div>
               </div>
 
@@ -555,17 +544,7 @@ export default function Signup() {
                 <button
                   type="button"
                   onClick={handleGoogleSignIn}
-                  className="
-      w-full flex items-center justify-center gap-3
-      rounded-xl border border-gray-300
-      bg-white px-5 py-3
-      text-sm font-medium text-gray-700
-      shadow-sm
-      transition-all duration-200
-      hover:bg-gray-50 hover:shadow-md
-      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
-      active:scale-[0.98]
-    "
+                  className="w-full h-12 flex items-center justify-center gap-3 rounded-[0.875rem] border border-slate-200 bg-white text-sm font-bold text-slate-800 shadow-sm transition hover:bg-slate-50 active:scale-[0.98]"
                 >
                   <svg
                     className="h-5 w-5"
@@ -577,7 +556,7 @@ export default function Signup() {
                     <path fill="#34A853" d="M24 48c6.48 0 11.93-2.14 15.9-5.78l-7.06-5.47c-1.96 1.32-4.47 2.1-8.84 2.1-6.23 0-11.5-3.63-13.42-8.94l-8.02 6.22C6.59 42.62 14.64 48 24 48z" />
                   </svg>
 
-                  <span>تسجيل الدخول عبر جوجل</span>
+                  <span>التسجيل عبر جوجل</span>
                 </button>
               </div>
 
