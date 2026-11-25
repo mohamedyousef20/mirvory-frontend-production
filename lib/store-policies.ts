@@ -33,8 +33,8 @@ export const TRUST_ITEMS: TrustItem[] = [
   },
   {
     icon: "authentic",
-    title: "أصلي 100% موثق",
-    titleEn: "100% verified authentic",
+    title: "بائعون موثوقون",
+    titleEn: "Trusted sellers",
     text: "منتجات من بائعين موثوقين على المنصة.",
     textEn: "Products from trusted sellers on the platform.",
   },

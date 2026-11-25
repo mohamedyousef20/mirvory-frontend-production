@@ -37,7 +37,6 @@ export function StitchDesktopHeader() {
     <header dir="rtl" className="hidden md:block sticky top-0 z-50 w-full bg-[#ffffff]/90 backdrop-blur-xl shadow-[0_1px_12px_rgba(15,23,42,0.06)] border-b border-[#e2e8f0]/60 font-[Cairo,sans-serif]">
       <div className="mx-auto max-w-6xl h-[72px] px-[2rem] flex items-center gap-6">
         <Link href="/" className="flex items-center gap-2 select-none shrink-0">
-          <span className="font-black text-2xl italic tracking-tighter text-slate-900">V<span className="text-rose-600 ml-[-2px]">O</span></span>
           <span className="font-extrabold text-[20px] tracking-wider text-slate-950 font-['Space_Grotesk'] uppercase">MIRVORY</span>
           <span className="px-2 py-0.5 rounded-[9999px] bg-slate-900 text-white font-bold text-[10px] tracking-widest flex items-center gap-1"><span>EGYPT</span><span className="w-1.5 h-1.5 rounded-[9999px] bg-emerald-400" /></span>
         </Link>

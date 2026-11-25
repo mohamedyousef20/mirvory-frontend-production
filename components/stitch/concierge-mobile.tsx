@@ -85,11 +85,11 @@ export function ConciergeMobile() {
             مش لاقي منتج أحلامك في مصر؟ <span className="text-[#2563eb]">إحنا هنجيبهولك</span> لحد باب بيتك 📦✈️
           </h1>
           <p className="text-[14px] leading-[22px] tracking-[0em] font-[400] [font-family:var(--font-jakarta),Plus_Jakarta_Sans,var(--font-cairo),Cairo,sans-serif] text-[#434655] mt-2.5 leading-relaxed">
-            سواء كان إصدار نادر، لون مخصص، أو مقاس مش متوفر في السوق المصري؛ فريق ميرفوري يوفرهولك أصلي 100% مع ضمان الفحص الشامل والمعاينة قبل الدفع.
+            سواء كان إصدار نادر، لون مخصص، أو مقاس مش متوفر في السوق المصري؛ فريق ميرفوري يوفرهولك مع المعاينة قبل الدفع وضمان الاستبدال 14 يوم.
           </p>
           <div className="grid grid-cols-3 gap-2 mt-4">
             {[
-              ["verified_user", "أصلي 100%", "فحص خبير معتمد"],
+              ["verified_user", "ضمان استبدال 14 يوم", "استرجاع بسهولة"],
               ["payments", "معاينة قبل الدفع", "بدون مقدم للطلب"],
               ["flight_takeoff", "شحن آمن سريع", "من الخارج لباب بيتك"],
             ].map(([i, a, b]) => (
@@ -192,7 +192,7 @@ export function ConciergeMobile() {
           <div className="space-y-3">
             {[
               ["١", "ابعت الطلب والتفاصيل", "خلال 24 ساعة", "ارسل صورة المنتج أو كود الموديل، وسيقوم فريق المشتريات بالبحث والرد عليك بالسعر الإجمالي وتاريخ الوصول التقريبي."],
-              ["٢", "فحص دقيق وتوثيق بالفيديو", "شهادة أصالة", "يتم فحص وتدقيق المنتج وتوثيق الخياطة والباركود، مع إرسال فيديو تفصيلي للمعاينة والموافقة قبل الشحن."],
+              ["٢", "فحص ومعاينة بالفيديو", "ضمان استبدال", "يتم فحص المنتج وتصويره، مع إرسال فيديو تفصيلي للمعاينة والموافقة قبل الشحن."],
               ["٣", "شحن لحد باب بيتك والمعاينة", "الدفع عند الاستلام", "المندوب يوصلك لحد باب البيت، تفتح البوكس، تقيس الكوتشي، وتتأكد من كل تفصيلة براحتك قبل ما تدفع."],
             ].map(([n, t, tag, d], i) => (
               <div key={n} className="flex items-start gap-3.5 p-4 rounded-2xl bg-[#ffffff] shadow-sm">
@@ -222,7 +222,7 @@ export function ConciergeMobile() {
               </div>
               <div className="flex items-start gap-2">
                 <span className="material-symbols-outlined text-[#004ac6] text-[18px] shrink-0 mt-0.5">check_circle</span>
-                <p><strong className="text-[#191c1e] font-semibold">فحص أصالة:</strong> يتم فحص كل زوج قبل الشحن وتوثيق نتيجة الفحص.</p>
+                <p><strong className="text-[#191c1e] font-semibold">ضمان الاستبدال:</strong> استبدال أو استرجاع خلال 14 يوم.</p>
               </div>
             </div>
           </div>

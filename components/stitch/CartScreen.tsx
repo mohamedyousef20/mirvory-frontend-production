@@ -106,7 +106,7 @@ export function CartMobileInner(p: Props) {
           </div>
           <span className="[font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[10px] leading-[14px] tracking-[0.06em] font-[700] text-[#004ac6] flex items-center gap-0.5">
             <span className="material-symbols-outlined text-[16px]">verified_user</span>
-            أصلي 100% موثق
+            ضمان استبدال 14 يوم
           </span>
         </div>
 
