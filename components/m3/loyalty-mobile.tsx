@@ -117,7 +117,7 @@ export function LoyaltyMobile() {
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between gap-2">
                 <h3 className="font-m3-headline-md text-m3-headline-md text-m3-on-surface font-semibold truncate">مع كل طلب شراء</h3>
-                <span className="font-m3-label-sm text-m3-label-sm text-m3-primary-container bg-m3-primary-fixed/40 px-2 py-0.5 rounded-full shrink-0">1 نقطة / 1 ج.م</span>
+                <span className="font-m3-label-sm text-m3-label-sm text-m3-primary-container bg-m3-primary-fixed/40 px-2 py-0.5 rounded-full shrink-0">1 نقطة / 5 ج.م</span>
               </div>
               <p className="font-m3-body-sm text-m3-body-sm text-m3-on-surface-variant mt-0.5">تضاف النقاط لمحفظتك تلقائياً بعد إتمام الطلب.</p>
             </div>

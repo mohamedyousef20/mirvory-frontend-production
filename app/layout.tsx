@@ -15,12 +15,14 @@ import { StoreProvider } from "@/src/app/providers/StoreProvider"
 import { LayoutWrapper } from "./layout-wrapper"
 import { MainNav } from "@/components/main-nav"
 import ErrorBoundaryProvider from "@/providers/ErrorBoundaryProvider"
-import { SiteFooter } from "@/components/site-footer"
+import { NavSwitch } from "@/components/stitch/StitchDesktopHeader"
+import { FloatingWhatsApp } from "@/components/stitch/FloatingWhatsApp"
+import { StitchFooter } from "@/components/stitch/StitchFooter"
 import { Toaster } from "sonner"
 import { getUserServer } from "@/src/lib/getUserServer"
 import { AuthProvider } from "@/contexts/AuthProvider"
 import { AnnouncementBar } from "@/components/announcement-bar"
-import { DesktopOnly, MobileHeader, MobileNav, PageOffset } from "@/components/m3/chrome"
+import { DesktopOnly, HideOnStitch, HideHeaderOnBrand, StitchBrandBar, StitchBackBar, MobileHeader, MobileNav, PageOffset } from "@/components/m3/chrome"
 
 import Script from "next/script"
 
@@ -55,6 +57,7 @@ const plusJakarta = Plus_Jakarta_Sans({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://www.mirvory.net"),
   title: "Mirvory - متجر الكوتشيات والملابس",
   description:
     "متجر متخصص في بيع الكوتشيات الميرور والملابس العصرية بأفضل الأسعار وأعلى جودة",
@@ -75,11 +78,15 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        {/* Material Symbols icon font used by the redesigned mobile screens */}
-        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        {/* Material Symbols icon font: self-hosted (public/fonts), preloaded, so icons never depend on Google's servers */}
+        <link rel="preload" href="/fonts/material-symbols-outlined.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        {/* Hide icon ligature text (e.g. "shopping_bag") until the icon font has really loaded,
+            so slow or blocked connections never show raw icon names. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){var d=document.documentElement;function ok(){d.classList.add('msf-ready')}try{if(document.fonts&&document.fonts.load){document.fonts.load('24px \"Material Symbols Outlined\"').then(function(f){if(f&&f.length)ok()},function(){})}else ok()}catch(e){ok()}})()",
+          }}
         />
       </head>
       <body
@@ -171,9 +178,11 @@ fbq('track', 'PageView');
                       <DesktopOnly>
                         <AnnouncementBar />
 
-                        <MainNav />
+                        <NavSwitch classic={<MainNav />} />
                       </DesktopOnly>
-                      <MobileHeader />
+                      <HideOnStitch><HideHeaderOnBrand><MobileHeader /></HideHeaderOnBrand></HideOnStitch>
+                      <StitchBrandBar />
+                      <StitchBackBar />
 
                       <PageOffset>
 
@@ -191,10 +200,11 @@ fbq('track', 'PageView');
 
                       {/* v5: extra space so the bottom bar never covers the footer (mobile only) */}
                       <div className="pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0">
-                        <SiteFooter />
+                        <StitchFooter />
                       </div>
 
-                      <MobileNav />
+                      <FloatingWhatsApp />
+                      <HideOnStitch><MobileNav /></HideOnStitch>
 
                     </AuthProvider>
 

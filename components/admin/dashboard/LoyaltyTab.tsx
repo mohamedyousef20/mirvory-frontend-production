@@ -21,7 +21,7 @@ interface UserLoyalty {
   phone: string;
   loyalty: {
     points: number;
-    tier: string;
+    tier?: string;
     totalEarned: number;
     totalRedeemed: number;
   };
@@ -166,18 +166,6 @@ export function LoyaltyTab({
               <Search className="h-4 w-4" />
             </Button>
           </div>
-          <Select value={loyaltyTierFilter} onValueChange={setLoyaltyTierFilter}>
-            <SelectTrigger className="w-full sm:w-40">
-              <SelectValue placeholder={copy.tier} />
-            </SelectTrigger>
-            <SelectContent>
-              {tierOptions.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {isArabic ? option.labelAr : option.labelEn}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
         </div>
       </div>
 
@@ -209,12 +197,6 @@ export function LoyaltyTab({
                     <p className="font-semibold">
                       {user.firstName} {user.lastName}
                     </p>
-                    <Badge className={getTierClass(user.loyalty.tier)}>
-                      <span className="flex items-center gap-1">
-                        {getTierIcon(user.loyalty.tier)}
-                        {getTierLabel(user.loyalty.tier)}
-                      </span>
-                    </Badge>
                   </div>
                   <p className="text-sm text-muted-foreground">{user.email}</p>
                   <p className="text-sm text-muted-foreground">{user.phone}</p>

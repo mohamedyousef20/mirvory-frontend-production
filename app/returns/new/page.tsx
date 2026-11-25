@@ -1,7 +1,7 @@
 "use client"
 
 import { Suspense, useEffect, useMemo, useState } from "react"
-import { ReturnMobile } from "@/components/m3/return-mobile"
+import { ReturnMobile } from "@/components/stitch/return-mobile"
 import { useSearchParams } from "next/navigation"
 import { useLanguage } from "@/components/language-provider";
 import { Button } from "@/components/ui/button"

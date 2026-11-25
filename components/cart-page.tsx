@@ -44,7 +44,7 @@ import { cartService, couponService, shippingSettingsService } from "@/lib/api"
 import { MirvoryPageLoader } from "./MirvoryLoader"
 import { useAuth } from "@/contexts/AuthProvider"
 import { GuestCartPage } from "@/components/guest-cart-page"
-import { CartMobile } from "@/components/m3/cart-mobile"
+import { CartMobile } from "@/components/stitch/CartScreen"
 
 interface CartItem {
   _id: string
