@@ -78,11 +78,15 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        {/* Material Symbols icon font used by the redesigned mobile screens */}
-        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        {/* Material Symbols icon font: self-hosted (public/fonts), preloaded, so icons never depend on Google's servers */}
+        <link rel="preload" href="/fonts/material-symbols-outlined.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        {/* Hide icon ligature text (e.g. "shopping_bag") until the icon font has really loaded,
+            so slow or blocked connections never show raw icon names. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){var d=document.documentElement;function ok(){d.classList.add('msf-ready')}try{if(document.fonts&&document.fonts.load){document.fonts.load('24px \"Material Symbols Outlined\"').then(function(f){if(f&&f.length)ok()},function(){})}else ok()}catch(e){ok()}})()",
+          }}
         />
       </head>
       <body
