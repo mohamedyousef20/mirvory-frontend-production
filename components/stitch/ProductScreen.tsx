@@ -100,7 +100,7 @@ export function ProductMobileInner(p: ProductMobileProps) {
         <section className="relative w-full rounded-3xl bg-[#f2f4f6] p-[0.5rem] shadow-sm overflow-hidden">
           <div className="absolute top-4 right-4 z-20 flex items-center gap-1.5 bg-[#2d3133]/90 backdrop-blur-md px-3 py-1.5 rounded-[9999px] shadow-sm">
             <span className="material-symbols-outlined text-[16px] text-[#b4c5ff]" style={star}>verified</span>
-            <span className="[font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[10px] leading-[14px] tracking-[0.06em] font-[700] text-[#eff1f3]">أصلي 100% تم فحصه</span>
+            <span className="[font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[10px] leading-[14px] tracking-[0.06em] font-[700] text-[#eff1f3]">ضمان استبدال 14 يوم</span>
           </div>
           <button
             aria-label="أضف إلى قائمة الرغبات"

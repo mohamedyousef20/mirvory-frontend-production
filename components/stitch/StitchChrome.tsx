@@ -36,11 +36,6 @@ export function StitchHeader({ variant = "home" }: { variant?: "home" | "cart" }
           <div className="flex items-center gap-2.5">
             <Link className="flex items-center gap-2 select-none group" href="/">
               <div className="flex items-center tracking-tight">
-                {variant === "home" && (
-                  <span className="inline-flex items-center justify-center font-black text-xl italic tracking-tighter text-slate-900 group-hover:scale-105 transition-transform">
-                    V<span className="text-rose-600 ml-[-2px]">O</span>
-                  </span>
-                )}
                 <span className="font-extrabold text-[19px] tracking-wider text-slate-950 font-['Space_Grotesk'] mr-1.5 uppercase">MIRVORY</span>
               </div>
             </Link>

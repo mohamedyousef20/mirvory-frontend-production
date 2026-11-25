@@ -88,7 +88,8 @@ export default function StitchHome() {
     return (c?.sizes || []).filter((s: any) => s.quantity > 0).slice(0, 5)
   }, [deal])
 
-  const left = liveOffer ? Math.max(0, Math.floor((new Date(liveOffer.endDate).getTime() - now) / 1000)) : 0
+  // 24-hour deal timer: counts down from the offer start, never past the offer end
+  const left = liveOffer ? Math.max(0, Math.floor((Math.min(new Date(liveOffer.endDate).getTime(), new Date(liveOffer.startDate).getTime() + 24 * 3600 * 1000) - now) / 1000)) : 0
 
   const toggleFav = async (id: string) => {
     if (!authed) return toast.error("سجّل الدخول لإضافة المنتج للمفضلة")
@@ -127,8 +128,7 @@ export default function StitchHome() {
         {cur && (
           <section className="relative w-full rounded-[1.25rem] bg-white p-4 shadow-sm border border-slate-100 overflow-hidden flex flex-col gap-3">
             <div className="relative w-full aspect-[4/3] md:aspect-[21/8] rounded-[0.875rem] bg-gradient-to-br from-slate-100 via-blue-50/40 to-slate-200/60 overflow-hidden flex items-center justify-center">
-              <div className="absolute top-2.5 left-2.5 z-10 px-2 py-0.5 rounded-md bg-slate-900/80 backdrop-blur-xs text-white text-[10px] font-bold">ORIGINAL VERIFIED</div>
-              <img alt={cur.title} src={normalizeImageUrl(cur.image, "product")} fetchPriority="high" decoding="async" className="relative z-10 w-full h-full object-contain p-2 drop-shadow-xl" />
+                            <img alt={cur.title} src={normalizeImageUrl(cur.image, "product")} fetchPriority="high" decoding="async" className="relative z-10 w-full h-full object-cover object-[50%_78%]" />
               {slides.length > 1 && (
                 <div className="absolute bottom-2.5 left-0 right-0 flex items-center justify-center gap-1.5 z-10">
                   {slides.map((_, i) => (
@@ -140,7 +140,7 @@ export default function StitchHome() {
             <div className="flex flex-col gap-1.5 text-right">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-bold tracking-wider text-slate-500 uppercase font-['Space_Grotesk']">MIRVORY EDITORIAL SELECTION</span>
-                <span className="text-[11px] font-bold text-emerald-600 flex items-center gap-0.5"><span className="material-symbols-outlined text-[14px]">check_circle</span> 100% أصلي ومفحوص</span>
+                <span className="text-[11px] font-bold text-emerald-600 flex items-center gap-0.5"><span className="material-symbols-outlined text-[14px]">check_circle</span> ضمان استبدال 14 يوم</span>
               </div>
               <h2 className="text-xl font-extrabold text-slate-900 leading-snug">{cur.title}</h2>
               {cur.content && <p className="text-xs text-slate-600 leading-relaxed font-medium line-clamp-3">{cur.content}</p>}
@@ -198,7 +198,7 @@ export default function StitchHome() {
             <div className="relative z-10 flex flex-col gap-3">
               <Link href={`/products/${deal._id}`} className="relative w-full aspect-[4/3] md:aspect-[21/8] rounded-[0.875rem] bg-gradient-to-b from-slate-900/90 to-slate-800/60 border border-slate-700/40 flex items-center justify-center overflow-hidden p-2">
                 <span className="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-[0.625rem] bg-rose-600 text-white [font-family:var(--font-space-grotesk),Space_Grotesk,sans-serif] text-xs font-black shadow-md">-{Math.round(deal.discountPercentage)}% خصم حصري</span>
-                <img alt={deal.title} src={normalizeImageUrl(deal.image || getProductImage(deal) || "", "product")} loading="lazy" decoding="async" className="w-full h-full object-contain drop-shadow-2xl" />
+                <img alt={deal.title} src={normalizeImageUrl(deal.image || getProductImage(deal) || "", "product")} loading="lazy" decoding="async" className="w-full h-full object-cover scale-[1.35] object-[50%_85%]" />
               </Link>
               <div className="flex flex-col gap-1 text-right">
                 <div className="flex items-center justify-between">
@@ -250,12 +250,12 @@ export default function StitchHome() {
             <div className="flex flex-col gap-1 flex-1 text-right">
               <span className="self-start px-2 py-0.5 rounded-[9999px] bg-blue-500/20 text-blue-300 border border-blue-400/30 text-[10px] font-bold">خدمة الكونسيرج الحصرية</span>
               <h3 className="text-base font-extrabold text-white">مش لاقي منتج معين في مصر؟</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">ابعتلنا صورة الموديل أو كود الحذاء وهنوفرهولك أصلي 100% وبأفضل سعر مع الفحص الكامل قبل الدفع.</p>
+              <p className="text-xs text-slate-300 leading-relaxed">ابعتلنا صورة الموديل أو كود الحذاء وهنوفرهولك بأفضل سعر مع المعاينة الكاملة قبل الدفع.</p>
             </div>
           </div>
           <div className="mt-3 pt-3 border-t border-slate-700/60 flex items-center justify-between gap-2 relative z-10">
             <div className="flex items-center gap-3 text-[11px] text-slate-300">
-              <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[14px] text-emerald-400">verified</span>فحص أصالة مضمون</span>
+              <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[14px] text-emerald-400">verified_user</span>ضمان استرجاع 14 يوم</span>
               <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[14px] text-blue-400">bolt</span>تسعير فوري</span>
             </div>
             <Link href="/request-product" className="h-9 px-4 rounded-[0.875rem] bg-white text-slate-950 text-xs font-extrabold flex items-center gap-1.5 shadow-sm active:scale-95 transition-transform">
@@ -348,12 +348,12 @@ export default function StitchHome() {
               <span className="material-symbols-outlined text-[20px]">verified</span>
             </span>
             <div>
-              <h4 className="text-sm font-extrabold text-slate-900">ضمان ميرفوري الأصلي</h4>
+              <h4 className="text-sm font-extrabold text-slate-900">ضمان ميرفوري</h4>
               <span className="text-xs text-slate-500">تجربة شراء موثوقة في جمهورية مصر العربية</span>
             </div>
           </div>
           {[
-            ["verified_user", "bg-blue-100 text-[#004ac6]", "ضمان استبدال واسترجاع 14 يوم", "فحص الخامات والباركود والبوكس الأصلي قطعة بقطعة"],
+            ["verified_user", "bg-blue-100 text-[#004ac6]", "ضمان استبدال واسترجاع 14 يوم", "استبدال أو استرجاع لو المنتج مش مطابق قطعة بقطعة"],
             ["visibility", "bg-emerald-100 text-emerald-700", "المعاينة وتجربة المقاس عند الاستلام", "حقك الكامل في فحص وتجربة السنيكرز قبل الدفع للمندوب"],
             ["electric_bolt", "bg-rose-100 text-rose-700", "شحن سريع لجميع المحافظات", "توصيل لباب بيتك مع تتبع الشحنة"],
           ].map(([icon, cls, t, d]) => (

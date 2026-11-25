@@ -238,7 +238,7 @@ const ProductCardComponent = function ProductCard({ product, language, onAddToCa
               </span>
             )}
             <span className="inline-flex items-center rounded-full bg-sky-600 px-2.5 py-1 text-[11px] font-bold text-white">
-              {language === "ar" ? "أصلي 100%" : "100% authentic"}
+              {language === "ar" ? "ضمان 14 يوم" : "14-day guarantee"}
             </span>
             {isLowStock && (
               <span className="rounded-full bg-amber-500 px-2.5 py-1 text-[11px] font-bold text-white">

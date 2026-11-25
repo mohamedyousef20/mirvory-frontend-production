@@ -9,7 +9,7 @@ const cols: { title: string; links: [string, string][] }[] = [
   { title: "السياسات", links: [["سياسة الاستبدال والاسترجاع", "/return-policy"], ["الشروط والأحكام", "/terms"], ["الخصوصية", "/privacy"]] },
 ]
 const trust: [string, string, string][] = [
-  ["verified", "أصلي 100%", "فحص الخامات والباركود"],
+  ["verified_user", "ضمان استبدال 14 يوم", "استبدال أو استرجاع بسهولة"],
   ["visibility", "معاينة قبل الدفع", "جرّب المقاس مع المندوب"],
   ["local_shipping", "شحن لكل المحافظات", "توصيل لباب بيتك"],
 ]
@@ -40,10 +40,9 @@ export function StitchFooter() {
           <div className="relative z-10 grid gap-6 md:grid-cols-[1.4fr_repeat(3,1fr)]">
             <div className="flex flex-col gap-3 text-right">
               <Link href="/" className="flex items-center gap-2 w-fit">
-                <span className="font-black text-xl italic tracking-tighter text-white">V<span className="text-rose-500 ml-[-2px]">O</span></span>
                 <span className="font-extrabold text-[19px] tracking-wider font-['Space_Grotesk'] uppercase">MIRVORY</span>
               </Link>
-              <p className="text-xs text-slate-300 leading-relaxed">متجر سنيكرز أصلية في مصر. فحص كامل للمنتج، معاينة وتجربة المقاس قبل الدفع، وتوصيل لكل المحافظات.</p>
+              <p className="text-xs text-slate-300 leading-relaxed">متجر سنيكرز في مصر. معاينة وتجربة المقاس قبل الدفع، وتوصيل لكل المحافظات.</p>
               <ul className="flex flex-col gap-2 text-xs text-slate-300 mt-1">
                 <li className="flex items-center gap-2"><span className="material-symbols-outlined text-[16px] text-blue-400">location_on</span>فيصل، الجيزة، مصر</li>
                 <li><a href="tel:+201060167568" className="flex items-center gap-2 hover:text-white"><span className="material-symbols-outlined text-[16px] text-blue-400">call</span><span dir="ltr">+20 106 016 7568</span></a></li>
