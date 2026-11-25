@@ -1,7 +1,7 @@
 "use client"
 
 import { Crown } from "lucide-react"
-import { EGP_PER_100_POINTS, MIN_REDEEM_POINTS, POINTS_PER_EGP, pointsToEgp } from "@/lib/loyalty-rules"
+import { EGP_PER_100_POINTS, MIN_REDEEM_POINTS, EGP_PER_EARNED_POINT, pointsToEgp } from "@/lib/loyalty-rules"
 
 interface Props {
   isArabic: boolean
@@ -25,7 +25,7 @@ export function LoyaltyMemberCard({ isArabic, points }: Props) {
       <div className="rounded-2xl border bg-card p-4 space-y-2">
         <h3 className="text-sm font-bold">{isArabic ? "كيف تكسب وتستخدم النقاط؟" : "How points work"}</h3>
         <p className="text-xs text-muted-foreground">
-          {isArabic ? `تكسب ${POINTS_PER_EGP} نقطة عن كل 1 جنيه من قيمة الطلبات المكتملة.` : `Earn ${POINTS_PER_EGP} point per EGP 1 on completed orders.`}
+          {isArabic ? `تكسب نقطة عن كل ${EGP_PER_EARNED_POINT} جنيه من قيمة الطلبات المكتملة.` : `Earn 1 point per EGP ${EGP_PER_EARNED_POINT} on completed orders.`}
         </p>
         <p className="text-xs text-muted-foreground">
           {isArabic ? `كل 100 نقطة = ${EGP_PER_100_POINTS} ج.م خصم، بحد أدنى ${nf(MIN_REDEEM_POINTS)} نقطة.` : `Every 100 points = EGP ${EGP_PER_100_POINTS} off, minimum ${nf(MIN_REDEEM_POINTS)} points.`}

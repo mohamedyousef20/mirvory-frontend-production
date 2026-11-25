@@ -40,7 +40,7 @@ export function LoyaltyMobile() {
               <span className="[font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[12px] leading-[16px] tracking-[0.04em] font-[600]">نادي ميرفوري</span>
             </div>
             <h1 className="[font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[26px] leading-[34px] tracking-[-0.02em] font-[700] text-[#191c1e] leading-tight font-bold">كل طلب بيرجعلك نقاط تخصمها من طلبك الجاي</h1>
-            <p className="[font-family:var(--font-jakarta),Plus_Jakarta_Sans,var(--font-cairo),Cairo,sans-serif] text-[14px] leading-[22px] tracking-[0em] font-[400] text-[#434655] max-w-[280px]">نظام نقاط بسيط: اجمع نقطة مع كل جنيه تدفعه، واستخدم رصيدك كخصم في السلة.</p>
+            <p className="[font-family:var(--font-jakarta),Plus_Jakarta_Sans,var(--font-cairo),Cairo,sans-serif] text-[14px] leading-[22px] tracking-[0em] font-[400] text-[#434655] max-w-[280px]">نظام نقاط بسيط: اجمع نقطة مع كل 5 جنيه تدفعها، واستخدم رصيدك كخصم عند الدفع.</p>
           </div>
         </section>
 
@@ -105,7 +105,7 @@ export function LoyaltyMobile() {
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between gap-2">
                 <h3 className="[font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[18px] leading-[26px] tracking-[-0.01em] font-[600] text-[#191c1e] font-semibold truncate">مع كل طلب شراء</h3>
-                <span className="[font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[10px] leading-[14px] tracking-[0.06em] font-[700] text-[#2563eb] bg-[#dbe1ff]/40 px-2 py-0.5 rounded-[9999px] shrink-0">1 نقطة / 1 ج.م</span>
+                <span className="[font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[10px] leading-[14px] tracking-[0.06em] font-[700] text-[#2563eb] bg-[#dbe1ff]/40 px-2 py-0.5 rounded-[9999px] shrink-0">1 نقطة / 5 ج.م</span>
               </div>
               <p className="[font-family:var(--font-jakarta),Plus_Jakarta_Sans,var(--font-cairo),Cairo,sans-serif] text-[12px] leading-[18px] tracking-[0.01em] font-[400] text-[#434655] mt-0.5">تضاف النقاط لمحفظتك تلقائياً بعد إتمام الطلب.</p>
             </div>
@@ -119,7 +119,7 @@ export function LoyaltyMobile() {
           </div>
           <div className="bg-[#ffffff] rounded-2xl p-4 shadow-sm flex flex-col gap-3 text-[13px] text-[#191c1e]">
             <div className="flex items-center gap-3"><span className="material-symbols-outlined text-[#004ac6]">payments</span><span>كل 100 نقطة = {EGP_PER_100_POINTS} ج.م خصم</span></div>
-            <div className="flex items-center gap-3"><span className="material-symbols-outlined text-[#004ac6]">shopping_cart_checkout</span><span>فعّل "استخدم نقاطي" في السلة قبل الدفع</span></div>
+            <div className="flex items-center gap-3"><span className="material-symbols-outlined text-[#004ac6]">shopping_cart_checkout</span><span>فعّل "استخدم نقاطي" في صفحة الدفع</span></div>
             <div className="flex items-center gap-3"><span className="material-symbols-outlined text-[#004ac6]">lock_open</span><span>أقل استخدام {fmt(MIN_REDEEM_POINTS)} نقطة، وحتى {Math.round(MAX_REDEEM_SHARE * 100)}% من قيمة الطلب</span></div>
           </div>
         </section>

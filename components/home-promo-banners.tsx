@@ -26,7 +26,7 @@ export function HomePromoBanners() {
         <Crown className="absolute -bottom-3 start-3 h-24 w-24 opacity-10" />
         <p className="text-xs font-semibold opacity-80">نادي ميرفوري</p>
         <h3 className="mt-1 text-lg font-extrabold">اكسب نقاط مع كل طلب</h3>
-        <p className="mt-1 text-xs opacity-80">نقطة عن كل جنيه، وترقّى بين المستويات لحد البلاتيني.</p>
+        <p className="mt-1 text-xs opacity-80">نقطة عن كل 5 جنيه، واستخدمها كخصم عند الدفع.</p>
         <span className="mt-4 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-bold text-primary">
           اعرف أكتر
         </span>

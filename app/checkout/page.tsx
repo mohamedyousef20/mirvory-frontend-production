@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { orderService, cartService, pickupPointService, shippingSettingsService } from '@/lib/api'
 import { useAuth } from "@/contexts/AuthProvider"
+import { loyaltyService } from "@/lib/api"
+import { MIN_REDEEM_POINTS, maxRedeemPoints } from "@/lib/loyalty-rules"
 import { useLanguage } from "@/components/language-provider"
 import { toast } from 'sonner'
 import { GREATER_CAIRO_AREA, getCitiesByGovernorate } from '@/lib/data/greater-cairo-area'
@@ -183,13 +185,30 @@ function CheckoutInner() {
         return fee;
     }, [subtotal, deliveryMethod, address.addressLine, shippingSettings])
         
+    // Loyalty points: the server recomputes and validates the discount at order time.
+    const [pointsBalance, setPointsBalance] = useState(0)
+    const [usePoints, setUsePoints] = useState(false)
+    useEffect(() => {
+        if (!user) return
+        loyaltyService.getMyLoyalty()
+            .then((r: any) => setPointsBalance(Number(r?.data?.loyalty?.points) || 0))
+            .catch(() => setPointsBalance(0))
+    }, [user])
+    const redeemablePoints = useMemo(
+        () => maxRedeemPoints(subtotal - (appliedCoupon?.discountAmount || 0), pointsBalance),
+        [subtotal, appliedCoupon, pointsBalance]
+    )
+    const canRedeem = redeemablePoints >= MIN_REDEEM_POINTS
+    const pointsToUse = usePoints && canRedeem ? redeemablePoints : 0
+    const pointsDiscount = pointsToUse * 0.05
+
     const total = useMemo(() => {
         let finalTotal = subtotal + shippingFee;
         if (appliedCoupon?.discountAmount) {
             finalTotal -= appliedCoupon.discountAmount;
         }
-        return finalTotal;
-    }, [subtotal, shippingFee, appliedCoupon]);
+        return Math.max(0, finalTotal - pointsDiscount);
+    }, [subtotal, shippingFee, appliedCoupon, pointsDiscount]);
 
 
     const availableCities = useMemo(() => {
@@ -350,6 +369,7 @@ function CheckoutInner() {
                 },
             }
             if (buyNowOrderItems) orderPayload.items = buyNowOrderItems
+            if (pointsToUse > 0) orderPayload.redeemPoints = pointsToUse
 
             const response = await orderService.createOrder(orderPayload)
             if (response.data) {
@@ -750,6 +770,23 @@ function CheckoutInner() {
                                     <p className="text-blue-100 font-medium">{isAr ? "المجموع الفرعي" : "Subtotal"}</p>
                                     <p className="font-bold">ج.م{subtotal.toFixed(2)}</p>
                                 </div>
+
+                                {user && canRedeem && (
+                                    <label className="flex items-center justify-between gap-3 mb-3 p-3 rounded-xl bg-white/10 border border-white/20 cursor-pointer">
+                                        <span className="text-sm text-blue-50">
+                                            {isAr
+                                                ? `استخدم نقاطي (${redeemablePoints} نقطة = ${(redeemablePoints * 0.05).toFixed(2)} ج.م)`
+                                                : `Use my points (${redeemablePoints} pts = EGP ${(redeemablePoints * 0.05).toFixed(2)})`}
+                                        </span>
+                                        <input type="checkbox" className="h-5 w-5" checked={usePoints} onChange={(e) => setUsePoints(e.target.checked)} />
+                                    </label>
+                                )}
+                                {pointsToUse > 0 && (
+                                    <div className="flex justify-between items-center mb-3">
+                                        <p className="text-blue-100 font-medium">{isAr ? "خصم النقاط" : "Points discount"}</p>
+                                        <p className="font-bold">-ج.م{pointsDiscount.toFixed(2)}</p>
+                                    </div>
+                                )}
 
                                 <div className="flex justify-between items-center mb-3">
                                     <p className="text-blue-100 font-medium">{isAr ? "الشحن" : "Shipping"}</p>
