@@ -1,6 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
+import { PRODUCTS_NAV_LABEL } from "@/lib/nav-labels"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Heart, Home, Package, ShoppingCart, Tag } from "lucide-react"
@@ -67,7 +68,7 @@ export function MobileBottomNav() {
 
   const items = [
     { href: "/", label: ar ? "الرئيسية" : "Home", icon: Home, exact: true },
-    { href: "/products", label: ar ? "المنتجات" : "Products", icon: Package },
+    { href: "/products", label: ar ? PRODUCTS_NAV_LABEL : "Products", icon: Package },
     { href: "/offers", label: ar ? "العروض" : "Offers", icon: Tag },
     { href: "/wishlist", label: ar ? "المفضلة" : "Wishlist", icon: Heart, badge: wishlistCount },
     { href: "/cart", label: ar ? "السلة" : "Cart", icon: ShoppingCart, badge: cartCount },

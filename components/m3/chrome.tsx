@@ -1,6 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
+import { PRODUCTS_NAV_LABEL } from "@/lib/nav-labels"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/AuthProvider"
@@ -109,7 +110,7 @@ export function MobileNav() {
   if (isClassicPath(pathname)) return null
   const items = [
     { href: "/", icon: "home", label: "الرئيسية", exact: true },
-    { href: "/products", icon: "grid_view", label: "المنتجات" },
+    { href: "/products", icon: "grid_view", label: PRODUCTS_NAV_LABEL },
     { href: "/wishlist", icon: "favorite", label: "المفضلة" },
     { href: "/cart", icon: "shopping_bag", label: "السلة", badge: cart },
     { href: authed ? "/profile" : "/auth/login", icon: "person", label: "حسابي", match: "/profile" },

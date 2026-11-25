@@ -99,41 +99,28 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row-reverse bg-gray-50" dir="rtl">
-      {/* Brand Section */}
-      <div className="bg-[#0d2f75] text-white md:w-1/2 p-8 flex flex-col justify-center items-center">
-        <div className="max-w-md mx-auto">
-          <h1 className="text-4xl font-black mb-6">ميرفوري</h1>
-          <p className="text-xl mb-8">منصة التسوق الإلكتروني المميزة لكل احتياجاتك</p>
-          <div className="bg-white/10 p-6 rounded-lg">
-            <p className="mb-4 text-lg">لم تقم بإنشاء حساب بعد؟</p>
-            <Link
-              href="/auth/register"
-              className="block text-center bg-white text-[#1640a0] py-3 px-6 rounded-lg font-bold transition-all hover:bg-blue-50"
-            >
-              إنشاء حساب جديد
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* Login Form */}
-      <div className="md:w-1/2 p-8 flex justify-center items-center">
-        <div className="w-full max-w-md">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold text-gray-800 mb-2">أهلاً بك مجدداً</h2>
-            <p className="text-gray-600">قم بتسجيل الدخول للوصول إلى حسابك</p>
+    <div className="min-h-screen bg-[#f7f9fb] font-[Cairo,sans-serif]" dir="rtl">
+      <div className="mx-auto w-full max-w-md px-4 pt-12 pb-12">
+        <div className="w-full">
+          <Link href="/" className="flex items-center justify-center gap-2 mb-6 select-none">
+            <span className="font-extrabold text-2xl tracking-wider text-slate-950 font-['Space_Grotesk'] uppercase">MIRVORY</span>
+            <span className="px-2 py-0.5 rounded-[9999px] bg-slate-900 text-white font-bold text-[10px] tracking-widest">EGYPT</span>
+          </Link>
+          <div className="rounded-[1.5rem] bg-white border border-slate-100 shadow-sm p-5 md:p-7">
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-extrabold text-slate-900 mb-1">أهلاً بك مجدداً</h2>
+            <p className="text-sm text-slate-500">سجّل الدخول للوصول إلى حسابك وطلباتك</p>
           </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+            <div className="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-[0.875rem] mb-5 text-sm">
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit}>
-            <div className="mb-6">
-              <label htmlFor="email" className="block text-gray-700 mb-2">
+            <div className="mb-4">
+              <label htmlFor="email" className="block text-[13px] font-bold text-slate-700 mb-1.5">
                 البريد الإلكتروني
               </label>
               <div className="relative">
@@ -142,16 +129,16 @@ export default function Login() {
                   type="email"
                   value={email}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                  className="w-full pr-4 pl-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                  className="w-full h-12 pr-4 pl-11 rounded-[0.875rem] bg-[#f1f5f9] border border-transparent text-sm font-semibold text-slate-900 placeholder:text-slate-400 outline-none focus:bg-white focus:border-[#004ac6] focus:ring-4 focus:ring-[#004ac6]/10 transition"
                   placeholder="أدخل بريدك الإلكتروني"
                   required
                 />
-                <Mail className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
+                <Mail className="absolute left-3.5 top-3.5 h-5 w-5 text-slate-400" />
               </div>
             </div>
 
-            <div className="mb-6">
-              <label htmlFor="password" className="block text-gray-700 mb-2">
+            <div className="mb-4">
+              <label htmlFor="password" className="block text-[13px] font-bold text-slate-700 mb-1.5">
                 كلمة المرور
               </label>
               <div className="relative">
@@ -160,19 +147,19 @@ export default function Login() {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-                  className="w-full pr-4 pl-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                  className="w-full h-12 pr-4 pl-11 rounded-[0.875rem] bg-[#f1f5f9] border border-transparent text-sm font-semibold text-slate-900 placeholder:text-slate-400 outline-none focus:bg-white focus:border-[#004ac6] focus:ring-4 focus:ring-[#004ac6]/10 transition"
                   placeholder="أدخل كلمة المرور"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute left-3 top-3.5"
+                  className="absolute left-3.5 top-3.5 z-10"
                 >
                   {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-400" />
+                    <EyeOff className="h-5 w-5 text-slate-400" />
                   ) : (
-                    <Eye className="h-5 w-5 text-gray-400" />
+                    <Eye className="h-5 w-5 text-slate-400" />
                   )}
                 </button>
               </div>
@@ -183,13 +170,13 @@ export default function Login() {
                 <input
                   id="remember"
                   type="checkbox"
-                  className="h-4 w-4 text-[#1a4fba] focus:ring-blue-500 border-gray-300 rounded"
+                  className="h-4 w-4 accent-[#004ac6] rounded"
                 />
-                <label htmlFor="remember" className="mr-2 block text-sm text-gray-700">
+                <label htmlFor="remember" className="mr-2 block text-sm text-slate-700">
                   تذكرني
                 </label>
               </div>
-              <Link href="/auth/password-reset-request" className="text-sm text-[#1a4fba] hover:text-blue-800">
+              <Link href="/auth/password-reset-request" className="text-sm font-bold text-[#004ac6] hover:underline">
                 نسيت كلمة المرور؟
               </Link>
             </div>
@@ -197,9 +184,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full bg-[#1a4fba] text-white py-3 rounded-lg font-medium transition-colors ${
-                loading ? 'bg-blue-400 cursor-not-allowed' : 'hover:bg-[#1640a0]'
-              }`}
+              className="w-full h-12 rounded-[0.875rem] bg-[#004ac6] text-white text-sm font-extrabold shadow-md transition active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed hover:bg-[#2563eb]"
             >
               {loading ? 'جاري تسجيل الدخول...' : 'تسجيل الدخول'}
             </button>
@@ -208,10 +193,10 @@ export default function Login() {
           <div className="mt-8">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300"></div>
+                <div className="w-full border-t border-slate-200"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-gray-50 text-gray-500">أو تسجيل الدخول باستخدام</span>
+                <span className="px-4 bg-white text-slate-500 text-xs font-semibold">أو تسجيل الدخول باستخدام</span>
               </div>
             </div>
 
@@ -219,7 +204,7 @@ export default function Login() {
               <button
                 type="button"
                 onClick={handleGoogleSignIn}
-                className="w-full flex items-center justify-center gap-3 rounded-xl border border-gray-300 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-sm transition-all duration-200 hover:bg-gray-50 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:scale-[0.98]"
+                className="w-full h-12 flex items-center justify-center gap-3 rounded-[0.875rem] border border-slate-200 bg-white text-sm font-bold text-slate-800 shadow-sm transition hover:bg-slate-50 active:scale-[0.98]"
               >
                 <svg className="h-5 w-5" viewBox="0 0 48 48">
                   <path fill="#EA4335" d="M24 9.5c3.54 0 6.72 1.22 9.22 3.61l6.9-6.9C35.9 2.38 30.47 0 24 0 14.64 0 6.59 5.38 2.56 13.22l8.02 6.22C12.5 13.13 17.77 9.5 24 9.5z" />
@@ -231,6 +216,8 @@ export default function Login() {
               </button>
             </div>
           </div>
+          </div>
+          <p className="text-center text-sm text-slate-600 mt-5">مستخدم جديد؟ <Link href="/auth/register" className="font-extrabold text-[#004ac6] hover:underline">إنشاء حساب جديد</Link></p>
         </div>
       </div>
     </div>

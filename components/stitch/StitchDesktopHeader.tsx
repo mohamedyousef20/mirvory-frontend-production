@@ -1,5 +1,6 @@
 "use client"
 import Link from "next/link"
+import { PRODUCTS_NAV_LABEL } from "@/lib/nav-labels"
 import { useCallback, useEffect, useState } from "react"
 import { usePathname, useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/AuthProvider"
@@ -7,7 +8,7 @@ import { cartService, notificationService } from "@/lib/api"
 import { getGuestCartCount } from "@/lib/guestCart"
 
 /** Desktop header in the Stitch design language (extension of the mobile Stitch header). Replaces MainNav on md+ for non-classic pages. */
-const links: [string, string][] = [["الرئيسية", "/"], ["المنتجات", "/products"], ["العروض", "/offers"], ["المساعدة", "/help"]]
+const links: [string, string][] = [["الرئيسية", "/"], [PRODUCTS_NAV_LABEL, "/products"], ["العروض", "/offers"], ["المساعدة", "/help"]]
 
 export function StitchDesktopHeader() {
   const { user, cookiesReady, logout } = useAuth()
@@ -72,7 +73,7 @@ export function StitchDesktopHeader() {
                   {[["حسابي", "/profile"], ["طلباتي", "/orders"], ["نادي ميرفوري", "/loyalty"], ["المفضلة", "/wishlist"]].map(([t, h]) => (
                     <Link key={h} href={h} className="block px-3 py-2 rounded-[0.75rem] hover:bg-slate-50">{t}</Link>
                   ))}
-                  <button onClick={async () => { await logout(); router.push("/") }} className="w-full text-right px-3 py-2 rounded-[0.75rem] text-rose-600 hover:bg-rose-50">تسجيل الخروج</button>
+                  <button onClick={async () => { await logout(); router.replace("/auth/login") }} className="w-full text-right px-3 py-2 rounded-[0.75rem] text-rose-600 hover:bg-rose-50">تسجيل الخروج</button>
                 </div>
               )}
             </div>
