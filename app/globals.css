@@ -405,3 +405,15 @@ html .material-symbols-outlined {
   font-feature-settings: "liga" !important;
   letter-spacing: normal !important;
 }
+
+
+/* Admin dashboard: Mirvory identity (navy primary, red destructive/accents, light slate page) */
+.mv-admin {
+  --primary: 222 80% 26%;
+  --primary-foreground: 0 0% 100%;
+  --destructive: 354 82% 50%;
+  --destructive-foreground: 0 0% 100%;
+  --ring: 222 80% 26%;
+}
+.mv-admin h2, .mv-admin h3 { color: #0b1f4d; }
+.mv-admin [role="tab"][data-state="active"] { color: #fff; }

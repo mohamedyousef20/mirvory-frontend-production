@@ -180,6 +180,10 @@ const nextConfig = {
         destination: `${backendUrl}/api/unavailable-product-requests/:path*`,
       },
       {
+        source: "/api/behavior/:path*",
+        destination: `${backendUrl}/api/behavior/:path*`,
+      },
+      {
         source: "/api/loyalty/:path*",
         destination: `${backendUrl}/api/loyalty/:path*`,
       },
