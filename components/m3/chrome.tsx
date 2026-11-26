@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react"
 import { PRODUCTS_NAV_LABEL } from "@/lib/nav-labels"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
+import { AccountAvatar } from "@/components/account-avatar"
 import { useAuth } from "@/contexts/AuthProvider"
 import { cartService, notificationService, wishlistService } from "@/lib/api"
 import { getGuestCartCount } from "@/lib/guestCart"
@@ -77,9 +78,9 @@ export function MobileHeader() {
           <Link
             href={authed ? "/profile" : "/auth/login"}
             aria-label="الملف الشخصي"
-            className="relative w-10 h-10 rounded-full bg-m3-primary-fixed flex items-center justify-center text-m3-on-primary-fixed hover:bg-m3-primary hover:text-m3-on-primary transition-colors"
+            className="relative w-10 h-10 flex items-center justify-center"
           >
-            <span className="material-symbols-outlined text-[20px]">person</span>
+            <AccountAvatar user={user} size={36} tone="soft" />
           </Link>
         </div>
       </div>
@@ -118,7 +119,7 @@ export function MobileNav() {
     { href: "/products", icon: "grid_view", label: PRODUCTS_NAV_LABEL },
     { href: "/wishlist", icon: "favorite", label: "المفضلة" },
     { href: "/cart", icon: "shopping_bag", label: "السلة", badge: cart },
-    { href: authed ? "/profile" : "/auth/login", icon: "person", label: "حسابي", match: "/profile" },
+    { href: authed ? "/profile" : "/auth/login", icon: "person", label: authed ? "حسابي" : "دخول", match: "/profile" },
   ]
   return (
     <nav dir="rtl" aria-label="التنقل السفلي" className="md:hidden fixed bottom-0 w-full z-50 pb-[env(safe-area-inset-bottom)] bg-m3-surface-container-lowest/90 backdrop-blur-xl shadow-[0_-4px_16px_rgba(15,23,42,0.04)]">
@@ -173,8 +174,8 @@ export function StitchBackBar() {
         </button>
         <h1 className="text-[16px] font-bold text-[#191c1e] truncate text-center flex-1 px-2 tracking-tight">{cfg.title}</h1>
         {cfg.eg ? (
-          <Link aria-label="حسابي" href={user ? "/profile" : "/auth/login"} className="w-8 h-8 rounded-[9999px] bg-[#2563eb] text-white flex items-center justify-center">
-            <span className="material-symbols-outlined text-[18px]">person</span>
+          <Link aria-label="حسابي" href={user ? "/profile" : "/auth/login"} className="flex items-center justify-center">
+            <AccountAvatar user={user} size={32} tone="soft" />
           </Link>
         ) : (
           <div className="flex items-center gap-1 -me-2">
@@ -218,8 +219,8 @@ export function StitchBrandBar() {
           <Link aria-label="الإشعارات" href="/notifications" className="w-11 h-11 rounded-[9999px] flex items-center justify-center text-[#434655] hover:bg-[#e6e8ea] transition-colors">
             <span className="material-symbols-outlined text-[22px]">notifications</span>
           </Link>
-          <Link aria-label="حسابي" href={user ? "/profile" : "/auth/login"} className={`w-10 h-10 rounded-[9999px] flex items-center justify-center ${cat ? "bg-[#dbe1ff] text-[#00174b]" : "bg-[#2563eb] text-white"}`}>
-            <span className="material-symbols-outlined text-[20px]">person</span>
+          <Link aria-label="حسابي" href={user ? "/profile" : "/auth/login"} className="w-10 h-10 flex items-center justify-center">
+            <AccountAvatar user={user} size={36} tone="soft" />
           </Link>
         </div>
       </div>

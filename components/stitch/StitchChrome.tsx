@@ -4,6 +4,7 @@ import Link from "next/link"
 import { PRODUCTS_NAV_LABEL } from "@/lib/nav-labels"
 import { useCallback, useEffect, useState } from "react"
 import { usePathname } from "next/navigation"
+import { AccountAvatar } from "@/components/account-avatar"
 import { useAuth } from "@/contexts/AuthProvider"
 import { cartService, notificationService, wishlistService } from "@/lib/api"
 import { getGuestCartCount } from "@/lib/guestCart"
@@ -53,8 +54,8 @@ export function StitchHeader({ variant = "home" }: { variant?: "home" | "cart" |
               <span className="material-symbols-outlined text-[22px]">favorite</span>
               {favs > 0 && <span className="absolute top-1 left-1 min-w-[16px] h-4 px-1 rounded-[9999px] bg-[#2563eb] text-white text-[10px] font-bold flex items-center justify-center leading-none">{favs}</span>}
             </Link>
-            <Link aria-label="حسابي" href={authed ? "/profile" : "/auth/login"} className="w-8 h-8 rounded-[9999px] bg-gradient-to-tr from-[#004ac6] to-blue-500 text-white flex items-center justify-center shrink-0 mr-1 shadow-sm ring-2 ring-[#dbeafe]">
-              <span className="material-symbols-outlined text-[17px]">person</span>
+            <Link aria-label="حسابي" href={authed ? "/profile" : "/auth/login"} className="shrink-0 mr-1 flex items-center justify-center">
+              <AccountAvatar user={user} size={32} />
             </Link>
           </div>
         </div>
@@ -97,7 +98,7 @@ export function StitchNav() {
     { href: "/products", icon: "grid_view", label: PRODUCTS_NAV_LABEL, exact: true },
     { href: authed ? "/orders" : "/track-order", icon: "package_2", label: "الطلبات", match: authed ? "/orders" : "/track-order" },
     { href: "/cart", icon: "shopping_bag", label: "السلة", badge: cart },
-    { href: authed ? "/profile" : "/auth/login", icon: "person", label: "حسابي", match: "/profile" },
+    { href: authed ? "/profile" : "/auth/login", icon: "person", label: authed ? "حسابي" : "دخول", match: "/profile" },
   ]
   return (
     <nav dir="rtl" className="md:hidden fixed bottom-0 w-full z-50 pb-safe bg-[#ffffff]/95 backdrop-blur-xl border-t border-slate-200/80 shadow-[0_-4px_16px_rgba(15,23,42,0.05)] font-[Cairo,sans-serif]">

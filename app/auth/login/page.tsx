@@ -7,6 +7,7 @@ import { Eye, EyeOff, Mail } from 'lucide-react';
 import { toast } from 'sonner';
 import { signIn } from 'next-auth/react';
 import { authService } from '@/lib/api';
+import { getReturnTo } from '@/lib/returnTo';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -18,7 +19,7 @@ export default function Login() {
 
   const handleGoogleSignIn = async () => {
     try {
-      await signIn('google', { callbackUrl: '/' });
+      await signIn('google', { callbackUrl: getReturnTo() });
     } catch (err) {
       console.error(err);
       toast.error('تعذر تسجيل الدخول عبر جوجل في الوقت الحالي');
@@ -75,14 +76,10 @@ export default function Login() {
         }
       }
 
-      // Navigate AFTER await — no setTimeout race condition
-      if (role === "seller") {
-        router.push("/vendor/dashboard");
-      } else {
-        router.push("/");
-      }
-      // Force page reload to refresh user data and cart after login
-      setTimeout(() => window.location.reload(), 300);
+      // Go back to where the customer was (cart, product, checkout...), not the home page.
+      // Sellers still land on their dashboard. Full load so user data and cart refresh.
+      const dest = role === "seller" ? "/vendor/dashboard" : getReturnTo();
+      window.location.assign(dest);
 
     } catch (err: any) {
       const errorMessage =
