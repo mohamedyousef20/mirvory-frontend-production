@@ -266,12 +266,12 @@ function GuestCheckoutInner() {
 
   if (trackingToken) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4" dir="rtl">
-        <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-8 text-center space-y-6">
+      <div className="min-h-screen flex items-center justify-center bg-[#f7f9fb] p-4 font-[Cairo,sans-serif]" dir="rtl">
+        <div className="max-w-md w-full bg-white rounded-[1.5rem] border border-slate-100 shadow-[0_8px_30px_rgba(15,23,42,0.08)] p-6 text-center space-y-5">
           <div className="flex justify-center">
-            <Package className="h-16 w-16 text-green-500" />
+            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-emerald-50"><Package className="h-10 w-10 text-emerald-600" /></div>
           </div>
-          <h1 className="text-2xl font-bold text-gray-800">تم تأكيد طلبك! 🎉</h1>
+          <h1 className="text-2xl font-extrabold text-slate-900">تم تأكيد طلبك 🎉</h1>
           {orderNumber && (
             <p className="text-gray-600">رقم الطلب: <span className="font-mono font-bold">{orderNumber}</span></p>
           )}
@@ -281,18 +281,19 @@ function GuestCheckoutInner() {
               {trackingToken}
             </p>
             <p className="text-xs text-gray-500">احفظ هذا الرمز لتتبع طلبك</p>
+            <p className="text-xs text-gray-500">هتوصلك رسالة تأكيد الطلب على واتساب على رقم الهاتف</p>
           </div>
           <div className="flex flex-col gap-3">
             <Button
               onClick={() => router.push(`/track-order?token=${trackingToken}`)}
-              className="w-full"
+              className="w-full h-12 rounded-xl bg-[#004ac6] hover:bg-[#003da5] font-bold"
             >
               تتبع طلبي
             </Button>
             <Button
               variant="outline"
               onClick={() => router.push('/')}
-              className="w-full"
+              className="w-full h-12 rounded-xl font-bold"
             >
               العودة للرئيسية
             </Button>
@@ -303,19 +304,71 @@ function GuestCheckoutInner() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4" dir="rtl">
+    <div className="min-h-screen bg-[#f7f9fb] py-5 px-4 pb-24 font-[Cairo,sans-serif]" dir="rtl">
       <div className="max-w-2xl mx-auto">
-        <div className="mb-8 text-center">
-          <ShoppingBag className="h-10 w-10 text-primary mx-auto mb-2" />
-          <h1 className="text-3xl font-bold text-gray-800">الشراء كضيف</h1>
-          <p className="text-gray-500 mt-1">لا تحتاج لحساب — فقط أكمل بياناتك</p>
+        <div className="mb-5 text-center">
+          <div className="mx-auto mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-[#dbe1ff]">
+            <ShoppingBag className="h-7 w-7 text-[#004ac6]" />
+          </div>
+          <h1 className="text-2xl font-extrabold text-slate-900">إتمام الطلب</h1>
+          <p className="text-sm text-slate-500 mt-1">من غير حساب، كمّل بياناتك وهتوصلك الطلبية</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm border p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Summary */}
+          {cartItems.length > 0 && (
+            <section className="bg-white rounded-[1.25rem] border border-slate-100 shadow-[0_2px_10px_rgba(15,23,42,0.05)] p-4">
+              <h3 className="font-semibold mb-3">ملخص الطلب</h3>
+              <div className="space-y-2">
+                {cartItems.map((item, idx) => (
+                  <div key={idx} className="flex justify-between items-start text-sm gap-2">
+                    <div className="flex-1 min-w-0">
+                      <span className="text-gray-700 font-medium">{item.title || `منتج ${idx + 1}`}</span>
+                      <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
+                        {item.color && (
+                          <span className="inline-flex items-center gap-1 bg-white border border-gray-200 rounded-full px-1.5 py-0.5">
+                            <span className="inline-block w-2.5 h-2.5 rounded-full border border-gray-300 shrink-0" style={{ backgroundColor: item.color }} />
+                            <span className="text-xs text-gray-500">{item.colorName || item.color}</span>
+                          </span>
+                        )}
+                        {item.size && (
+                          <span className="inline-flex items-center bg-blue-50 border border-blue-100 text-[#1640a0] rounded-full px-1.5 py-0.5 text-xs font-medium">
+                            م {item.size}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <span className="font-medium shrink-0">
+                      x{item.quantity}
+                      {item.price ? ` · ${(item.price * item.quantity).toLocaleString()} ج.م` : ''}
+                    </span>
+                  </div>
+                ))}
+
+                <div className="border-t pt-2 mt-2 space-y-2">
+                  <div className="flex justify-between text-sm text-gray-600">
+                    <span>المجموع الفرعي</span>
+                    <span>{subtotal.toLocaleString()} ج.م</span>
+                  </div>
+                  <div className="flex justify-between text-sm text-gray-600">
+                    <span>رسوم الشحن</span>
+                    <span className={shippingFee === 0 ? "text-green-600 font-medium" : ""}>
+                      {shippingFee === 0 ? 'مجاني' : `${shippingFee.toLocaleString()} ج.م`}
+                    </span>
+                  </div>
+                  <div className="border-t pt-2 flex justify-between font-bold text-lg">
+                    <span>الإجمالي</span>
+                    <span>{totalAmount.toLocaleString()} ج.م</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+          )}
+
           {/* Personal Info */}
-          <section>
-            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <User className="h-5 w-5 text-primary" /> بياناتك الشخصية
+          <section className="bg-white rounded-[1.25rem] border border-slate-100 shadow-[0_2px_10px_rgba(15,23,42,0.05)] p-4">
+            <h2 className="text-base font-extrabold text-slate-900 mb-4 flex items-center gap-2">
+              <User className="h-5 w-5 text-[#004ac6]" /> بياناتك الشخصية
             </h2>
             <div className="space-y-4">
               <div>
@@ -326,7 +379,7 @@ function GuestCheckoutInner() {
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('guestName', e.target.value)}
                   placeholder="مثال: محمد أحمد"
                   required
-                  className="mt-1"
+                  className="mt-1 h-12 bg-slate-50 rounded-xl border-slate-200"
                 />
               </div>
               <div>
@@ -340,9 +393,9 @@ function GuestCheckoutInner() {
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('guestEmail', e.target.value)}
                   placeholder="example@email.com"
                   required
-                  className="mt-1"
+                  className="mt-1 h-12 bg-slate-50 rounded-xl border-slate-200"
                 />
-                <p className="text-xs text-gray-400 mt-1">سنرسل تأكيد الطلب على هذا البريد</p>
+                
               </div>
               <div>
                 <Label htmlFor="guestPhone" className="flex items-center gap-1">
@@ -355,21 +408,22 @@ function GuestCheckoutInner() {
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('guestPhone', e.target.value)}
                   placeholder="01xxxxxxxxx"
                   required
-                  className="mt-1"
+                  className="mt-1 h-12 bg-slate-50 rounded-xl border-slate-200"
                   dir="ltr"
                 />
+                <p className="text-xs text-slate-500 mt-1">هنبعتلك رسالة تأكيد الطلب على واتساب على الرقم ده</p>
               </div>
             </div>
           </section>
 
           {/* Delivery */}
-          <section>
-            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <MapPin className="h-5 w-5 text-primary" /> طريقة التوصيل
+          <section className="bg-white rounded-[1.25rem] border border-slate-100 shadow-[0_2px_10px_rgba(15,23,42,0.05)] p-4">
+            <h2 className="text-base font-extrabold text-slate-900 mb-4 flex items-center gap-2">
+              <MapPin className="h-5 w-5 text-[#004ac6]" /> طريقة التوصيل
             </h2>
 
-            <div className="flex gap-4 mb-4">
-              <label className={`flex-1 flex items-center justify-center gap-2 p-3 border rounded-xl cursor-pointer transition-colors ${form.deliveryMethod === 'home' ? 'border-primary bg-primary/5 text-primary font-medium' : 'bg-gray-50 text-gray-600'}`}>
+            <div className="flex gap-3 mb-4">
+              <label className={`flex-1 flex items-center justify-center gap-2 h-14 border-2 rounded-xl cursor-pointer transition-colors ${form.deliveryMethod === 'home' ? 'border-[#004ac6] bg-[#eef3ff] text-[#004ac6] font-bold' : 'bg-slate-50 border-slate-200 text-slate-600'}`}>
                 <input
                   type="radio"
                   name="deliveryMethod"
@@ -380,7 +434,7 @@ function GuestCheckoutInner() {
                 />
                 <MapPin className="h-4 w-4" /> توصيل للمنزل
               </label>
-              <label className={`flex-1 flex items-center justify-center gap-2 p-3 border rounded-xl cursor-pointer transition-colors ${form.deliveryMethod === 'pickup' ? 'border-primary bg-primary/5 text-primary font-medium' : 'bg-gray-50 text-gray-600'}`}>
+              <label className={`flex-1 flex items-center justify-center gap-2 h-14 border-2 rounded-xl cursor-pointer transition-colors ${form.deliveryMethod === 'pickup' ? 'border-[#004ac6] bg-[#eef3ff] text-[#004ac6] font-bold' : 'bg-slate-50 border-slate-200 text-slate-600'}`}>
                 <input
                   type="radio"
                   name="deliveryMethod"
@@ -396,7 +450,7 @@ function GuestCheckoutInner() {
             {form.deliveryMethod === 'home' && (
               <div className="space-y-3 animate-in fade-in slide-in-from-top-2 bg-slate-50 rounded-xl p-4 border border-slate-200">
                 <h3 className="font-semibold text-slate-800 flex items-center gap-2 text-sm">
-                  <MapPin className="h-4 w-4 text-primary" /> عنوان التوصيل
+                  <MapPin className="h-4 w-4 text-[#004ac6]" /> عنوان التوصيل
                 </h3>
 
                 {/* Governorate */}
@@ -406,7 +460,7 @@ function GuestCheckoutInner() {
                     id="governorate"
                     value={form.governorate}
                     onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleChange('governorate', e.target.value)}
-                    className="mt-1 w-full h-11 bg-white rounded-xl px-3 border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="mt-1 w-full h-12 bg-white rounded-xl px-3 border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#004ac6]"
                     required={form.deliveryMethod === 'home'}
                   >
                     <option value="">اختر المحافظة</option>
@@ -423,7 +477,7 @@ function GuestCheckoutInner() {
                     id="city"
                     value={form.city}
                     onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleChange('city', e.target.value)}
-                    className="mt-1 w-full h-11 bg-white rounded-xl px-3 border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
+                    className="mt-1 w-full h-12 bg-white rounded-xl px-3 border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#004ac6] disabled:opacity-50"
                     required={form.deliveryMethod === 'home'}
                     disabled={!form.governorate}
                   >
@@ -443,7 +497,7 @@ function GuestCheckoutInner() {
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('addressLine', e.target.value)}
                     placeholder="الشارع، رقم المبنى، الطابق..."
                     required={form.deliveryMethod === 'home'}
-                    className="mt-1 h-11 bg-white rounded-xl border-slate-200"
+                    className="mt-1 h-12 bg-white rounded-xl border-slate-200"
                   />
                 </div>
 
@@ -508,56 +562,6 @@ function GuestCheckoutInner() {
             )}
           </section>
 
-          {/* Summary */}
-          {cartItems.length > 0 && (
-            <section className="bg-gray-50 rounded-xl p-4">
-              <h3 className="font-semibold mb-3">ملخص الطلب</h3>
-              <div className="space-y-2">
-                {cartItems.map((item, idx) => (
-                  <div key={idx} className="flex justify-between items-start text-sm gap-2">
-                    <div className="flex-1 min-w-0">
-                      <span className="text-gray-700 font-medium">{item.title || `منتج ${idx + 1}`}</span>
-                      <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
-                        {item.color && (
-                          <span className="inline-flex items-center gap-1 bg-white border border-gray-200 rounded-full px-1.5 py-0.5">
-                            <span className="inline-block w-2.5 h-2.5 rounded-full border border-gray-300 shrink-0" style={{ backgroundColor: item.color }} />
-                            <span className="text-xs text-gray-500">{item.colorName || item.color}</span>
-                          </span>
-                        )}
-                        {item.size && (
-                          <span className="inline-flex items-center bg-blue-50 border border-blue-100 text-[#1640a0] rounded-full px-1.5 py-0.5 text-xs font-medium">
-                            م {item.size}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <span className="font-medium shrink-0">
-                      x{item.quantity}
-                      {item.price ? ` · ${(item.price * item.quantity).toLocaleString()} ج.م` : ''}
-                    </span>
-                  </div>
-                ))}
-
-                <div className="border-t pt-2 mt-2 space-y-2">
-                  <div className="flex justify-between text-sm text-gray-600">
-                    <span>المجموع الفرعي</span>
-                    <span>{subtotal.toLocaleString()} ج.م</span>
-                  </div>
-                  <div className="flex justify-between text-sm text-gray-600">
-                    <span>رسوم الشحن</span>
-                    <span className={shippingFee === 0 ? "text-green-600 font-medium" : ""}>
-                      {shippingFee === 0 ? 'مجاني' : `${shippingFee.toLocaleString()} ج.م`}
-                    </span>
-                  </div>
-                  <div className="border-t pt-2 flex justify-between font-bold text-lg">
-                    <span>الإجمالي</span>
-                    <span>{totalAmount.toLocaleString()} ج.م</span>
-                  </div>
-                </div>
-              </div>
-            </section>
-          )}
-
           {/* Warning for empty cart */}
           {cartItems.length === 0 && (
             <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
@@ -570,15 +574,16 @@ function GuestCheckoutInner() {
 
           <Button
             type="submit"
-            className="w-full h-12 text-base font-semibold"
+            className="w-full h-14 rounded-2xl bg-[#004ac6] hover:bg-[#003da5] text-base font-extrabold shadow-md"
             disabled={loading || cartItems.length === 0}
           >
             {loading ? (
               <><Loader2 className="h-4 w-4 animate-spin ml-2" /> جاري تأكيد الطلب...</>
             ) : (
-              'تأكيد الطلب'
+              `تأكيد الطلب${cartItems.length > 0 ? ` · ${totalAmount.toLocaleString()} ج.م` : ''}`
             )}
           </Button>
+          {cartItems.length > 0 && <p className="text-center text-xs text-gray-500">الدفع عند الاستلام · معاينة قبل الدفع</p>}
         </form>
       </div>
     </div>

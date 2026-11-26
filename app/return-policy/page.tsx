@@ -1,8 +1,8 @@
 "use client"
 
+import { PageShell, Card, CardContent, CardHeader, CardTitle, Badge } from "@/components/stitch/PageKit"
+
 import { useLanguage } from "@/components/language-provider"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import {
     RotateCcw,
@@ -47,9 +47,10 @@ export default function ReturnPolicyPage() {
     const isArabic = language === "ar"
 
     return (
+        <PageShell>
         <div className="space-y-8 pb-12">
             <div className="text-center space-y-4">
-                <Badge variant="outline" className="px-4 py-1 text-sm">
+                <Badge>
                     {isArabic ? "المنتجات الموثوقة" : "Trusted Products"}
                 </Badge>
 
@@ -64,7 +65,7 @@ export default function ReturnPolicyPage() {
                         : "Trusted Products Policy"}
                 </h1>
 
-                <p className="text-muted-foreground max-w-2xl mx-auto">
+                <p className="text-slate-500 max-w-2xl mx-auto">
                     {isArabic
                         ? "توضح هذه الصفحة المزايا والسياسات الإضافية المطبقة على المنتجات الحاصلة على شارة (منتج موثوق) داخل منصة Mirvory."
                         : "This page explains the additional benefits and policies applied to products carrying the Trusted Product badge on Mirvory."}
@@ -93,7 +94,7 @@ export default function ReturnPolicyPage() {
                             </CardHeader>
 
                             <CardContent>
-                                <p className="text-sm text-muted-foreground leading-relaxed">
+                                <p className="text-sm text-slate-500 leading-relaxed">
                                     {isArabic
                                         ? rule.contentAr
                                         : rule.contentEn}
@@ -115,7 +116,7 @@ export default function ReturnPolicyPage() {
 
                 <CardContent>
                     <ul
-                        className="space-y-3 text-muted-foreground"
+                        className="space-y-3 text-slate-500"
                         dir={isArabic ? "rtl" : "ltr"}
                     >
                         <li>
@@ -158,7 +159,7 @@ export default function ReturnPolicyPage() {
 
                 <CardContent>
                     <ol
-                        className="list-decimal list-inside space-y-3 text-muted-foreground"
+                        className="list-decimal list-inside space-y-3 text-slate-500"
                         dir={isArabic ? "rtl" : "ltr"}
                     >
                         <li>
@@ -207,7 +208,7 @@ export default function ReturnPolicyPage() {
 
                 <CardContent>
                     <ul
-                        className="space-y-3 text-muted-foreground"
+                        className="space-y-3 text-slate-500"
                         dir={isArabic ? "rtl" : "ltr"}
                     >
                         <li>
@@ -238,7 +239,7 @@ export default function ReturnPolicyPage() {
                         : "Need Assistance?"}
                 </h3>
 
-                <p className="text-sm text-muted-foreground mb-4">
+                <p className="text-sm text-slate-500 mb-4">
                     {isArabic
                         ? "يمكنك التواصل مع فريق الدعم للمساعدة."
                         : "You can contact our support team for assistance."}
@@ -252,5 +253,6 @@ export default function ReturnPolicyPage() {
                 </Badge>
             </div>
         </div>
+        </PageShell>
     )
 }

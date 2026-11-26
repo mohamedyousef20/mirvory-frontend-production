@@ -59,7 +59,7 @@ export function StitchHeader({ variant = "home" }: { variant?: "home" | "cart" }
           </div>
         </div>
         <div className="w-full">
-          <Link href="/products" className="relative flex items-center w-full h-10 px-3.5 bg-[#f1f5f9] rounded-[0.875rem] text-[#475569] hover:bg-[#e2e8f0] transition-all cursor-pointer">
+          <Link href="/products?focus=1" className="relative flex items-center w-full h-10 px-3.5 bg-[#f1f5f9] rounded-[0.875rem] text-[#475569] hover:bg-[#e2e8f0] transition-all cursor-pointer">
             <span className="material-symbols-outlined text-[#475569] text-[20px] ml-2 shrink-0">search</span>
             <span className="text-sm font-semibold text-[#475569]/80 truncate select-none">{variant === "cart" ? "ابحث عن حذائك المفضل..." : "ابحث بالموديل، الماركة (Nike, NB, Asics)..."}</span>
             <span className="material-symbols-outlined text-[#475569] text-[18px] mr-auto shrink-0 bg-white p-1 rounded-md shadow-xs">tune</span>

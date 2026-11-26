@@ -13,6 +13,7 @@ import { SideAds } from "@/components/side-ads"
 import { HomeOffersCountdown } from "@/components/home-offers-countdown"
 import { HomePromoBanners } from "@/components/home-promo-banners"
 import StitchHome from "@/components/stitch/StitchHome"
+import DesktopHome from "@/components/stitch/DesktopHome"
 
 /** Lightweight visual divider between homepage sections */
 function SectionDivider({ icon: Icon, label }: { icon?: React.ElementType; label?: string }) {
@@ -34,7 +35,8 @@ export default async function Home() {
 
   return (
     <>
-    <StitchHome />
+    <div className="md:hidden"><StitchHome /></div>
+    <DesktopHome />
     {/* Legacy desktop home kept below but hidden: delete this block once the Stitch desktop home is approved. */}
     <div className="hidden min-h-screen flex-col">
       <main className="flex-1">

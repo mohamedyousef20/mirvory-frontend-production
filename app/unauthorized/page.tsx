@@ -8,49 +8,18 @@ export const metadata: Metadata = {
 
 export default function UnauthorizedPage() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4" dir="rtl">
-      <div className="max-w-md w-full text-center">
-        {/* Shield icon */}
-        <div className="mb-6 flex justify-center">
-          <svg
-            className="h-24 w-24 text-red-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={1.5}
-            aria-hidden="true"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 9v3.75m0-10.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.75c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.75h-.152c-3.196 0-6.1-1.249-8.25-3.286zm0 13.036h.008v.008H12v-.008z"
-            />
-          </svg>
+    <div className="flex min-h-screen items-center justify-center bg-[#f7f9fb] px-4 pb-24 pt-24 [font-family:var(--font-cairo),Cairo,sans-serif]" dir="rtl">
+      <div className="w-full max-w-md rounded-[1.5rem] border border-slate-100 bg-white p-8 text-center shadow-[0_2px_16px_rgba(15,23,42,0.06)]">
+        <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-rose-50 text-[#ba1a1a]">
+          <span className="material-symbols-outlined text-[32px]">lock</span>
         </div>
-
-        <h1 className="text-3xl font-bold text-gray-800 mb-3">غير مصرح بالوصول</h1>
-
-        <p className="text-gray-600 mb-8 leading-relaxed">
-          ليس لديك الصلاحيات الكافية للوصول إلى هذه الصفحة.
-          <br />
-          يرجى التواصل مع مسؤول النظام إذا كنت تعتقد أن هذا خطأ.
-        </p>
-
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Link
-            href="/"
-            className="inline-flex items-center justify-center px-6 py-3 bg-[#1a4fba] text-white rounded-lg font-medium hover:bg-[#1640a0] transition-colors"
-          >
-            العودة إلى الرئيسية
-          </Link>
-          <Link
-            href="/auth/login"
-            className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-100 transition-colors"
-          >
-            تسجيل الدخول بحساب آخر
-          </Link>
+        <h1 className="mb-2 text-2xl font-extrabold text-slate-900">مش مسموح تدخل الصفحة دي</h1>
+        <p className="mb-7 text-[14px] leading-relaxed text-slate-500">حسابك ملوش صلاحية الوصول للصفحة دي. لو شايف إن ده غلط، تواصل مع الدعم.</p>
+        <div className="flex flex-col gap-2.5">
+          <Link href="/" className="inline-flex h-12 items-center justify-center rounded-xl bg-[#004ac6] text-[14px] font-bold text-white active:scale-[0.99]">الرئيسية</Link>
+          <Link href="/auth/login" className="inline-flex h-12 items-center justify-center rounded-xl border border-slate-200 text-[14px] font-bold text-slate-700">تسجيل الدخول بحساب تاني</Link>
         </div>
       </div>
     </div>
-  );
+  )
 }

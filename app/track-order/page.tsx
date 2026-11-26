@@ -83,16 +83,16 @@ export default function TrackOrderPage() {
   const status = order ? STATUS_MAP[order.deliveryStatus] || STATUS_MAP.pending : null;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4" dir="rtl">
+    <div className="min-h-screen bg-[#f7f9fb] px-4 pb-28 pt-24 md:pt-10 [font-family:var(--font-cairo),Cairo,sans-serif]" dir="rtl">
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-8">
-          <Package className="h-12 w-12 text-primary mx-auto mb-2" />
+          <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#dbeafe] text-[#004ac6]"><Package className="h-7 w-7" /></div>
           <h1 className="text-3xl font-black text-slate-900">تتبع طلبك</h1>
           <p className="text-gray-500 mt-1">أدخل رمز التتبع الذي استلمته عند الطلب</p>
         </div>
 
         {/* Search Form */}
-        <div className="bg-white rounded-2xl shadow-sm border p-6 mb-6">
+        <div className="bg-white rounded-[1.25rem] shadow-[0_2px_10px_rgba(15,23,42,0.05)] border border-slate-100 p-5 md:p-6 mb-6">
           <div className="flex gap-3">
             <div className="flex-1">
               <Label htmlFor="trackToken" className="sr-only">رمز التتبع</Label>
@@ -101,7 +101,7 @@ export default function TrackOrderPage() {
                 value={token}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setToken(e.target.value)}
                 placeholder="أدخل رمز التتبع هنا..."
-                className="h-12"
+                className="h-12 rounded-xl bg-slate-50"
                 onKeyDown={(e) => e.key === 'Enter' && handleTrack()}
                 dir="ltr"
               />
@@ -109,7 +109,7 @@ export default function TrackOrderPage() {
             <Button
               onClick={() => handleTrack()}
               disabled={loading}
-              className="h-12 px-6"
+              className="h-12 px-6 rounded-xl bg-[#004ac6] hover:bg-[#003da6] text-white"
             >
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
               {!loading && <span className="mr-2">بحث</span>}
@@ -126,7 +126,7 @@ export default function TrackOrderPage() {
 
         {/* Order Results */}
         {order && status && (
-          <div className="bg-white rounded-2xl shadow-sm border p-6 space-y-6">
+          <div className="bg-white rounded-[1.25rem] shadow-[0_2px_10px_rgba(15,23,42,0.05)] border border-slate-100 p-5 md:p-6 space-y-6">
             {/* Header */}
             <div className="flex items-center justify-between">
               <div>

@@ -1,8 +1,8 @@
 "use client"
 
+import { PageShell, Card, CardContent, CardHeader, CardTitle, Badge } from "@/components/stitch/PageKit"
+
 import { useLanguage } from "@/components/language-provider";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { Target, Eye, ShoppingBag, Store, Star, Users } from "lucide-react"
 
@@ -100,18 +100,19 @@ export default function AboutUsPage() {
     const isArabic = language === "ar"
 
     return (
+        <PageShell>
         <div className="space-y-8">
             <div className="text-center space-y-4">
-                <Badge variant="outline" className="px-4 py-1 text-sm">
+                <Badge>
                     {isArabic ? "من نحن" : "About Us"}
                 </Badge>
                 <div className="space-y-3">
-                    <h1 className={cn("text-3xl font-bold tracking-tight", isArabic && "font-[Cairo]")}
+                    <h1 className={cn("text-[26px] md:text-3xl font-extrabold tracking-tight text-slate-900", isArabic && "font-[Cairo]")}
                         dir={isArabic ? "rtl" : "ltr"}
                     >
                         {isArabic ? "عن ميرفورى - Mirvory" : "About Mirvory"}
                     </h1>
-                    <p className="text-muted-foreground max-w-2xl mx-auto" dir={isArabic ? "rtl" : "ltr"}>
+                    <p className="text-slate-500 max-w-2xl mx-auto" dir={isArabic ? "rtl" : "ltr"}>
                         {isArabic
                             ? "نحن نهدف إلى إعادة تعريف معايير التجارة الإلكترونية، لنبني متجراً يخدم المشترين الباحثين عن الجودة والثقة."
                             : "We aim to redefine e-commerce standards, building an online store that serves buyers seeking quality and trust."}
@@ -129,7 +130,7 @@ export default function AboutUsPage() {
                 <CardContent>
                     <div className="grid gap-4 md:grid-cols-2">
                         <div className="rounded-lg border bg-muted/40 p-4" dir={isArabic ? "rtl" : "ltr"}>
-                            <h3 className="text-sm font-semibold text-muted-foreground">
+                            <h3 className="text-sm font-semibold text-slate-500">
                                 {isArabic ? "المجتمع التجاري" : "Business Community"}
                             </h3>
                             <p className="text-sm mt-1">
@@ -139,7 +140,7 @@ export default function AboutUsPage() {
                             </p>
                         </div>
                         <div className="rounded-lg border bg-muted/40 p-4" dir={isArabic ? "rtl" : "ltr"}>
-                            <h3 className="text-sm font-semibold text-muted-foreground">
+                            <h3 className="text-sm font-semibold text-slate-500">
                                 {isArabic ? "نموذج العمل" : "Business Model"}
                             </h3>
                             <p className="text-sm mt-1">
@@ -169,7 +170,7 @@ export default function AboutUsPage() {
                             <CardContent>
                                 <ul className="space-y-3" dir={isArabic ? "rtl" : "ltr"}>
                                     {content.map((text, idx) => (
-                                        <li key={idx} className="text-muted-foreground leading-relaxed flex items-start gap-2">
+                                        <li key={idx} className="text-slate-500 leading-relaxed flex items-start gap-2">
                                             <span className="mt-2 h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0" />
                                             <span>{text}</span>
                                         </li>
@@ -187,7 +188,7 @@ export default function AboutUsPage() {
                         <Store className="h-5 w-5 text-primary" />
                         {isArabic ? "هل أنت بائع تبحث عن النجاح؟" : "Are you a seller looking for success?"}
                     </h3>
-                    <p className="text-muted-foreground">
+                    <p className="text-slate-500">
                         {isArabic
                             ? "إذا كنت تمتلك منتجات ذات جودة عالية وتبحث عن منصة تقدر عملك وتربطك بعملاء حقيقيين، فإن ميرفورى هي المكان الأنسب لك."
                             : "If you have high-quality products and are looking for a platform that values your work and connects you with real customers, Mirvory is the right place for you."}
@@ -200,5 +201,6 @@ export default function AboutUsPage() {
                 </CardContent>
             </Card>
         </div>
+        </PageShell>
     )
 }

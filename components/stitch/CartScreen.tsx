@@ -2,7 +2,8 @@
 import { normalizeImageUrl } from "@/src/lib/normalizeImageUrl"
 
 import Link from "next/link"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { productService } from "@/lib/api"
 
 export type M3CartItem = {
   _id: string
@@ -42,6 +43,38 @@ type Props = {
 
 const fmt = (n: number) => Math.round(n).toLocaleString("en-US")
 
+
+function EmptyCartSuggestions() {
+  const [items, setItems] = useState<any[]>([])
+  useEffect(() => {
+    let off = false
+    productService.getProducts({ limit: 4 } as any).then((r: any) => {
+      const list = r?.data?.data ?? r?.data?.products ?? []
+      if (!off && Array.isArray(list)) setItems(list.slice(0, 4))
+    }).catch(() => {})
+    return () => { off = true }
+  }, [])
+  if (!items.length) return null
+  return (
+    <div className="w-full mt-8 text-right">
+      <h3 className="text-[16px] font-bold text-[#191c1e] mb-3">ممكن يعجبك</h3>
+      <div className="grid grid-cols-2 gap-3">
+        {items.map((it) => {
+          const img = normalizeImageUrl(it.image || it.colors?.[0]?.image || "", "card")
+          const price = it.discountedPrice && it.discountedPrice < it.price ? it.discountedPrice : it.price
+          return (
+            <Link key={it._id} href={`/products/${it._id}`} className="bg-white rounded-2xl p-2 shadow-sm flex flex-col gap-1">
+              <div className="aspect-square rounded-xl bg-[#f2f4f6] overflow-hidden">{img && <img alt={it.title} src={img} loading="lazy" className="w-full h-full object-cover" />}</div>
+              <span className="text-[13px] font-bold text-[#191c1e] truncate">{it.title}</span>
+              <span className="text-[14px] font-bold text-[#004ac6]">{fmt(Number(price) || 0)} ج.م</span>
+            </Link>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 export function CartMobileInner(p: Props) {
   const [confirmId, setConfirmId] = useState<string | null>(null)
   const count = p.items.reduce((s, i) => s + i.quantity, 0)
@@ -60,6 +93,7 @@ export function CartMobileInner(p: Props) {
             تصفح المنتجات
           </Link>
         )}
+        {!p.loading && <EmptyCartSuggestions />}
       </div>
     )
   }
