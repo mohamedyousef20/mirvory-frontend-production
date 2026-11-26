@@ -966,7 +966,7 @@ export default function OrderDetailsPage() {
                                 {(order.paymentMethod === "instapay" || order.paymentMethod === "wallet") && order.paymentStatus !== "paid" && order.deliveryStatus !== "cancelled" && (
                                     <div className="space-y-3 pt-1">
                                         {order.paymentStatus !== "under_review" && <ManualPaymentCard method={order.paymentMethod as "instapay" | "wallet"} amount={order.total} />}
-                                        <ReceiptUpload orderId={order._id} status={order.paymentStatus} hasProof={Boolean((order as any).paymentProof?.url)} onUploaded={() => window.location.reload()} />
+                                        <ReceiptUpload orderId={order._id} status={order.paymentStatus} hasProof={Boolean((order as any).paymentProof?.uploadedAt)} onUploaded={() => window.location.reload()} />
                                     </div>
                                 )}
 

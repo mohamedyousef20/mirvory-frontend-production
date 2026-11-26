@@ -964,6 +964,8 @@ export interface PaymentInfo {
 }
 export const manualPaymentService = {
   getInfo: () => api.get<{ data: PaymentInfo }>("/api/guest-orders/payment-info"),
+  // Admin only: the receipt is streamed by the server and never has a public URL.
+  getProofBlob: (orderId: string) => api.get(`/api/orders/${orderId}/payment-proof`, { responseType: "blob" }),
   uploadProof: (orderId: string, file: File) => {
     const fd = new FormData()
     fd.append("image", file)
