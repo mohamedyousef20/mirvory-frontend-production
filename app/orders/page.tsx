@@ -511,7 +511,7 @@ function OrdersDesktop() {
                                                 </div>
                                                 <div className="flex flex-col gap-1">
                                                     <CardTitle className="text-base md:text-lg text-slate-900 leading-none">
-                                                        طلب #{order.orderNumber || order._id.slice(-8).toUpperCase()}
+                                                        طلب <bdi dir="ltr">#{order.orderNumber || order._id.slice(-8).toUpperCase()}</bdi>
                                                     </CardTitle>
                                                     <div className="flex flex-wrap items-center gap-2 mt-1 md:mt-2">
                                                         <span className="flex items-center gap-1 text-xs md:text-sm text-slate-500">

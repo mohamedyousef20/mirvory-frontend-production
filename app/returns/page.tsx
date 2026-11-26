@@ -1,5 +1,6 @@
 "use client";
 
+import { unwrapUser } from "@/lib/unwrap-user"
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from "sonner"
@@ -53,7 +54,7 @@ export default function ReturnsPage() {
         const fetchUserRole = async () => {
             try {
                 const response = await authService.getMe();
-                const user = response.data.data?.user || response.data;
+                const user = unwrapUser(response);
                 setUserRole(user?.role || null);
             } catch (error) {
                 console.error('Error fetching user role:', error);
@@ -129,7 +130,7 @@ export default function ReturnsPage() {
 
         try {
             const response = await authService.getMe();
-            const user = response.data.data?.user || response.data;
+            const user = unwrapUser(response);
             
             if (user?.role === 'seller') {
                 toast.error('التجار لا يمكنهم حذف طلبات الإرجاع');

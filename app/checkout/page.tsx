@@ -1,5 +1,6 @@
 "use client"
 
+import { track } from "@/lib/track"
 import { getProductImage } from "@/lib/productVariants"
 import React, { useState, useEffect, useCallback, useMemo, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -383,6 +384,7 @@ function CheckoutInner() {
                     try { sessionStorage.removeItem('buyNowItem') } catch { /* ignore */ }
                 }
 
+                track('purchase', { isAuth: true })
                 // Meta Pixel - Purchase Event
                 if (typeof window !== 'undefined' && window.fbq) {
                     window.fbq('track', 'Purchase', {

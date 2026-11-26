@@ -12,6 +12,7 @@ import { redirectToLoginIfProtected } from './authRedirect';
 // Server/SSR environment: use the full Railway URL directly (no browser
 //   cookie policy applies; Next.js reads req.cookies server-side).
 //
+import { track } from './track';
 const isBrowser = typeof window !== 'undefined';
 const API_URL = isBrowser
   ? '' // same-origin → /api/* rewrites to Railway via next.config.mjs
@@ -528,7 +529,7 @@ export const cartService = {
     colors?: string[];
     size?: string;
     color?: string;
-  }) => api.post('/api/carts', data),
+  }) => { track('add_to_cart', { productId: data.productId, isAuth: true }); return api.post('/api/carts', data) },
 
   updateCartItem: (itemId: string, quantity: number) =>
     api.patch(`/api/carts/increase`, { itemId, quantity }),

@@ -468,8 +468,8 @@ export default function OrderDetailsPage() {
                             تفاصيل الطلب رقم
                         </span>
 
-                        <span className="text-primary font-mono">
-                            #{order._id.slice(0, 8)}
+                        <span dir="ltr" className="text-primary font-mono">
+                            #{order.orderNumber || order._id.slice(-8).toUpperCase()}
                         </span>
 
                         <Button
@@ -711,7 +711,7 @@ export default function OrderDetailsPage() {
                                         </span>
                                     </div>
 
-                                    <div className="flex justify-between text-green-600">
+                                    {Number(order.discount) > 0 && <div className="flex justify-between text-green-600">
 
                                         <span>
                                             الخصم
@@ -725,7 +725,7 @@ export default function OrderDetailsPage() {
                                             ج.م
                                         </span>
 
-                                    </div>
+                                    </div>}
 
                                     <div className="flex justify-between text-muted-foreground">
 
