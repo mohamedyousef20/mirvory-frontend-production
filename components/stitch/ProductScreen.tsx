@@ -80,10 +80,12 @@ export function ProductMobileInner(p: ProductMobileProps) {
   const gallery = colors.filter((c) => c.image)
   const selectedColorObj = colors.find((c) => c.value === p.selectedColor)
   const sizes = useMemo(() => [...p.activeSizes].sort((a, b) => parseFloat(a.size) - parseFloat(b.size)), [p.activeSizes])
+  const lowStock = sizes.find((x) => x.size === p.selectedSize && x.quantity > 0 && x.quantity <= 3)
   const avg = product.ratings?.average || 0
   const count = product.ratings?.count || 0
   const dist = product.ratings?.distribution || {}
-  const storeName = product.seller?.vendorProfile?.storeName || [product.seller?.firstName, product.seller?.lastName].filter(Boolean).join(" ")
+  // Only show a real store name; never the admin/owner account name
+  const storeName = product.seller?.vendorProfile?.storeName || ""
   const lines = (product.description || "").split(/\n+/).map((l) => l.trim()).filter(Boolean)
 
   const shownReviews = useMemo(() => {
@@ -144,11 +146,11 @@ export function ProductMobileInner(p: ProductMobileProps) {
           </div>
           <h2 className="[font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[22px] leading-[30px] tracking-[-0.02em] font-[700] font-bold text-[#191c1e] mt-2 leading-tight">{product.title}</h2>
           <div className="flex items-center gap-2 mt-2">
-            <div className="flex items-center gap-1 bg-[#e6e8ea] px-2 py-0.5 rounded-[0.5rem]">
+            {count > 0 && <div className="flex items-center gap-1 bg-[#e6e8ea] px-2 py-0.5 rounded-[0.5rem]">
               <span className="material-symbols-outlined text-[16px] text-amber-500" style={star}>star</span>
               <span className="[font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[18px] leading-[26px] tracking-[-0.01em] font-[600] text-[#191c1e] font-bold text-[14px]">{avg ? avg.toFixed(1) : "—"}</span>
-            </div>
-            <span className="[font-family:var(--font-jakarta),Plus_Jakarta_Sans,var(--font-cairo),Cairo,sans-serif] text-[12px] leading-[18px] tracking-[0.01em] font-[400] text-[#434655] font-medium">({count} تقييم)</span>
+            </div>}
+            {count > 0 && <span className="[font-family:var(--font-jakarta),Plus_Jakarta_Sans,var(--font-cairo),Cairo,sans-serif] text-[12px] leading-[18px] tracking-[0.01em] font-[400] text-[#434655] font-medium">({count} تقييم)</span>}
             {product.isTrusted && (
               <>
                 <span className="w-1 h-1 rounded-[9999px] bg-[#c3c6d7]" />
@@ -242,14 +244,18 @@ export function ProductMobileInner(p: ProductMobileProps) {
                   className={`relative py-2 px-1 rounded-[0.75rem] text-center [font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] transition-all flex flex-col items-center justify-center ${on ? "bg-[#004ac6] text-[#ffffff] shadow-md font-bold" : "bg-[#ffffff] shadow-sm text-[#191c1e] hover:bg-[#eceef0]"}`}
                 >
                   <span className="font-bold text-[14px]">{s.size}</span>
-                  <span className={`[font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[9px] font-medium ${on ? "text-[#eeefff]" : "text-[#434655]"}`}>{on ? "المختار" : "متوفر"}</span>
-                  {s.quantity <= 3 && !on && (
-                    <span className="absolute -top-1.5 -right-1 bg-[#ffdad6] text-[#93000a] [font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[8px] px-1.5 rounded-[9999px] font-bold">متبقي {s.quantity}</span>
-                  )}
+                  <span className={`[font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[9px] font-medium ${on ? "text-[#eeefff]" : "text-[#434655]"}`}>{on ? "المختار" : ""}</span>
+                  
                 </button>
               )
             })}
           </div>
+          {lowStock && (
+            <p className="mb-3 -mt-1 flex items-center gap-1.5 text-[12px] font-bold text-[#93000a]">
+              <span className="material-symbols-outlined text-[16px]">local_fire_department</span>
+              {lowStock.quantity === 1 ? "باقي قطعة واحدة بس من المقاس ده" : `باقي ${lowStock.quantity} قطع بس من المقاس ده`}
+            </p>
+          )}
           <div className="p-3 bg-[#ffffff] rounded-2xl shadow-sm border border-[#c3c6d7]/30 flex items-center justify-between">
             <span className="[font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[12px] leading-[16px] tracking-[0.04em] font-[600] font-bold text-[#191c1e]">الكمية المطلوبة</span>
             <div className="flex items-center gap-3 bg-[#f2f4f6] px-2 py-1 rounded-[0.75rem]">
@@ -271,16 +277,11 @@ export function ProductMobileInner(p: ProductMobileProps) {
           </div>
         )}
 
-        <div className="flex items-center justify-between px-[1rem] py-2.5 bg-[#dae2fd]/40 rounded-[0.75rem] my-3 text-[#191c1e]">
-          <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-[#004ac6] text-[20px]">local_shipping</span>
-            <div className="flex flex-col">
-              <span className="[font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[12px] leading-[16px] tracking-[0.04em] font-[600] font-bold text-[#191c1e]">{p.isOutOfStock ? "غير متوفر حالياً" : "متوفر جاهز للشحن الفوري"}</span>
-              <span className="[font-family:var(--font-jakarta),Plus_Jakarta_Sans,var(--font-cairo),Cairo,sans-serif] text-[11px] text-[#434655]">التوصيل خلال 48 - 120 ساعة لباب منزلك</span>
-            </div>
+        {p.isOutOfStock && (
+          <div className="flex items-center gap-2 px-[1rem] py-2.5 bg-[#ffdad6] rounded-[0.75rem] my-3 text-[#93000a] text-[12px] font-bold">
+            <span className="material-symbols-outlined text-[20px]">inventory_2</span>غير متوفر حالياً
           </div>
-          {!p.isOutOfStock && <span className="inline-flex items-center px-2 py-0.5 rounded-[9999px] text-[10px] font-bold bg-[#004ac6] text-[#ffffff]">متوفر بالمستودع</span>}
-        </div>
+        )}
 
         <section ref={buyRef} className="mt-1 mb-2 bg-[#ffffff] rounded-2xl p-[1rem] shadow-sm border border-[#c3c6d7]/30">
           <div className="flex flex-col gap-3">
@@ -298,6 +299,7 @@ export function ProductMobileInner(p: ProductMobileProps) {
                 {total >= ship.min ? "طلبك مؤهل للشحن المجاني" : `باقي ${fmt(ship.min - total)} ج.م وتاخد شحن مجاني`}
               </div>
             )}
+            <p className="text-[11px] text-[#434655] flex items-center gap-1.5 px-1"><span className="material-symbols-outlined text-[16px] text-[#004ac6]">schedule</span>التوصيل خلال 48 - 120 ساعة لباب منزلك</p>
             <div className="flex items-center gap-2.5">
               <div className="flex flex-col shrink-0 min-w-[90px]">
                 <span className="[font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[10px] text-[#434655] leading-tight">المبلغ الإجمالي</span>
@@ -322,7 +324,8 @@ export function ProductMobileInner(p: ProductMobileProps) {
         </section>
 
         <section className="mt-[1.5rem] flex flex-col gap-2.5">
-          <details className="group bg-[#ffffff] rounded-2xl shadow-sm overflow-hidden" open>
+          {lines[0] && <p className="px-1 text-[13px] leading-relaxed text-[#434655] line-clamp-2">{lines[0]}</p>}
+          <details className="group bg-[#ffffff] rounded-2xl shadow-sm overflow-hidden">
             <summary className="flex items-center justify-between p-[1rem] cursor-pointer list-none select-none">
               <div className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-[#004ac6] text-[20px]">tune</span>

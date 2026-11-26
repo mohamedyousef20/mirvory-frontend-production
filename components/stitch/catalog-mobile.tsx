@@ -8,6 +8,8 @@ import { useAuth } from "@/contexts/AuthProvider"
 import { getProductImage, getTotalStock } from "@/lib/productVariants"
 import { normalizeImageUrl } from "@/src/lib/normalizeImageUrl"
 import { toast } from "sonner"
+import { StitchProductCard } from "./StitchProductCard"
+import { SuggestPanel, saveRecent } from "./SearchSuggest"
 
 const PRICE_MIN = 500
 const PRICE_MAX = 8000
@@ -31,6 +33,7 @@ export function CatalogMobile() {
 
   const [query, setQuery] = useState(sp.get("q") || "")
   const [submitted, setSubmitted] = useState(sp.get("q") || "")
+  const [suggestOpen, setSuggestOpen] = useState(false)
   const [brands, setBrands] = useState<string[]>((sp.get("brand") || "").split(",").filter(Boolean))
   const [sizes, setSizes] = useState<string[]>((sp.get("size") || "").split(",").filter(Boolean))
   const [maxPrice, setMaxPrice] = useState(PRICE_MAX)
@@ -151,22 +154,30 @@ export function CatalogMobile() {
       <h1 className="sr-only">Categories</h1>
       <div className="flex flex-col w-full gap-[1rem]">
         <div className="flex flex-col gap-[0.25rem]">
+          <div className="relative">
           <form
             className="flex items-center gap-[0.25rem] bg-[#ffffff] p-1.5 rounded-[0.75rem] shadow-sm"
             onSubmit={(e) => {
               e.preventDefault()
               setSubmitted(query)
+              saveRecent(query)
+              setSuggestOpen(false)
             }}
           >
             <div className="flex items-center justify-center w-9 h-9 text-[#004ac6] shrink-0">
               <span className="material-symbols-outlined text-[20px]">search</span>
             </div>
             <input
-              className="w-full bg-transparent [font-family:var(--font-jakarta),Plus_Jakarta_Sans,var(--font-cairo),Cairo,sans-serif] text-[14px] leading-[22px] tracking-[0em] font-[400] text-[#191c1e] outline-none placeholder:text-[#434655]/60"
+              className="w-full [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-cancel-button]:appearance-none bg-transparent [font-family:var(--font-jakarta),Plus_Jakarta_Sans,var(--font-cairo),Cairo,sans-serif] text-[14px] leading-[22px] tracking-[0em] font-[400] text-[#191c1e] outline-none placeholder:text-[#434655]/60"
               placeholder="ابحث بالاسم، الموديل أو البائع..."
-              type="text"
+              type="search"
+              autoFocus={sp.get("focus") === "1"}
+              enterKeyHint="search"
+              autoComplete="off"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onFocus={() => setSuggestOpen(true)}
+              onBlur={() => setSuggestOpen(false)}
+              onChange={(e) => { setQuery(e.target.value); setSuggestOpen(true) }}
             />
             {query && (
               <button
@@ -191,6 +202,20 @@ export function CatalogMobile() {
               {activeCount > 0 && <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-[9999px] bg-[#ab0b1c]" />}
             </button>
           </form>
+          <SuggestPanel
+            q={query}
+            open={suggestOpen}
+            onClose={() => setSuggestOpen(false)}
+            onPick={(t) => { setQuery(t); setSubmitted(t); saveRecent(t); setSuggestOpen(false) }}
+          />
+          </div>
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar -mx-[1rem] px-[1rem] py-1">
+            {SORTS.map((x) => (
+              <button key={x.value} type="button" onClick={() => setSort(x.value)} className={`shrink-0 h-8 px-3.5 rounded-[9999px] text-[12px] font-bold transition-colors ${sort === x.value ? "bg-[#0f172a] text-white" : "bg-white border border-[#e2e8f0] text-[#434655]"}`}>
+                {x.label.replace("ترتيب: ", "")}
+              </button>
+            ))}
+          </div>
           <div className="flex items-center justify-between px-1">
             <div className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-[9999px] bg-[#004ac6] animate-pulse" />
@@ -350,7 +375,7 @@ export function CatalogMobile() {
             <h3 className="[font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[18px] leading-[26px] tracking-[-0.01em] font-[600] text-[#191c1e]">الإصدارات المتاحة</h3>
             <span className="[font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[10px] leading-[14px] tracking-[0.06em] font-[700] text-[#434655]">تحديث فوري للمخزون</span>
           </div>
-          <div className="grid grid-cols-2 gap-[0.75rem]">
+          <div className="grid grid-cols-1 gap-[0.75rem]">
             {products.map((p) => (
               <CatalogCard key={p._id} p={p} fav={favs.has(p._id)} onFav={() => toggleFav(p._id)} />
             ))}
@@ -386,61 +411,5 @@ function Chip({ label, aria, onRemove }: { label: string; aria: string; onRemove
 }
 
 function CatalogCard({ p, fav, onFav }: { p: any; fav: boolean; onFav: () => void }) {
-  const price = Number(p.price) || 0
-  const pct = Number(p.discountPercentage) || 0
-  const final = p.discountedPrice && p.discountedPrice < price ? Number(p.discountedPrice) : pct > 0 ? price * (1 - pct / 100) : price
-  const hasDiscount = final < price
-  const img = normalizeImageUrl(p.image || getProductImage(p) || "", "card")
-  const brand = p.brand || p.category?.name || ""
-  const out = getTotalStock(p) <= 0
-  const badge = hasDiscount
-    ? { text: `خصم ${Math.round(pct || ((price - final) / price) * 100)}%`, cls: "bg-[#ffdad7] text-[#410004]" }
-    : p.isTrusted
-      ? { text: "بائع موثوق ✓", cls: "bg-[#dae2fd] text-[#131b2e]" }
-      : p.isFeatured || (p.sold || 0) > 20
-        ? { text: "الأكثر طلباً", cls: "bg-[#dbe1ff] text-[#00174b]" }
-        : null
-  return (
-    <article className="bg-[#ffffff] rounded-2xl p-2.5 flex flex-col gap-2 shadow-sm relative group">
-      <Link href={`/products/${p._id}`} className="relative aspect-square w-full rounded-[0.75rem] bg-[#f2f4f6] overflow-hidden flex items-center justify-center">
-        {img && <img alt={p.title} src={img} loading="lazy" decoding="async" className="object-contain w-full h-full p-1 transform group-hover:scale-105 transition-transform duration-300" />}
-        {badge && (
-          <span className={`absolute top-2 right-2 px-2 py-0.5 rounded-[9999px] [font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[10px] leading-[14px] tracking-[0.06em] font-[700] font-bold shadow-sm ${badge.cls}`}>{badge.text}</span>
-        )}
-      </Link>
-      <button
-        aria-label="إضافة للمفضلة"
-        type="button"
-        onClick={onFav}
-        className={`absolute top-4 left-4 w-7 h-7 rounded-[9999px] bg-[#ffffff]/80 backdrop-blur-md flex items-center justify-center shadow-sm ${fav ? "text-[#ab0b1c]" : "text-[#434655]"}`}
-      >
-        <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: `'FILL' ${fav ? 1 : 0}` }}>favorite</span>
-      </button>
-      <div className="flex flex-col gap-1 flex-1 justify-between">
-        <div>
-          <div className="flex items-center justify-between text-[#434655] [font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[10px] leading-[14px] tracking-[0.06em] font-[700]">
-            <span className="truncate">{brand}</span>
-            {hasDiscount ? (
-              <span className="text-[#ab0b1c] font-bold">وفر {fmt(price - final)} ج.م</span>
-            ) : out ? (
-              <span className="text-[#ba1a1a] font-bold">نفد</span>
-            ) : null}
-          </div>
-          <h4 className="[font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[14px] leading-[20px] tracking-[0.02em] font-[600] text-[#191c1e] line-clamp-1 font-bold">{p.title}</h4>
-        </div>
-        <div className="flex items-baseline gap-1.5 flex-wrap">
-          <span className="[font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[20px] leading-[26px] tracking-[-0.02em] font-[700] text-[#191c1e] font-extrabold">{fmt(final)}</span>
-          <span className="[font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[10px] leading-[14px] tracking-[0.06em] font-[700] text-[#191c1e]">ج.م</span>
-          {hasDiscount && <span className="[font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[10px] leading-[14px] tracking-[0.06em] font-[700] line-through text-[#434655]/70">{fmt(price)} ج.م</span>}
-        </div>
-        <Link
-          href={`/products/${p._id}`}
-          className="w-full py-2 px-3 rounded-[0.75rem] bg-[#004ac6] text-[#ffffff] [font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[12px] leading-[16px] tracking-[0.04em] font-[600] font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-sm"
-        >
-          <span className="material-symbols-outlined text-[16px]">shopping_bag</span>
-          <span>{out ? "غير متوفر" : "اختر المقاس"}</span>
-        </Link>
-      </div>
-    </article>
-  )
+  return <StitchProductCard p={p} fav={fav} onFav={onFav} />
 }

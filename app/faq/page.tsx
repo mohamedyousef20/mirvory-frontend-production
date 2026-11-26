@@ -1,8 +1,8 @@
 "use client"
 
+import { PageShell, Card, CardContent, CardHeader, CardTitle, Badge } from "@/components/stitch/PageKit"
+
 import { useLanguage } from "@/components/language-provider";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { HelpCircle, ShoppingBag, Store, CreditCard, ShieldCheck } from "lucide-react"
 
@@ -106,18 +106,19 @@ export default function FAQPage() {
     const isArabic = language === "ar"
 
     return (
+        <PageShell>
         <div className="space-y-8 pb-10">
             <div className="text-center space-y-4">
-                <Badge variant="outline" className="px-4 py-1 text-sm">
+                <Badge>
                     {isArabic ? "مركز المساعدة" : "Help Center"}
                 </Badge>
                 <div className="space-y-3">
-                    <h1 className={cn("text-3xl font-bold tracking-tight", isArabic && "font-[Cairo]")}
+                    <h1 className={cn("text-[26px] md:text-3xl font-extrabold tracking-tight text-slate-900", isArabic && "font-[Cairo]")}
                         dir={isArabic ? "rtl" : "ltr"}
                     >
                         {isArabic ? "الأسئلة الشائعة" : "Frequently Asked Questions"}
                     </h1>
-                    <p className="text-muted-foreground max-w-2xl mx-auto" dir={isArabic ? "rtl" : "ltr"}>
+                    <p className="text-slate-500 max-w-2xl mx-auto" dir={isArabic ? "rtl" : "ltr"}>
                         {isArabic
                             ? "إليك الإجابات على أكثر الأسئلة شيوعاً حول الشراء، البيع، وطرق الدفع في منصة ميرفورى."
                             : "Here are the answers to the most common questions about buying, selling, and payments on Mirvory."}
@@ -139,24 +140,19 @@ export default function FAQPage() {
                                 <CardTitle className="text-xl">{categoryTitle}</CardTitle>
                             </CardHeader>
                             <CardContent className="pt-6">
-                                <div className="space-y-6" dir={isArabic ? "rtl" : "ltr"}>
+                                <div className="space-y-2.5" dir={isArabic ? "rtl" : "ltr"}>
                                     {category.faqs.map((faq, idx) => {
                                         const question = isArabic ? faq.qAr : faq.qEn
                                         const answer = isArabic ? faq.aAr : faq.aEn
 
                                         return (
-                                            <div key={idx} className="space-y-2">
-                                                <h4 className="font-semibold text-base flex items-start gap-2">
-                                                    <span className="text-primary mt-1 text-sm">●</span>
+                                            <details key={idx} className="group rounded-xl border border-slate-100 bg-slate-50/60 open:bg-white open:shadow-sm">
+                                                <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3.5 text-[14px] font-bold text-slate-900 [&::-webkit-details-marker]:hidden">
                                                     <span>{question}</span>
-                                                </h4>
-                                                <p className={cn(
-                                                    "text-muted-foreground leading-relaxed text-sm",
-                                                    isArabic ? "pr-5" : "pl-5"
-                                                )}>
-                                                    {answer}
-                                                </p>
-                                            </div>
+                                                    <span className="material-symbols-outlined text-[20px] text-slate-400 transition-transform group-open:rotate-180">expand_more</span>
+                                                </summary>
+                                                <p className="px-4 pb-4 text-[13px] leading-relaxed text-slate-600">{answer}</p>
+                                            </details>
                                         )
                                     })}
                                 </div>
@@ -172,7 +168,7 @@ export default function FAQPage() {
                     <h3 className="text-lg font-semibold">
                         {isArabic ? "لم تجد إجابة لسؤالك؟" : "Didn't find an answer to your question?"}
                     </h3>
-                    <p className="text-muted-foreground text-sm max-w-md mx-auto">
+                    <p className="text-slate-500 text-sm max-w-md mx-auto">
                         {isArabic
                             ? "فريق الدعم الفني الخاص بنا متواجد دائماً لمساعدتك. لا تتردد في التواصل معنا في أي وقت."
                             : "Our technical support team is always here to help. Feel free to contact us at any time."}
@@ -180,5 +176,6 @@ export default function FAQPage() {
                 </CardContent>
             </Card>
         </div>
+        </PageShell>
     )
 }

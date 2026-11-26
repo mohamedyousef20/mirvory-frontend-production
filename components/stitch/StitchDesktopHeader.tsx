@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/AuthProvider"
 import { cartService, notificationService } from "@/lib/api"
 import { getGuestCartCount } from "@/lib/guestCart"
+import { SuggestPanel, saveRecent } from "./SearchSuggest"
 
 /** Desktop header in the Stitch design language (extension of the mobile Stitch header). Replaces MainNav on md+ for non-classic pages. */
 const links: [string, string][] = [["الرئيسية", "/"], [PRODUCTS_NAV_LABEL, "/products"], ["العروض", "/offers"], ["المساعدة", "/help"]]
@@ -19,6 +20,7 @@ export function StitchDesktopHeader() {
   const [unread, setUnread] = useState(0)
   const [menu, setMenu] = useState(false)
   const [q, setQ] = useState("")
+  const [sOpen, setSOpen] = useState(false)
 
   const load = useCallback(async () => {
     if (!authed) return setCart(getGuestCartCount())
@@ -47,11 +49,12 @@ export function StitchDesktopHeader() {
             return <Link key={h} href={h} className={`px-3 py-2 rounded-[0.875rem] text-sm font-semibold transition-colors ${active ? "bg-[#dbeafe] text-[#004ac6]" : "text-slate-600 hover:bg-[#f1f5f9] hover:text-slate-900"}`}>{t}</Link>
           })}
         </nav>
-        <form onSubmit={(e) => { e.preventDefault(); router.push(q.trim() ? `/products?search=${encodeURIComponent(q.trim())}` : "/products") }} className="flex-1 min-w-[180px]">
+        <form onSubmit={(e) => { e.preventDefault(); saveRecent(q); setSOpen(false); router.push(q.trim() ? `/products?q=${encodeURIComponent(q.trim())}` : "/products") }} className="relative flex-1 min-w-[180px]">
           <label className="flex w-full items-center h-10 px-3.5 bg-[#f1f5f9] rounded-[0.875rem] focus-within:ring-2 focus-within:ring-[#004ac6]/20">
             <span className="material-symbols-outlined text-[#475569] text-[20px] ml-2">search</span>
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="ابحث بالموديل، الماركة (Nike, NB, Asics)..." className="w-full bg-transparent outline-none text-sm font-semibold text-slate-800 placeholder:text-[#475569]/80" />
+            <input value={q} type="search" style={{ WebkitAppearance: "none" }} autoComplete="off" onFocus={() => setSOpen(true)} onBlur={() => setSOpen(false)} onChange={(e) => { setQ(e.target.value); setSOpen(true) }} placeholder="ابحث بالموديل، الماركة (Nike, NB, Asics)..." className="w-full bg-transparent outline-none text-sm font-semibold text-slate-800 placeholder:text-[#475569]/80" />
           </label>
+          <SuggestPanel q={q} open={sOpen} onClose={() => setSOpen(false)} onPick={(t) => { saveRecent(t); setSOpen(false); router.push(`/products?q=${encodeURIComponent(t)}`) }} />
         </form>
         <div className="flex items-center gap-1.5 shrink-0">
           <Link aria-label="الإشعارات" href={authed ? "/notifications" : "/auth/login"} className={circle}>

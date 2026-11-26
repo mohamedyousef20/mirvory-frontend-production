@@ -1,5 +1,6 @@
 "use client"
 
+import { StitchProductCard } from "./StitchProductCard"
 import Link from "next/link"
 import { useEffect, useMemo, useState } from "react"
 import { announcementService, categoryService, loyaltyService, offerService, productService, shippingSettingsService, wishlistService } from "@/lib/api"
@@ -242,29 +243,6 @@ export default function StitchHome() {
           </section>
         )}
 
-        <section className="relative w-full rounded-[1.25rem] bg-gradient-to-r from-slate-900 via-slate-800 to-slate-950 text-white p-4 shadow-md overflow-hidden border border-slate-800">
-          <div className="flex items-start gap-3 relative z-10">
-            <div className="w-12 h-12 rounded-[0.875rem] bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shrink-0 shadow-md">
-              <span className="material-symbols-outlined text-[26px]">manage_search</span>
-            </div>
-            <div className="flex flex-col gap-1 flex-1 text-right">
-              <span className="self-start px-2 py-0.5 rounded-[9999px] bg-blue-500/20 text-blue-300 border border-blue-400/30 text-[10px] font-bold">خدمة الكونسيرج الحصرية</span>
-              <h3 className="text-base font-extrabold text-white">مش لاقي منتج معين في مصر؟</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">ابعتلنا صورة الموديل أو كود الحذاء وهنوفرهولك بأفضل سعر مع المعاينة الكاملة قبل الدفع.</p>
-            </div>
-          </div>
-          <div className="mt-3 pt-3 border-t border-slate-700/60 flex items-center justify-between gap-2 relative z-10">
-            <div className="flex items-center gap-3 text-[11px] text-slate-300">
-              <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[14px] text-emerald-400">verified_user</span>ضمان استرجاع 14 يوم</span>
-              <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[14px] text-blue-400">bolt</span>تسعير فوري</span>
-            </div>
-            <Link href="/request-product" className="h-9 px-4 rounded-[0.875rem] bg-white text-slate-950 text-xs font-extrabold flex items-center gap-1.5 shadow-sm active:scale-95 transition-transform">
-              <span className="material-symbols-outlined text-[16px]">photo_camera</span>
-              <span>اطلب منتجك الآن</span>
-            </Link>
-          </div>
-        </section>
-
         {authed && loyalty && (
           <section className="relative w-full rounded-[1.25rem] bg-gradient-to-br from-amber-50 via-white to-amber-100/40 p-4 border border-amber-200/70 shadow-sm flex flex-col gap-3">
             <div className="flex items-center justify-between">
@@ -303,44 +281,36 @@ export default function StitchHome() {
                 <span className="material-symbols-outlined text-[16px]">chevron_left</span>
               </Link>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-[0.75rem]">
-              {best.slice(0, 4).map((p) => {
-                const fp = finalPrice(p)
-                const sizes = (p.colors || []).flatMap((c: any) => (c.available !== false ? c.sizes || [] : [])).filter((s: any) => s.quantity > 0).map((s: any) => parseFloat(s.size)).filter((n: number) => !isNaN(n))
-                return (
-                  <article key={p._id} className="flex flex-col justify-between rounded-[1.25rem] bg-white p-3 shadow-sm border border-slate-100 relative group">
-                    <button aria-label="إضافة للمفضلة" type="button" onClick={() => toggleFav(p._id)} className={`absolute top-2.5 left-2.5 z-10 w-8 h-8 rounded-[9999px] bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-sm ${favs.has(p._id) ? "text-rose-600" : "text-slate-500"}`}>
-                      <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: `'FILL' ${favs.has(p._id) ? 1 : 0}` }}>favorite</span>
-                    </button>
-                    {p.discountPercentage > 0 && <span className="absolute top-2.5 right-2.5 z-10 px-2 py-0.5 rounded-md bg-rose-100 text-rose-700 font-bold text-[10px]">-{Math.round(p.discountPercentage)}%</span>}
-                    <Link href={`/products/${p._id}`} className="relative w-full aspect-square rounded-[0.875rem] bg-slate-50 flex items-center justify-center overflow-hidden mb-2 p-1">
-                      <img alt={p.title} src={normalizeImageUrl(p.image || getProductImage(p) || "", "card")} loading="lazy" decoding="async" className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300" />
-                    </Link>
-                    <div className="flex flex-col gap-1 text-right">
-                      {p.ratings?.count > 0 && (
-                        <div className="flex items-center gap-1 text-amber-500">
-                          <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
-                          <span className="text-xs font-bold text-slate-800">{Number(p.ratings.average).toFixed(1)}</span>
-                          <span className="text-[10px] text-slate-400 [font-family:var(--font-space-grotesk),Space_Grotesk,sans-serif]">({p.ratings.count})</span>
-                        </div>
-                      )}
-                      <h4 className="text-xs font-bold text-slate-900 line-clamp-1">{p.title}</h4>
-                      {sizes.length > 0 && <span className="text-[11px] text-slate-500">مقاسات {Math.min(...sizes)} إلى {Math.max(...sizes)}</span>}
-                      <div className="flex items-baseline justify-between mt-1 pt-1 border-t border-slate-100">
-                        <span className="[font-family:var(--font-space-grotesk),Space_Grotesk,sans-serif] text-base font-extrabold text-slate-950">
-                          {fmt(fp)} <span className="text-[11px] font-normal text-slate-500">ج.م</span>
-                        </span>
-                        <Link href={`/products/${p._id}`} aria-label="اختر المقاس" className="w-7 h-7 rounded-[0.625rem] bg-slate-100 flex items-center justify-center text-slate-900 hover:bg-[#004ac6] hover:text-white transition-colors">
-                          <span className="material-symbols-outlined text-[16px]">add</span>
-                        </Link>
-                      </div>
-                    </div>
-                  </article>
-                )
-              })}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-[0.75rem]">
+              {best.slice(0, 4).map((p) => (
+                <StitchProductCard key={p._id} p={p} fav={favs.has(p._id)} onFav={() => toggleFav(p._id)} />
+              ))}
             </div>
           </section>
         )}
+
+        <section className="relative w-full rounded-[1.25rem] bg-gradient-to-r from-slate-900 via-slate-800 to-slate-950 text-white p-4 shadow-md overflow-hidden border border-slate-800">
+          <div className="flex items-start gap-3 relative z-10">
+            <div className="w-12 h-12 rounded-[0.875rem] bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shrink-0 shadow-md">
+              <span className="material-symbols-outlined text-[26px]">manage_search</span>
+            </div>
+            <div className="flex flex-col gap-1 flex-1 text-right">
+              <span className="self-start px-2 py-0.5 rounded-[9999px] bg-blue-500/20 text-blue-300 border border-blue-400/30 text-[10px] font-bold">خدمة الكونسيرج الحصرية</span>
+              <h3 className="text-base font-extrabold text-white">مش لاقي منتج معين في مصر؟</h3>
+              <p className="text-xs text-slate-300 leading-relaxed">ابعتلنا صورة الموديل أو كود الحذاء وهنوفرهولك بأفضل سعر مع المعاينة الكاملة قبل الدفع.</p>
+            </div>
+          </div>
+          <div className="mt-3 pt-3 border-t border-slate-700/60 flex items-center justify-between gap-2 relative z-10">
+            <div className="flex items-center gap-3 text-[11px] text-slate-300">
+              <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[14px] text-emerald-400">verified_user</span>ضمان استرجاع 14 يوم</span>
+              <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[14px] text-blue-400">bolt</span>تسعير فوري</span>
+            </div>
+            <Link href="/request-product" className="h-9 px-4 rounded-[0.875rem] bg-white text-slate-950 text-xs font-extrabold flex items-center gap-1.5 shadow-sm active:scale-95 transition-transform">
+              <span className="material-symbols-outlined text-[16px]">photo_camera</span>
+              <span>اطلب منتجك الآن</span>
+            </Link>
+          </div>
+        </section>
 
         <section className="rounded-[1.25rem] bg-white p-4 shadow-sm border border-slate-100 flex flex-col gap-3">
           <div className="flex items-center gap-2">

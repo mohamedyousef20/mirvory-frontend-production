@@ -667,7 +667,7 @@ export function MainNav() {
 
           {/* Logo */}
           <div className="flex items-center">
-            <Link href={isVendor ? "/vendor/dashboard" : "/"} className="flex items-center gap-2 navbar-brand mr-6">
+            <Link href={isVendor ? "/vendor/dashboard" : "/"} className="flex items-center gap-2 navbar-brand mr-2 sm:mr-6">
               <MirvoryLogo className="text-3xl" />
             </Link>
 
@@ -702,7 +702,7 @@ export function MainNav() {
             {/* Theme switcher */}
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" className="hidden sm:inline-flex">
                   {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
                   <span className="sr-only">Toggle theme</span>
                 </Button>
@@ -907,9 +907,9 @@ export function MainNav() {
             {/* Cart Popover */}
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="ghost" className="relative gap-2 px-3 font-bold">
+                <Button variant="ghost" className="relative gap-2 px-2 sm:px-3 font-bold">
                   <ShoppingCart className="h-5 w-5" />
-                  <span className="text-sm font-bold">{language === "ar" ? "السلة" : "Cart"}</span>
+                  <span className="hidden sm:inline text-sm font-bold">{language === "ar" ? "السلة" : "Cart"}</span>
                   {counts.cart > 0 && (
                     <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center rounded-full text-[10px] p-0">
                       {counts.cart}
