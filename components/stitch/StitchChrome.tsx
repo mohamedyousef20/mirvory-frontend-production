@@ -95,7 +95,7 @@ export function StitchNav() {
   const items = [
     { href: "/", icon: "home", label: "الرئيسية", exact: true },
     { href: "/products", icon: "grid_view", label: PRODUCTS_NAV_LABEL, exact: true },
-    { href: authed ? "/wishlist" : "/auth/login", icon: "favorite", label: "المفضلة", match: "/wishlist" },
+    { href: authed ? "/orders" : "/track-order", icon: "package_2", label: "الطلبات", match: authed ? "/orders" : "/track-order" },
     { href: "/cart", icon: "shopping_bag", label: "السلة", badge: cart },
     { href: authed ? "/profile" : "/auth/login", icon: "person", label: "حسابي", match: "/profile" },
   ]

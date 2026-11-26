@@ -35,6 +35,7 @@ export function StitchDesktopHeader() {
   }, [authed, pathname])
   useEffect(() => setMenu(false), [pathname])
 
+  const navLinks: [string, string][] = [...links.slice(0, 3), ["الطلبات", authed ? "/orders" : "/track-order"], ...links.slice(3)]
   const circle = "relative w-10 h-10 flex items-center justify-center rounded-[9999px] text-[#0f172a] hover:bg-[#f1f5f9] transition-colors"
   return (
     <header dir="rtl" className="hidden md:block sticky top-0 z-50 w-full bg-[#ffffff]/90 backdrop-blur-xl shadow-[0_1px_12px_rgba(15,23,42,0.06)] border-b border-[#e2e8f0]/60 font-[Cairo,sans-serif]">
@@ -44,7 +45,7 @@ export function StitchDesktopHeader() {
           <span className="px-2 py-0.5 rounded-[9999px] bg-slate-900 text-white font-bold text-[10px] tracking-widest flex items-center gap-1"><span>EGYPT</span><span className="w-1.5 h-1.5 rounded-[9999px] bg-emerald-400" /></span>
         </Link>
         <nav className="flex items-center gap-1">
-          {links.map(([t, h]) => {
+          {navLinks.map(([t, h]) => {
             const active = h === "/" ? pathname === "/" : pathname.startsWith(h)
             return <Link key={h} href={h} className={`px-3 py-2 rounded-[0.875rem] text-sm font-semibold transition-colors ${active ? "bg-[#dbeafe] text-[#004ac6]" : "text-slate-600 hover:bg-[#f1f5f9] hover:text-slate-900"}`}>{t}</Link>
           })}
@@ -73,7 +74,7 @@ export function StitchDesktopHeader() {
               </button>
               {menu && (
                 <div className="absolute left-0 mt-2 w-52 rounded-[1.25rem] bg-white shadow-xl border border-slate-100 p-2 text-sm font-semibold text-slate-700">
-                  {[["حسابي", "/profile"], ["طلباتي", "/orders"], ["نادي ميرفوري", "/loyalty"], ["المفضلة", "/wishlist"]].map(([t, h]) => (
+                  {[["حسابي", "/profile"], ["طلباتي", "/orders"], ["المرتجعات والاستبدال", "/returns"], ["نادي ميرفوري", "/loyalty"], ["المفضلة", "/wishlist"], ...(["admin", "super_admin"].includes(String(user?.role)) ? [["لوحة تحكم الأدمن", "/admin/dashboard"]] : []), ...(user?.role === "seller" ? [["لوحة البائع", "/vendor/dashboard"]] : [])].map(([t, h]) => (
                     <Link key={h} href={h} className="block px-3 py-2 rounded-[0.75rem] hover:bg-slate-50">{t}</Link>
                   ))}
                   <button onClick={async () => { await logout(); router.replace("/auth/login") }} className="w-full text-right px-3 py-2 rounded-[0.75rem] text-rose-600 hover:bg-rose-50">تسجيل الخروج</button>

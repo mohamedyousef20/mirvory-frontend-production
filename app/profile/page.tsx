@@ -499,6 +499,12 @@ const Profile = () => {
 
                                     <Separator className="my-4" />
 
+                                    {[["طلباتي", "/orders"], ["تتبع الطلب", "/track-order"], ["المرتجعات والاستبدال", "/returns"], ["نادي ميرفوري", "/loyalty"], ...(["admin", "super_admin"].includes(String(user?.role)) ? [["لوحة تحكم الأدمن", "/admin/dashboard"]] : []), ...(user?.role === "seller" ? [["لوحة البائع", "/vendor/dashboard"]] : [])].map(([t, h]) => (
+                                        <Button key={h} variant="ghost" className="w-full justify-start" onClick={() => router.push(h)}>
+                                            {t}
+                                        </Button>
+                                    ))}
+
                                     <Button
                                         variant="ghost"
                                         className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"

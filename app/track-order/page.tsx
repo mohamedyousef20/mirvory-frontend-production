@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { listGuestOrders, removeGuestOrder, type SavedGuestOrder } from '@/lib/guestOrders';
 import { Loader2, Package, Truck, CheckCircle, Clock, Search, MapPin } from 'lucide-react';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'https://http://localhost:5000';
@@ -47,6 +48,21 @@ export default function TrackOrderPage() {
   const [order, setOrder] = useState<OrderData | null>(null);
   const [guestName, setGuestName] = useState('');
   const [error, setError] = useState('');
+  const [saved, setSaved] = useState<SavedGuestOrder[]>([]);
+  const [lkPhone, setLkPhone] = useState('');
+  const [lkNum, setLkNum] = useState('');
+  useEffect(() => { setSaved(listGuestOrders()) }, []);
+
+  const lookup = async () => {
+    if (!lkPhone.trim() || !lkNum.trim()) { toast.error('اكتب رقم الموبايل ورقم الطلب'); return; }
+    setLoading(true); setError('');
+    try {
+      const r = await fetch(`${BACKEND_URL}/api/guest-orders/lookup`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone: lkPhone.trim(), orderNumber: lkNum.trim() }) });
+      const d = await r.json();
+      if (!r.ok || !d.trackingToken) { setError(d.message || 'مفيش طلب بالبيانات دي'); return; }
+      setToken(d.trackingToken); handleTrack(d.trackingToken);
+    } catch { setError('حدث خطأ في الاتصال. حاول مرة أخرى.'); } finally { setLoading(false); }
+  };
 
   const handleTrack = async (trackToken?: string) => {
     const t = trackToken || token;
@@ -116,6 +132,34 @@ export default function TrackOrderPage() {
             </Button>
           </div>
         </div>
+
+        {!order && saved.length > 0 && (
+          <div className="bg-white rounded-[1.25rem] shadow-[0_2px_10px_rgba(15,23,42,0.05)] border border-slate-100 p-5 mb-6">
+            <h2 className="font-black text-slate-900 mb-3">طلباتك على الجهاز ده</h2>
+            <div className="space-y-2">
+              {saved.map((o) => (
+                <div key={o.token} className="flex items-center gap-2 rounded-xl bg-slate-50 p-3">
+                  <button className="flex-1 text-right" onClick={() => { setToken(o.token); handleTrack(o.token) }}>
+                    <span className="font-bold text-sm">{o.orderNumber ? `طلب #${o.orderNumber}` : 'طلب'}</span>
+                    <span className="block text-xs text-slate-500">{new Date(o.at).toLocaleDateString('ar-EG')}</span>
+                  </button>
+                  <button className="text-xs text-slate-400" onClick={() => { removeGuestOrder(o.token); setSaved(listGuestOrders()) }}>حذف</button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {!order && (
+          <details className="bg-white rounded-[1.25rem] border border-slate-100 p-5 mb-6">
+            <summary className="font-bold text-slate-800 cursor-pointer">ضيعت الرمز؟ دور بالموبايل ورقم الطلب</summary>
+            <div className="mt-4 space-y-3">
+              <Input value={lkPhone} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLkPhone(e.target.value)} placeholder="رقم الموبايل اللي استخدمته في الطلب" className="h-12 rounded-xl bg-slate-50" dir="ltr" />
+              <Input value={lkNum} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLkNum(e.target.value)} placeholder="رقم الطلب (من رسالة التأكيد)" className="h-12 rounded-xl bg-slate-50" dir="ltr" />
+              <Button onClick={lookup} disabled={loading} className="w-full h-12 rounded-xl bg-[#004ac6] text-white">دور على طلبي</Button>
+            </div>
+          </details>
+        )}
 
         {/* Error */}
         {error && (

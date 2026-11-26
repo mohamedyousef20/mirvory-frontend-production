@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { Loader2, ShoppingBag, User, Phone, Mail, MapPin, Package, Store, Home } from 'lucide-react';
 import { guestCartService, pickupPointService, shippingSettingsService } from '@/lib/api';
 import { getGuestCart, clearGuestCart } from '@/lib/guestCart';
+import { saveGuestOrder, trackUrl, whatsappToSelf } from '@/lib/guestOrders';
 import { GREATER_CAIRO_AREA, getCitiesByGovernorate } from '@/lib/data/greater-cairo-area';
 declare global {
   interface Window {
@@ -246,6 +247,7 @@ function GuestCheckoutInner() {
         clearGuestCart();
       }
 
+      saveGuestOrder({ token: data.trackingToken, orderNumber: data.orderNumber, phone: form.guestPhone.trim() });
       setTrackingToken(data.trackingToken);
       setOrderNumber(data.orderNumber);
 
@@ -280,10 +282,24 @@ function GuestCheckoutInner() {
             <p className="font-mono text-sm bg-white border rounded-lg p-3 break-all select-all">
               {trackingToken}
             </p>
-            <p className="text-xs text-gray-500">احفظ هذا الرمز لتتبع طلبك</p>
-            <p className="text-xs text-gray-500">هتوصلك رسالة تأكيد الطلب على واتساب على رقم الهاتف</p>
+            <p className="text-xs text-gray-500">اتحفظ تلقائياً على جهازك في صفحة "تتبع طلبك"، بس ابعته لنفسك على واتساب عشان ميضيعش.</p>
           </div>
           <div className="flex flex-col gap-3">
+            <a
+              href={whatsappToSelf(form.guestPhone, orderNumber || undefined, trackingToken)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full h-12 rounded-xl bg-[#25D366] hover:bg-[#1ebe5b] text-white font-bold flex items-center justify-center"
+            >
+              ابعت تأكيد الطلب ورابط التتبع لنفسي على واتساب
+            </a>
+            <Button
+              variant="outline"
+              onClick={() => { navigator.clipboard?.writeText(trackUrl(trackingToken)).then(() => toast.success('اتنسخ رابط التتبع')).catch(() => {}) }}
+              className="w-full h-12 rounded-xl font-bold"
+            >
+              نسخ رابط التتبع
+            </Button>
             <Button
               onClick={() => router.push(`/track-order?token=${trackingToken}`)}
               className="w-full h-12 rounded-xl bg-[#004ac6] hover:bg-[#003da5] font-bold"
