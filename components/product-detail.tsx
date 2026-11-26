@@ -1,4 +1,5 @@
 "use client"
+import { PrepaidNote } from "@/components/prepaid-note"
 import { DELIVERY_ZONES, DELIVERY_NOTE, DELIVERY_NOTE_EN } from "@/lib/delivery-times"
 import { useState, useEffect, useCallback, useRef, useMemo } from "react"
 import { ProductMobile } from "@/components/stitch/ProductScreen"
@@ -807,6 +808,8 @@ const ProductDetail = ({ productId }: { productId: string }) => {
               </Button>
             </div>
           </div>
+
+          <PrepaidNote />
 
           <div className="flex flex-wrap gap-2 pt-2">
             <Button

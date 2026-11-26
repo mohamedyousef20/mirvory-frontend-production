@@ -1,5 +1,6 @@
 'use client';
 
+import { hasShipmentData } from "@/components/orders/shipment-tracker"
 import { ManualPaymentCard, ReceiptUpload } from '@/components/stitch/ManualPayment';
 import { getProductImage } from "@/lib/productVariants"
 import React, { useState, useEffect } from 'react';
@@ -189,7 +190,7 @@ export default function TrackOrderPage() {
               </div>
             </div>
 
-            {(order.shipment?.events?.length || order.shipment?.waybillNumber) ? (
+            {hasShipmentData(order.shipment) ? (
               <ShipmentTimeline shipment={order.shipment} orderNumber={order.orderNumber} deliveryStatus={order.deliveryStatus} />
             ) : (
               <>

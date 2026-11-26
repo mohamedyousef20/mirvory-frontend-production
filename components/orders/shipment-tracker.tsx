@@ -20,7 +20,7 @@ export interface Shipment {
 }
 
 export function hasShipmentData(s?: Shipment | null): boolean {
-  return Boolean(s && (s.waybillNumber || s.currentStatus || (s.events && s.events.length)))
+  return Boolean(s && (s.waybillNumber || s.currentStatus || s.courierAgent?.name || s.courierAgent?.phone || (s.events && s.events.length)))
 }
 
 const fmtDate = (d?: string) =>
@@ -128,12 +128,12 @@ export function ShipmentTracker({ shipment, orderNumber }: { shipment: Shipment;
       )}
 
       {/* Courier + branch */}
-      {(shipment.courierAgent?.name || shipment.branch?.name) && (
+      {(shipment.courierAgent?.name || shipment.courierAgent?.phone || shipment.branch?.name) && (
         <div className="space-y-3 rounded-2xl border bg-card p-4">
-          {shipment.courierAgent?.name && (
+          {(shipment.courierAgent?.name || shipment.courierAgent?.phone) && (
             <div>
-              <p className="text-sm font-bold">{shipment.courierAgent.name}</p>
-              <p className="text-xs text-muted-foreground">مندوب التوصيل{agentPhone ? ` • ${agentPhone}` : ""}</p>
+              <p className="text-sm font-bold">{shipment.courierAgent?.name || "المندوب"}</p>
+              <p className="text-xs text-muted-foreground">المندوب اللي هيوصّل طلبك{agentPhone ? ` • ${agentPhone}` : ""}</p>
             </div>
           )}
           {shipment.branch?.name && (

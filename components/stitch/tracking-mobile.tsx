@@ -235,21 +235,21 @@ export function TrackingMobile() {
             </section>
           )}
 
-          {(sh?.courierAgent?.name || sh?.branch?.name) && (
+          {(sh?.courierAgent?.name || sh?.courierAgent?.phone || sh?.branch?.name) && (
             <section className="px-[1rem] py-2">
               <div className="bg-[#ffffff] rounded-2xl p-4 shadow-sm space-y-3">
-                {sh?.courierAgent?.name && (
+                {(sh?.courierAgent?.name || sh?.courierAgent?.phone) && (
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-[9999px] bg-[#e6e8ea] flex items-center justify-center">
                       <span className="material-symbols-outlined text-[#004ac6] text-[28px]">person</span>
                     </div>
                     <div>
                       <div className="flex items-center gap-1.5">
-                        <h4 className="[font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[18px] leading-[26px] tracking-[-0.01em] font-[600] text-[#191c1e]">{sh.courierAgent.name}</h4>
+                        <h4 className="[font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[18px] leading-[26px] tracking-[-0.01em] font-[600] text-[#191c1e]">{sh.courierAgent?.name || "المندوب"}</h4>
                         <span className="material-symbols-outlined text-[#004ac6] text-[16px]">verified</span>
                       </div>
                       <div className="flex items-center gap-2 text-[#434655] [font-family:var(--font-jakarta),Plus_Jakarta_Sans,var(--font-cairo),Cairo,sans-serif] text-[12px] leading-[18px] tracking-[0.01em] font-[400]">
-                        <span className="text-[#004ac6] font-semibold">مندوب التوصيل</span>
+                        <span className="text-[#004ac6] font-semibold">المندوب اللي هيوصّل طلبك</span>
                         {agentPhone && <span>• هاتف: {agentPhone}</span>}
                       </div>
                     </div>

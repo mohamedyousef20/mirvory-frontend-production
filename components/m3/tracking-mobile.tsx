@@ -234,21 +234,21 @@ export function TrackingMobile() {
             </section>
           )}
 
-          {(sh?.courierAgent?.name || sh?.branch?.name) && (
+          {(sh?.courierAgent?.name || sh?.courierAgent?.phone || sh?.branch?.name) && (
             <section className="px-m3-margin py-2">
               <div className="bg-m3-surface-container-lowest rounded-2xl p-4 shadow-sm space-y-3">
-                {sh?.courierAgent?.name && (
+                {(sh?.courierAgent?.name || sh?.courierAgent?.phone) && (
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-full bg-m3-surface-container-high flex items-center justify-center">
                       <span className="material-symbols-outlined text-m3-primary text-[28px]">person</span>
                     </div>
                     <div>
                       <div className="flex items-center gap-1.5">
-                        <h4 className="font-m3-headline-md text-m3-headline-md text-m3-on-surface">{sh.courierAgent.name}</h4>
+                        <h4 className="font-m3-headline-md text-m3-headline-md text-m3-on-surface">{sh.courierAgent?.name || "المندوب"}</h4>
                         <span className="material-symbols-outlined text-m3-primary text-[16px]">verified</span>
                       </div>
                       <div className="flex items-center gap-2 text-m3-on-surface-variant font-m3-body-sm text-m3-body-sm">
-                        <span className="text-m3-primary font-semibold">مندوب التوصيل</span>
+                        <span className="text-m3-primary font-semibold">المندوب اللي هيوصّل طلبك</span>
                         {agentPhone && <span>• هاتف: {agentPhone}</span>}
                       </div>
                     </div>

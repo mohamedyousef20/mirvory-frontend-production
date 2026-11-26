@@ -1,5 +1,6 @@
 "use client"
 
+import { PREPAID_DISCOUNT, prepaidDiscountFor } from "@/lib/prepaid"
 import { ManualPaymentCard } from "@/components/stitch/ManualPayment"
 import { zoneFor } from "@/lib/delivery-times"
 import { track } from "@/lib/track"
@@ -205,13 +206,17 @@ function CheckoutInner() {
     const pointsToUse = usePoints && canRedeem ? redeemablePoints : 0
     const pointsDiscount = pointsToUse * 0.05
 
+    const prepaidDiscount = prepaidDiscountFor(
+        paymentMethod,
+        subtotal - (appliedCoupon?.discountAmount || 0) - pointsDiscount
+    );
     const total = useMemo(() => {
         let finalTotal = subtotal + shippingFee;
         if (appliedCoupon?.discountAmount) {
             finalTotal -= appliedCoupon.discountAmount;
         }
-        return Math.max(0, finalTotal - pointsDiscount);
-    }, [subtotal, shippingFee, appliedCoupon, pointsDiscount]);
+        return Math.max(0, finalTotal - pointsDiscount - prepaidDiscount);
+    }, [subtotal, shippingFee, appliedCoupon, pointsDiscount, prepaidDiscount]);
 
 
     const availableCities = useMemo(() => {
@@ -677,6 +682,7 @@ function CheckoutInner() {
                                             <div>
                                                 <p className="font-bold text-sm text-slate-800">{isAr ? "إنستا باي" : "InstaPay"}</p>
                                                 <p className="text-xs text-slate-500">{isAr ? "تحويل ورفع الإيصال" : "Transfer and upload the receipt"}</p>
+                                                <p className="text-xs font-bold text-emerald-700">{isAr ? `وفّر ${PREPAID_DISCOUNT} ج.م مع الدفع المسبق` : `Save EGP ${PREPAID_DISCOUNT} when you prepay`}</p>
                                             </div>
                                         </Label>
                                         <Label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-all ${paymentMethod === 'wallet' ? 'border-[#1a4fba] bg-blue-50/50 ring-1 ring-[#1a4fba]' : 'border-slate-200 hover:border-[#1a4fba]'}`}>
@@ -684,10 +690,11 @@ function CheckoutInner() {
                                             <div>
                                                 <p className="font-bold text-sm text-slate-800">{isAr ? "فودافون كاش" : "Vodafone Cash"}</p>
                                                 <p className="text-xs text-slate-500">{isAr ? "تحويل ورفع الإيصال" : "Transfer and upload the receipt"}</p>
+                                                <p className="text-xs font-bold text-emerald-700">{isAr ? `وفّر ${PREPAID_DISCOUNT} ج.م مع الدفع المسبق` : `Save EGP ${PREPAID_DISCOUNT} when you prepay`}</p>
                                             </div>
                                         </Label>
                                     </RadioGroup>
-                                    {paymentMethod !== 'cash' && <ManualPaymentCard method={paymentMethod} />}
+                                    {paymentMethod !== 'cash' && <ManualPaymentCard method={paymentMethod} amount={total} />}
                                 </div>
                             </div>
 
@@ -809,6 +816,13 @@ function CheckoutInner() {
                                     <div className="flex justify-between items-center mb-3">
                                         <p className="text-blue-100 font-medium">{isAr ? "خصم النقاط" : "Points discount"}</p>
                                         <p className="font-bold">-ج.م{pointsDiscount.toFixed(2)}</p>
+                                    </div>
+                                )}
+
+                                {prepaidDiscount > 0 && (
+                                    <div className="flex justify-between items-center mb-3">
+                                        <p className="text-blue-100 font-medium">{isAr ? "خصم الدفع المسبق" : "Prepaid discount"}</p>
+                                        <p className="font-bold">-ج.م{prepaidDiscount.toFixed(2)}</p>
                                     </div>
                                 )}
 
