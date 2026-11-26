@@ -49,6 +49,7 @@ const statusLabels = {
 const paymentStatusLabels = {
   pending: { en: "Pending", ar: "قيد الدفع" },
   paid: { en: "Paid", ar: "مدفوع" },
+  under_review: { en: "Receipt under review", ar: "الإيصال تحت المراجعة" },
   failed: { en: "Failed", ar: "فشل" },
   completed: { en: "Completed", ar: "مكتمل" }
 };

@@ -110,14 +110,14 @@ export function ReturnMobile() {
 
   if (!authed && !loading)
     return (
-      <div dir="rtl" className="md:hidden min-h-screen bg-[#f7f9fb] px-[1rem] pt-[2.25rem] text-center flex flex-col items-center gap-[0.5rem]">
+      <div dir="rtl" className="min-h-screen bg-[#f7f9fb] px-[1rem] pt-[2.25rem] text-center flex flex-col items-center gap-[0.5rem]">
         <p className="[font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[18px] leading-[26px] tracking-[-0.01em] font-[600] text-[#191c1e]">سجّل الدخول لطلب الاستبدال أو الإرجاع</p>
         <Link href="/auth/login" className="px-6 py-3 rounded-[9999px] bg-[#2563eb] text-[#ffffff] [font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[14px] leading-[20px] tracking-[0.02em] font-[600] font-bold">تسجيل الدخول</Link>
       </div>
     )
 
   return (
-    <div dir="rtl" className="md:hidden flex flex-col w-full bg-[#f7f9fb] min-h-screen [font-family:var(--font-jakarta),Plus_Jakarta_Sans,var(--font-cairo),Cairo,sans-serif] pb-44">
+    <div dir="rtl" className="md:max-w-2xl md:mx-auto md:pt-6 flex flex-col w-full bg-[#f7f9fb] min-h-screen [font-family:var(--font-jakarta),Plus_Jakarta_Sans,var(--font-cairo),Cairo,sans-serif] pb-44">
       <div className="bg-[#e6e8ea] px-[1rem] py-[0.5rem] flex items-center justify-between text-[#434655]">
         <div className="flex items-center gap-2">
           <span className="inline-flex w-2 h-2 rounded-[9999px] bg-[#2563eb] animate-pulse" />
@@ -317,7 +317,7 @@ export function ReturnMobile() {
       </div>
 
       {item && (
-        <div className="fixed bottom-16 left-0 right-0 bg-[#ffffff]/90 backdrop-blur-xl shadow-[0_-4px_20px_rgba(15,23,42,0.08)] px-[1rem] py-3 z-40">
+        <div className="fixed bottom-16 left-0 right-0 md:bottom-0 md:left-1/2 md:right-auto md:w-[42rem] md:-translate-x-1/2 md:rounded-t-2xl bg-[#ffffff]/90 backdrop-blur-xl shadow-[0_-4px_20px_rgba(15,23,42,0.08)] px-[1rem] py-3 z-40">
           <div className="max-w-md mx-auto flex flex-col gap-2">
             <button disabled={sending} onClick={submit} className="w-full min-h-[52px] bg-[#2563eb] hover:bg-[#004ac6] active:scale-[0.98] text-[#ffffff] rounded-[9999px] font-bold text-[16px] leading-[26px] tracking-[0em] font-[400] flex items-center justify-center gap-2 shadow-md transition-all disabled:opacity-60">
               <span className="material-symbols-outlined text-[22px]">published_with_changes</span>

@@ -1,4 +1,5 @@
 "use client"
+import { DELIVERY_ZONES, DELIVERY_NOTE, DELIVERY_NOTE_EN } from "@/lib/delivery-times"
 import { useState, useEffect, useCallback, useRef, useMemo } from "react"
 import { ProductMobile } from "@/components/stitch/ProductScreen"
 import { Card, CardContent } from "@/components/ui/card"
@@ -1004,7 +1005,10 @@ const ProductDetail = ({ productId }: { productId: string }) => {
             {language === "ar" ? "التوصيل والمعاينة" : "Delivery & inspection"}
           </AccordionTrigger>
           <AccordionContent className="space-y-1.5 text-sm text-muted-foreground">
-            <p>{language === "ar" ? `التوصيل خلال ${STORE_POLICIES.deliveryWindow}.` : `Delivery within ${STORE_POLICIES.deliveryWindowEn}.`}</p>
+            {DELIVERY_ZONES.map((z) => (
+              <p key={z.key} className="flex justify-between gap-3"><span>{language === "ar" ? z.label : z.labelEn}</span><span className="font-semibold text-foreground">{language === "ar" ? z.hours : z.hoursEn}</span></p>
+            ))}
+            <p className="text-xs">{language === "ar" ? DELIVERY_NOTE : DELIVERY_NOTE_EN}</p>
             <p>{language === "ar" ? `معاينة المنتج لمدة ${STORE_POLICIES.inspectionMinutes} دقيقة مع المندوب قبل الاستلام.` : `Inspect the item for ${STORE_POLICIES.inspectionMinutes} minutes with the courier before accepting.`}</p>
           </AccordionContent>
         </AccordionItem>

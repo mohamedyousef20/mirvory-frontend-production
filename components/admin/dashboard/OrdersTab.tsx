@@ -695,11 +695,28 @@ export function OrdersTab({
                                                 </SelectTrigger>
                                                 <SelectContent className="rounded-xl">
                                                     <SelectItem value="pending">{ar ? "قيد الانتظار" : "Pending"}</SelectItem>
+                                                    <SelectItem value="under_review">{ar ? "إيصال تحت المراجعة" : "Receipt under review"}</SelectItem>
                                                     <SelectItem value="paid">{ar ? "مدفوع" : "Paid"}</SelectItem>
                                                     <SelectItem value="failed">{ar ? "فشل" : "Failed"}</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                         </div>
+
+                                        {(order.paymentMethod === "instapay" || order.paymentMethod === "wallet") && (
+                                            <div className="flex items-center gap-2 text-xs">
+                                                <span className="w-24 shrink-0 text-slate-400">{ar ? "تحويل" : "Transfer"}</span>
+                                                <span className="font-semibold text-slate-700">
+                                                    {order.paymentMethod === "instapay" ? "InstaPay" : "Vodafone Cash"}
+                                                </span>
+                                                {order.paymentProof?.url ? (
+                                                    <a href={order.paymentProof.url} target="_blank" rel="noopener noreferrer" className="rounded-lg bg-blue-50 px-2.5 py-1 font-bold text-blue-700">
+                                                        {ar ? "عرض الإيصال" : "View receipt"}
+                                                    </a>
+                                                ) : (
+                                                    <span className="text-amber-600">{ar ? "لم يُرفع إيصال بعد" : "No receipt yet"}</span>
+                                                )}
+                                            </div>
+                                        )}
 
                                         {/* Delivery status select */}
                                         <div className="flex items-center gap-2">

@@ -4,6 +4,8 @@ import { normalizeImageUrl } from "@/src/lib/normalizeImageUrl"
 import Link from "next/link"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { shippingSettingsService } from "@/lib/api"
+import { DeliveryEstimate } from "@/components/stitch/DeliveryEstimate"
+import { ProductVideo } from "@/components/stitch/ProductVideo"
 
 type Color = { name: string; value: string; image?: string | null; available?: boolean; sizes?: { size: string; quantity: number }[] }
 
@@ -12,6 +14,7 @@ export type ProductMobileProps = {
     _id: string
     title: string
     description?: string
+    videoUrl?: string
     brand?: string
     price: number
     discountPercentage: number
@@ -299,7 +302,7 @@ export function ProductMobileInner(p: ProductMobileProps) {
                 {total >= ship.min ? "طلبك مؤهل للشحن المجاني" : `باقي ${fmt(ship.min - total)} ج.م وتاخد شحن مجاني`}
               </div>
             )}
-            <p className="text-[11px] text-[#434655] flex items-center gap-1.5 px-1"><span className="material-symbols-outlined text-[16px] text-[#004ac6]">schedule</span>التوصيل خلال 48 - 120 ساعة لباب منزلك</p>
+            <p className="text-[11px] text-[#434655] flex items-center gap-1.5 px-1"><span className="material-symbols-outlined text-[16px] text-[#004ac6]">schedule</span>التوصيل خلال 24 - 120 ساعة حسب محافظتك</p>
             <div className="flex items-center gap-2.5">
               <div className="flex flex-col shrink-0 min-w-[90px]">
                 <span className="[font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[10px] text-[#434655] leading-tight">المبلغ الإجمالي</span>
@@ -325,6 +328,8 @@ export function ProductMobileInner(p: ProductMobileProps) {
 
         <section className="mt-[1.5rem] flex flex-col gap-2.5">
           {lines[0] && <p className="px-1 text-[13px] leading-relaxed text-[#434655] line-clamp-2">{lines[0]}</p>}
+          <DeliveryEstimate />
+          <ProductVideo url={product.videoUrl} />
           <details className="group bg-[#ffffff] rounded-2xl shadow-sm overflow-hidden">
             <summary className="flex items-center justify-between p-[1rem] cursor-pointer list-none select-none">
               <div className="flex items-center gap-2">

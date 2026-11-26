@@ -36,9 +36,9 @@ const trustedRules = [
         titleAr: "إرجاع واستبدال",
         titleEn: "Returns & Exchanges",
         contentAr:
-            "يمكن طلب الإرجاع أو الاستبدال خلال 7 أيام من تاريخ الاستلام وفق شروط وأحكام المنصة.",
+            "يمكن طلب الإرجاع أو الاستبدال خلال 14 يوم من تاريخ الاستلام وفق شروط وأحكام المنصة.",
         contentEn:
-            "Returns or exchanges may be requested within 7 days of delivery, subject to platform terms and conditions.",
+            "Returns or exchanges may be requested within 14 days of delivery, subject to platform terms and conditions.",
     },
 ]
 

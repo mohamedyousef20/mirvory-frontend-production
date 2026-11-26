@@ -31,7 +31,7 @@ export function LoyaltyMobile() {
   const memberId = user?._id || user?.id ? String(user._id || user.id).slice(-6).toUpperCase() : ""
 
   return (
-    <div dir="rtl" className="md:hidden flex flex-col w-full pb-24 bg-[#f7f9fb] [font-family:var(--font-jakarta),Plus_Jakarta_Sans,var(--font-cairo),Cairo,sans-serif] min-h-screen">
+    <div dir="rtl" className="md:max-w-2xl md:mx-auto md:pt-6 flex flex-col w-full pb-24 bg-[#f7f9fb] [font-family:var(--font-jakarta),Plus_Jakarta_Sans,var(--font-cairo),Cairo,sans-serif] min-h-screen">
       <div className="flex flex-col w-full pb-10 space-y-6">
         <section className="px-[1rem] pt-2">
           <div className="relative overflow-hidden rounded-3xl bg-[#f2f4f6] p-6 shadow-sm flex flex-col gap-3">
