@@ -2,153 +2,161 @@
 
 /**
  * SideAds
- * Displays active side advertisements fetched from /api/side-ads
- * (with fallback to announcements filtered by type='side_ad').
+ * Text-only (no images). Shows the active NON-main announcements that the admin marked to appear at
+ * this placement (home, product, cart, offers, products).
  *
- * Usage:
- *   <SideAds position="right" />
- *   <SideAds position="left" />
- *   <SideAds />          — shows all active ads regardless of position
+ * - Under 1900px wide: an inline row of cards (1 per row on mobile, up to 3 on desktop).
+ * - 1900px and wider: fixed rails in the empty page margins, one on each side.
+ * - Each ad can be closed for the session.
+ *
+ * Usage: <SideAds placement="cart" />
  */
 
 import { useEffect, useState } from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
-import { sideAdService, type SideAd } from '@/lib/api/services/sideAdService'
+import { announcementService } from '@/lib/api'
 import { X } from 'lucide-react'
 
-interface SideAdsProps {
-  position?: 'left' | 'right' | 'both' | 'all'
-  /** Optional cap. Omit to show every active ad. */
-  maxAds?: number
-  className?: string
-  /** If true, each ad can be dismissed locally (session) */
-  dismissible?: boolean
+export type AdPlacement = 'home' | 'product' | 'cart' | 'offers' | 'products'
+
+interface Ad {
+  _id: string
+  title?: string
+  content?: string
+  image?: string
+  link?: string
+  isMain?: boolean
+  status?: string
+  startDate?: string
+  endDate?: string
+  placements?: string[]
 }
 
-export function SideAds({
-  position = 'all',
-  maxAds,
-  className = '',
-  dismissible = true,
-}: SideAdsProps) {
-  const [ads, setAds] = useState<SideAd[]>([])
-  const [dismissed, setDismissed] = useState<Set<string>>(new Set())
+// One shared request for all placements on a page.
+let adsPromise: Promise<Ad[]> | null = null
+let adsFetchedAt = 0
+function loadAds(): Promise<Ad[]> {
+  if (!adsPromise || Date.now() - adsFetchedAt > 5 * 60 * 1000) {
+    adsFetchedAt = Date.now()
+    adsPromise = announcementService
+      .getAnnouncements()
+      .then((r: any) => {
+        const d = r?.data
+        return Array.isArray(d) ? d : Array.isArray(d?.data) ? d.data : []
+      })
+      .catch(() => [])
+  }
+  return adsPromise
+}
+
+const isLive = (a: Ad) => {
+  if (a.isMain || (a.status && a.status !== 'active')) return false
+  const now = Date.now()
+  if (a.startDate && new Date(a.startDate).getTime() > now) return false
+  if (a.endDate && new Date(a.endDate).getTime() < now) return false
+  return !!(a.title || a.content)
+}
+
+// Only http(s) and site-relative links are rendered as links.
+const safeHref = (u?: string) => {
+  const t = (u || '').trim()
+  return /^(https?:\/\/|\/(?!\/))/i.test(t) ? t : ''
+}
+const isExternal = (h: string) => /^https?:\/\//i.test(h)
+
+const DISMISS_KEY = 'mirvory-dismissed-ads'
+const readDismissed = (): string[] => {
+  try { return JSON.parse(sessionStorage.getItem(DISMISS_KEY) || '[]') } catch { return [] }
+}
+
+export function SideAds({ placement, className = '' }: { placement: AdPlacement; className?: string }) {
+  const [ads, setAds] = useState<Ad[]>([])
+  const [dismissed, setDismissed] = useState<string[]>([])
 
   useEffect(() => {
-    sideAdService.getActive().then((all) => {
-      const filtered =
-        position === 'all'
-          ? all
-          : all.filter(
-              (ad) =>
-                !ad.position ||
-                ad.position === position ||
-                ad.position === 'both'
-            )
-      setAds(maxAds === undefined ? filtered : filtered.slice(0, maxAds))
+    setDismissed(readDismissed())
+    let alive = true
+    loadAds().then((all) => {
+      if (!alive) return
+      setAds(all.filter((a) => isLive(a) && Array.isArray(a.placements) && a.placements.includes(placement)))
     })
-  }, [position, maxAds])
+    return () => { alive = false }
+  }, [placement])
 
-  const visible = ads.filter((ad) => !dismissed.has(ad._id))
+  const close = (id: string) => {
+    const next = [...dismissed, id]
+    setDismissed(next)
+    try { sessionStorage.setItem(DISMISS_KEY, JSON.stringify(next)) } catch {}
+  }
+
+  const visible = ads.filter((a) => !dismissed.includes(a._id))
   if (visible.length === 0) return null
 
+  const rightRail = visible.filter((_, i) => i % 2 === 0).slice(0, 2)
+  const leftRail = visible.filter((_, i) => i % 2 === 1).slice(0, 2)
+
   return (
-    <aside className={`flex flex-col gap-3 ${className}`} aria-label="إعلانات جانبية">
-      {visible.map((ad) => (
-        <AdCard
-          key={ad._id}
-          ad={ad}
-          dismissible={dismissible}
-          onDismiss={() => setDismissed((prev) => new Set([...prev, ad._id]))}
-        />
-      ))}
-    </aside>
+    <>
+      <aside
+        aria-label="إعلانات"
+        dir="rtl"
+        className={`mx-auto w-full max-w-7xl px-4 md:px-6 py-4 min-[1900px]:hidden ${className}`}
+      >
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {visible.slice(0, 3).map((a, i) => (
+            <div key={a._id} className={i >= 2 ? 'hidden lg:block' : ''}>
+              <AdCard ad={a} onClose={() => close(a._id)} />
+            </div>
+          ))}
+        </div>
+      </aside>
+
+      {rightRail.length > 0 && (
+        <aside
+          aria-label="إعلانات جانبية"
+          dir="rtl"
+          className="hidden min-[1900px]:flex fixed top-32 z-20 w-[150px] flex-col gap-3"
+          style={{ left: 'calc(50% + 766px)' }}
+        >
+          {rightRail.map((a) => <AdCard key={a._id} ad={a} compact onClose={() => close(a._id)} />)}
+        </aside>
+      )}
+      {leftRail.length > 0 && (
+        <aside
+          aria-label="إعلانات جانبية"
+          dir="rtl"
+          className="hidden min-[1900px]:flex fixed top-32 z-20 w-[150px] flex-col gap-3"
+          style={{ right: 'calc(50% + 766px)' }}
+        >
+          {leftRail.map((a) => <AdCard key={a._id} ad={a} compact onClose={() => close(a._id)} />)}
+        </aside>
+      )}
+    </>
   )
 }
 
-/* ── Single ad card ──────────────────────────────────────────────────────── */
-
-function AdCard({
-  ad,
-  dismissible,
-  onDismiss,
-}: {
-  ad: SideAd
-  dismissible: boolean
-  onDismiss: () => void
-}) {
-  const isValidUrl = (url?: string) => {
-    if (!url) return false
-    try { new URL(url); return true } catch { return false }
-  }
-
-  const card = (
-    <div className="relative group rounded-2xl overflow-hidden border border-slate-200 bg-white shadow-sm hover:shadow-md transition-shadow">
-      {/* Dismiss button */}
-      {dismissible && (
-        <button
-          onClick={(e) => { e.preventDefault(); e.stopPropagation(); onDismiss() }}
-          className="absolute top-2 end-2 z-10 w-6 h-6 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-          aria-label="إغلاق الإعلان"
-        >
-          <X size={12} />
-        </button>
-      )}
-
-      {/* Image */}
-      {isValidUrl(ad.imageUrl) ? (
-        <div className="relative w-full aspect-[4/3] bg-slate-100">
-          <Image
-            src={ad.imageUrl!}
-            alt={ad.title}
-            fill
-            sizes="(max-width: 768px) 100vw, 200px"
-            className="object-cover"
-            unoptimized={ad.imageUrl?.includes('cloudinary') === false}
-          />
-        </div>
-      ) : (
-        <div className="w-full aspect-[4/3] bg-gradient-to-br from-[#0d2f75] to-[#2465d4] flex items-center justify-center p-4">
-          <p className="text-white text-sm font-bold text-center leading-snug">{ad.title}</p>
-        </div>
-      )}
-
-      {/* Content */}
-      {(ad.title || ad.content) && (
-        <div className="p-3 space-y-1">
-          {ad.title && (
-            <p className="text-sm font-semibold text-slate-800 leading-tight line-clamp-2">
-              {ad.title}
-            </p>
-          )}
-          {ad.content && (
-            <p className="text-xs text-slate-500 leading-relaxed line-clamp-3">
-              {ad.content}
-            </p>
-          )}
-          {isValidUrl(ad.linkUrl) && (
-            <span className="inline-block mt-1.5 text-xs font-semibold text-[#1a4fba] hover:underline">
-              اعرف أكثر ←
-            </span>
-          )}
-        </div>
-      )}
+function AdCard({ ad, compact = false, onClose }: { ad: Ad; compact?: boolean; onClose: () => void }) {
+  const href = safeHref(ad.link)
+  const body = (
+    <div className="relative overflow-hidden rounded-2xl border border-blue-100 bg-gradient-to-br from-white to-blue-50/70 shadow-sm transition-shadow hover:shadow-md">
+      <span className="absolute inset-y-0 right-0 w-1 bg-[#0b57d0]" aria-hidden />
+      <div className={`space-y-1 pe-4 ps-10 ${compact ? 'py-3' : 'py-3.5'}`}>
+        {ad.title && <p className={`font-bold leading-snug text-slate-900 ${compact ? 'text-sm' : 'text-[15px]'}`}>{ad.title}</p>}
+        {ad.content && <p className="line-clamp-2 text-xs leading-relaxed text-slate-600">{ad.content}</p>}
+        {href && <span className="inline-block pt-1 text-xs font-bold text-[#0b57d0]">اعرف أكتر ←</span>}
+      </div>
+      <button
+        type="button"
+        onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClose() }}
+        aria-label="إغلاق الإعلان"
+        className="absolute top-2 left-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200"
+      >
+        <X size={13} />
+      </button>
     </div>
   )
-
-  if (isValidUrl(ad.linkUrl)) {
-    return (
-      <Link
-        href={ad.linkUrl!}
-        target={ad.linkUrl?.startsWith('http') ? '_blank' : undefined}
-        rel={ad.linkUrl?.startsWith('http') ? 'noopener noreferrer' : undefined}
-        className="block"
-      >
-        {card}
-      </Link>
-    )
-  }
-
-  return card
+  if (!href) return body
+  return isExternal(href)
+    ? <a href={href} target="_blank" rel="noopener noreferrer sponsored" className="block">{body}</a>
+    : <Link href={href} className="block">{body}</Link>
 }

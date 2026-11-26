@@ -157,7 +157,7 @@ export function ProductMobile(p: ProductMobileProps) {
                   <span className="material-symbols-outlined text-m3-primary text-[20px]">payments</span>
                 </div>
                 <p className="font-m3-body-sm text-m3-body-sm font-medium text-m3-on-surface leading-snug">
-                  قسّم على <span className="font-bold text-m3-primary">4 دفعات</span> بقيمة <span className="font-bold font-m3-price-display">{fmt(unit / 4)} ج.م</span> بدون فوائد مع Valu أو Sympl
+                  التقسيط عبر Valu وSympl <span className="font-bold">قريبًا</span>
                 </p>
               </div>
               <span className="material-symbols-outlined text-[18px] text-m3-on-surface-variant">arrow_back_ios</span>

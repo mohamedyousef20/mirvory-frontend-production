@@ -456,6 +456,46 @@ export function AnnouncementsTab({
                             </div>
                         </div>
 
+                        {!(selectedAnnouncement?.isMain ?? newAnnouncement.isMain) && (
+                            <div className="mt-4 rounded-lg border p-4">
+                                <Label className="mb-1 block text-sm font-medium">
+                                    {isArabic ? "يظهر كإعلان جانبي في:" : "Show as a side ad on:"}
+                                </Label>
+                                <p className="mb-3 text-sm text-gray-500">
+                                    {isArabic
+                                        ? "اختار صفحة أو أكتر. لو مفيش اختيار، الإعلان بيظهر في الشريط العلوي بس."
+                                        : "Pick one or more pages. With none selected it only shows in the top bar."}
+                                </p>
+                                <div className="flex flex-wrap gap-x-5 gap-y-2">
+                                    {([
+                                        ["home", "الرئيسية", "Home"],
+                                        ["product", "صفحة المنتج", "Product page"],
+                                        ["cart", "السلة", "Cart"],
+                                        ["offers", "العروض", "Offers"],
+                                        ["products", "قايمة المنتجات", "Product list"],
+                                    ] as const).map(([key, ar, en]) => {
+                                        const current: string[] = (selectedAnnouncement ?? newAnnouncement).placements || [];
+                                        const checked = current.includes(key);
+                                        return (
+                                            <label key={key} className="flex cursor-pointer items-center gap-2 text-sm">
+                                                <input
+                                                    type="checkbox"
+                                                    className="h-4 w-4"
+                                                    checked={checked}
+                                                    onChange={() => {
+                                                        const next = checked ? current.filter((k) => k !== key) : [...current, key];
+                                                        if (selectedAnnouncement) setSelectedAnnouncement({ ...selectedAnnouncement, placements: next });
+                                                        else setNewAnnouncement({ ...newAnnouncement, placements: next });
+                                                    }}
+                                                />
+                                                {isArabic ? ar : en}
+                                            </label>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+
                         <div className="flex justify-end mt-6 space-x-2">
                             <Button
                                 variant="outline"

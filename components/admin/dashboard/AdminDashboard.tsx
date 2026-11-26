@@ -24,7 +24,6 @@ import { ShippingSettingsTab } from "./ShippingSettingsTab";
 import { TransactionsTab } from "./TransactionsTab";
 import { AnalyticsTab } from "./AnalyticsTab";
 import { InventoryTab } from "./InventoryTab";
-import { SideAdsTab } from "./SideAdsTab";
 import { BehaviorTab } from "./BehaviorTab";
 import { OrderNotificationBell } from "@/components/admin/OrderNotificationBell";
 import { PushNotificationToggle } from "@/components/admin/PushNotificationToggle";
@@ -73,7 +72,6 @@ const TAB_ITEMS = (isArabic: boolean, t: TranslateFunction) => [{ value: "overvi
 { value: "analytics", label: isArabic ? "التحليلات" : "Analytics" },
 { value: "behavior", label: isArabic ? "سلوك المشترين" : "Buyer Behavior" },
 { value: "inventory", label: isArabic ? "المخزون" : "Inventory" },
-{ value: "side-ads", label: isArabic ? "إعلانات جانبية" : "Side Ads" },
 ];
 
 export function AdminDashboard() {
@@ -604,10 +602,6 @@ export function AdminDashboard() {
 
         <TabsContent value="inventory">
           <InventoryTab />
-        </TabsContent>
-
-        <TabsContent value="side-ads">
-          <SideAdsTab isArabic={isArabic} />
         </TabsContent>
 
         <TabsContent value="transactions">

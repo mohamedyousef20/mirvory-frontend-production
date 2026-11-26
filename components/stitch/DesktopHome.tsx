@@ -1,5 +1,6 @@
 "use client"
 
+import { SideAds } from "@/components/side-ads"
 import Link from "next/link"
 import { useEffect, useMemo, useState } from "react"
 import { announcementService, categoryService, offerService, productService, shippingSettingsService, wishlistService } from "@/lib/api"
@@ -294,6 +295,8 @@ export default function DesktopHome() {
             </div>
           </section>
         )}
+
+        <SideAds placement="home" className="!px-0 !py-0" />
 
         {/* Concierge + help */}
         <section className="grid grid-cols-2 gap-5">
