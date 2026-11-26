@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { ShipmentTimeline } from '@/components/orders/ShipmentTimeline';
 import { listGuestOrders, removeGuestOrder, type SavedGuestOrder } from '@/lib/guestOrders';
 import { Loader2, Package, Truck, CheckCircle, Clock, Search, MapPin } from 'lucide-react';
 
@@ -36,6 +37,7 @@ interface OrderData {
   deliveryMethod: string;
   items: Array<{ product?: { title?: string; images?: string[] }; quantity: number; price: number }>;
   createdAt: string;
+  shipment?: any;
 }
 
 export default function TrackOrderPage() {
@@ -185,6 +187,10 @@ export default function TrackOrderPage() {
               </div>
             </div>
 
+            {(order.shipment?.events?.length || order.shipment?.waybillNumber) ? (
+              <ShipmentTimeline shipment={order.shipment} orderNumber={order.orderNumber} deliveryStatus={order.deliveryStatus} />
+            ) : (
+              <>
             {/* Status Timeline — route-style map */}
             <div className="border-t pt-4">
               <h3 className="font-black mb-6 text-slate-900">مسار طلبك</h3>
@@ -223,6 +229,9 @@ export default function TrackOrderPage() {
                 );
               })()}
             </div>
+
+              </>
+            )}
 
             {/* Order Items */}
             {order.items?.length > 0 && (

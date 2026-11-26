@@ -7,6 +7,7 @@ import { orderService } from "@/lib/api"
 import { useAuth } from "@/contexts/AuthProvider"
 import { normalizeEgyptianPhone } from "@/lib/whatsapp"
 import { normalizeImageUrl } from "@/src/lib/normalizeImageUrl"
+import { cleanEvents } from "@/lib/shipment-timeline"
 import { hasShipmentData, type Shipment } from "@/components/orders/shipment-tracker"
 
 const fmt = (n: number) => Math.round(n).toLocaleString("en-US")
@@ -52,8 +53,8 @@ export function TrackingMobile() {
   const active = sorted.find((o) => ["pending", "processing", "shipped"].includes(o.deliveryStatus) && hasShipmentData(o.shipment)) || sorted.find((o) => ["pending", "processing", "shipped"].includes(o.deliveryStatus))
   const done = sorted.filter((o) => o.deliveryStatus === "delivered" && o._id !== active?._id)
   const sh: Shipment | null = active?.shipment && hasShipmentData(active.shipment) ? active.shipment : null
-  const events = sh ? [...(sh.events || [])].sort((a, b) => +new Date(b.occurredAt || 0) - +new Date(a.occurredAt || 0)) : []
-  const agentPhone = sh?.courierAgent?.phone || ""
+  const events = sh ? cleanEvents(sh.events).map((e) => ({ status: e.kind, title: e.title, description: "", station: e.city, occurredAt: e.at })) : []
+  const agentPhone = "" // courier phone numbers are not shown to customers
   const agentWa = normalizeEgyptianPhone(agentPhone)
   const item = active?.items?.[0]
   const orderNo = active ? active.orderNumber || active._id.slice(-6).toUpperCase() : ""
