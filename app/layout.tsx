@@ -22,7 +22,7 @@ import { Toaster } from "sonner"
 import { getUserServer } from "@/src/lib/getUserServer"
 import { AuthProvider } from "@/contexts/AuthProvider"
 import { AnnouncementBar } from "@/components/announcement-bar"
-import { DesktopOnly, HideOnStitch, HideHeaderOnBrand, StitchBrandBar, StitchBackBar, MobileHeader, MobileNav, PageOffset } from "@/components/m3/chrome"
+import { DesktopOnly, UnifiedMobileHeader, UnifiedMobileNav, PageOffset } from "@/components/m3/chrome"
 
 import Script from "next/script"
 
@@ -180,9 +180,7 @@ fbq('track', 'PageView');
 
                         <NavSwitch classic={<MainNav />} />
                       </DesktopOnly>
-                      <HideOnStitch><HideHeaderOnBrand><MobileHeader /></HideHeaderOnBrand></HideOnStitch>
-                      <StitchBrandBar />
-                      <StitchBackBar />
+                      <UnifiedMobileHeader />
 
                       <PageOffset>
 
@@ -204,7 +202,7 @@ fbq('track', 'PageView');
                       </div>
 
                       <FloatingWhatsApp />
-                      <HideOnStitch><MobileNav /></HideOnStitch>
+                      <UnifiedMobileNav />
 
                     </AuthProvider>
 

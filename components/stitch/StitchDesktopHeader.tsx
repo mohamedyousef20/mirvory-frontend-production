@@ -92,6 +92,6 @@ export function StitchDesktopHeader() {
 /** Classic pages (admin, vendor, auth, checkout) keep the old MainNav; everything else gets the Stitch desktop header on md+. */
 export function NavSwitch({ classic }: { classic: React.ReactNode }) {
   const pathname = usePathname() || "/"
-  const isClassic = ["/admin", "/vendor", "/auth", "/checkout", "/guest-checkout", "/verifyEmail"].some((x) => pathname.startsWith(x))
+  const isClassic = ["/admin", "/vendor"].some((x) => pathname.startsWith(x))
   return isClassic ? <>{classic}</> : <StitchDesktopHeader />
 }

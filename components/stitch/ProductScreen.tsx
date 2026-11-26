@@ -453,7 +453,6 @@ export function ProductMobileInner(p: ProductMobileProps) {
 
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/AuthProvider"
-import { StitchNav } from "./StitchChrome"
 
 export function ProductMobile(p: ProductMobileProps) {
   const router = useRouter()
@@ -466,26 +465,7 @@ export function ProductMobile(p: ProductMobileProps) {
   }
   return (
     <div className="md:hidden">
-      <header dir="rtl" className="fixed top-0 w-full z-50 bg-[#ffffff]/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(15,23,42,0.03)] pt-safe">
-        <div className="h-16 px-[1rem] flex items-center justify-between">
-          <div className="flex items-center gap-[0.5rem]">
-            <button aria-label="رجوع" onClick={() => router.back()} className="w-11 h-11 flex items-center justify-center rounded-[9999px] text-[#191c1e] hover:bg-[#eceef0] transition-colors">
-              <span className="material-symbols-outlined text-[24px]">arrow_forward</span>
-            </button>
-            <h1 className="font-[Cairo,sans-serif] text-[18px] leading-[26px] font-bold text-[#191c1e] tracking-tight truncate max-w-[200px]">تفاصيل المنتج</h1>
-          </div>
-          <div className="flex items-center gap-[0.25rem]">
-            <button aria-label="مشاركة" onClick={share} className="w-11 h-11 flex items-center justify-center rounded-[9999px] text-[#191c1e] hover:bg-[#eceef0] transition-colors">
-              <span className="material-symbols-outlined text-[20px]">share</span>
-            </button>
-            <Link aria-label="حسابي" href={user ? "/profile" : "/auth/login"} className="w-8 h-8 rounded-[9999px] bg-[#004ac6] flex items-center justify-center shrink-0 mr-1">
-              <span className="material-symbols-outlined text-[#ffffff] text-[18px]">person</span>
-            </Link>
-          </div>
-        </div>
-      </header>
       <ProductMobileInner {...p} />
-      <StitchNav />
     </div>
   )
 }
