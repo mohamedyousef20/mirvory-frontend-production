@@ -1,3 +1,4 @@
+import { CopyText } from "@/components/admin/CopyText";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getProductImage } from "@/lib/productVariants"
 import { Button } from "@/components/ui/button";
@@ -159,6 +160,8 @@ export function OrdersTab({
             target.closest('button') || target.closest('select') ||
             target.closest('input') || target.closest('[role="combobox"]') ||
             target.closest('[data-interactive="true"]');
+        // Do not navigate when the admin is selecting text to copy it
+        if (typeof window !== 'undefined' && (window.getSelection()?.toString() || '').length > 0) return;
         if (!isInteractiveElement) router.push(`/orders/${orderId}`);
     }, [router]);
 
@@ -435,14 +438,12 @@ export function OrdersTab({
                                             <User className="h-4 w-4 text-slate-500" />
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-semibold text-slate-800 truncate">
-                                                {order.buyer?.fullName ||
-                                                    `${order.buyer?.firstName || ''} ${order.buyer?.lastName || ''}`.trim() || order.deliveryInfo?.fullName || "N/A"}
-                                            </p>
+                                            <CopyText className="text-sm font-semibold text-slate-800" value={order.deliveryInfo?.fullName || order.buyer?.fullName ||
+                                                    `${order.buyer?.firstName || ''} ${order.buyer?.lastName || ''}`.trim() || "N/A"} />
                                             <p className="text-xs text-slate-400 truncate">{order.buyer?.email || ""}</p>
                                         </div>
-                                        <div className="shrink-0 text-xs text-slate-400">
-                                            {order.buyer?.phone || order.deliveryInfo?.phone || ""}
+                                        <div className="shrink-0 text-xs text-slate-500">
+                                            <CopyText dir="ltr" value={order.deliveryInfo?.phone || order.buyer?.phone || ""} />
                                         </div>
                                     </div>
 
@@ -637,12 +638,10 @@ export function OrdersTab({
                                     <div className="flex items-center gap-2 p-2.5 bg-slate-50 border border-slate-100 rounded-xl">
                                         <User className="h-3.5 w-3.5 text-slate-400 shrink-0" />
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-xs font-semibold text-slate-700 truncate">
-                                                {order.deliveryInfo?.fullName || order.buyer?.fullName || "N/A"}
-                                            </p>
-                                            <p className="text-xs text-slate-400">
-                                                {order.deliveryInfo?.phone || order.buyer?.phone || "N/A"}
-                                            </p>
+                                            <CopyText className="text-xs font-semibold text-slate-700" value={order.deliveryInfo?.fullName || order.buyer?.fullName || "N/A"} />
+                                            <div className="text-xs text-slate-500">
+                                                <CopyText dir="ltr" value={order.deliveryInfo?.phone || order.buyer?.phone || "N/A"} />
+                                            </div>
                                         </div>
                                     </div>
 

@@ -1,5 +1,6 @@
 "use client"
 
+import { CopyText } from "@/components/admin/CopyText"
 import { ManualPaymentCard, ReceiptUpload } from "@/components/stitch/ManualPayment"
 import { getProductImage } from "@/lib/productVariants"
 import { useParams } from "next/navigation"
@@ -822,11 +823,7 @@ export default function OrderDetailsPage() {
                                     <div className="space-y-2 text-gray-700 bg-gray-50/50 p-3 sm:p-4 rounded-xl border border-gray-100">
 
                                         <p className="font-semibold text-gray-900">
-                                            {
-                                                order
-                                                    .deliveryInfo
-                                                    ?.fullName
-                                            }
+                                            <CopyText value={order.deliveryInfo?.fullName} />
                                         </p>
 
                                         <p className="text-gray-600 text-sm leading-relaxed">
@@ -844,9 +841,7 @@ export default function OrderDetailsPage() {
                                             </span>{" "}
 
                                             <span className="font-mono text-gray-900">
-                                                {
-                                                    order.deliveryInfo?.phone
-                                                }
+                                                <CopyText dir="ltr" value={order.deliveryInfo?.phone} />
                                             </span>
 
                                         </p>

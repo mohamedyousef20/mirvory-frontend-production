@@ -298,27 +298,41 @@ export function AdminDashboard() {
   const tabItems = TAB_ITEMS(isArabic, t);
 
   return (
-    <div className="max-w-screen-2xl w-full px-4 py-6 md:py-12 mx-auto" dir={isArabic ? "rtl" : "ltr"}>
-      {/* Header Section */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-            {t("adminDashboard")}
-          </h1>
-          <p className="text-muted-foreground mt-2">
-            {isArabic
-              ? "مرحبًا بك في لوحة تحكم المدير، يمكنك إدارة المنصة من هنا."
-              : "Welcome to the admin dashboard, manage your platform from here."}
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <OrderNotificationBell />
-          <PushNotificationToggle />
-          <Link href="/admin/notifications">
-            <Button>
-              {isArabic ? "إرسال إشعارات" : "Send Notifications"}
-            </Button>
-          </Link>
+    <div className="mv-admin max-w-screen-2xl w-full px-4 py-6 md:py-10 mx-auto" dir={isArabic ? "rtl" : "ltr"}>
+      {/* Header: Mirvory identity (navy, red accent, white) */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-l from-[#0d2f75] to-[#0a2258] text-white px-5 py-6 md:px-8 md:py-8 mb-6 shadow-lg">
+        <span className="absolute inset-y-0 start-0 w-1.5 bg-[#e11d2e]" aria-hidden />
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <div className="flex items-center gap-3">
+              <span className="font-extrabold text-2xl tracking-[0.18em] font-['Space_Grotesk',sans-serif]">MIRVORY</span>
+              <span className="rounded-full bg-[#e11d2e] px-2.5 py-0.5 text-[11px] font-bold tracking-wide">{isArabic ? "الأدمن" : "ADMIN"}</span>
+            </div>
+            <h1 className="mt-3 text-xl md:text-2xl font-bold tracking-tight">
+              {t("adminDashboard")}
+            </h1>
+            <p className="text-white/70 mt-1 text-sm">
+              {isArabic
+                ? "مرحبًا بك في لوحة تحكم ميرفوري، تقدر تدير المتجر من هنا."
+                : "Welcome to the Mirvory admin dashboard."}
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <Link href="/" className="rounded-xl border border-white/25 px-3 py-2 text-sm font-semibold text-white/90 hover:bg-white/10">
+              {isArabic ? "فتح المتجر" : "View store"}
+            </Link>
+            <div className="rounded-xl bg-white/10 p-1 [&_button]:text-white [&_svg]:text-white">
+              <OrderNotificationBell />
+            </div>
+            <div className="[&_button]:bg-white/10 [&_button]:text-white [&_button]:border-white/25 [&_button:hover]:bg-white/20">
+              <PushNotificationToggle />
+            </div>
+            <Link href="/admin/notifications">
+              <Button className="bg-white text-[#0d2f75] hover:bg-slate-100 font-bold">
+                {isArabic ? "إرسال إشعارات" : "Send Notifications"}
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
 
@@ -346,9 +360,9 @@ export function AdminDashboard() {
         </div>
 
         {/* الديسكتوب: نفس التابات القديمة، بس gap بدل space-x (gap شغال صح في RTL) */}
-        <TabsList className="hidden md:flex overflow-x-auto whitespace-nowrap gap-2 p-1">
+        <TabsList className="hidden md:flex overflow-x-auto whitespace-nowrap gap-1.5 p-1.5 h-auto rounded-2xl bg-white border border-slate-200 shadow-sm">
           {tabItems.map((item) => (
-            <TabsTrigger key={item.value} value={item.value}>
+            <TabsTrigger key={item.value} value={item.value} className="rounded-xl px-3.5 py-2 font-semibold text-slate-600 data-[state=active]:bg-[#0d2f75] data-[state=active]:text-white data-[state=active]:shadow">
               {item.label}
             </TabsTrigger>
           ))}
