@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { Loader2, ShoppingBag, User, Phone, Mail, MapPin, Package, Store, Home } from 'lucide-react';
 import { guestCartService, pickupPointService, shippingSettingsService } from '@/lib/api';
 import { getGuestCart, clearGuestCart } from '@/lib/guestCart';
+import { track } from '@/lib/track';
 import { saveGuestOrder, trackUrl, whatsappToSelf } from '@/lib/guestOrders';
 import { GREATER_CAIRO_AREA, getCitiesByGovernorate } from '@/lib/data/greater-cairo-area';
 declare global {
@@ -248,6 +249,7 @@ function GuestCheckoutInner() {
       }
 
       saveGuestOrder({ token: data.trackingToken, orderNumber: data.orderNumber, phone: form.guestPhone.trim() });
+      track('purchase');
       setTrackingToken(data.trackingToken);
       setOrderNumber(data.orderNumber);
 

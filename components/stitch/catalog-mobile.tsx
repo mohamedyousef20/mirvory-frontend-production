@@ -1,5 +1,6 @@
 "use client"
 
+import { track } from "@/lib/track"
 import React, { useCallback, useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
@@ -100,6 +101,7 @@ export function CatalogMobile() {
           list = r.data.data || []
           tot = r.data.pagination?.total || 0
         }
+        if (submitted.trim() && !append) track("search", { term: submitted.trim(), results: tot })
         setProducts((p) => (append ? [...p, ...list] : list))
         setTotal(tot)
         setPage(pg)

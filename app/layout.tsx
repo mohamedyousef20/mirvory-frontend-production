@@ -17,6 +17,7 @@ import { MainNav } from "@/components/main-nav"
 import ErrorBoundaryProvider from "@/providers/ErrorBoundaryProvider"
 import { NavSwitch } from "@/components/stitch/StitchDesktopHeader"
 import { FloatingWhatsApp } from "@/components/stitch/FloatingWhatsApp"
+import { BehaviorTracker } from "@/components/behavior-tracker"
 import { StitchFooter } from "@/components/stitch/StitchFooter"
 import { Toaster } from "sonner"
 import { getUserServer } from "@/src/lib/getUserServer"
@@ -180,6 +181,7 @@ fbq('track', 'PageView');
 
                         <NavSwitch classic={<MainNav />} />
                       </DesktopOnly>
+                      <BehaviorTracker />
                       <UnifiedMobileHeader />
 
                       <PageOffset>

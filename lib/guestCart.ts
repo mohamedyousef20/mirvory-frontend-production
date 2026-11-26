@@ -7,6 +7,8 @@
 
 const GUEST_CART_KEY = 'guest_cart';
 
+import { track } from './track';
+
 export interface GuestCartItem {
   productId: string;
   quantity: number;
@@ -59,6 +61,7 @@ export function saveGuestCart(items: GuestCartItem[], silent = false): void {
  * If the same productId + size + color already exists, quantity is incremented.
  */
 export function addToGuestCart(item: GuestCartItem): GuestCartItem[] {
+  track('add_to_cart', { productId: item.productId });
   const items = getGuestCart();
 
   const existingIndex = items.findIndex(
