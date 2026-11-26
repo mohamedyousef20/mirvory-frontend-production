@@ -35,7 +35,7 @@ interface Transaction {
 }
 
 // Old desktop layout, no longer rendered: the Stitch layout now serves every width.
-export function LoyaltyDesktop() {
+function LoyaltyDesktop() {
   const { language } = useLanguage();
   const isArabic = language === "ar";
 
