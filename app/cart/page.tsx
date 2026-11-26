@@ -1,3 +1,4 @@
+import { SideAds } from "@/components/side-ads"
 import { SiteFooter } from "@/components/site-footer"
 import { CartPage } from "@/components/cart-page"
 
@@ -8,6 +9,7 @@ export default function Cart() {
         <div className="container px-4 py-6 md:py-10">
           <CartPage />
         </div>
+        <SideAds placement="cart" />
       </main>
     </div>
   )

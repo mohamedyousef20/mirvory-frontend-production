@@ -181,7 +181,7 @@ export function ProductMobileInner(p: ProductMobileProps) {
                   <span className="material-symbols-outlined text-[#004ac6] text-[20px]">payments</span>
                 </div>
                 <p className="[font-family:var(--font-jakarta),Plus_Jakarta_Sans,var(--font-cairo),Cairo,sans-serif] text-[12px] leading-[18px] tracking-[0.01em] font-[400] font-medium text-[#191c1e] leading-snug">
-                  قسّم على <span className="font-bold text-[#004ac6]">4 دفعات</span> بقيمة <span className="font-bold [font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif]">{fmt(unit / 4)} ج.م</span> بدون فوائد مع Valu أو Sympl
+                  التقسيط عبر Valu وSympl <span className="font-bold">قريبًا</span>
                 </p>
               </div>
               <span className="material-symbols-outlined text-[18px] text-[#434655]">arrow_back_ios</span>

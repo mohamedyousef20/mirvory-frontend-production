@@ -1,5 +1,6 @@
 import ProductDetail from "@/components/product-detail"
 import { RelatedProducts } from "@/components/stitch/RelatedProducts"
+import { SideAds } from "@/components/side-ads"
 import { SiteFooter } from "@/components/site-footer"
 import type { Metadata } from "next"
 import { SITE_URL, fetchProduct } from "@/lib/seo"
@@ -29,6 +30,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
     <div className="flex min-h-screen flex-col">
       <main className="flex-1">
         <ProductDetail productId={id} />
+        <SideAds placement="product" />
         <RelatedProducts productId={id} />
       </main>
     </div>

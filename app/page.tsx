@@ -9,7 +9,6 @@ import { TrendingSection } from "@/components/trending-section"
 import { getUserServer } from "@/src/lib/getUserServer"
 import { redirect } from "next/navigation"
 import { ShoppingBag } from "lucide-react"
-import { SideAds } from "@/components/side-ads"
 import { HomeOffersCountdown } from "@/components/home-offers-countdown"
 import { HomePromoBanners } from "@/components/home-promo-banners"
 import StitchHome from "@/components/stitch/StitchHome"
@@ -49,7 +48,7 @@ export default async function Home() {
           <div className="flex gap-4 items-start">
             {/* Left side ad (hidden on mobile) */}
             <aside className="hidden xl:block w-44 flex-shrink-0 sticky top-20">
-              <SideAds position="left" dismissible />
+              
             </aside>
 
             {/* Main content column */}
@@ -85,7 +84,7 @@ export default async function Home() {
 
               {/* ── Mobile side ads (between sections, below newest) ───── */}
               <div className="xl:hidden">
-                <SideAds position="both" dismissible className="grid grid-cols-2 gap-3" />
+                
               </div>
 
               <SectionDivider icon={ShoppingBag} />
@@ -96,7 +95,7 @@ export default async function Home() {
 
             {/* Right side ad (hidden on mobile) */}
             <aside className="hidden xl:block w-44 flex-shrink-0 sticky top-20">
-              <SideAds position="right" dismissible />
+              
             </aside>
           </div>
         </div>

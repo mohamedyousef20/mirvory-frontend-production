@@ -1377,6 +1377,7 @@ export function useAdminDashboard() {
                 isMain: announcementData.isMain,
                 image: imageUrl || announcementData.image,
                 link: announcementData.link,
+                placements: announcementData.isMain ? [] : (announcementData.placements || []),
             };
 
             let response: AxiosResponse<any, any>;

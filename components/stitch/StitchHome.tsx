@@ -1,5 +1,6 @@
 "use client"
 
+import { SideAds } from "@/components/side-ads"
 import { StitchProductCard } from "./StitchProductCard"
 import Link from "next/link"
 import { useEffect, useMemo, useState } from "react"
@@ -288,6 +289,8 @@ export default function StitchHome() {
             </div>
           </section>
         )}
+
+        <SideAds placement="home" className="!px-0 !py-0" />
 
         <section className="relative w-full rounded-[1.25rem] bg-gradient-to-r from-slate-900 via-slate-800 to-slate-950 text-white p-4 shadow-md overflow-hidden border border-slate-800">
           <div className="flex items-start gap-3 relative z-10">
