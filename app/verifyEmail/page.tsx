@@ -178,33 +178,18 @@ const VerifyEmail = () => {
   if (isVerified) {
     return (
       <>
-        <div className="min-h-screen flex flex-col md:flex-row-reverse bg-gray-50" dir="rtl">
-          {/* Success Illustration Section */}
-          <div className="bg-[#1640a0] text-white md:w-1/2 p-8 flex flex-col justify-center items-center">
-            <div className="max-w-md mx-auto text-center">
-              <div className="flex justify-center mb-6">
-                <div className="bg-white/20 p-4 rounded-full">
-                  <CheckCircle className="text-white" size={80} />
-                </div>
-              </div>
-              <h1 className="text-4xl font-bold mb-4">تهانينا!</h1>
-              <p className="text-xl mb-8">تم تأكيد بريدك الإلكتروني بنجاح</p>
-              <div className="bg-white/10 p-6 rounded-lg">
-                <p className="mb-4 text-lg">يمكنك الآن تسجيل الدخول إلى حسابك</p>
-                <Link href="/auth/login" className="block text-center bg-white text-[#1640a0] py-3 px-6 rounded-lg font-bold transition-all hover:bg-blue-50">
-                  الانتقال لتسجيل الدخول
-                  <ArrowRight className="inline mr-2" size={18} />
-                </Link>
-              </div>
-            </div>
-          </div>
+        <div className="min-h-screen bg-[#f7f9fb] font-[Cairo,sans-serif]" dir="rtl">
 
           {/* Success Message */}
-          <div className="md:w-1/2 p-8 flex justify-center items-center">
-            <div className="w-full max-w-md text-center">
+          <div className="mx-auto w-full max-w-md px-4 pt-12 pb-16">
+          <Link href="/" className="mb-6 flex select-none items-center justify-center gap-2">
+            <span className="font-extrabold text-2xl tracking-wider text-slate-950 font-['Space_Grotesk'] uppercase">MIRVORY</span>
+            <span className="rounded-[9999px] bg-slate-900 px-2 py-0.5 text-[10px] font-bold tracking-widest text-white">EGYPT</span>
+          </Link>
+          <div className="w-full rounded-[1.5rem] border border-slate-100 bg-white p-5 shadow-sm md:p-7 text-center">
               <div className="mb-8">
                 <h2 className="text-3xl font-bold text-gray-800 mb-4">تم التحقق بنجاح</h2>
-                <p className="text-gray-600 text-lg">سيتم تحويلك تلقائياً إلى صفحة تسجيل الدخول خلال ثوانٍ قليلة</p>
+                <p className="text-slate-500 text-lg">سيتم تحويلك تلقائياً إلى صفحة تسجيل الدخول خلال ثوانٍ قليلة</p>
               </div>
 
               <div className="bg-green-50 border border-green-200 rounded-lg p-6">
@@ -219,7 +204,7 @@ const VerifyEmail = () => {
 
               <div className="mt-6">
                 <div className="text-center">
-                  <div className="inline-flex items-center text-gray-600">
+                  <div className="inline-flex items-center text-slate-500">
                     <Clock className="w-4 h-4 ml-1" />
                     <span>سيتم التوجيه خلال 3 ثوانٍ...</span>
                   </div>
@@ -235,27 +220,18 @@ const VerifyEmail = () => {
   // ===================== MAIN FORM ======================
   return (
     <>
-      <div className="min-h-screen flex flex-col md:flex-row-reverse bg-gray-50" dir="rtl">
-        {/* Brand Section */}
-        <div className="bg-[#1640a0] text-white md:w-1/2 p-8 flex flex-col justify-center items-center">
-          <div className="max-w-md mx-auto">
-            <h1 className="text-4xl font-bold mb-6">ميرفوري</h1>
-            <p className="text-xl mb-8">منصة التسوق الإلكتروني المميزة لكل احتياجاتك</p>
-            <div className="bg-white/10 p-6 rounded-lg">
-              <p className="mb-4 text-lg">لم تقم بإنشاء حساب بعد؟</p>
-              <Link href="/auth/register" className="block text-center bg-white text-[#1640a0] py-3 px-6 rounded-lg font-bold transition-all hover:bg-blue-50">
-                إنشاء حساب جديد
-              </Link>
-            </div>
-          </div>
-        </div>
+      <div className="min-h-screen bg-[#f7f9fb] font-[Cairo,sans-serif]" dir="rtl">
 
         {/* Verification Form */}
-        <div className="md:w-1/2 p-8 flex justify-center items-center">
-          <div className="w-full max-w-md">
-            <div className="text-center mb-10">
-              <h2 className="text-3xl font-bold text-gray-800 mb-2">تأكيد البريد الإلكتروني</h2>
-              <p className="text-gray-600">أدخل رمز التحقق المرسل إلى بريدك الإلكتروني</p>
+        <div className="mx-auto w-full max-w-md px-4 pt-12 pb-16">
+          <Link href="/" className="mb-6 flex select-none items-center justify-center gap-2">
+            <span className="font-extrabold text-2xl tracking-wider text-slate-950 font-['Space_Grotesk'] uppercase">MIRVORY</span>
+            <span className="rounded-[9999px] bg-slate-900 px-2 py-0.5 text-[10px] font-bold tracking-widest text-white">EGYPT</span>
+          </Link>
+          <div className="w-full rounded-[1.5rem] border border-slate-100 bg-white p-5 shadow-sm md:p-7">
+            <div className="text-center mb-7">
+              <h2 className="text-2xl font-extrabold text-slate-900 mb-1">تأكيد البريد الإلكتروني</h2>
+              <p className="text-slate-500">أدخل رمز التحقق المرسل إلى بريدك الإلكتروني</p>
             </div>
 
             {errorText && (
@@ -270,14 +246,14 @@ const VerifyEmail = () => {
             <form onSubmit={handleVerify} className="space-y-6">
               {/* Email Input */}
               <div>
-                <label htmlFor="email" className="block text-gray-700 mb-2">البريد الإلكتروني</label>
+                <label htmlFor="email" className="block text-slate-700 text-[13px] font-bold mb-1.5">البريد الإلكتروني</label>
                 <div className="relative">
                   <input
                     id="email"
                     type="email"
                     value={email}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                    className="w-full pr-4 pl-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                    className="w-full pr-4 pl-10 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                     placeholder="أدخل بريدك الإلكتروني"
                     required
                   />
@@ -287,7 +263,7 @@ const VerifyEmail = () => {
 
               {/* Verification Code Input */}
               <div>
-                <label htmlFor="verificationCode" className="block text-gray-700 mb-2">رمز التحقق</label>
+                <label htmlFor="verificationCode" className="block text-slate-700 text-[13px] font-bold mb-1.5">رمز التحقق</label>
                 <div className="relative">
                   <input
                     id="verificationCode"
@@ -298,7 +274,7 @@ const VerifyEmail = () => {
                       setVerificationCode(value);
                       setErrorText("");
                     }}
-                    className="w-full pr-4 pl-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent text-center text-lg tracking-widest"
+                    className="w-full pr-4 pl-10 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent text-center text-lg tracking-widest"
                     placeholder="••••••"
                     maxLength={6}
                     required
@@ -315,7 +291,7 @@ const VerifyEmail = () => {
                     )}
                   </button>
                 </div>
-                <p className="text-sm text-gray-500 mt-2 text-center">
+                <p className="text-sm text-slate-500 mt-2 text-center">
                   أدخل الرمز المكون من 6 أرقام
                 </p>
               </div>
@@ -324,9 +300,9 @@ const VerifyEmail = () => {
               <button
                 type="submit"
                 disabled={isLoading || verificationCode.length !== 6 || !email}
-                className={`w-full bg-[#1a4fba] text-white py-3 rounded-lg font-medium transition-colors ${isLoading || verificationCode.length !== 6 || !email
+                className={`w-full bg-[#004ac6] text-white h-12 rounded-xl font-bold transition-colors ${isLoading || verificationCode.length !== 6 || !email
                   ? 'bg-blue-400 cursor-not-allowed'
-                  : 'hover:bg-[#1640a0]'
+                  : 'hover:bg-[#003da6]'
                   }`}
               >
                 {isLoading ? 'جاري التحقق...' : 'تأكيد الرمز'}
@@ -335,12 +311,12 @@ const VerifyEmail = () => {
 
             {/* Resend Code Section */}
             <div className="mt-8 text-center">
-              <p className="text-gray-600 mb-4">لم تستلم الرمز؟</p>
+              <p className="text-slate-500 mb-4">لم تستلم الرمز؟</p>
 
               {isResendDisabled ? (
                 <div className="inline-flex items-center justify-center space-x-2 space-x-reverse bg-gray-100 px-4 py-2 rounded-lg">
-                  <Clock className="h-4 w-4 text-gray-500" />
-                  <span className="text-gray-700 font-medium">
+                  <Clock className="h-4 w-4 text-slate-500" />
+                  <span className="text-slate-700 font-medium">
                     يمكنك إعادة الإرسال خلال {formatTime(resendCooldown)}
                   </span>
                 </div>
@@ -350,7 +326,7 @@ const VerifyEmail = () => {
                   disabled={!email || isResendDisabled}
                   className={`inline-flex items-center justify-center space-x-2 space-x-reverse px-4 py-2 rounded-lg font-medium transition-colors ${!email || isResendDisabled
                       ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                      : 'bg-blue-50 text-[#1a4fba] hover:bg-blue-100'
+                      : 'bg-blue-50 text-[#004ac6] hover:bg-blue-100'
                     }`}
                 >
                   <RefreshCw className="h-4 w-4" />
@@ -364,17 +340,17 @@ const VerifyEmail = () => {
             {/* Additional Help */}
             <div className="mt-8 pt-6 border-t border-gray-200">
               <div className="text-center">
-                <p className="text-gray-600 mb-2">تواجه مشكلة في التحقق؟</p>
+                <p className="text-slate-500 mb-2">تواجه مشكلة في التحقق؟</p>
                 <div className="space-y-2">
                   <Link
                     href="/contact"
-                    className="block text-[#1a4fba] hover:text-blue-800 font-medium"
+                    className="block text-[#004ac6] hover:text-blue-800 font-medium"
                   >
                     اتصل بالدعم الفني
                   </Link>
                   <Link
                     href="/auth/forgot-password"
-                    className="block text-[#1a4fba] hover:text-blue-800 font-medium"
+                    className="block text-[#004ac6] hover:text-blue-800 font-medium"
                   >
                     نسيت كلمة المرور؟
                   </Link>

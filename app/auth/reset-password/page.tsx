@@ -56,39 +56,30 @@ export default function ResetPassword() {
 
   return (
     <>
-      <div className="min-h-screen flex flex-col md:flex-row-reverse bg-gray-50" dir="rtl">
-        {/* Brand Section - Same as login page */}
-        <div className="bg-[#1640a0] text-white md:w-1/2 p-8 flex flex-col justify-center items-center">
-          <div className="max-w-md mx-auto">
-            <h1 className="text-4xl font-bold mb-6">ميرفوري</h1>
-            <p className="text-xl mb-8">منصة التسوق الإلكتروني المميزة لكل احتياجاتك</p>
-            <div className="bg-white/10 p-6 rounded-lg">
-              <p className="mb-4 text-lg">تذكرت كلمة المرور؟</p>
-              <Link href="/auth/login" className="block text-center bg-white text-[#1640a0] py-3 px-6 rounded-lg font-bold transition-all hover:bg-blue-50">
-                العودة لتسجيل الدخول
-              </Link>
-            </div>
-          </div>
-        </div>
+      <div className="min-h-screen bg-[#f7f9fb] font-[Cairo,sans-serif]" dir="rtl">
 
         {/* Reset Password Form */}
-        <div className="md:w-1/2 p-8 flex justify-center items-center">
-          <div className="w-full max-w-md">
-            <div className="text-center mb-10">
-              <h2 className="text-3xl font-bold text-gray-800 mb-2">تغيير كلمة المرور</h2>
-              <p className="text-gray-600">أدخل كلمة المرور الجديدة لحسابك</p>
+        <div className="mx-auto w-full max-w-md px-4 pt-12 pb-16">
+          <Link href="/" className="mb-6 flex select-none items-center justify-center gap-2">
+            <span className="font-extrabold text-2xl tracking-wider text-slate-950 font-['Space_Grotesk'] uppercase">MIRVORY</span>
+            <span className="rounded-[9999px] bg-slate-900 px-2 py-0.5 text-[10px] font-bold tracking-widest text-white">EGYPT</span>
+          </Link>
+          <div className="w-full rounded-[1.5rem] border border-slate-100 bg-white p-5 shadow-sm md:p-7">
+            <div className="text-center mb-7">
+              <h2 className="text-2xl font-extrabold text-slate-900 mb-1">تغيير كلمة المرور</h2>
+              <p className="text-slate-500">أدخل كلمة المرور الجديدة لحسابك</p>
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)}>
               {/* Email Field */}
               <div className="mb-6">
-                <label htmlFor="email" className="block text-gray-700 mb-2">البريد الإلكتروني</label>
+                <label htmlFor="email" className="block text-slate-700 text-[13px] font-bold mb-1.5">البريد الإلكتروني</label>
                 <div className="relative">
                   <input
                     id="email"
                     type="email"
                     {...register('email')}
-                    className={`w-full pr-4 pl-10 py-3 border rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent ${errors.email ? 'border-red-300' : 'border-gray-300'
+                    className={`w-full pr-4 pl-10 py-3 border rounded-[0.875rem] bg-slate-50 focus:ring-2 focus:ring-[#004ac6]/30 focus:border-[#004ac6] ${errors.email ? 'border-red-300' : 'border-slate-200'
                       }`}
                     placeholder="أدخل بريدك الإلكتروني"
                     required
@@ -104,13 +95,13 @@ export default function ResetPassword() {
 
               {/* New Password Field */}
               <div className="mb-6">
-                <label htmlFor="newPassword" className="block text-gray-700 mb-2">كلمة المرور الجديدة</label>
+                <label htmlFor="newPassword" className="block text-slate-700 text-[13px] font-bold mb-1.5">كلمة المرور الجديدة</label>
                 <div className="relative">
                   <input
                     id="newPassword"
                     type={showNewPassword ? "text" : "password"}
                     {...register('newPassword')}
-                    className={`w-full pr-4 pl-10 py-3 border rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent ${errors.newPassword ? 'border-red-300' : 'border-gray-300'
+                    className={`w-full pr-4 pl-10 py-3 border rounded-[0.875rem] bg-slate-50 focus:ring-2 focus:ring-[#004ac6]/30 focus:border-[#004ac6] ${errors.newPassword ? 'border-red-300' : 'border-slate-200'
                       }`}
                     placeholder="أدخل كلمة المرور الجديدة"
                     required
@@ -137,13 +128,13 @@ export default function ResetPassword() {
 
               {/* Confirm Password Field */}
               <div className="mb-6">
-                <label htmlFor="confirmPassword" className="block text-gray-700 mb-2">تأكيد كلمة المرور</label>
+                <label htmlFor="confirmPassword" className="block text-slate-700 text-[13px] font-bold mb-1.5">تأكيد كلمة المرور</label>
                 <div className="relative">
                   <input
                     id="confirmPassword"
                     type={showConfirmPassword ? "text" : "password"}
                     {...register('confirmPassword')}
-                    className={`w-full pr-4 pl-10 py-3 border rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent ${errors.confirmPassword ? 'border-red-300' : 'border-gray-300'
+                    className={`w-full pr-4 pl-10 py-3 border rounded-[0.875rem] bg-slate-50 focus:ring-2 focus:ring-[#004ac6]/30 focus:border-[#004ac6] ${errors.confirmPassword ? 'border-red-300' : 'border-slate-200'
                       }`}
                     placeholder="أعد إدخال كلمة المرور"
                     required
@@ -171,7 +162,7 @@ export default function ResetPassword() {
               <button
                 type="submit"
                 disabled={loading}
-                className={`w-full bg-[#1a4fba] text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${loading ? 'bg-blue-400 cursor-not-allowed' : 'hover:bg-[#1640a0]'
+                className={`w-full bg-[#004ac6] text-white h-12 rounded-xl font-bold transition-colors flex items-center justify-center gap-2 ${loading ? 'bg-blue-400 cursor-not-allowed' : 'hover:bg-[#003da6]'
                   }`}
               >
                 {loading ? (
@@ -192,23 +183,23 @@ export default function ResetPassword() {
             <div className="mt-8 text-center">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300"></div>
+                  <div className="w-full border-t border-slate-200"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-4 bg-gray-50 text-gray-500">خيارات إضافية</span>
+                  <span className="px-4 bg-white text-slate-500">خيارات إضافية</span>
                 </div>
               </div>
 
               <div className="mt-6 space-y-4">
                 <Link
                   href="/auth/login"
-                  className="block text-center text-[#1a4fba] hover:text-blue-800 transition-colors"
+                  className="block text-center text-[#004ac6] hover:text-blue-800 transition-colors"
                 >
                   العودة إلى تسجيل الدخول
                 </Link>
                 <Link
                   href="/auth/register"
-                  className="block text-center text-gray-600 hover:text-gray-800 transition-colors"
+                  className="block text-center text-slate-500 hover:text-gray-800 transition-colors"
                 >
                   إنشاء حساب جديد
                 </Link>
@@ -216,9 +207,9 @@ export default function ResetPassword() {
             </div>
 
             {/* Password Requirements */}
-            <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-sm text-[#1640a0] font-medium mb-2">متطلبات كلمة المرور:</p>
-              <ul className="text-sm text-[#1a4fba] list-disc pr-4 space-y-1">
+            <div className="mt-8 p-4 bg-[#eff4ff] rounded-xl">
+              <p className="text-sm text-[#003da6] font-medium mb-2">متطلبات كلمة المرور:</p>
+              <ul className="text-sm text-[#004ac6] list-disc pr-4 space-y-1">
                 <li>يجب أن تكون على الأقل 6 أحرف</li>
                 <li>يجب أن لا تتجاوز 50 حرف</li>
                 <li>يجب أن تتطابق كلمتا المرور</li>

@@ -22,7 +22,7 @@ import { toast } from "react-hot-toast"
 
 import { productService, cartService, wishlistService, offerService } from "@/lib/api"
 import { announcementService } from "@/lib/api/services/announcementService"
-import { ProductCard } from "./ProductCard"
+import { StitchProductCard } from "@/components/stitch/StitchProductCard"
 import { useLanguage } from "@/components/language-provider"
 import { useAuth } from "@/contexts/AuthProvider"
 import { addToGuestCart } from "@/lib/guestCart"
@@ -269,6 +269,7 @@ export function OffersPage() {
      Wishlist
   ───────────────────────────────────────────────────────── */
 
+  const [offerFavs, setOfferFavs] = useState<Set<string>>(new Set())
   const toggleWishlist = async (productId: string) => {
     if (!isLoggedIn) {
       toast.error(
@@ -882,33 +883,22 @@ export function OffersPage() {
                 </div>
               ) : (
                 <div className="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-                    {filteredProducts.map(
-                      (product) => (
-                        <div
-                          key={product._id}
-                          className="relative"
-                        >
-                          <div className="absolute top-3 right-3 z-10">
-                            <span className="inline-flex items-center gap-1 bg-red-500 text-white text-[11px] font-black px-2.5 py-1 rounded-full shadow-sm">
-                              <Percent className="w-3 h-3" />
-                              {product.discountPercentage}%
-                            </span>
-                          </div>
-
-                          <ProductCard
-                            product={product}
-                            language={language}
-                            onAddToCart={
-                              handleAddToCart
-                            }
-                            onToggleWishlist={
-                              toggleWishlist
-                            }
-                          />
-                        </div>
-                      )
-                    )}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {filteredProducts.map((product) => (
+                      <StitchProductCard
+                        key={product._id}
+                        p={product}
+                        fav={offerFavs.has(product._id)}
+                        onFav={() => {
+                          setOfferFavs((prev) => {
+                            const n = new Set(prev)
+                            n.has(product._id) ? n.delete(product._id) : n.add(product._id)
+                            return n
+                          })
+                          toggleWishlist(product._id)
+                        }}
+                      />
+                    ))}
                   </div>
                 </div>
               )}
