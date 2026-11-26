@@ -9,7 +9,7 @@ import { cartService, notificationService, wishlistService } from "@/lib/api"
 import { getGuestCartCount } from "@/lib/guestCart"
 
 /** Header from the Stitch home screen (brand + EGYPT pill, icons, search row). Pixel values copied from the Stitch code. */
-export function StitchHeader({ variant = "home" }: { variant?: "home" | "cart" }) {
+export function StitchHeader({ variant = "home" }: { variant?: "home" | "cart" | "plain" }) {
   const { user } = useAuth()
   const authed = Boolean(user)
   const pathname = usePathname() || "/"
@@ -32,7 +32,7 @@ export function StitchHeader({ variant = "home" }: { variant?: "home" | "cart" }
   const circle = "relative w-10 h-10 flex items-center justify-center rounded-[9999px] text-[#0f172a] hover:bg-[#f1f5f9] transition-colors"
   return (
     <header dir="rtl" className="md:hidden fixed top-0 w-full z-50 bg-[#ffffff]/90 backdrop-blur-xl shadow-[0_1px_12px_rgba(15,23,42,0.06)] pt-safe border-b border-[#e2e8f0]/60 font-[Cairo,sans-serif]">
-      <div className="h-28 px-[1rem] flex flex-col justify-center gap-[0.25rem]">
+      <div className={`${variant === "plain" ? "h-16" : "h-28"} px-[1rem] flex flex-col justify-center gap-[0.25rem]`}>
         <div className="flex items-center justify-between gap-[0.5rem]">
           <div className="flex items-center gap-2.5">
             <Link className="flex items-center gap-2 select-none group" href="/">
@@ -58,13 +58,13 @@ export function StitchHeader({ variant = "home" }: { variant?: "home" | "cart" }
             </Link>
           </div>
         </div>
-        <div className="w-full">
+        {variant !== "plain" && <div className="w-full">
           <Link href="/products?focus=1" className="relative flex items-center w-full h-10 px-3.5 bg-[#f1f5f9] rounded-[0.875rem] text-[#475569] hover:bg-[#e2e8f0] transition-all cursor-pointer">
             <span className="material-symbols-outlined text-[#475569] text-[20px] ml-2 shrink-0">search</span>
             <span className="text-sm font-semibold text-[#475569]/80 truncate select-none">{variant === "cart" ? "ابحث عن حذائك المفضل..." : "ابحث بالموديل، الماركة (Nike, NB, Asics)..."}</span>
             <span className="material-symbols-outlined text-[#475569] text-[18px] mr-auto shrink-0 bg-white p-1 rounded-md shadow-xs">tune</span>
           </Link>
-        </div>
+        </div>}
       </div>
     </header>
   )

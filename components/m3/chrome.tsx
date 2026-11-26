@@ -7,9 +7,14 @@ import { usePathname, useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/AuthProvider"
 import { cartService, notificationService, wishlistService } from "@/lib/api"
 import { getGuestCartCount } from "@/lib/guestCart"
+import { StitchHeader, StitchNav } from "@/components/stitch/StitchChrome"
 
 // Pages that keep the classic navbar on mobile (own layout / flow)
-export const CLASSIC_PREFIXES = ["/admin", "/vendor", "/auth", "/checkout", "/guest-checkout", "/verifyEmail"]
+export const CLASSIC_PREFIXES = ["/admin", "/vendor"]
+// Focus flows: unified header, but no bottom tab bar (it would cover the sticky submit buttons)
+export const NO_BOTTOM_PREFIXES = ["/admin", "/vendor", "/auth", "/checkout", "/guest-checkout", "/verifyEmail"]
+// Screens that render their own header (with the search row) and tab bar inline
+export const SELF_CHROME = ["/", "/cart"]
 export const STITCH_PATHS = ["/", "/cart"]
 export const isStitchPath = (p: string) => STITCH_PATHS.includes(p) || /^\/products\/[^/]+$/.test(p)
 export const isClassicPath = (p: string) => CLASSIC_PREFIXES.some((x) => p.startsWith(x))
@@ -220,4 +225,17 @@ export function StitchBrandBar() {
       </div>
     </header>
   )
+}
+
+/** ONE mobile header for every page except admin/vendor (and "/" and "/cart", which render the same header with a search row inline). */
+export function UnifiedMobileHeader() {
+  const pathname = usePathname() || "/"
+  if (isClassicPath(pathname) || SELF_CHROME.includes(pathname)) return null
+  return <StitchHeader variant="plain" />
+}
+/** ONE bottom tab bar for every browsing page. Hidden on admin/vendor and on auth/checkout flows. */
+export function UnifiedMobileNav() {
+  const pathname = usePathname() || "/"
+  if (NO_BOTTOM_PREFIXES.some((x) => pathname.startsWith(x)) || SELF_CHROME.includes(pathname)) return null
+  return <StitchNav />
 }
