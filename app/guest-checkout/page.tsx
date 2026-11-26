@@ -1,5 +1,7 @@
 'use client';
 
+import { ManualPaymentCard, ReceiptUpload } from '@/components/stitch/ManualPayment';
+import { zoneFor } from "@/lib/delivery-times";
 import React, { useState, useEffect, useMemo, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -85,7 +87,7 @@ interface GuestCheckoutForm {
   guestEmail: string;
   guestPhone: string;
   deliveryMethod: 'home' | 'pickup';
-  paymentMethod: 'cash';
+  paymentMethod: 'cash' | 'instapay' | 'wallet';
   // structured address fields — match the registered user checkout
   governorate: string;
   city: string;
@@ -221,7 +223,7 @@ function GuestCheckoutInner() {
         guestEmail: form.guestEmail.toLowerCase().trim(),
         guestPhone: form.guestPhone.trim(),
         deliveryMethod: form.deliveryMethod,
-        paymentMethod: 'cash',
+        paymentMethod: form.paymentMethod,
         deliveryInfo: {
           address: form.deliveryMethod === 'home'
             ? `${form.addressLine.trim()}, ${form.city}, ${form.governorate}`
@@ -278,6 +280,12 @@ function GuestCheckoutInner() {
           <h1 className="text-2xl font-extrabold text-slate-900">تم تأكيد طلبك 🎉</h1>
           {orderNumber && (
             <p className="text-gray-600">رقم الطلب: <span className="font-mono font-bold">{orderNumber}</span></p>
+          )}
+          {form.paymentMethod !== 'cash' && orderNumber && (
+            <div className="space-y-3 text-start">
+              <ManualPaymentCard method={form.paymentMethod} amount={totalAmount} />
+              <ReceiptUpload orderNumber={orderNumber} phone={form.guestPhone.trim()} />
+            </div>
           )}
           <div className="bg-gray-50 rounded-xl p-4 space-y-2">
             <p className="text-sm text-gray-600">رمز التتبع الخاص بك:</p>
@@ -486,6 +494,9 @@ function GuestCheckoutInner() {
                       <option key={gov.id} value={gov.id}>{gov.nameAr}</option>
                     ))}
                   </select>
+                  {zoneFor(form.governorate) && (
+                    <p className="mt-1.5 text-xs font-bold text-[#004ac6]">التوصيل المتوقع خلال {zoneFor(form.governorate)!.hours} (تقديري من شركة الشحن)</p>
+                  )}
                 </div>
 
                 {/* City */}
@@ -590,6 +601,23 @@ function GuestCheckoutInner() {
             </div>
           )}
 
+          <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm space-y-2">
+            <p className="text-sm font-extrabold text-slate-900">طريقة الدفع</p>
+            <div className="grid grid-cols-3 gap-2">
+              {([['cash', 'عند الاستلام'], ['instapay', 'إنستا باي'], ['wallet', 'فودافون كاش']] as const).map(([v, label]) => (
+                <button
+                  key={v}
+                  type="button"
+                  onClick={() => setForm((f) => ({ ...f, paymentMethod: v }))}
+                  className={`h-12 rounded-xl border text-[13px] font-bold transition ${form.paymentMethod === v ? 'border-[#004ac6] bg-[#dae2fd]/40 text-[#004ac6] ring-1 ring-[#004ac6]' : 'border-slate-200 text-slate-700'}`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            {form.paymentMethod !== 'cash' && <ManualPaymentCard method={form.paymentMethod} amount={totalAmount} />}
+          </div>
+
           <Button
             type="submit"
             className="w-full h-14 rounded-2xl bg-[#004ac6] hover:bg-[#003da5] text-base font-extrabold shadow-md"
@@ -601,7 +629,7 @@ function GuestCheckoutInner() {
               `تأكيد الطلب${cartItems.length > 0 ? ` · ${totalAmount.toLocaleString()} ج.م` : ''}`
             )}
           </Button>
-          {cartItems.length > 0 && <p className="text-center text-xs text-gray-500">الدفع عند الاستلام · معاينة قبل الدفع</p>}
+          {cartItems.length > 0 && <p className="text-center text-xs text-gray-500">{form.paymentMethod === 'cash' ? 'الدفع عند الاستلام · معاينة قبل الدفع' : 'ارفع إيصال التحويل بعد تأكيد الطلب · معاينة قبل الدفع'}</p>}
         </form>
       </div>
     </div>

@@ -207,6 +207,16 @@ const nextConfig = {
           },
         ],
       },
+      // Public image/font files (logo, icons): 7 days at browser and CDN
+      {
+        source: "/:file(.+\\.(?:png|jpg|jpeg|webp|avif|svg|ico|woff2))",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=604800, stale-while-revalidate=86400",
+          },
+        ],
+      },
       {
         source: "/fonts/:path*",
         headers: [

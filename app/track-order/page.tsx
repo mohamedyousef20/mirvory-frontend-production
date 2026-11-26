@@ -1,5 +1,6 @@
 'use client';
 
+import { ManualPaymentCard, ReceiptUpload } from '@/components/stitch/ManualPayment';
 import { getProductImage } from "@/lib/productVariants"
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -33,6 +34,7 @@ interface OrderData {
   orderNumber?: string;
   deliveryStatus: string;
   paymentStatus: string;
+  paymentMethod?: string;
   total: number;
   deliveryMethod: string;
   items: Array<{ product?: { title?: string; images?: string[] }; quantity: number; price: number }>;
@@ -263,6 +265,18 @@ export default function TrackOrderPage() {
               <span className="text-gray-600">الإجمالي</span>
               <span className="text-xl font-bold text-primary">{order.total} ج.م</span>
             </div>
+
+            {(order.paymentMethod === 'instapay' || order.paymentMethod === 'wallet') && order.orderNumber && order.deliveryStatus !== 'cancelled' && (
+              <div className="space-y-3">
+                {order.paymentStatus !== 'paid' && order.paymentStatus !== 'under_review' && <ManualPaymentCard method={order.paymentMethod} amount={order.total} />}
+                <ReceiptUpload
+                  orderNumber={order.orderNumber}
+                  phone={listGuestOrders().find((g) => g.orderNumber === order.orderNumber)?.phone}
+                  status={order.paymentStatus}
+                  onUploaded={() => handleTrack(token || tokenFromUrl || undefined)}
+                />
+              </div>
+            )}
 
             <div className="text-xs text-gray-400 text-center">
               تاريخ الطلب: {new Date(order.createdAt).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' })}

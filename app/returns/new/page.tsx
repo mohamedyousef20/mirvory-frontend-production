@@ -548,9 +548,6 @@ export default function ReturnPageRequest() {
   return (
     <Suspense fallback={null}>
       <ReturnMobile />
-      <div className="hidden md:block">
-        <ReturnDesktop />
-      </div>
     </Suspense>
   )
 }

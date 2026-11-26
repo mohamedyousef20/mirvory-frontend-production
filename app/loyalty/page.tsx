@@ -34,7 +34,8 @@ interface Transaction {
   createdAt: string;
 }
 
-function LoyaltyDesktop() {
+// Old desktop layout, no longer rendered: the Stitch layout now serves every width.
+export function LoyaltyDesktop() {
   const { language } = useLanguage();
   const isArabic = language === "ar";
 
@@ -350,11 +351,6 @@ function LoyaltyDesktop() {
 
 export default function LoyaltyPage() {
   return (
-    <>
-      <LoyaltyMobile />
-      <div className="hidden md:block">
-        <LoyaltyDesktop />
-      </div>
-    </>
+    <LoyaltyMobile />
   );
 }

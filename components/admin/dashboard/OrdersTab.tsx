@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
+import { manualPaymentService } from "@/lib/api";
 import { openWhatsAppConfirmation, getOrderPhone } from "@/lib/whatsapp";
 import { ShipmentEditorDialog } from "@/components/admin/dashboard/ShipmentEditorDialog";
 import {
@@ -695,11 +696,41 @@ export function OrdersTab({
                                                 </SelectTrigger>
                                                 <SelectContent className="rounded-xl">
                                                     <SelectItem value="pending">{ar ? "قيد الانتظار" : "Pending"}</SelectItem>
+                                                    <SelectItem value="under_review">{ar ? "إيصال تحت المراجعة" : "Receipt under review"}</SelectItem>
                                                     <SelectItem value="paid">{ar ? "مدفوع" : "Paid"}</SelectItem>
                                                     <SelectItem value="failed">{ar ? "فشل" : "Failed"}</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                         </div>
+
+                                        {(order.paymentMethod === "instapay" || order.paymentMethod === "wallet") && (
+                                            <div className="flex items-center gap-2 text-xs">
+                                                <span className="w-24 shrink-0 text-slate-400">{ar ? "تحويل" : "Transfer"}</span>
+                                                <span className="font-semibold text-slate-700">
+                                                    {order.paymentMethod === "instapay" ? "InstaPay" : "Vodafone Cash"}
+                                                </span>
+                                                {order.paymentProof?.uploadedAt ? (
+                                                    <button
+                                                        type="button"
+                                                        onClick={async () => {
+                                                            try {
+                                                                const r = await manualPaymentService.getProofBlob(order._id)
+                                                                const url = URL.createObjectURL(r.data as Blob)
+                                                                window.open(url, "_blank", "noopener")
+                                                                setTimeout(() => URL.revokeObjectURL(url), 60000)
+                                                            } catch {
+                                                                toast.error(ar ? "تعذر فتح الإيصال" : "Could not open the receipt")
+                                                            }
+                                                        }}
+                                                        className="rounded-lg bg-blue-50 px-2.5 py-1 font-bold text-blue-700"
+                                                    >
+                                                        {ar ? "عرض الإيصال" : "View receipt"}
+                                                    </button>
+                                                ) : (
+                                                    <span className="text-amber-600">{ar ? "لم يُرفع إيصال بعد" : "No receipt yet"}</span>
+                                                )}
+                                            </div>
+                                        )}
 
                                         {/* Delivery status select */}
                                         <div className="flex items-center gap-2">

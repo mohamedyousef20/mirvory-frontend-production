@@ -1,5 +1,6 @@
 "use client"
 
+import { ManualPaymentCard, ReceiptUpload } from "@/components/stitch/ManualPayment"
 import { getProductImage } from "@/lib/productVariants"
 import { useParams } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -55,12 +56,15 @@ type DeliveryStatus =
 
 type PaymentStatus =
     | "pending"
+    | "under_review"
     | "paid"
     | "failed"
 
 type PaymentMethod =
     | "cash"
     | "card"
+    | "instapay"
+    | "wallet"
 
 type DeliveryMethod =
     | "home"
@@ -260,6 +264,12 @@ export default function OrderDetailsPage() {
                     color: "bg-yellow-100 text-yellow-800",
                 }
 
+            case "under_review":
+                return {
+                    text: "الإيصال تحت المراجعة",
+                    color: "bg-amber-100 text-amber-800",
+                }
+
             case "failed":
                 return {
                     text: "فشل الدفع",
@@ -283,6 +293,12 @@ export default function OrderDetailsPage() {
 
             case "card":
                 return "بطاقة ائتمان"
+
+            case "instapay":
+                return "إنستا باي (تحويل)"
+
+            case "wallet":
+                return "فودافون كاش (تحويل)"
 
             default:
                 return method
@@ -946,6 +962,13 @@ export default function OrderDetailsPage() {
                                     </Badge>
 
                                 </div>
+
+                                {(order.paymentMethod === "instapay" || order.paymentMethod === "wallet") && order.paymentStatus !== "paid" && order.deliveryStatus !== "cancelled" && (
+                                    <div className="space-y-3 pt-1">
+                                        {order.paymentStatus !== "under_review" && <ManualPaymentCard method={order.paymentMethod as "instapay" | "wallet"} amount={order.total} />}
+                                        <ReceiptUpload orderId={order._id} status={order.paymentStatus} hasProof={Boolean((order as any).paymentProof?.uploadedAt)} onUploaded={() => window.location.reload()} />
+                                    </div>
+                                )}
 
                                 {order.payoutProcessed && (
                                     <div className="flex justify-between items-center gap-2">

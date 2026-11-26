@@ -1,5 +1,7 @@
 "use client"
 
+import { ManualPaymentCard } from "@/components/stitch/ManualPayment"
+import { zoneFor } from "@/lib/delivery-times"
 import { track } from "@/lib/track"
 import { getProductImage } from "@/lib/productVariants"
 import React, { useState, useEffect, useCallback, useMemo, Suspense } from 'react'
@@ -141,7 +143,7 @@ function CheckoutInner() {
     const [fullName, setFullName] = useState('')
     const [phone, setPhone] = useState('')
     const [deliveryMethod, setDeliveryMethod] = useState<'home' | 'pickup'>('home')
-    const [paymentMethod, setPaymentMethod] = useState<'cash' | 'card'>('cash')
+    const [paymentMethod, setPaymentMethod] = useState<'cash' | 'instapay' | 'wallet'>('cash')
     const [address, setAddress] = useState({
         governorate: '',
         city: '',
@@ -559,6 +561,11 @@ function CheckoutInner() {
                                                         </option>
                                                     ))}
                                                 </select>
+                                                {zoneFor(address.governorate) && (
+                                                    <p className="mt-1.5 text-xs font-bold text-[#004ac6]">
+                                                        {isAr ? `التوصيل المتوقع خلال ${zoneFor(address.governorate)!.hours} (تقديري من شركة الشحن)` : `Estimated delivery: ${zoneFor(address.governorate)!.hoursEn} (by the shipping company)`}
+                                                    </p>
+                                                )}
                                             </div>
 
                                             {/* City */}
@@ -647,7 +654,7 @@ function CheckoutInner() {
                                     </h3>
                                     <RadioGroup
                                         value={paymentMethod}
-                                        onValueChange={(v: string) => setPaymentMethod(v as 'cash' | 'card')}
+                                        onValueChange={(v: string) => setPaymentMethod(v as 'cash' | 'instapay' | 'wallet')}
                                         className="grid grid-cols-1 sm:grid-cols-2 gap-3"
                                     >
                                         {/* <Label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-all ${paymentMethod === 'card' ? 'border-blue-600 bg-blue-50/50 ring-1 ring-blue-600' : 'border-gray-200 hover:border-blue-300'}`}>
@@ -665,7 +672,22 @@ function CheckoutInner() {
                                             </div>
                                         </Label>
 
+                                        <Label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-all ${paymentMethod === 'instapay' ? 'border-[#1a4fba] bg-blue-50/50 ring-1 ring-[#1a4fba]' : 'border-slate-200 hover:border-[#1a4fba]'}`}>
+                                            <RadioGroupItem value="instapay" id="instapay" className="sr-only" />
+                                            <div>
+                                                <p className="font-bold text-sm text-slate-800">{isAr ? "إنستا باي" : "InstaPay"}</p>
+                                                <p className="text-xs text-slate-500">{isAr ? "تحويل ورفع الإيصال" : "Transfer and upload the receipt"}</p>
+                                            </div>
+                                        </Label>
+                                        <Label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-all ${paymentMethod === 'wallet' ? 'border-[#1a4fba] bg-blue-50/50 ring-1 ring-[#1a4fba]' : 'border-slate-200 hover:border-[#1a4fba]'}`}>
+                                            <RadioGroupItem value="wallet" id="wallet" className="sr-only" />
+                                            <div>
+                                                <p className="font-bold text-sm text-slate-800">{isAr ? "فودافون كاش" : "Vodafone Cash"}</p>
+                                                <p className="text-xs text-slate-500">{isAr ? "تحويل ورفع الإيصال" : "Transfer and upload the receipt"}</p>
+                                            </div>
+                                        </Label>
                                     </RadioGroup>
+                                    {paymentMethod !== 'cash' && <ManualPaymentCard method={paymentMethod} />}
                                 </div>
                             </div>
 

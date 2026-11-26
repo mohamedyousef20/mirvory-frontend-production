@@ -2,6 +2,7 @@
 import { normalizeImageUrl } from "@/src/lib/normalizeImageUrl"
 
 import Link from "next/link"
+import { DeliveryEstimate } from "@/components/stitch/DeliveryEstimate"
 import { useEffect, useState } from "react"
 import { productService } from "@/lib/api"
 
@@ -269,6 +270,8 @@ export function CartMobileInner(p: Props) {
             </div>
           )}
         </div>}
+
+        <DeliveryEstimate className="mb-[1rem] shadow-sm" />
 
         <div className="bg-[#ffffff] rounded-2xl p-[1rem] shadow-sm mb-[1rem]">
           <h2 className="[font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[18px] leading-[26px] tracking-[-0.01em] font-[600] text-[#191c1e] mb-[0.5rem]">ملخص الطلب</h2>

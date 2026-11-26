@@ -48,7 +48,7 @@ const faqCategories = [
             {
                 qAr: "كم يستغرق شحن الطلب؟",
                 qEn: "How long does shipping take?",
-                aAr: "تختلف مدة الشحن حسب موقعك وموقع التاجر، وعادةً ما تستغرق بين 2 إلى 5 أيام عمل داخل المحافظات الرئيسية.",
+                aAr: "تختلف مدة الشحن حسب موقعك وموقع التاجر، وهي 24 – 48 ساعة للقاهرة والجيزة، 48 – 72 ساعة للدلتا والقناة، 72 – 96 ساعة للصعيد، وحتى 120 ساعة للمناطق البعيدة (تقديرية من شركة الشحن).",
                 aEn: "Shipping times vary based on your location and the seller's location, typically taking 2 to 5 business days within major governorates."
             }
         ]

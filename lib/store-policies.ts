@@ -4,8 +4,8 @@
 export const STORE_POLICIES = {
   inspectionMinutes: 15,
   returnDays: 14,
-  deliveryWindow: "24 – 48 ساعة",
-  deliveryWindowEn: "24 – 48 hours",
+  deliveryWindow: "24 – 120 ساعة حسب محافظتك",
+  deliveryWindowEn: "24 – 120 hours depending on your governorate",
 } as const
 
 export interface TrustItem {

@@ -814,7 +814,7 @@ export const guestCartService = {
     guestEmail: string;
     guestPhone: string;
     deliveryMethod: 'home' | 'pickup';
-    paymentMethod: 'cash';
+    paymentMethod: 'cash' | 'instapay' | 'wallet';
     deliveryInfo: { address?: string; pickupPoint?: string };
     items: Array<{
       productId: string;
@@ -957,3 +957,25 @@ export const apiServices = {
 };
 
 export default apiServices;
+// Manual payment (InstaPay / Vodafone Cash transfer + receipt upload, admin confirms)
+export interface PaymentInfo {
+  instapay: { link: string; address: string }
+  wallet: { provider: string; number: string }
+}
+export const manualPaymentService = {
+  getInfo: () => api.get<{ data: PaymentInfo }>("/api/guest-orders/payment-info"),
+  // Admin only: the receipt is streamed by the server and never has a public URL.
+  getProofBlob: (orderId: string) => api.get(`/api/orders/${orderId}/payment-proof`, { responseType: "blob" }),
+  uploadProof: (orderId: string, file: File) => {
+    const fd = new FormData()
+    fd.append("image", file)
+    return api.post(`/api/orders/${orderId}/payment-proof`, fd, { headers: { "Content-Type": "multipart/form-data" }, timeout: 60000 })
+  },
+  uploadGuestProof: (orderNumber: string, phone: string, file: File) => {
+    const fd = new FormData()
+    fd.append("image", file)
+    fd.append("orderNumber", orderNumber)
+    fd.append("phone", phone)
+    return api.post("/api/guest-orders/payment-proof", fd, { headers: { "Content-Type": "multipart/form-data" }, timeout: 60000 })
+  },
+}
