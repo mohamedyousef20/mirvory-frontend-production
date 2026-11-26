@@ -1,5 +1,6 @@
 "use client"
 
+import { PrepaidNote } from "@/components/prepaid-note"
 import Link from "next/link"
 import { useMemo, useState } from "react"
 
@@ -157,12 +158,13 @@ export function ProductMobile(p: ProductMobileProps) {
                   <span className="material-symbols-outlined text-m3-primary text-[20px]">payments</span>
                 </div>
                 <p className="font-m3-body-sm text-m3-body-sm font-medium text-m3-on-surface leading-snug">
-                  التقسيط عبر Valu وSympl <span className="font-bold">قريبًا</span>
+                  التقسيط عبر Valu أو Sympl <span className="font-bold">قريبًا</span>
                 </p>
               </div>
               <span className="material-symbols-outlined text-[18px] text-m3-on-surface-variant">arrow_back_ios</span>
             </div>
           )}
+          <PrepaidNote className="mt-3" />
         </section>
 
         {colors.length > 0 && (

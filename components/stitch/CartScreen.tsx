@@ -1,4 +1,5 @@
 "use client"
+import { PrepaidNote } from "@/components/prepaid-note"
 import { normalizeImageUrl } from "@/src/lib/normalizeImageUrl"
 
 import Link from "next/link"
@@ -293,6 +294,7 @@ export function CartMobileInner(p: Props) {
               <span className="font-[Cairo,sans-serif] text-[14px] leading-[22px] tracking-[0em] font-[400] text-[#434655]">مصاريف الشحن</span>
               <span className="[font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[14px] leading-[20px] tracking-[0.02em] font-[600] text-[#191c1e]">{p.shipping === 0 ? "مجاني" : `${fmt(p.shipping)} ج.م`}</span>
             </div>
+            <PrepaidNote className="my-1" />
             <div className="w-full h-px bg-[#eceef0] my-[0.25rem]" />
             <div className="flex items-baseline justify-between pt-1">
               <span className="[font-family:var(--font-space-grotesk),Space_Grotesk,var(--font-cairo),Cairo,sans-serif] text-[22px] leading-[30px] tracking-[-0.02em] font-[700] text-[#191c1e] block font-bold">الإجمالي النهائي</span>

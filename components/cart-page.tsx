@@ -1,5 +1,6 @@
 "use client"
 
+import { PrepaidNote } from "@/components/prepaid-note"
 import { useState, useEffect, useCallback, useRef, useMemo } from "react"
 import Link from "next/link"
 import Image from "next/image"
@@ -879,6 +880,8 @@ function AuthenticatedCartPage() {
                         )}
                       </span>
                     </div>
+
+                    <PrepaidNote className="my-1" />
 
                     <Separator className="bg-slate-100/80 my-1" />
 

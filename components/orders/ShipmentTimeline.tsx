@@ -3,6 +3,7 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { Shipment } from "./shipment-tracker"
 import { STAGES, cleanEvents, groupByDay, reachedStage, isReturned } from "@/lib/shipment-timeline"
+import { normalizeEgyptianPhone } from "@/lib/whatsapp"
 import { buildSupportWhatsAppUrl } from "@/lib/support-contact"
 
 const fmtTime = (d?: string) => (d ? new Date(d).toLocaleTimeString("ar-EG", { hour: "2-digit", minute: "2-digit" }) : "")
@@ -18,6 +19,7 @@ export function ShipmentTimeline({ shipment, orderNumber, deliveryStatus, create
   const headline = returned ? (events.some((e) => e.kind === "return_done") ? "تم استلام المرتجع" : "الشحنة راجعة إلى المرسل") : STAGES[reached].label
   const shown = all ? events : events.slice(0, 6)
   const groups = groupByDay(shown)
+  const waNumber = normalizeEgyptianPhone(shipment?.courierAgent?.phone || "")
   const copy = async () => { try { await navigator.clipboard.writeText(shipment?.waybillNumber || ""); toast.success("تم نسخ رقم الشحنة") } catch { toast.error("تعذر النسخ") } }
 
   return (
@@ -38,6 +40,28 @@ export function ShipmentTimeline({ shipment, orderNumber, deliveryStatus, create
           </div>
         )}
       </div>
+
+      {(shipment?.courierAgent?.name || shipment?.courierAgent?.phone) && deliveryStatus !== "delivered" && deliveryStatus !== "cancelled" && (
+        <div className="rounded-[1.25rem] border border-slate-100 bg-white p-4 shadow-sm">
+          <p className="text-xs text-slate-500">المندوب اللي هيوصّل طلبك</p>
+          <p className="mt-0.5 text-base font-extrabold text-slate-900">{shipment?.courierAgent?.name || "المندوب"}</p>
+          {shipment?.courierAgent?.phone && (
+            <>
+              <p dir="ltr" className="mt-1 text-right text-lg font-extrabold tracking-wide text-[#004ac6]">{shipment.courierAgent.phone}</p>
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                <a href={`tel:${shipment.courierAgent.phone}`} className="flex h-11 items-center justify-center gap-1.5 rounded-xl border border-slate-200 text-sm font-bold text-slate-800">
+                  <span className={`${ic} text-[18px]`}>call</span> اتصال
+                </a>
+                {waNumber && (
+                  <a href={`https://wa.me/${waNumber}`} target="_blank" rel="noopener noreferrer" className="flex h-11 items-center justify-center gap-1.5 rounded-xl bg-[#25D366] text-sm font-bold text-white">
+                    <span className={`${ic} text-[18px]`}>chat</span> واتساب
+                  </a>
+                )}
+              </div>
+            </>
+          )}
+        </div>
+      )}
 
       {!returned && (
         <div className="rounded-[1.25rem] bg-white border border-slate-100 p-4 shadow-[0_2px_10px_rgba(15,23,42,0.05)]">

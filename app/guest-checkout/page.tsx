@@ -1,5 +1,6 @@
 'use client';
 
+import { PREPAID_DISCOUNT, prepaidDiscountFor } from "@/lib/prepaid"
 import { ManualPaymentCard, ReceiptUpload } from '@/components/stitch/ManualPayment';
 import { zoneFor } from "@/lib/delivery-times";
 import React, { useState, useEffect, useMemo, useCallback, Suspense } from 'react';
@@ -187,7 +188,8 @@ function GuestCheckoutInner() {
     return fee;
   }, [subtotal, form.deliveryMethod, shippingSettings]);
   
-  const totalAmount = subtotal + shippingFee;
+  const prepaidDiscount = prepaidDiscountFor(form.paymentMethod, subtotal);
+  const totalAmount = subtotal + shippingFee - prepaidDiscount;
 
   const selectedPickupPoint = pickupPoints.find(
     (p) => (p._id || p.id) === form.pickupPoint
@@ -376,6 +378,12 @@ function GuestCheckoutInner() {
                     <span>المجموع الفرعي</span>
                     <span>{subtotal.toLocaleString()} ج.م</span>
                   </div>
+                  {prepaidDiscount > 0 && (
+                    <div className="flex justify-between text-sm font-medium text-emerald-700">
+                      <span>خصم الدفع المسبق</span>
+                      <span>-{prepaidDiscount.toLocaleString()} ج.م</span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-sm text-gray-600">
                     <span>رسوم الشحن</span>
                     <span className={shippingFee === 0 ? "text-green-600 font-medium" : ""}>
@@ -612,9 +620,12 @@ function GuestCheckoutInner() {
                   className={`h-12 rounded-xl border text-[13px] font-bold transition ${form.paymentMethod === v ? 'border-[#004ac6] bg-[#dae2fd]/40 text-[#004ac6] ring-1 ring-[#004ac6]' : 'border-slate-200 text-slate-700'}`}
                 >
                   {label}
+                  {v !== 'cash' && <span className="block text-[10px] font-bold text-emerald-700">وفّر {PREPAID_DISCOUNT} ج.م</span>}
                 </button>
               ))}
             </div>
+            {form.paymentMethod === 'cash' && <p className="text-[12px] font-bold text-emerald-700">ادفع مقدمًا بإنستا باي أو فودافون كاش واوفّر {PREPAID_DISCOUNT} ج.م.</p>}
+            {prepaidDiscount > 0 && <p className="text-[12px] font-bold text-emerald-700">تم خصم {PREPAID_DISCOUNT} ج.م لأنك هتدفع مقدمًا.</p>}
             {form.paymentMethod !== 'cash' && <ManualPaymentCard method={form.paymentMethod} amount={totalAmount} />}
           </div>
 

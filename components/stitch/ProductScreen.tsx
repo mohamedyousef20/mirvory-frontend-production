@@ -1,4 +1,5 @@
 "use client"
+import { PrepaidNote } from "@/components/prepaid-note"
 import { normalizeImageUrl } from "@/src/lib/normalizeImageUrl"
 
 import Link from "next/link"
@@ -181,12 +182,13 @@ export function ProductMobileInner(p: ProductMobileProps) {
                   <span className="material-symbols-outlined text-[#004ac6] text-[20px]">payments</span>
                 </div>
                 <p className="[font-family:var(--font-jakarta),Plus_Jakarta_Sans,var(--font-cairo),Cairo,sans-serif] text-[12px] leading-[18px] tracking-[0.01em] font-[400] font-medium text-[#191c1e] leading-snug">
-                  التقسيط عبر Valu وSympl <span className="font-bold">قريبًا</span>
+                  التقسيط عبر Valu أو Sympl <span className="font-bold">قريبًا</span>
                 </p>
               </div>
               <span className="material-symbols-outlined text-[18px] text-[#434655]">arrow_back_ios</span>
             </div>
           )}
+          <PrepaidNote className="mt-3" />
         </section>
 
         {colors.length > 0 && (
