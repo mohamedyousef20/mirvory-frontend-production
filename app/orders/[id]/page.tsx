@@ -43,7 +43,8 @@ import {
     openWhatsAppConfirmation,
     getOrderPhone,
 } from "@/lib/whatsapp"
-import { ShipmentTracker, hasShipmentData, type Shipment } from "@/components/orders/shipment-tracker"
+import { hasShipmentData, type Shipment } from "@/components/orders/shipment-tracker"
+import { ShipmentTimeline } from "@/components/orders/ShipmentTimeline"
 import { WhatsAppHelpButton } from "@/components/whatsapp-help-button"
 
 type DeliveryStatus =
@@ -499,7 +500,7 @@ export default function OrderDetailsPage() {
                 <div className="lg:col-span-2 space-y-4 sm:space-y-6">
 
                     {hasShipmentData(order.shipment) && (
-                        <ShipmentTracker shipment={order.shipment as Shipment} orderNumber={order.orderNumber} />
+                        <ShipmentTimeline shipment={order.shipment as Shipment} orderNumber={order.orderNumber} deliveryStatus={order.deliveryStatus} />
                     )}
 
                     {/* Order Summary Card */}
