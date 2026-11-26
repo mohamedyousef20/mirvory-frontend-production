@@ -151,27 +151,18 @@ export default function SellerSignup() {
 
   return (
     <>
-      <div className="min-h-screen flex flex-col md:flex-row-reverse bg-gray-50" dir="rtl">
-        {/* Brand Section */}
-        <div className="bg-[#1640a0] text-white md:w-1/2 p-8 flex flex-col justify-center items-center">
-          <div className="max-w-md mx-auto">
-            <h1 className="text-4xl font-bold mb-6">ميرفوري للبائعين</h1>
-            <p className="text-xl mb-8">انضم إلينا كبائع وابدأ بيع منتجاتك على منصتنا</p>
-            <div className="bg-white/10 p-6 rounded-lg">
-              <p className="mb-4 text-lg">لديك حساب بائع بالفعل؟</p>
-              <Link href="/auth/login" className="block text-center bg-white text-[#1640a0] py-3 px-6 rounded-lg font-bold transition-all hover:bg-blue-50">
-                تسجيل الدخول
-              </Link>
-            </div>
-          </div>
-        </div>
+      <div className="min-h-screen bg-[#f7f9fb] font-[Cairo,sans-serif]" dir="rtl">
 
         {/* Signup Form */}
-        <div className="md:w-1/2 p-8 flex justify-center items-center">
-          <div className="w-full max-w-md py-8">
-            <div className="text-center mb-10">
-              <h2 className="text-3xl font-bold text-gray-800 mb-2">تسجيل بائع جديد</h2>
-              <p className="text-gray-600">أنشئ حساب بائع وابدأ ببيع منتجاتك</p>
+        <div className="mx-auto w-full max-w-md px-4 pt-12 pb-16">
+          <Link href="/" className="mb-6 flex select-none items-center justify-center gap-2">
+            <span className="font-extrabold text-2xl tracking-wider text-slate-950 font-['Space_Grotesk'] uppercase">MIRVORY</span>
+            <span className="rounded-[9999px] bg-slate-900 px-2 py-0.5 text-[10px] font-bold tracking-widest text-white">EGYPT</span>
+          </Link>
+          <div className="w-full rounded-[1.5rem] border border-slate-100 bg-white p-5 shadow-sm md:p-7 py-8">
+            <div className="text-center mb-7">
+              <h2 className="text-2xl font-extrabold text-slate-900 mb-1">تسجيل بائع جديد</h2>
+              <p className="text-slate-500">أنشئ حساب بائع وابدأ ببيع منتجاتك</p>
             </div>
 
             {error && (
@@ -196,7 +187,7 @@ export default function SellerSignup() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   <div>
-                    <label htmlFor="firstName" className="block text-gray-700 mb-2">الاسم الأول</label>
+                    <label htmlFor="firstName" className="block text-slate-700 text-[13px] font-bold mb-1.5">الاسم الأول</label>
                     <div className="relative">
                       <input
                         id="firstName"
@@ -204,7 +195,7 @@ export default function SellerSignup() {
                         type="text"
                         value={formData.firstName}
                         onChange={handleChange}
-                        className="w-full pr-4 pl-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                        className="w-full pr-4 pl-10 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                         placeholder="الاسم الأول"
                         required
                       />
@@ -212,7 +203,7 @@ export default function SellerSignup() {
                     </div>
                   </div>
                   <div>
-                    <label htmlFor="lastName" className="block text-gray-700 mb-2">الاسم الأخير</label>
+                    <label htmlFor="lastName" className="block text-slate-700 text-[13px] font-bold mb-1.5">الاسم الأخير</label>
                     <div className="relative">
                       <input
                         id="lastName"
@@ -220,7 +211,7 @@ export default function SellerSignup() {
                         type="text"
                         value={formData.lastName}
                         onChange={handleChange}
-                        className="w-full pr-4 pl-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                        className="w-full pr-4 pl-10 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                         placeholder="الاسم الأخير"
                         required
                       />
@@ -230,7 +221,7 @@ export default function SellerSignup() {
                 </div>
 
                 <div className="mb-6">
-                  <label htmlFor="email" className="block text-gray-700 mb-2">البريد الإلكتروني</label>
+                  <label htmlFor="email" className="block text-slate-700 text-[13px] font-bold mb-1.5">البريد الإلكتروني</label>
                   <div className="relative">
                     <input
                       id="email"
@@ -238,7 +229,7 @@ export default function SellerSignup() {
                       type="email"
                       value={formData.email}
                       onChange={handleChange}
-                      className="w-full pr-4 pl-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                      className="w-full pr-4 pl-10 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                       placeholder="أدخل بريدك الإلكتروني"
                       required
                     />
@@ -247,7 +238,7 @@ export default function SellerSignup() {
                 </div>
 
                 <div className="mb-6">
-                  <label htmlFor="phone" className="block text-gray-700 mb-2">رقم الهاتف الشخصي</label>
+                  <label htmlFor="phone" className="block text-slate-700 text-[13px] font-bold mb-1.5">رقم الهاتف الشخصي</label>
                   <div className="relative">
                     <input
                       id="phone"
@@ -255,17 +246,17 @@ export default function SellerSignup() {
                       type="tel"
                       value={formData.phone}
                       onChange={handleChange}
-                      className="w-full pr-4 pl-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                      className="w-full pr-4 pl-10 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                       placeholder="01012345678"
                       required
                     />
                     <Phone className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
                   </div>
-                  <p className="mt-1 text-xs text-gray-500">مثال: 01012345678 (رقم هاتف مصري)</p>
+                  <p className="mt-1 text-xs text-slate-500">مثال: 01012345678 (رقم هاتف مصري)</p>
                 </div>
 
                 <div className="mb-6">
-                  <label htmlFor="password" className="block text-gray-700 mb-2">كلمة المرور</label>
+                  <label htmlFor="password" className="block text-slate-700 text-[13px] font-bold mb-1.5">كلمة المرور</label>
                   <div className="relative">
                     <input
                       id="password"
@@ -273,7 +264,7 @@ export default function SellerSignup() {
                       type={showPassword ? "text" : "password"}
                       value={formData.password}
                       onChange={handleChange}
-                      className="w-full pr-4 pl-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                      className="w-full pr-4 pl-10 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                       placeholder="أدخل كلمة المرور"
                       required
                       minLength={8}
@@ -290,11 +281,11 @@ export default function SellerSignup() {
                       )}
                     </button>
                   </div>
-                  <p className="mt-1 text-xs text-gray-500">يجب أن تحتوي على 8 أحرف على الأقل</p>
+                  <p className="mt-1 text-xs text-slate-500">يجب أن تحتوي على 8 أحرف على الأقل</p>
                 </div>
 
                 <div className="mb-6">
-                  <label htmlFor="confirmPassword" className="block text-gray-700 mb-2">تأكيد كلمة المرور</label>
+                  <label htmlFor="confirmPassword" className="block text-slate-700 text-[13px] font-bold mb-1.5">تأكيد كلمة المرور</label>
                   <div className="relative">
                     <input
                       id="confirmPassword"
@@ -302,7 +293,7 @@ export default function SellerSignup() {
                       type={showConfirmPassword ? "text" : "password"}
                       value={formData.confirmPassword}
                       onChange={handleChange}
-                      className="w-full pr-4 pl-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                      className="w-full pr-4 pl-10 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                       placeholder="أعد إدخال كلمة المرور"
                       required
                     />
@@ -326,7 +317,7 @@ export default function SellerSignup() {
                 <h3 className="text-lg font-bold text-gray-800 mb-4 pb-2 border-b border-gray-200">معلومات المتجر</h3>
 
                 <div className="mb-6">
-                  <label htmlFor="vendorProfile.storeName" className="block text-gray-700 mb-2">اسم المتجر</label>
+                  <label htmlFor="vendorProfile.storeName" className="block text-slate-700 text-[13px] font-bold mb-1.5">اسم المتجر</label>
                   <div className="relative">
                     <input
                       id="vendorProfile.storeName"
@@ -334,7 +325,7 @@ export default function SellerSignup() {
                       type="text"
                       value={formData.vendorProfile.storeName}
                       onChange={handleChange}
-                      className="w-full pr-4 pl-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                      className="w-full pr-4 pl-10 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                       placeholder="اسم المتجر"
                       required
                     />
@@ -344,7 +335,7 @@ export default function SellerSignup() {
 
 
                 <div className="mb-6">
-                  <label htmlFor="vendorProfile.phone" className="block text-gray-700 mb-2">رقم تواصل المتجر</label>
+                  <label htmlFor="vendorProfile.phone" className="block text-slate-700 text-[13px] font-bold mb-1.5">رقم تواصل المتجر</label>
                   <div className="relative">
                     <input
                       id="vendorProfile.phone"
@@ -352,7 +343,7 @@ export default function SellerSignup() {
                       type="tel"
                       value={formData.vendorProfile.phone}
                       onChange={handleChange}
-                      className="w-full pr-4 pl-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                      className="w-full pr-4 pl-10 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                       placeholder="01012345678"
                       required
                     />
@@ -362,7 +353,7 @@ export default function SellerSignup() {
 
                 {/* Governorate Dropdown */}
                 <div className="mb-6">
-                  <label htmlFor="address.governorate" className="block text-gray-700 mb-2">
+                  <label htmlFor="address.governorate" className="block text-slate-700 text-[13px] font-bold mb-1.5">
                     المحافظة
                   </label>
 
@@ -373,7 +364,7 @@ export default function SellerSignup() {
                       value={formData.address.governorate}
                       onChange={handleChange}
                       required
-                      className="w-full pr-4 pl-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-white"
+                      className="w-full pr-4 pl-10 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-white"
                     >
                       <option value="">اختر المحافظة</option>
                       {GREATER_CAIRO_AREA.map((gov: any) => (
@@ -389,7 +380,7 @@ export default function SellerSignup() {
 
                 {/* City Dropdown */}
                 <div className="mb-6">
-                  <label htmlFor="address.city" className="block text-gray-700 mb-2">
+                  <label htmlFor="address.city" className="block text-slate-700 text-[13px] font-bold mb-1.5">
                     المنطقة / المدينة
                   </label>
 
@@ -401,7 +392,7 @@ export default function SellerSignup() {
                       onChange={handleChange}
                       required
                       disabled={!formData.address.governorate}
-                      className={`w-full pr-4 pl-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-white ${!formData.address.governorate ? 'bg-gray-100 cursor-not-allowed' : ''
+                      className={`w-full pr-4 pl-10 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-white ${!formData.address.governorate ? 'bg-gray-100 cursor-not-allowed' : ''
                         }`}
                     >
                       <option value="">
@@ -419,7 +410,7 @@ export default function SellerSignup() {
                 </div>
                 {/* Detailed Address */}
                 <div className="mb-6">
-                  <label htmlFor="address.addressLine" className="block text-gray-700 mb-2">
+                  <label htmlFor="address.addressLine" className="block text-slate-700 text-[13px] font-bold mb-1.5">
                     العنوان بالتفصيل
                   </label>
 
@@ -430,7 +421,7 @@ export default function SellerSignup() {
                       type="text"
                       value={formData.address.addressLine}
                       onChange={handleChange}
-                      className="w-full pr-4 pl-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                      className="w-full pr-4 pl-10 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                       placeholder="مثال: شارع التحرير، عمارة 15، الدور 3"
                       required
                     />
@@ -440,14 +431,14 @@ export default function SellerSignup() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   <div>
-                    <label htmlFor="vendorProfile.payoutMethod" className="block text-gray-700 mb-2">طريقة استلام الأرباح</label>
+                    <label htmlFor="vendorProfile.payoutMethod" className="block text-slate-700 text-[13px] font-bold mb-1.5">طريقة استلام الأرباح</label>
                     <div className="relative">
                       <select
                         id="vendorProfile.payoutMethod"
                         name="vendorProfile.payoutMethod"
                         value={formData.vendorProfile.payoutMethod}
                         onChange={handleChange}
-                        className="w-full pr-4 pl-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent appearance-none bg-white"
+                        className="w-full pr-4 pl-10 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent appearance-none bg-white"
                         required
                       >
                         <option value="instapay">InstaPay</option>
@@ -459,7 +450,7 @@ export default function SellerSignup() {
                   </div>
 
                   <div>
-                    <label htmlFor="vendorProfile.payoutAccount" className="block text-gray-700 mb-2">حساب الاستلام</label>
+                    <label htmlFor="vendorProfile.payoutAccount" className="block text-slate-700 text-[13px] font-bold mb-1.5">حساب الاستلام</label>
                     <div className="relative">
                       <input
                         id="vendorProfile.payoutAccount"
@@ -467,7 +458,7 @@ export default function SellerSignup() {
                         type="text"
                         value={formData.vendorProfile.payoutAccount}
                         onChange={handleChange}
-                        className="w-full pr-4 pl-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                        className="w-full pr-4 pl-10 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                         placeholder="رقم الحساب"
                         required
                       />
@@ -485,11 +476,11 @@ export default function SellerSignup() {
                     type="checkbox"
                     checked={formData.acceptTerms}
                     onChange={handleChange}
-                    className="h-4 w-4 text-[#1a4fba] focus:ring-blue-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-[#004ac6] focus:ring-blue-500 border-slate-200 rounded"
                     required
                   />
-                  <label htmlFor="acceptTerms" className="mr-2 block text-sm text-gray-700">
-                    أوافق على <Link href="/seller-terms" className="text-[#1a4fba] hover:text-blue-800">الشروط والأحكام</Link> و <Link href="/seller/privacy" className="text-[#1a4fba] hover:text-blue-800">سياسة الخصوصية</Link>
+                  <label htmlFor="acceptTerms" className="mr-2 block text-sm text-slate-700">
+                    أوافق على <Link href="/seller-terms" className="text-[#004ac6] hover:text-blue-800">الشروط والأحكام</Link> و <Link href="/seller/privacy" className="text-[#004ac6] hover:text-blue-800">سياسة الخصوصية</Link>
                   </label>
                 </div>
               </div>
@@ -497,7 +488,7 @@ export default function SellerSignup() {
               <button
                 type="submit"
                 disabled={loading}
-                className={`w-full bg-[#1a4fba] text-white py-3 rounded-lg font-medium transition-colors ${loading ? 'bg-blue-400 cursor-not-allowed' : 'hover:bg-[#1640a0]'
+                className={`w-full bg-[#004ac6] text-white h-12 rounded-xl font-bold transition-colors ${loading ? 'bg-blue-400 cursor-not-allowed' : 'hover:bg-[#003da6]'
                   }`}
               >
                 {loading ? 'جاري إنشاء الحساب...' : 'إنشاء حساب بائع'}
@@ -507,10 +498,10 @@ export default function SellerSignup() {
             <div className="mt-8">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300"></div>
+                  <div className="w-full border-t border-slate-200"></div>
                 </div>
                 {/* <div className="relative flex justify-center text-sm">
-                  <span className="px-4 bg-gray-50 text-gray-500">أو التسجيل باستخدام</span>
+                  <span className="px-4 bg-white text-slate-500">أو التسجيل باستخدام</span>
                 </div> */}
               </div>
 {/* 
@@ -520,9 +511,9 @@ export default function SellerSignup() {
                   onClick={handleGoogleSignIn}
                   className="
       w-full flex items-center justify-center gap-3
-      rounded-xl border border-gray-300
+      rounded-xl border border-slate-200
       bg-white px-5 py-3
-      text-sm font-medium text-gray-700
+      text-sm font-medium text-slate-700
       shadow-sm
       transition-all duration-200
       hover:bg-gray-50 hover:shadow-md

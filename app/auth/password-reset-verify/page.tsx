@@ -137,14 +137,14 @@ export default function PasswordResetVerify() {
   // Check if email is available
   if (!emailParam) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50" dir="rtl">
-        <div className="max-w-md w-full p-8 bg-white rounded-lg shadow-lg text-center">
+      <div className="min-h-screen flex items-center justify-center bg-[#f7f9fb] px-4 font-[Cairo,sans-serif]" dir="rtl">
+        <div className="max-w-md w-full p-8 bg-white rounded-[1.5rem] shadow-sm border border-slate-100 text-center">
           <Shield className="h-12 w-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">خطأ في البيانات</h2>
-          <p className="text-gray-600 mb-6">لم يتم العثور على بريد إلكتروني للتحقق منه.</p>
+          <h2 className="text-2xl font-extrabold text-slate-900 mb-2">خطأ في البيانات</h2>
+          <p className="text-slate-500 mb-6">لم يتم العثور على بريد إلكتروني للتحقق منه.</p>
           <Link
             href="/auth/forgot-password"
-            className="inline-block bg-[#1a4fba] text-white py-3 px-6 rounded-lg font-medium hover:bg-[#1640a0] transition-colors"
+            className="inline-block bg-[#004ac6] text-white h-12 px-6 rounded-xl font-bold hover:bg-[#003da6] transition-colors"
           >
             العودة لإدخال البريد الإلكتروني
           </Link>
@@ -155,51 +155,42 @@ export default function PasswordResetVerify() {
 
   return (
     <>
-      <div className="min-h-screen flex flex-col md:flex-row-reverse bg-gray-50" dir="rtl">
-        {/* Brand Section - Same as other pages */}
-        <div className="bg-[#1640a0] text-white md:w-1/2 p-8 flex flex-col justify-center items-center">
-          <div className="max-w-md mx-auto">
-            <h1 className="text-4xl font-bold mb-6">ميرفوري</h1>
-            <p className="text-xl mb-8">منصة التسوق الإلكتروني المميزة لكل احتياجاتك</p>
-            <div className="bg-white/10 p-6 rounded-lg">
-              <p className="mb-4 text-lg">تذكرت كلمة المرور؟</p>
-              <Link href="/auth/login" className="block text-center bg-white text-[#1640a0] py-3 px-6 rounded-lg font-bold transition-all hover:bg-blue-50">
-                العودة لتسجيل الدخول
-              </Link>
-            </div>
-          </div>
-        </div>
+      <div className="min-h-screen bg-[#f7f9fb] font-[Cairo,sans-serif]" dir="rtl">
 
         {/* Verification Form */}
-        <div className="md:w-1/2 p-8 flex justify-center items-center">
-          <div className="w-full max-w-md">
-            <div className="text-center mb-10">
+        <div className="mx-auto w-full max-w-md px-4 pt-12 pb-16">
+          <Link href="/" className="mb-6 flex select-none items-center justify-center gap-2">
+            <span className="font-extrabold text-2xl tracking-wider text-slate-950 font-['Space_Grotesk'] uppercase">MIRVORY</span>
+            <span className="rounded-[9999px] bg-slate-900 px-2 py-0.5 text-[10px] font-bold tracking-widest text-white">EGYPT</span>
+          </Link>
+          <div className="w-full rounded-[1.5rem] border border-slate-100 bg-white p-5 shadow-sm md:p-7">
+            <div className="text-center mb-7">
               <div className="flex justify-center mb-4">
                 <div className="bg-blue-100 p-3 rounded-full">
-                  <Shield className="h-8 w-8 text-[#1a4fba]" />
+                  <Shield className="h-8 w-8 text-[#004ac6]" />
                 </div>
               </div>
-              <h2 className="text-3xl font-bold text-gray-800 mb-2">تحقق من كود إعادة التعيين</h2>
-              <p className="text-gray-600">أدخل الكود المكون من 6 أرقام الذي تم إرساله إلى بريدك الإلكتروني</p>
+              <h2 className="text-2xl font-extrabold text-slate-900 mb-1">تحقق من كود إعادة التعيين</h2>
+              <p className="text-slate-500">أدخل الكود المكون من 6 أرقام الذي تم إرساله إلى بريدك الإلكتروني</p>
 
               {emailParam && (
                 <div className="mt-4 inline-flex items-center justify-center px-4 py-2 bg-blue-50 rounded-lg">
-                  <Mail className="h-4 w-4 text-[#1a4fba] ml-2" />
-                  <span className="text-[#1640a0] font-medium text-sm">{emailParam}</span>
+                  <Mail className="h-4 w-4 text-[#004ac6] ml-2" />
+                  <span className="text-[#003da6] font-medium text-sm">{emailParam}</span>
                 </div>
               )}
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className="mb-6">
-                <label htmlFor="code" className="block text-gray-700 mb-2">كود التحقق</label>
+                <label htmlFor="code" className="block text-slate-700 text-[13px] font-bold mb-1.5">كود التحقق</label>
                 <div className="relative">
                   <input
                     id="code"
                     type="text"
                     maxLength={6}
                     {...register('code')}
-                    className={`w-full pr-4 pl-10 py-3 border rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent text-center text-xl tracking-widest ${errors.code ? 'border-red-300' : 'border-gray-300'
+                    className={`w-full pr-4 pl-10 py-3 border rounded-[0.875rem] bg-slate-50 focus:ring-2 focus:ring-[#004ac6]/30 focus:border-[#004ac6] text-center text-xl tracking-widest ${errors.code ? 'border-red-300' : 'border-slate-200'
                       }`}
                     placeholder="٠٠٠٠٠٠"
                     dir="ltr"
@@ -217,7 +208,7 @@ export default function PasswordResetVerify() {
               <button
                 type="submit"
                 disabled={loading}
-                className={`w-full bg-[#1a4fba] text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${loading ? 'bg-blue-400 cursor-not-allowed' : 'hover:bg-[#1640a0]'
+                className={`w-full bg-[#004ac6] text-white h-12 rounded-xl font-bold transition-colors flex items-center justify-center gap-2 ${loading ? 'bg-blue-400 cursor-not-allowed' : 'hover:bg-[#003da6]'
                   }`}
               >
                 {loading ? (
@@ -238,12 +229,12 @@ export default function PasswordResetVerify() {
             <div className="mt-6 text-center">
               {isResendDisabled ? (
                 <div className="inline-flex items-center justify-center space-x-2 space-x-reverse bg-gray-100 px-4 py-3 rounded-lg w-full">
-                  <Clock className="h-5 w-5 text-gray-500" />
+                  <Clock className="h-5 w-5 text-slate-500" />
                   <div>
-                    <p className="text-gray-700 font-medium">
+                    <p className="text-slate-700 font-medium">
                       يمكنك إعادة الإرسال خلال {formatTime(cooldown)}
                     </p>
-                    <p className="text-gray-500 text-sm mt-1">
+                    <p className="text-slate-500 text-sm mt-1">
                       يجب الانتظار 3 دقائق بين كل محاولة
                     </p>
                   </div>
@@ -253,9 +244,9 @@ export default function PasswordResetVerify() {
                   type="button"
                   onClick={handleResend}
                   disabled={resendLoading || !emailParam}
-                  className={`w-full py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${resendLoading || !emailParam
+                  className={`w-full h-12 rounded-xl font-bold transition-colors flex items-center justify-center gap-2 ${resendLoading || !emailParam
                       ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                      : 'bg-blue-50 text-[#1a4fba] hover:bg-blue-100 border border-blue-200'
+                      : 'bg-blue-50 text-[#004ac6] hover:bg-blue-100 border border-blue-200'
                     }`}
                 >
                   {resendLoading ? (
@@ -278,23 +269,23 @@ export default function PasswordResetVerify() {
             <div className="mt-8 text-center">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300"></div>
+                  <div className="w-full border-t border-slate-200"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-4 bg-gray-50 text-gray-500">خيارات إضافية</span>
+                  <span className="px-4 bg-white text-slate-500">خيارات إضافية</span>
                 </div>
               </div>
 
               <div className="mt-6 space-y-4">
                 <Link
                   href="/auth/forgot-password"
-                  className="block text-center text-[#1a4fba] hover:text-blue-800 transition-colors font-medium"
+                  className="block text-center text-[#004ac6] hover:text-blue-800 transition-colors font-medium"
                 >
                   إعادة إدخال البريد الإلكتروني
                 </Link>
                 <Link
                   href="/auth/login"
-                  className="block text-center text-gray-600 hover:text-gray-800 transition-colors"
+                  className="block text-center text-slate-500 hover:text-gray-800 transition-colors"
                 >
                   العودة إلى تسجيل الدخول
                 </Link>
