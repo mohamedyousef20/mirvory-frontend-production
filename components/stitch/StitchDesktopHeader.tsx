@@ -3,6 +3,7 @@ import Link from "next/link"
 import { PRODUCTS_NAV_LABEL } from "@/lib/nav-labels"
 import { useCallback, useEffect, useState } from "react"
 import { usePathname, useRouter } from "next/navigation"
+import { AccountAvatar } from "@/components/account-avatar"
 import { useAuth } from "@/contexts/AuthProvider"
 import { cartService, notificationService } from "@/lib/api"
 import { getGuestCartCount } from "@/lib/guestCart"
@@ -69,8 +70,8 @@ export function StitchDesktopHeader() {
           </Link>
           {authed ? (
             <div className="relative">
-              <button aria-label="حسابي" onClick={() => setMenu((v) => !v)} className="w-9 h-9 rounded-[9999px] bg-gradient-to-tr from-[#004ac6] to-blue-500 text-white flex items-center justify-center ring-2 ring-[#dbeafe]">
-                <span className="material-symbols-outlined text-[18px]">person</span>
+              <button aria-label="حسابي" onClick={() => setMenu((v) => !v)} className="flex items-center justify-center">
+                <AccountAvatar user={user} size={36} />
               </button>
               {menu && (
                 <div className="absolute left-0 mt-2 w-52 rounded-[1.25rem] bg-white shadow-xl border border-slate-100 p-2 text-sm font-semibold text-slate-700">
