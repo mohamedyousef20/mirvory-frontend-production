@@ -29,9 +29,9 @@ export function OverviewTab({ language, t, dashboardCounters, balance, orders, p
     const totalRevenue = availableBalance + pendingBalance;
 
     const balanceStats = [
-        { key: 'totalRevenue', title: language === "ar" ? "إجمالي الإيرادات" : "Total Revenue", value: totalRevenue.toFixed(2), icon: <DollarSign className="h-5 w-5 text-emerald-500" />, suffix: language === "ar" ? "ج.م" : "EGP", subtext: language === "ar" ? "إجمالي المبيعات" : "Total Sales" },
-        { key: 'orders', title: language === "ar" ? "الطلبات" : "Orders", value: orders?.length ?? 0, icon: <ShoppingBag className="h-5 w-5 text-[#1a4fba]" />, subtext: dashboardCounters?.totalOrders ? `${dashboardCounters.totalOrders} ${language === 'ar' ? 'كلي' : 'total'}` : '' },
-        { key: 'products', title: language === "ar" ? "المنتجات" : "Products", value: products?.length ?? 0, icon: <Package className="h-5 w-5 text-purple-500" />, subtext: dashboardCounters?.totalProducts ? `${dashboardCounters.totalProducts} ${language === 'ar' ? 'كلي' : 'total'}` : '' },
+        { key: 'totalRevenue', title: language === "ar" ? "إجمالي الرصيد" : "Total Balance", value: totalRevenue.toFixed(2), icon: <DollarSign className="h-5 w-5 text-emerald-500" />, suffix: language === "ar" ? "ج.م" : "EGP", subtext: language === "ar" ? "المتاح + المعلق" : "Available + pending" },
+        { key: 'orders', title: language === "ar" ? "الطلبات المحمّلة" : "Loaded Orders", value: orders?.length ?? 0, icon: <ShoppingBag className="h-5 w-5 text-[#1a4fba]" />, subtext: dashboardCounters?.totalOrders ? `${dashboardCounters.totalOrders} ${language === 'ar' ? 'كلي' : 'total'}` : '' },
+        { key: 'products', title: language === "ar" ? "المنتجات المحمّلة" : "Loaded Products", value: products?.length ?? 0, icon: <Package className="h-5 w-5 text-purple-500" />, subtext: dashboardCounters?.totalProducts ? `${dashboardCounters.totalProducts} ${language === 'ar' ? 'كلي' : 'total'}` : '' },
         { key: 'availableBalance', title: language === "ar" ? "الرصيد المتاح" : "Available Balance", value: availableBalance.toFixed(2), icon: <BarChart className="h-5 w-5 text-teal-500" />, suffix: language === "ar" ? "ج.م" : "EGP", subtext: language === "ar" ? "متاح للسحب" : "Available" },
         { key: 'pendingBalance', title: language === "ar" ? "الرصيد المعلق" : "Pending Balance", value: pendingBalance.toFixed(2), icon: <BarChart className="h-5 w-5 text-orange-500" />, suffix: language === "ar" ? "ج.م" : "EGP", subtext: language === "ar" ? "قيد المراجعة" : "Pending" },
     ]

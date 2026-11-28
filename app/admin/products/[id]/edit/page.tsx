@@ -34,6 +34,7 @@ interface ColorSize {
 }
 
 interface Color {
+  _id?: string;
   name: string;
   value: string;
   image: string;
@@ -50,9 +51,12 @@ interface EditColorSizeManagerProps {
   onAddSize: (size: string, quantity: number) => void;
   onRemoveSize: (size: string) => void;
   onUpdateQty: (size: string, quantity: number) => void;
+  onEdit: (updates: Partial<Color>) => void;
+  onRenameSize: (size: string, nextSize: string) => void;
+  onMove: (direction: number) => void;
 }
 
-function EditColorSizeManager({ color, language, onToggleAvailability, onRemove, onAddSize, onRemoveSize, onUpdateQty }: EditColorSizeManagerProps) {
+function EditColorSizeManager({ color, language, onToggleAvailability, onRemove, onAddSize, onRemoveSize, onUpdateQty, onEdit, onRenameSize, onMove }: EditColorSizeManagerProps) {
   const [newSize, setNewSize] = useState('');
   const [newQty, setNewQty] = useState(1);
 
@@ -92,6 +96,12 @@ function EditColorSizeManager({ color, language, onToggleAvailability, onRemove,
         </div>
       </div>
 
+      <div className="grid gap-3 sm:grid-cols-2">
+        <label className="text-sm">{language === 'ar' ? 'اسم اللون' : 'Color name'}<Input value={color.name} onChange={e => onEdit({ name: e.target.value })} /></label>
+        <label className="text-sm">{language === 'ar' ? 'كود اللون HEX' : 'Color HEX'}<Input dir="ltr" value={color.value} onChange={e => onEdit({ value: e.target.value })} /></label>
+        <div className="sm:col-span-2"><p className="text-sm mb-2">{language === 'ar' ? 'استبدال صورة هذا اللون (المقاسات تفضل محفوظة)' : 'Replace color image (sizes are kept)'}</p><ImageUploader onUpload={url => onEdit({ image: url })} /></div>
+        <div className="flex gap-2"><Button type="button" variant="outline" size="sm" onClick={() => onMove(-1)}>{language === 'ar' ? 'تقديم ↑' : 'Move up'}</Button><Button type="button" variant="outline" size="sm" onClick={() => onMove(1)}>{language === 'ar' ? 'تأخير ↓' : 'Move down'}</Button></div>
+      </div>
       <div className="space-y-2">
         <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide">
           {language === 'ar' ? 'المقاسات والكميات' : 'Sizes & Quantities'}
@@ -107,7 +117,7 @@ function EditColorSizeManager({ color, language, onToggleAvailability, onRemove,
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-2">
             {color.sizes.map(({ size, quantity }) => (
               <div key={size} className="flex items-center gap-1.5 bg-white rounded-lg border border-slate-200 shadow-sm p-2">
-                <span className="text-sm font-bold text-slate-700 min-w-[2rem] text-center">{size}</span>
+                <input aria-label={language === 'ar' ? 'اسم المقاس' : 'Size name'} defaultValue={size} onBlur={e => { onRenameSize(size, e.target.value); e.target.value = size; }} className="w-14 min-w-0 text-center text-sm border rounded px-1" />
                 <input type="number" min="0" value={quantity}
                   onChange={e => onUpdateQty(size, Math.max(0, parseInt(e.target.value) || 0))}
                   className="w-14 text-center text-sm border border-slate-200 rounded-md px-1 py-0.5 focus:ring-1 focus:ring-primary focus:outline-none" />
@@ -173,7 +183,7 @@ function EditColorSizeManager({ color, language, onToggleAvailability, onRemove,
 export default function EditProductPage() {
   const { language } = useLanguage();
   const { user } = useAuth();
-  const isAdminUser = (user as any)?.role === 'admin';
+  const isAdminUser = ['admin', 'super_admin'].includes((user as any)?.role);
   const router = useRouter();
   const { id } = useParams();
 
@@ -203,7 +213,12 @@ export default function EditProductPage() {
     colors: [] as Color[],
     isFeatured: false,
     isTrusted: false,
-    status: 'available' as 'available' | 'pending',
+    status: 'available' as 'available' | 'pending' | 'deleted',
+    tags: '',
+    sellerPercentage: '0',
+    isApproved: false,
+    rejectionReason: '',
+    needsStockReview: false,
     videoUrl: '',
   });
 
@@ -366,9 +381,14 @@ export default function EditProductPage() {
     isTrusted: Joi.boolean().default(false),
 
     status: Joi.string()
-      .valid('available', 'pending')
+      .valid('available', 'pending', 'deleted')
       .default('available'),
 
+    tags: Joi.string().allow('').max(5000),
+    sellerPercentage: Joi.number().min(0).required(),
+    isApproved: Joi.boolean(),
+    rejectionReason: Joi.string().allow(''),
+    needsStockReview: Joi.boolean(),
     discountedPrice: Joi.any()
   });
 
@@ -382,7 +402,7 @@ export default function EditProductPage() {
     const fetchData = async () => {
       try {
         const [productResponse, categoriesResponse] = await Promise.all([
-          productService.getProductById(id as string),
+          productService.getProductForAdminEdit(id as string),
           categoryService.getCategories()
         ]);
 
@@ -392,6 +412,7 @@ export default function EditProductPage() {
         const prod = productResponse.data.product;
 
         const cleanedColors = (prod.colors || []).map((color: any) => ({
+          _id: color._id,
           name: color.name,
           value: color.value,
           image: color.image,
@@ -416,6 +437,11 @@ export default function EditProductPage() {
           isFeatured: prod.isFeatured || false,
           isTrusted: prod.isTrusted || false,
           status: prod.status || 'available',
+          tags: (prod.tags || []).join(', '),
+          sellerPercentage: String(prod.sellerPercentage ?? 0),
+          isApproved: Boolean(prod.isApproved),
+          rejectionReason: prod.rejectionReason || '',
+          needsStockReview: Boolean(prod.needsStockReview),
           videoUrl: prod.videoUrl || '',
         });
       } catch (error: any) {
@@ -430,8 +456,10 @@ export default function EditProductPage() {
       }
     };
 
+    if (!user) return;
+    if (!isAdminUser) { setLoading(false); return; }
     fetchData();
-  }, [id, language, router]);
+  }, [id, language, router, user?._id, isAdminUser]);
 
   /*
    * ============================================================
@@ -651,6 +679,7 @@ export default function EditProductPage() {
     const preparedDataToValidate = {
       ...newProduct,
       price: newProduct.price === '' ? undefined : parseFloat(newProduct.price),
+      sellerPercentage: Number(newProduct.sellerPercentage),
       discountPercentage: parseFloat(newProduct.discountPercentage) || 0
     };
 
@@ -675,7 +704,8 @@ export default function EditProductPage() {
         category: newProduct.category,
         brand: newProduct.brand,
         deletedColorImages: newProduct.deletedColorImages,
-        colors: newProduct.colors.map(({ name, value, image, available, sizes }) => ({
+        colors: newProduct.colors.map(({ _id, name, value, image, available, sizes }) => ({
+          ...(_id ? { _id } : {}),
           name,
           value,
           image,
@@ -683,9 +713,16 @@ export default function EditProductPage() {
           sizes: sizes ?? [],
         })),
         isFeatured: newProduct.isFeatured,
-        ...(isAdminUser ? { isTrusted: newProduct.isTrusted } : {}),
+        tags: newProduct.tags.split(',').map(t => t.trim()).filter(Boolean),
+        ...(isAdminUser ? {
+          isTrusted: newProduct.isTrusted,
+          sellerPercentage: Number(newProduct.sellerPercentage),
+          isApproved: newProduct.isApproved,
+          rejectionReason: newProduct.rejectionReason,
+          needsStockReview: newProduct.needsStockReview,
+        } : {}),
         status: newProduct.status,
-        videoUrl: newProduct.videoUrl.trim() || undefined,
+        videoUrl: newProduct.videoUrl.trim(),
       };
 
       await productService.updateProduct(id as string, productData);
@@ -716,6 +753,25 @@ export default function EditProductPage() {
    * ============================================================
    */
 
+  const editColor = (index: number, updates: Partial<Color>) => {
+    setNewProduct(prev => ({ ...prev, colors: prev.colors.map((c, i) => i === index ? { ...c, ...updates } : c) }));
+  };
+  const renameSize = (index: number, oldSize: string, value: string) => {
+    const next = value.trim();
+    if (!next || next.length > 20 || newProduct.colors[index].sizes.some(s => s.size !== oldSize && s.size.toUpperCase() === next.toUpperCase())) {
+      toast.error(language === 'ar' ? 'المقاس فارغ أو مكرر أو طويل' : 'Size is empty, duplicate or too long');
+      return;
+    }
+    editColor(index, { sizes: newProduct.colors[index].sizes.map(s => s.size === oldSize ? { ...s, size: next } : s) });
+  };
+  const moveColor = (index: number, direction: number) => {
+    setNewProduct(prev => {
+      const colors = [...prev.colors], to = index + direction;
+      if (to < 0 || to >= colors.length) return prev;
+      [colors[index], colors[to]] = [colors[to], colors[index]];
+      return { ...prev, colors };
+    });
+  };
   const ar = language === 'ar';
 
   if (loading) {
@@ -726,8 +782,9 @@ export default function EditProductPage() {
     );
   }
 
+  if (!isAdminUser) return <p className="p-8">{ar ? 'الصفحة للأدمن والسوبر أدمن فقط' : 'Admin access required'}</p>;
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
+    <div className="container mx-auto px-4 py-8 max-w-6xl" dir={ar ? 'rtl' : 'ltr'}>
       <div className="mb-6">
         <Button
           variant="ghost"
@@ -861,6 +918,7 @@ export default function EditProductPage() {
               />
             </div>
 
+            <div><Label htmlFor="tags">{ar ? 'كلمات البحث (بفاصلة إنجليزية)' : 'Tags (comma separated)'}</Label><Input id="tags" name="tags" value={newProduct.tags} onChange={handleInputChange} /></div>
             {/* Video URL (optional) */}
             <div>
               <Label htmlFor="videoUrl">{ar ? 'رابط الفيديو (اختياري)' : 'Video URL (optional)'}</Label>
@@ -920,6 +978,9 @@ export default function EditProductPage() {
                       key={index}
                       color={color}
                       language={language}
+                      onEdit={updates => editColor(index, updates)}
+                      onRenameSize={(oldSize, next) => renameSize(index, oldSize, next)}
+                      onMove={direction => moveColor(index, direction)}
                       onToggleAvailability={() => toggleColorAvailability(color.value)}
                       onRemove={() => removeColor(color.value, color.image)}
                       onAddSize={(size, qty) => addSizeToColor(color.value, size, qty)}
@@ -971,7 +1032,7 @@ export default function EditProductPage() {
                 </Label>
                 <Select
                   value={newProduct.status}
-                  onValueChange={(value) => handleSelectChange('status', value)}
+                  onValueChange={(value) => setNewProduct(prev => ({ ...prev, status: value as any, isApproved: value === 'available' }))}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -979,11 +1040,22 @@ export default function EditProductPage() {
                   <SelectContent>
                     <SelectItem value="available">{ar ? 'متاح' : 'Available'}</SelectItem>
                     <SelectItem value="pending">{ar ? 'قيد المراجعة' : 'Pending'}</SelectItem>
+                    <SelectItem value="deleted">{ar ? 'محذوف (إخفاء المنتج)' : 'Deleted (hidden)'}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
 
+            <section className="grid gap-4 rounded-lg border p-4 md:grid-cols-2">
+              <h3 className="font-bold md:col-span-2">{ar ? 'الموافقة والعائد والمراجعة' : 'Approval, payout and review'}</h3>
+              <label className="text-sm">{ar ? 'عائد البائع بالجنيه (المبلغ لكل قطعة، مش نسبة %)' : 'Seller payout per item (EGP, not %)'}<Input type="number" min="0" step="0.01" name="sellerPercentage" value={newProduct.sellerPercentage} onChange={handleInputChange} /></label>
+              <label className="flex gap-2 items-center"><input type="checkbox" checked={newProduct.isApproved} onChange={e => setNewProduct(prev => ({ ...prev, isApproved: e.target.checked, status: e.target.checked ? 'available' : 'pending' }))} />{ar ? 'موافق عليه ومنشور' : 'Approved and published'}</label>
+              <label className="text-sm md:col-span-2">{ar ? 'سبب الرفض / ملاحظة المراجعة' : 'Rejection / review reason'}<Textarea name="rejectionReason" value={newProduct.rejectionReason} onChange={handleInputChange} /></label>
+              <label className="flex gap-2 items-center"><input type="checkbox" checked={newProduct.needsStockReview} onChange={e => setNewProduct(prev => ({ ...prev, needsStockReview: e.target.checked }))} />{ar ? 'يحتاج مراجعة المخزون' : 'Needs stock review'}</label>
+              <p className="text-sm text-muted-foreground md:col-span-2">{ar ? 'السعر بعد الخصم وإجمالي المخزون بيتحسبوا تلقائيًا. ترتيب الألوان بيحدد الصورة الأساسية: أول لون متاح. الصور القديمة مش بتتمسح من التخزين تلقائيًا.' : 'Discounted price and total stock are calculated. First available color sets the main image. Old image assets are not deleted automatically.'}</p>
+              <p className="text-sm text-muted-foreground md:col-span-2">{ar ? 'للقراءة فقط: البائع ومعرف المنتج والتواريخ والمبيعات والتقييمات، لأنها مرتبطة بالحسابات والطلبات والمراجعات.' : 'Read-only: seller, ID, timestamps, sales and ratings, which belong to account/order/review history.'}</p>
+              <div className="text-xs break-all md:col-span-2">ID: {String(id)} | {ar ? 'البائع' : 'Seller'}: {product?.seller?.vendorProfile?.storeName || product?.seller?.firstName || product?.seller?._id || '—'} | {ar ? 'المبيعات' : 'Sold'}: {product?.sold ?? 0} | {ar ? 'التقييم' : 'Rating'}: {product?.ratings?.average ?? 0} ({product?.ratings?.count ?? 0})</div>
+            </section>
             {/* Submit buttons */}
             <div className="flex gap-4">
               <Button type="submit" disabled={saving}>

@@ -1,4 +1,5 @@
 "use client";
+import { ControlPanelNav } from "@/components/dashboard/ControlPanelNav";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -72,6 +73,7 @@ const TAB_ITEMS = (isArabic: boolean, t: TranslateFunction) => [{ value: "overvi
 { value: "analytics", label: isArabic ? "التحليلات" : "Analytics" },
 { value: "behavior", label: isArabic ? "سلوك المشترين" : "Buyer Behavior" },
 { value: "inventory", label: isArabic ? "المخزون" : "Inventory" },
+{ value: "transactions", label: isArabic ? "المعاملات" : "Transactions" },
 ];
 
 export function AdminDashboard() {
@@ -298,76 +300,21 @@ export function AdminDashboard() {
   const tabItems = TAB_ITEMS(isArabic, t);
 
   return (
-    <div className="mv-admin max-w-screen-2xl w-full px-4 py-6 md:py-10 mx-auto" dir={isArabic ? "rtl" : "ltr"}>
-      {/* Header: Mirvory identity (navy, red accent, white) */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-l from-[#0d2f75] to-[#0a2258] text-white px-5 py-6 md:px-8 md:py-8 mb-6 shadow-lg">
-        <span className="absolute inset-y-0 start-0 w-1.5 bg-[#e11d2e]" aria-hidden />
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div>
-            <div className="flex items-center gap-3">
-              <span className="font-extrabold text-2xl tracking-[0.18em] font-['Space_Grotesk',sans-serif]">MIRVORY</span>
-              <span className="rounded-full bg-[#e11d2e] px-2.5 py-0.5 text-[11px] font-bold tracking-wide">{isArabic ? "الأدمن" : "ADMIN"}</span>
-            </div>
-            <h1 className="mt-3 text-xl md:text-2xl font-bold tracking-tight">
-              {t("adminDashboard")}
-            </h1>
-            <p className="text-white/70 mt-1 text-sm">
-              {isArabic
-                ? "مرحبًا بك في لوحة تحكم ميرفوري، تقدر تدير المتجر من هنا."
-                : "Welcome to the Mirvory admin dashboard."}
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <Link href="/" className="rounded-xl border border-white/25 px-3 py-2 text-sm font-semibold text-white/90 hover:bg-white/10">
-              {isArabic ? "فتح المتجر" : "View store"}
-            </Link>
-            <div className="rounded-xl bg-white/10 p-1 [&_button]:text-white [&_svg]:text-white">
-              <OrderNotificationBell />
-            </div>
-            <div className="[&_button]:bg-white/10 [&_button]:text-white [&_button]:border-white/25 [&_button:hover]:bg-white/20">
-              <PushNotificationToggle />
-            </div>
-            <Link href="/admin/notifications">
-              <Button className="bg-white text-[#0d2f75] hover:bg-slate-100 font-bold">
-                {isArabic ? "إرسال إشعارات" : "Send Notifications"}
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </div>
-
+    <div className="mv-admin cp-dashboard w-full" dir={isArabic ? "rtl" : "ltr"}>
+      <header className="cp-page-header">
+        <div><p className="cp-eyebrow">MIRVORY / {isArabic ? "الإدارة" : "ADMIN"}</p><h1>{isArabic ? "متجرك تحت السيطرة" : "Your store, in focus"}</h1><p className="cp-header-description">{isArabic ? "تابع الطلبات، جهّز المنتجات، وخد خطوتك الجاية." : "Follow orders, manage your catalog, and plan your next move."}</p></div>
+        <div className="cp-header-actions"><Link href="/" className="cp-store-link">{isArabic ? "فتح المتجر ↗" : "View store ↗"}</Link><OrderNotificationBell /></div>
+      </header>
       {/* Main Tabs */}
-      <Tabs
+      <Tabs dir={isArabic ? "rtl" : "ltr"}
         defaultValue="overview"
         value={activeTab}
         onValueChange={setActiveTab}
-        className="space-y-6"
+        className="cp-layout"
       >
-        {/* الموبايل: Select بدل التابات، أوضح وأسهل من سحب أفقي مخفي */}
-        <div className="md:hidden">
-          <Select value={activeTab} onValueChange={setActiveTab}>
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {tabItems.map((item) => (
-                <SelectItem key={item.value} value={item.value}>
-                  {item.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* الديسكتوب: نفس التابات القديمة، بس gap بدل space-x (gap شغال صح في RTL) */}
-        <TabsList className="hidden md:flex overflow-x-auto whitespace-nowrap gap-1.5 p-1.5 h-auto rounded-2xl bg-white border border-slate-200 shadow-sm">
-          {tabItems.map((item) => (
-            <TabsTrigger key={item.value} value={item.value} className="rounded-xl px-3.5 py-2 font-semibold text-slate-600 data-[state=active]:bg-[#0d2f75] data-[state=active]:text-white data-[state=active]:shadow">
-              {item.label}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-
+        <ControlPanelNav items={tabItems} active={activeTab} onChange={setActiveTab} ar={isArabic} />
+        <main className="cp-main" id="dashboard-content">
+          <div className="cp-section-bar"><div><p className="cp-eyebrow">{isArabic ? "لوحة التحكم" : "CONTROL PANEL"}</p><h2>{tabItems.find(item => item.value === activeTab)?.label}</h2></div><div className="cp-section-tools"><PushNotificationToggle /><Link href="/admin/notifications" className="cp-notify-link">{isArabic ? "إرسال إشعار" : "Send notification"}</Link></div></div>
         {/* Tab Contents — من غير أي تغيير */}
         <TabsContent value="overview">
           <OverviewTab
@@ -631,6 +578,7 @@ export function AdminDashboard() {
             transactionsPages={transactionsPages}
           />
         </TabsContent>
+        </main>
       </Tabs>
     </div>
   );
