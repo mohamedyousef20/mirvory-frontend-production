@@ -300,6 +300,8 @@ export const productService = {
   // Get product by ID
   getProductById: (id: string) => api.get(`/api/products/${id}`),
 
+  getProductForAdminEdit: (id: string) => api.get(`/api/products/admin-edit/${id}`),
+
   // Update product (expects ID in payload body)
   updateProduct: (
     id: string,

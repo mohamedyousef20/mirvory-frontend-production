@@ -559,9 +559,9 @@ export function VendorDashboard() {
 
   return (
     <>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap'); * { font-family: 'Cairo', sans-serif !important; }`}</style>
-      <div dir="rtl" className="min-h-screen bg-[#f4f6fb]">
-        <div className="max-w-7xl mx-auto px-6 py-8 space-y-6">
+
+      <div dir={language === "ar" ? "rtl" : "ltr"} className="cp-dashboard cp-vendor min-h-screen">
+        <div className="w-full">
 
           <VendorHeader
             title={t("vendorDashboard")}
@@ -569,8 +569,9 @@ export function VendorDashboard() {
             addLabel={language === "ar" ? "إضافة منتج جديد" : "Add New Product"}
           />
 
-          <Tabs defaultValue="overview" value={activeTab} onValueChange={setActiveTab}>
-            <VendorTabBar tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+          <Tabs dir={language === "ar" ? "rtl" : "ltr"} defaultValue="overview" value={activeTab} onValueChange={setActiveTab} className="cp-layout">
+            <VendorTabBar tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} ar={language === "ar"} />
+            <main className="cp-main"><div className="cp-section-bar"><div><p className="cp-eyebrow">MIRVORY / {language === "ar" ? "البائع" : "SELLER"}</p><h2>{tabs.find(tab => tab.value === activeTab)?.label}</h2></div></div>
 
             <TabsContent value="overview">
               <OverviewTab language={language} t={t} dashboardCounters={dashboardCounters} balance={balance} orders={orders} products={products} />
@@ -639,6 +640,7 @@ export function VendorDashboard() {
                 getReturnStatusLabel={getReturnStatusLabel}
               />
             </TabsContent>
+            </main>
           </Tabs>
         </div>
       </div>

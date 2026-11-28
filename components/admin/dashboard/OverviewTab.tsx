@@ -93,14 +93,14 @@ export function OverviewTab({
     };
 
     // Use dashboardCounters data if available, otherwise fall back to platformEarnings
-    const displayRevenue = counters.totalRevenue || earningsSummary.totalAmount;
-    const displayDiscounts = counters.totalDiscounts || earningsSummary.totalDiscounts;
-    const displayCommission = counters.totalCommissions || earningsSummary.totalCommission;
-    const displayProfits = counters.totalProfits || earningsSummary.totalCommission;
+    const displayRevenue = dashboardCounters?.totalRevenue ?? earningsSummary.totalAmount;
+    const displayDiscounts = dashboardCounters?.totalDiscounts ?? earningsSummary.totalDiscounts;
+    const displayCommission = dashboardCounters?.totalCommissions ?? earningsSummary.totalCommission;
+    const displayProfits = dashboardCounters?.totalProfits ?? earningsSummary.totalCommission;
 
     return (
         <div className="space-y-6">
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="cp-kpi-grid grid gap-3 grid-cols-2 xl:grid-cols-4">
                 {[
                     {
                         key: 'new',
@@ -127,7 +127,7 @@ export function OverviewTab({
                         icon: <Users className="h-4 w-4 text-muted-foreground" />
                     }
                 ].map((card) => (
-                    <Card key={card.key} className="border border-primary/10">
+                    <Card key={card.key} className="cp-kpi-card border border-slate-200">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">{card.title}</CardTitle>
                             {card.icon}
@@ -135,18 +135,18 @@ export function OverviewTab({
                         <CardContent>
                             <div className="text-3xl font-semibold">{card.value}</div>
                             <p className="text-xs text-muted-foreground">
-                                {isArabic ? "محدثة لحظيًا" : "Live data"}
+                                {isArabic ? "حسب آخر تحديث للبيانات" : "Latest loaded data"}
                             </p>
                         </CardContent>
                     </Card>
                 ))}
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-8">
+            <div className="cp-summary-grid grid gap-3 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">
-                            {isArabic ? "إجمالي الأرباح" : "Total Earnings"}
+                            {isArabic ? "إجمالي الإيرادات" : "Total Revenue"}
                         </CardTitle>
                         <DollarSign className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
@@ -164,7 +164,7 @@ export function OverviewTab({
                             ) : (
                                 <TrendingDown className="h-3 w-3 text-red-500 mr-1" />
                             )}
-                            {!loadingEarnings && `${Math.abs(monthlyGrowth).toFixed(1)}% ${isArabic ? "من الشهر الماضي" : "from last month"}`}
+                            {!loadingEarnings && (earningsSummary.monthly.length >= 2 ? `${Math.abs(monthlyGrowth).toFixed(1)}% ${isArabic ? "مقارنة بالشهر السابق المتاح" : "vs previous available month"}` : (isArabic ? "لا توجد مقارنة شهرية كافية" : "Not enough monthly data"))}
                         </p>
                     </CardContent>
                 </Card>
@@ -240,7 +240,7 @@ export function OverviewTab({
                         <ShoppingBag className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{counters.totalOrders || totalOrders}</div>
+                        <div className="text-2xl font-bold">{dashboardCounters?.totalOrders ?? totalOrders}</div>
                         <p className="text-xs text-muted-foreground">
                             {isArabic ? "إجمالي الطلبات" : "total orders"}
                         </p>
@@ -255,7 +255,7 @@ export function OverviewTab({
                         <Package className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{counters.totalProducts || totalProductsCount}</div>
+                        <div className="text-2xl font-bold">{dashboardCounters?.totalProducts ?? totalProductsCount}</div>
                         <p className="text-xs text-muted-foreground">
                             {isArabic ? "إجمالي المنتجات" : "total products"}
                         </p>
@@ -270,7 +270,7 @@ export function OverviewTab({
                         <Users className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{counters.totalSellers || totalSellersCount}</div>
+                        <div className="text-2xl font-bold">{dashboardCounters?.totalSellers ?? totalSellersCount}</div>
                         <p className="text-xs text-muted-foreground">
                             {isArabic ? "إجمالي البائعين" : "total sellers"}
                         </p>
@@ -285,7 +285,7 @@ export function OverviewTab({
                         <Users className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{counters.totalUsers || totalUsersCount}</div>
+                        <div className="text-2xl font-bold">{dashboardCounters?.totalUsers ?? totalUsersCount}</div>
                         <p className="text-xs text-muted-foreground">
                             {isArabic ? "إجمالي المستخدمين" : "total users"}
                         </p>
