@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { jwtVerify, type JWTPayload } from "jose";
+import { renewSession, SessionRefreshError, setSessionCookies } from "@/lib/session-refresh";
 
 // ── Typed JWT payload ────────────────────────────────────────────────────────
 interface AppJwtPayload extends JWTPayload {
@@ -10,9 +11,6 @@ interface AppJwtPayload extends JWTPayload {
 }
 
 const PROTECTED_ROUTES = ["/account", "/vendor", "/admin", "/driver"];
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:5000";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -36,14 +34,14 @@ export async function middleware(request: NextRequest) {
     if (authHeader?.startsWith("Bearer ")) token = authHeader.substring(7);
   }
 
-  if (!token) {
+  if (!token && !refreshToken) {
     const loginUrl = new URL("/auth/login", request.url);
     loginUrl.searchParams.set("redirect", request.nextUrl.pathname + request.nextUrl.search);
     return NextResponse.redirect(loginUrl);
   }
 
   try {
-    const { payload } = await jwtVerify(token, SECRET_KEY);
+    const { payload } = await jwtVerify(token || "", SECRET_KEY);
     const decoded = payload as AppJwtPayload;
 
     // Null-safe extraction — never pass undefined to headers
@@ -74,43 +72,21 @@ export async function middleware(request: NextRequest) {
     // Log code/message only — never log the token value itself
     console.error("❌ Token verification failed:", { code: err.code, message: err.message });
 
-    // // ── Auto-refresh on expiry ───────────────────────────────────────────────
-    // if (err.code === "ERR_JWT_EXPIRED" && refreshToken) {
-    //   try {
-    //     const refreshRes = await fetch(`${API_URL}/api/users/refresh-token`, {
-    //       method: "POST",
-    //       credentials: "include",
-    //       headers: { Cookie: request.headers.get("cookie") || "" },
-    //     });
-
-    //     if (refreshRes.ok) {
-    //       const data = await refreshRes.json();
-    //       const newToken: string | undefined = data.accessToken;
-
-    //       if (newToken) {
-    //         const { payload } = await jwtVerify(newToken, SECRET_KEY);
-    //         const d = payload as AppJwtPayload;
-
-    //         const requestHeaders = new Headers(request.headers);
-    //         const uid = d.id ?? "";
-    //         const urole = (d.role ?? "").toLowerCase();
-    //         const umail = d.email ?? "";
-    //         if (uid) requestHeaders.set("x-user-id", uid);
-    //         if (urole) requestHeaders.set("x-user-role", urole);
-    //         if (umail) requestHeaders.set("x-user-email", umail);
-
-    //         const response = NextResponse.next({ request: { headers: requestHeaders } });
-    //         const isProd = process.env.NODE_ENV === "production";
-    //         response.cookies.set("accessToken", newToken, {
-    //           httpOnly: true, secure: isProd, sameSite: "lax", path: "/", maxAge: 15 * 60,
-    //         });
-    //         return response;
-    //       }
-    //     }
-    //   } catch (refreshError) {
-    //     console.error("❌ Token refresh failed:", refreshError);
-    //   }
-    // }
+    // Renew before rendering protected pages. No role is trusted until the
+    // next request verifies the new access JWT and runs the RBAC checks above.
+    if (refreshToken && (!token || err.code === "ERR_JWT_EXPIRED")) {
+      try {
+        const tokens = await renewSession(request.headers.get("cookie") || "");
+        await jwtVerify(tokens.accessToken, SECRET_KEY);
+        return setSessionCookies(NextResponse.redirect(request.nextUrl), tokens);
+      } catch (refreshError) {
+        if (!(refreshError instanceof SessionRefreshError) || refreshError.status !== 401) {
+          return new NextResponse("Session renewal temporarily unavailable. Please reload.", {
+            status: 503, headers: { "Cache-Control": "no-store", "Retry-After": "5" },
+          });
+        }
+      }
+    }
 
     const response = NextResponse.redirect(new URL("/auth/login", request.url));
     response.cookies.delete("accessToken");

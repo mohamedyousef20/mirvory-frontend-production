@@ -1,0 +1,43 @@
+const ts = require('typescript');
+const fs = require('fs');
+const Module = require('module');
+const assert = require('node:assert/strict');
+const { NextRequest } = require('next/server');
+const jwt = require('jsonwebtoken');
+function load(path) {
+ let code = ts.transpileModule(fs.readFileSync(path,'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, esModuleInterop: true } }).outputText;
+ code = code.replaceAll('@/lib/session-refresh', `${process.cwd()}/.test-session.cjs`);
+ const mod = new Module(path, module); mod.filename = path; mod.paths = module.paths; mod._compile(code, path); return mod.exports;
+}
+const helper = ts.transpileModule(fs.readFileSync('lib/session-refresh.ts','utf8'), {compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
+fs.writeFileSync('.test-session.cjs', helper);
+(async () => {
+ process.env.JWT_SECRET = 'test-access';
+ const { middleware } = load(`${process.cwd()}/middleware.ts`);
+ const { POST } = load(`${process.cwd()}/app/api/auth/refresh/route.ts`);
+ const session = require(`${process.cwd()}/.test-session.cjs`);
+ const accessToken = jwt.sign({id:'unit-user',role:'admin'}, process.env.JWT_SECRET, {expiresIn:'1h'});
+ const refreshToken = jwt.sign({id:'unit-user'}, 'test-refresh', {expiresIn:'7d'});
+ let calls=0;
+ global.fetch=async () => { calls++; return Response.json({ accessToken, refreshToken }); };
+ let r = await middleware(new NextRequest('https://mirvory.net/admin', {headers:{cookie:`refreshToken=${refreshToken}`}}));
+ assert.equal(r.status,307); assert(r.cookies.get('accessToken')); assert(r.cookies.get('refreshToken')); assert.equal(calls,1);
+ r=await middleware(new NextRequest('https://mirvory.net/admin',{headers:{cookie:`accessToken=${accessToken}`}}));
+ assert.equal(r.status,200); assert.equal(calls,1);
+ const ordinary=jwt.sign({id:'unit-user',role:'user'},process.env.JWT_SECRET,{expiresIn:'1h'});
+ r=await middleware(new NextRequest('https://mirvory.net/admin',{headers:{cookie:`accessToken=${ordinary}`}}));
+ assert(r.headers.get('location').endsWith('/unauthorized'));
+ const expired=jwt.sign({id:'unit-user',role:'admin'},process.env.JWT_SECRET,{expiresIn:-1});
+ r=await middleware(new NextRequest('https://mirvory.net/admin',{headers:{cookie:`accessToken=${expired}; refreshToken=${refreshToken}`}}));
+ assert(r.cookies.get('accessToken'));
+ r=await POST(new NextRequest('https://mirvory.net/api/auth/refresh',{method:'POST',headers:{origin:'https://mirvory.net',cookie:`refreshToken=${refreshToken}`}}));
+ assert.equal(r.status,200); assert.deepEqual(await r.json(),{success:true}); assert(r.cookies.get('accessToken'));
+ r=await POST(new NextRequest('https://mirvory.net/api/auth/refresh',{method:'POST',headers:{origin:'https://evil.invalid'}})); assert.equal(r.status,403);
+ global.fetch=async()=>new Response('',{status:503});
+ r=await middleware(new NextRequest('https://mirvory.net/admin',{headers:{cookie:`refreshToken=${refreshToken}`}})); assert.equal(r.status,503); assert.equal(r.cookies.getAll().length,0);
+ global.fetch=async()=>new Response('',{status:401});
+ r=await middleware(new NextRequest('https://mirvory.net/admin',{headers:{cookie:`refreshToken=${refreshToken}`}})); assert(r.headers.get('location').endsWith('/auth/login'));
+ assert(session.cookieLifetime(accessToken,7*86400)>3500);
+ assert.equal(session.cookieLifetime(expired,7*86400),0);
+ console.log('PASS: middleware missing/expired access renews, valid access/RBAC retained, same-origin route sets HttpOnly credentials without returning them, CSRF origin rejected, outages retain cookies, invalid refresh redirects, cookie lifetime follows JWT expiry.');
+})().finally(()=>fs.unlinkSync('.test-session.cjs')).catch(e=>{console.error(e);process.exitCode=1});

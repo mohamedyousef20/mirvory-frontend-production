@@ -63,14 +63,10 @@ api.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
 
-    // Handle 401 errors (Unauthorized)
-    // Never retry if the request that failed IS the refresh-token endpoint —
-    // that would cause an infinite loop where refresh → 401 → refresh → ...
-    // Also skip for /api/users/me: a 401 there just means "not logged in",
-    // which is a completely normal state for a guest visitor — it should
-    // resolve quietly, not trigger a token-refresh attempt + forced
-    // redirect to /auth/login on every page a guest visits.
+    // Even /users/me must renew an expired access cookie. Guests get one
+    // failed renewal, quietly, without being redirected away from the store.
     const isRefreshEndpoint =
+      originalRequest?.url?.includes('/api/auth/refresh') ||
       originalRequest?.url?.includes('/api/users/refresh-token') ||
       originalRequest?.url?.includes('/api/users/login') ||
       originalRequest?.url?.includes('/api/users/logout');
@@ -78,8 +74,7 @@ api.interceptors.response.use(
     if (
       error.response?.status === 401 &&
       !originalRequest?._retry &&
-      !isRefreshEndpoint &&
-      !isMeEndpoint
+      !isRefreshEndpoint
     ) {
       if (isRefreshing) {
         // If refresh is in progress, queue the request
@@ -96,18 +91,21 @@ api.interceptors.response.use(
       isRefreshing = true;
       try {
         // Refresh the authentication cookies through the same-origin API
-        await api.post('/api/users/refresh-token');
+        await api.post('/api/auth/refresh');
 
         // Release queued requests
         processQueue(null, null);
 
         // Retry the original request
         return api(originalRequest);
-      } catch (refreshError) {
+      } catch (refreshError: any) {
         processQueue(refreshError, null);
 
-        clearAuth();
-        redirectToLoginIfProtected();
+        // A timeout or server error is not a logout.
+        if (refreshError?.response?.status === 401) {
+          clearAuth();
+          if (!isMeEndpoint) redirectToLoginIfProtected();
+        }
 
         return Promise.reject(refreshError);
       } finally {

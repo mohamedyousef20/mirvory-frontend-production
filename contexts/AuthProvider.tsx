@@ -227,7 +227,7 @@ function AuthContextWrapper({
     // ===== Refresh User =====
     const refreshUser = useCallback(
         async ({ force = false }: { force?: boolean } = {}) => {
-            if (isRefreshing && !force) {
+            if (isRefreshing) {
                 return new Promise((resolve, reject) => {
                     refreshQueue.push({ resolve, reject });
                 });
@@ -257,8 +257,7 @@ function AuthContextWrapper({
                 hasFetchedRef.current = true;
 
                 if (
-                    err?.response?.status === 401 ||
-                    err?.response?.status === 403
+                    err?.response?.status === 401
                 ) {
                     setUser(null);
                 }
@@ -298,6 +297,13 @@ function AuthContextWrapper({
 
             // Priority 2: NextAuth session (Google OAuth flow)
             if (session?.user) {
+                // Prefer live backend cookies. Replaying the original OAuth
+                // credentials on every mount can overwrite a renewed session.
+                const currentUser = await refreshUser({ force: true });
+                if (currentUser) {
+                    if (mounted) setCookiesReady(true);
+                    return;
+                }
                 setUser(session.user);
 
                 const cookiePayload = {
