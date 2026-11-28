@@ -55,7 +55,7 @@ export function BehaviorTab() {
   return (
     <div className="space-y-5" dir="rtl">
       <div className="flex items-center justify-between flex-wrap gap-2">
-        <div><h2 className="text-xl font-black">تحليل سلوك المشترين</h2><p className="text-xs text-muted-foreground">تتبع مجهول الهوية: بدون اسم أو تليفون أو IP للزوار. السلات المتروكة من بيانات حسابات المسجلين فقط.</p></div>
+        <div><h2 className="text-xl font-black">تحليل سلوك المشترين</h2><p className="text-xs text-muted-foreground">تتبع مجهول الهوية: بدون اسم أو تليفون أو IP للزوار. السلات المتروكة من بيانات حسابات المسجلين فقط. زياراتك كأدمن مستبعدة من الأرقام.</p></div>
         <div className="flex gap-2">
           {[7, 30, 90].map((d) => <Button key={d} size="sm" variant={days === d ? "default" : "outline"} onClick={() => setDays(d)}>{d} يوم</Button>)}
           <Button size="sm" variant="outline" onClick={load} disabled={loading}>تحديث</Button>

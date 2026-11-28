@@ -11,6 +11,7 @@ import {
 } from "react";
 import { SessionProvider, useSession } from "next-auth/react";
 import { authService } from "@/lib/api";
+import { markAdminBrowser } from "@/lib/track";
 
 type AuthUser = any;
 
@@ -129,6 +130,12 @@ function AuthContextWrapper({
         ((session.user as any).id ||
             (session.user as any)._id ||
             (session.user as any).email);
+
+    // Exclude the owner's/admin's own visits from the buyer-behavior analytics:
+    // any browser where an admin logs in is flagged, and lib/track.ts then skips sending events from it.
+    useEffect(() => {
+        if (userState) markAdminBrowser((userState as any).role);
+    }, [userState]);
 
     // ===== Timer Management =====
     const clearTimers = useCallback(() => {
