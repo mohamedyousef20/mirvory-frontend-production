@@ -7,6 +7,19 @@
 export type TrackType = "pageview" | "product_view" | "add_to_cart" | "checkout_start" | "purchase" | "search"
 
 const SID_KEY = "mv_sid"
+// Any browser where an admin/super_admin logged in is marked with this flag (set by AuthProvider).
+// It stays after logout on purpose: the owner's own visits must not count as buyer behavior,
+// whether he is logged in or just browsing the storefront.
+const ADMIN_FLAG = "mv_adm"
+
+export function markAdminBrowser(role?: string) {
+  if (typeof window === "undefined") return
+  try { if (role === "admin" || role === "super_admin") localStorage.setItem(ADMIN_FLAG, "1") } catch { /* ignore */ }
+}
+
+function isAdminBrowser(): boolean {
+  try { return localStorage.getItem(ADMIN_FLAG) === "1" } catch { return false }
+}
 function sid(): string {
   try {
     let s = sessionStorage.getItem(SID_KEY)
@@ -32,6 +45,7 @@ function source() {
 export function track(type: TrackType, extra: { productId?: string; term?: string; results?: number; isAuth?: boolean } = {}) {
   if (typeof window === "undefined") return
   if (navigator.doNotTrack === "1") return
+  if (isAdminBrowser()) return
   const id = sid()
   if (!id) return
   const { ref, utm } = source()
