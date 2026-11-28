@@ -1,3 +1,4 @@
+import { cookieLifetime } from "@/lib/session-refresh";
 import { NextRequest, NextResponse } from 'next/server';
 
 /**
@@ -62,7 +63,7 @@ export async function POST(request: NextRequest) {
       secure: isProd,
       sameSite: 'lax',
       path: '/',
-      maxAge: 15 * 60, // 15 minutes — matches typical backend JWT_EXPIRE
+      maxAge: cookieLifetime(accessToken, 7 * 86400),
     });
 
     // refreshToken — longer-lived, HTTP-only, same-site
@@ -71,7 +72,7 @@ export async function POST(request: NextRequest) {
       secure: isProd,
       sameSite: 'lax',
       path: '/',
-      maxAge: 20 * 24 * 60 * 60, // 20 days — matches typical JWT_REFRESH_EXPIRE
+      maxAge: cookieLifetime(refreshToken, 30 * 86400),
     });
 
     // userRole — not HTTP-only so client JS can read it for UI decisions
@@ -81,7 +82,7 @@ export async function POST(request: NextRequest) {
         secure: isProd,
         sameSite: 'lax',
         path: '/',
-        maxAge: 20 * 24 * 60 * 60,
+        maxAge: cookieLifetime(refreshToken, 30 * 86400),
       });
     }
 

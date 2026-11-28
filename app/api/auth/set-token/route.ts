@@ -1,3 +1,4 @@
+import { cookieLifetime } from "@/lib/session-refresh";
 /**
  * POST /api/auth/set-token
  *
@@ -119,7 +120,7 @@ export async function POST(request: NextRequest) {
       secure: isProd,
       sameSite: 'lax',
       path: '/',
-      maxAge: 15 * 60, // 15 minutes — matches backend JWT_EXPIRE default
+      maxAge: cookieLifetime(accessToken, 7 * 86400),
     });
 
     if (refreshToken) {
@@ -128,7 +129,7 @@ export async function POST(request: NextRequest) {
         secure: isProd,
         sameSite: 'lax',
         path: '/',
-        maxAge: 7 * 24 * 60 * 60, // 7 days — matches backend COOKIE_REFRESH_EXPIRE default
+        maxAge: cookieLifetime(refreshToken, 30 * 86400),
       });
     }
 
@@ -139,7 +140,7 @@ export async function POST(request: NextRequest) {
         secure: isProd,
         sameSite: 'lax',
         path: '/',
-        maxAge: 7 * 24 * 60 * 60,
+        maxAge: cookieLifetime(refreshToken, 30 * 86400),
       });
     }
 
